@@ -157,6 +157,59 @@ document.addEventListener("DOMContentLoaded", () => {
             // Vuelve a la velocidad base lenta
             targetSpeed = targetSpeed > 0 ? 0.5 : -0.5;
         });
+
+             // Soporte táctil: arrastrar el carrusel con el dedo
+let arrastrando = false;
+let touchStartX = 0;
+let touchStartPosition = 0;
+let huboArrastre = false;
+
+if (carruselWrapper) {
+
+    carruselWrapper.addEventListener("touchstart", (e) => {
+        arrastrando = true;
+        huboArrastre = false;
+        touchStartX = e.touches[0].clientX;
+        touchStartPosition = position;
+        if (animFrame) cancelAnimationFrame(animFrame);
+    }, { passive: true });
+
+    carruselWrapper.addEventListener("touchmove", (e) => {
+        if (!arrastrando) return;
+
+        const deltaX = e.touches[0].clientX - touchStartX;
+        if (Math.abs(deltaX) > 5) huboArrastre = true;
+
+        position = touchStartPosition + deltaX;
+
+        if (carruselTrack) {
+            const singleWidth = carruselTrack.scrollWidth / 3;
+            if (singleWidth > 0) {
+                if (position <= -(singleWidth * 2)) {
+                    position += singleWidth;
+                } else if (position > -singleWidth) {
+                    position -= singleWidth;
+                }
+            }
+            carruselTrack.style.transform = `translateX(${position}px)`;
+        }
+    }, { passive: true });
+
+    carruselWrapper.addEventListener("touchend", () => {
+        arrastrando = false;
+        speed = 0.5;
+        targetSpeed = 0.5;
+        animarCarrusel();
+    });
+
+    // Evita abrir el vídeo por error si el usuario estaba arrastrando
+    carruselWrapper.addEventListener("click", (e) => {
+        if (huboArrastre) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    }, true);
+}  
     }
 
 

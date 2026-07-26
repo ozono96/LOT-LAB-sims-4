@@ -209,6 +209,25 @@ function actualizarBotonesFiltros() {
 
     const tooltip = document.getElementById("tooltipFiltro");
 
+     // ── Dependencia: Barrio solo disponible si hay Mundo filtrado ──
+    const botonBarrio = document.querySelector('.botonFiltro[data-filtro="barrio"]');
+    const hayMundoFiltrado = contarValoresFiltro("mundo") > 0;
+
+    if (botonBarrio) {
+        if (hayMundoFiltrado) {
+            botonBarrio.style.display = "";
+        } else {
+            if (existeFiltro("barrio")) {
+                eliminarFiltro("barrio");
+            }
+            botonBarrio.style.display = "none";
+        }
+    }
+
+    document
+    .querySelectorAll(".botonFiltro")
+    .forEach(boton => {
+
     document
     .querySelectorAll(".botonFiltro")
     .forEach(boton => {

@@ -201,7 +201,7 @@ function rerollCategoria(categoriaId) {
         if (resNuevo.packsPermitidos && resNuevo.packsPermitidos.length > 0) {
             poolPacksSolar = resNuevo.packsPermitidos;
         }
-        retoActual.solar = seleccionarSolarParaReto(poolPacksSolar);
+        retoActual.solar = seleccionarSolarParaReto(poolPacksSolar, retoActual.categorias);
     }
 
     // Volver a renderizar UI sin cambiar el resto del reto

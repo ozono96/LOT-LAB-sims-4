@@ -222,10 +222,15 @@ function renderizarPacksRetos() {
             + '</div>';
     }
 
-    contenedor.innerHTML += crearSeccion("Packs de Expansión", packsExpansion, "packs-expansion");
-    contenedor.innerHTML += crearSeccion("Packs de Contenido", packsContenido, "packs-contenido");
-    contenedor.innerHTML += crearSeccion("Packs de Accesorios", packsAccesorios, "packs-accesorios");
-    contenedor.innerHTML += crearSeccion("Kits", packsKits, "packs-kits");
+    // ── Packs de Expansión, Contenido, Accesorios y Kits en cuadrícula 2 columnas ──
+    let gridSecciones = '<div class="gridPacksRetos">';
+    gridSecciones += crearSeccion("Packs de Expansión", packsExpansion, "packs-expansion");
+    gridSecciones += crearSeccion("Packs de Contenido", packsContenido, "packs-contenido");
+    gridSecciones += crearSeccion("Packs de Accesorios", packsAccesorios, "packs-accesorios");
+    gridSecciones += crearSeccion("Kits", packsKits, "packs-kits");
+    gridSecciones += '</div>';
+
+    contenedor.innerHTML += gridSecciones;
 
     // Eventos click en botones de pack (toggle individual)
     document.querySelectorAll("#listaPacksRetos .opcionFiltro").forEach(boton => {

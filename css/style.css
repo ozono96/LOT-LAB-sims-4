@@ -277,7 +277,7 @@ header p{
 
     padding:25px 25px 50px 25px;
 
-    width:min(92%,900px);
+    width:min(92%,1150px);
 
     border-radius:var(--radio-grande);
 
@@ -1298,6 +1298,16 @@ input[type="number"]:focus {
 
 }
 
+@media(min-width:1400px){
+
+    .ventana{
+
+        width:min(75%,1350px);
+
+    }
+
+}
+
 .compartir svg{
 
     width:22px;
@@ -1963,3 +1973,213 @@ body.modo-noche .toggleModo:hover{
     margin-top: 8px;
 }
 
+/* ==========================================================
+   TARJETAS DE SOLAR (GRID)
+========================================================== */
+
+#listaResultados,
+.contenidoMundo.abierto{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+
+    gap:16px;
+
+}
+
+.contenidoMundo{
+
+    display:none;
+
+}
+
+#resultadoAleatorio{
+
+    display:flex;
+
+    justify-content:center;
+
+}
+
+.tarjetaSolar{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    width:100%;
+
+    max-width:220px;
+
+    margin:0 auto;
+
+    padding:16px 12px;
+
+    border-radius:var(--radio-normal);
+
+    background:var(--color-tarjeta);
+
+    backdrop-filter:blur(8px);
+
+    -webkit-backdrop-filter:blur(8px);
+
+    border:1px solid var(--borde);
+
+    box-shadow:var(--sombra-suave);
+
+    cursor:pointer;
+
+    transition:var(--transicion);
+
+    text-align:center;
+
+}
+
+.tarjetaSolar:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:var(--sombra-normal);
+
+    border-color:rgba(255,255,255,.5);
+
+}
+
+.iconoTarjetaSolar{
+
+    position:relative;
+
+    width:64px;
+
+    height:64px;
+
+}
+
+.iconoTarjetaSolar img{
+
+    position:absolute;
+
+    top:0;
+
+    left:0;
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:contain;
+
+    border-radius:10px;
+
+    filter:drop-shadow(0 2px 6px rgba(0,0,0,.25));
+
+    transition:opacity .3s ease;
+
+}
+
+.iconoMundoImg{
+
+    opacity:0;
+
+}
+
+.tarjetaSolar:hover .iconoTarjetaSolar.tieneIconoMundo .iconoPackImg{
+
+    opacity:0;
+
+}
+
+.tarjetaSolar:hover .iconoTarjetaSolar.tieneIconoMundo .iconoMundoImg{
+
+    opacity:1;
+
+}
+
+.iconoTarjetaSolarFallback{
+
+    font-size:2.2rem;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    width:100%;
+
+    height:100%;
+
+}
+
+.nombreTarjetaSolar{
+
+    font-weight:bold;
+
+    font-size:.95rem;
+
+    line-height:1.3;
+
+    color:var(--color-texto);
+
+}
+
+@media(max-width:700px){
+
+    #listaResultados,
+    .contenidoMundo.abierto{
+
+        grid-template-columns:repeat(auto-fill,minmax(115px,1fr));
+
+        gap:12px;
+
+    }
+
+    .tarjetaSolar{
+
+        max-width:none;
+
+        padding:12px 8px;
+
+    }
+
+    .iconoTarjetaSolar{
+
+        width:52px;
+
+        height:52px;
+
+    }
+
+}
+
+
+/* ==========================================================
+   GRID SECCIONES DE PACKS (RETOS)
+========================================================== */
+
+.gridPacksRetos{
+
+    display:grid;
+
+    grid-template-columns:1fr;
+
+    column-gap:40px;
+
+}
+
+@media(min-width:701px){
+
+    .gridPacksRetos{
+
+        grid-template-columns:1fr 1fr;
+
+    }
+
+}

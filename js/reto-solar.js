@@ -9,37 +9,48 @@ function seleccionarSolarParaReto(packsUsuario = [], categoriasGeneradas = {}) {
         return null;
     }
 
-    // Filtrar solares compatibles con los packs que posee el usuario
-    const solaresValidos = database.solares.filter(solar => {
-        const packSolar = (solar.nombrePack || "").trim();
-        const tipoPackSolar = (solar.tipoPack || "").trim().toLowerCase();
+    function filtrarSolares(soloJuegoBase) {
+        return database.solares.filter(solar => {
+            const packSolar = (solar.nombrePack || "").trim();
+            const tipoPackSolar = (solar.tipoPack || "").trim().toLowerCase();
 
-        // 1. Comprobar si el usuario tiene el pack
-        let tienePack = false;
-        const esJuegoBase = tipoPackSolar.includes("base") || packSolar.toLowerCase().includes("juego base") || packSolar.toLowerCase() === "los sims 4";
+            const esJuegoBase = tipoPackSolar.includes("base") || packSolar.toLowerCase().includes("juego base") || packSolar.toLowerCase() === "los sims 4";
 
-        if (esJuegoBase) {
-            // Solo válido si el botón "Los Sims 4" está marcado
-            tienePack = typeof juegoBaseMarcado === "function" ? juegoBaseMarcado() : true;
-        } else {
-            tienePack = packsUsuario.some(packSelec => 
-                packSelec.toLowerCase() === packSolar.toLowerCase() ||
-                packSolar.toLowerCase().includes(packSelec.toLowerCase())
-            );
-        }
+            let tienePack;
 
-        if (!tienePack) return false;
-
-        // 2. Comprobar el tamaño si es requerido
-        if (categoriasGeneradas && categoriasGeneradas.tamanoSolar && categoriasGeneradas.tamanoSolar.resultado.tamanoRequerido) {
-            const tamRequerido = categoriasGeneradas.tamanoSolar.resultado.tamanoRequerido.trim();
-            if ((solar.tamaño || "").trim() !== tamRequerido) {
-                return false;
+            if (soloJuegoBase) {
+                if (!esJuegoBase) return false;
+                tienePack = typeof juegoBaseMarcado === "function" ? juegoBaseMarcado() : true;
+            } else if (esJuegoBase) {
+                tienePack = typeof juegoBaseMarcado === "function" ? juegoBaseMarcado() : true;
+            } else {
+                tienePack = packsUsuario.some(packSelec =>
+                    packSelec.toLowerCase() === packSolar.toLowerCase() ||
+                    packSolar.toLowerCase().includes(packSelec.toLowerCase())
+                );
             }
-        }
 
-        return true;
-    });
+            if (!tienePack) return false;
+
+            // Comprobar el tamaño si es requerido
+            if (categoriasGeneradas && categoriasGeneradas.tamanoSolar && categoriasGeneradas.tamanoSolar.resultado.tamanoRequerido) {
+                const tamRequerido = categoriasGeneradas.tamanoSolar.resultado.tamanoRequerido.trim();
+                if ((solar.tamaño || "").trim() !== tamRequerido) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+    }
+
+    let solaresValidos = filtrarSolares(false);
+
+    // ── Si el límite de packs deja fuera cualquier pack con solares propios
+    //    (ej. solo packs de accesorios/kits sin mundo), recurrimos al Juego Base ──
+    if (solaresValidos.length === 0 && categoriasGeneradas && categoriasGeneradas.limitePacks) {
+        solaresValidos = filtrarSolares(true);
+    }
 
     if (solaresValidos.length === 0) {
         return null;

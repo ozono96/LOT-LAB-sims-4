@@ -76,7 +76,13 @@ function renderizarResultadoReto(reto) {
                     <div style="font-size: 1.05rem; margin-top: 4px;">${cat.resultado.texto}</div>
                     ${detalleExtra}
                 </div>
-                <button class="${btnClass}" onclick="rerollCategoria('${catId}')" ${disabled} title="Re-generar esta opción (${rerollsLeft}/3)" style="display: flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 0.95rem;">
+                <button
+                    class="${btnClass}"
+                    onclick="rerollCategoria('${catId}')"
+                    ${disabled}
+                    data-tooltip=" ¡RECUERDA! Solo tienes 3 intentos para regenerar cada limitante del reto."
+                    style="display: flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 0.95rem;"
+                >
                     🔄 (${rerollsLeft}/3)
                 </button>
             </div>
@@ -86,4 +92,22 @@ function renderizarResultadoReto(reto) {
     html += `</div>`;
 
     contenedor.innerHTML = html;
+
+    // ── Tooltip de los botones de reroll ──
+    const tooltip = document.getElementById("tooltipOpciones");
+    if (tooltip) {
+        contenedor.querySelectorAll(".btnReroll").forEach(boton => {
+            boton.addEventListener("mouseenter", function() {
+                tooltip.textContent = this.getAttribute("data-tooltip");
+                tooltip.style.display = "block";
+            });
+            boton.addEventListener("mousemove", function(e) {
+                tooltip.style.left = e.pageX + "px";
+                tooltip.style.top = (e.pageY - 10) + "px";
+            });
+            boton.addEventListener("mouseleave", function() {
+                tooltip.style.display = "none";
+            });
+        });
+    }
 }

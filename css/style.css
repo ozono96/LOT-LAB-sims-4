@@ -273,7 +273,7 @@ header p{
 
     position:relative;
 
-    margin:30px auto;
+    margin:30px auto 70px auto;
 
     padding:25px;
 
@@ -824,6 +824,10 @@ input[type="number"]:focus {
     background:var(--color-advertencia);
 
     color:#2B2B2B;
+
+    justify-content:center;
+
+    align-items:center;
 
 }
 

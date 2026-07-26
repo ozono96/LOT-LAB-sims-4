@@ -138,6 +138,7 @@ async function iniciarBaseDatos() {
     await cargarListados();
 
     construirMapaIconosPacks();
+    construirMapaIconosMundos();
 
     mostrarSolares(database.solares);
 
@@ -244,4 +245,44 @@ function htmlIconosPacks(listaNombres) {
         }
         return `<span class="chipPackTexto">📦 ${nombre}</span>`;
     }).join("");
+}
+
+// ── Mapa de iconos de mundos ─────────────────────────────────
+// Construye database.iconosMundos: { "nombre mundo": { ruta, id } }
+function construirMapaIconosMundos() {
+    database.iconosMundos = {};
+
+    if (!database.mundos) return;
+
+    database.mundos.forEach(fila => {
+        const nombre = (fila[0] || "").trim(); // Columna A: nombre del mundo
+        const id     = (fila[1] || "").trim(); // Columna B: ID de la carpeta
+
+        if (!nombre || !id) return;
+
+        const ruta = `img/mundos-con-solares/${id}/icono.webp`;
+        database.iconosMundos[nombre.toLowerCase()] = { ruta, id, nombre };
+    });
+
+    console.log("Mapa de iconos de mundos:", Object.keys(database.iconosMundos).length, "entradas");
+}
+
+// Devuelve la ruta del icono dado el nombre del mundo, o null si no existe
+function rutaIconoMundo(nombreMundo) {
+    if (!database.iconosMundos) return null;
+    const entrada = database.iconosMundos[(nombreMundo || "").trim().toLowerCase()];
+    return entrada ? entrada.ruta : null;
+}
+
+// Genera HTML de un botón de mundo con icono, mismo estilo que los packs
+function htmlBotonMundoIcono(nombreMundo, extraClases = "", extraData = "") {
+    const ruta = rutaIconoMundo(nombreMundo);
+    if (ruta) {
+        return `<button class="opcionFiltro btnPackIcono seleccionada" ${extraData} title="${nombreMundo}">
+            <img src="${ruta}" alt="${nombreMundo}" class="iconoPack" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+            <span class="iconoPackFallback" style="display:none;">🌎</span>
+        </button>`;
+    }
+    // Fallback sin icono
+    return `<button class="opcionFiltro seleccionada" ${extraData}><span>🌎 ${nombreMundo}</span></button>`;
 }

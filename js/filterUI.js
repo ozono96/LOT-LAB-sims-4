@@ -49,37 +49,49 @@ function mostrarPanelFiltro() {
     const lista = document.getElementById("listaOpcionesFiltro");
 
     const esFiltroNombrePack = (nombre === "nombrePack");
+    const esFiltroMundo = (nombre === "mundo");
 
     opciones.forEach(opcion => {
 
-        const activo = filtroTieneValor(nombre, opcion);
+    const activo = filtroTieneValor(nombre, opcion);
 
-        if (esFiltroNombrePack && typeof htmlBotonPackIcono === "function") {
-            const tieneIcono = typeof rutaIconoPack === "function" && !!rutaIconoPack(opcion);
-            if (!tieneIcono) {
-                console.warn(`[ICONO PACK] Sin icono para: "${opcion}"`);
-            }
-            const html = htmlBotonPackIcono(opcion, "", `data-valor="${opcion}"`);
-            const tempDiv = document.createElement("div");
-            tempDiv.innerHTML = html;
-            const btn = tempDiv.firstElementChild;
-            if (!activo) btn.classList.remove("seleccionada");
-            lista.appendChild(btn);
-        } else {
-            lista.innerHTML += `
-                <button
-                    class="opcionFiltro ${activo ? "seleccionada" : ""}"
-                    data-valor="${opcion}"
-                >
-                    ${opcion}
-                </button>
-            `;
+    if (esFiltroNombrePack && typeof htmlBotonPackIcono === "function") {
+        const tieneIcono = typeof rutaIconoPack === "function" && !!rutaIconoPack(opcion);
+        if (!tieneIcono) {
+            console.warn(`[ICONO PACK] Sin icono para: "${opcion}"`);
         }
+        const html = htmlBotonPackIcono(opcion, "", `data-valor="${opcion}"`);
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = html;
+        const btn = tempDiv.firstElementChild;
+        if (!activo) btn.classList.remove("seleccionada");
+        lista.appendChild(btn);
+    } else if (esFiltroMundo && typeof htmlBotonMundoIcono === "function") {
+        const tieneIcono = typeof rutaIconoMundo === "function" && !!rutaIconoMundo(opcion);
+        if (!tieneIcono) {
+            console.warn(`[ICONO MUNDO] Sin icono para: "${opcion}"`);
+        }
+        const html = htmlBotonMundoIcono(opcion, "", `data-valor="${opcion}"`);
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = html;
+        const btn = tempDiv.firstElementChild;
+        if (!activo) btn.classList.remove("seleccionada");
+        lista.appendChild(btn);
+    } else {
+        lista.innerHTML += `
+            <button
+                class="opcionFiltro ${activo ? "seleccionada" : ""}"
+                data-valor="${opcion}"
+            >
+                ${opcion}
+            </button>
+        `;
+    }
 
-    });
+});
 
     // Estilo extra para la lista cuando muestra iconos de pack
-    if (esFiltroNombrePack) {
+   if (esFiltroNombrePack || esFiltroMundo) {
         lista.style.justifyContent = "center";
         lista.style.gap = "10px";
         lista.style.flexWrap = "wrap";

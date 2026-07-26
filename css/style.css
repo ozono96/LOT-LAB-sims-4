@@ -1273,6 +1273,25 @@ input[type="number"]:focus {
 
     }
 
+    .accionesBuscador{
+
+    flex-wrap:wrap;
+
+    gap:14px;
+
+    }
+
+    .accionesBuscador button{
+
+    min-width:0;
+
+    width:100%;
+
+    }
+
+
+
+
 }
 
 .compartir svg{

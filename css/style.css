@@ -3095,3 +3095,126 @@ body.galeria-ampliada .ventana {
     }
 
 }
+/* ==========================================================
+   SELECTOR DE IDIOMA
+========================================================== */
+
+.footer-controles {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin: 0 auto 18px;
+}
+
+.footer-controles .toggleModo {
+    margin: 0;
+}
+
+.selectorIdioma {
+    position: relative;
+}
+
+/* No se define color propio: al llevar la clase .toggleModo,
+   el botón de idioma ya respeta automáticamente los colores
+   de modo día / modo noche, igual que el botón de sol/luna. */
+.botonIdiomaBtn {
+    overflow: hidden;
+}
+
+.banderaImg {
+    width: 24px;
+    height: 18px;
+    object-fit: cover;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .35);
+    pointer-events: none;
+}
+
+.listaIdiomas {
+    position: absolute;
+    bottom: calc(100% + 12px);
+    left: 50%;
+    transform: translateX(-50%) translateY(8px);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 8px;
+    padding: 10px;
+    width: max-content;
+    border-radius: var(--radio-normal);
+    background: var(--color-tarjeta);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    border: 1px solid var(--borde);
+    box-shadow: var(--sombra-normal);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+    z-index: 500;
+}
+
+.listaIdiomas.abierta {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+}
+
+.opcionIdioma {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: var(--color-principal);
+    cursor: pointer;
+    transition: var(--transicion);
+}
+
+.opcionIdioma:hover {
+    background: var(--color-secundario);
+    transform: translateY(-3px);
+}
+
+.opcionIdioma.activo {
+    background: var(--color-resaltado);
+}
+
+/* ==========================================================
+   BLOQUEO TOTAL DE LA BARRA DE GOOGLE TRANSLATE
+   (además del bloqueo por JS en idioma.js)
+========================================================== */
+
+html body {
+    top: 0px !important;
+    position: static !important;
+}
+
+.goog-te-banner-frame,
+.goog-te-banner-frame.skiptranslate,
+iframe.goog-te-banner-frame,
+body > .skiptranslate {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    width: 0 !important;
+}
+
+#goog-gt-tt,
+.goog-te-balloon-frame,
+.goog-tooltip,
+.goog-tooltip:hover {
+    display: none !important;
+}
+
+.goog-text-highlight {
+    background: none !important;
+    box-shadow: none !important;
+}
+
+#google_translate_element {
+    display: none !important;
+}

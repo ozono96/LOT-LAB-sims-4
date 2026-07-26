@@ -670,22 +670,53 @@
 
         <div class="footer-contenido">
 
-            <button id="botonModo" class="toggleModo" title="Cambiar modo día/noche">
+            <div class="footer-controles">
 
-                <svg class="icono-sol" viewBox="0 0 24 24" aria-hidden="true">
-                    <path
-                        d="M6.76 4.84 4.96 3.05 3.55 4.46l1.79 1.8 1.42-1.42zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7 1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91 1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z" />
-                </svg>
+    <button id="botonModo" class="toggleModo" title="Cambiar modo día/noche">
 
-                <svg class="icono-luna" viewBox="0 0 24 24" aria-hidden="true">
-                    <path
-                        d="M9.37 5.51A7.35 7.35 0 0 0 9.1 7.5c0 4.08 3.32 7.4 7.4 7.4.68 0 1.35-.09 1.99-.27C17.45 17.19 14.93 19 12 19c-3.86 0-7-3.14-7-7 0-2.93 1.81-5.45 4.37-6.49z" />
-                </svg>
+        <svg class="icono-sol" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+                d="M6.76 4.84 4.96 3.05 3.55 4.46l1.79 1.8 1.42-1.42zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7 1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91 1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z" />
+        </svg>
 
-            </button>
+        <svg class="icono-luna" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+                d="M9.37 5.51A7.35 7.35 0 0 0 9.1 7.5c0 4.08 3.32 7.4 7.4 7.4.68 0 1.35-.09 1.99-.27C17.45 17.19 14.93 19 12 19c-3.86 0-7-3.14-7-7 0-2.93 1.81-5.45 4.37-6.49z" />
+        </svg>
+
+    </button>
+
+    <div class="selectorIdioma">
+
+        <button id="botonIdioma" class="toggleModo botonIdiomaBtn" title="Cambiar idioma">
+    <img id="banderaActual" src="https://flagcdn.com/24x18/es.png" alt="Idioma actual" class="banderaImg">
+        </button>
+
+
+        <div id="listaIdiomas" class="listaIdiomas">
+    <button class="opcionIdioma" data-lang="es" title="Español">
+        <img src="https://flagcdn.com/24x18/es.png" alt="Español" class="banderaImg">
+    </button>
+    <button class="opcionIdioma" data-lang="en" title="English">
+        <img src="https://flagcdn.com/24x18/gb.png" alt="English" class="banderaImg">
+    </button>
+    <button class="opcionIdioma" data-lang="fr" title="Français">
+        <img src="https://flagcdn.com/24x18/fr.png" alt="Français" class="banderaImg">
+    </button>
+    <button class="opcionIdioma" data-lang="de" title="Deutsch">
+        <img src="https://flagcdn.com/24x18/de.png" alt="Deutsch" class="banderaImg">
+    </button>
+    <button class="opcionIdioma" data-lang="it" title="Italiano">
+        <img src="https://flagcdn.com/24x18/it.png" alt="Italiano" class="banderaImg">
+    </button>
+</div>
+
+    </div>
+
+</div>
 
             <p>
-                El unico buscador de Solares y generador de retos para construir en Los Sims 4 - Versión 1.1.1
+                El unico buscador de Solares y generador de retos para construir en Los Sims 4 - Versión 1.1.2
             </p>
 
             <p>
@@ -734,6 +765,9 @@
 
     <!-- Tooltip para opciones del reto -->
     <div id="tooltipOpciones" class="tooltip"></div>
+    <div id="google_translate_element" style="display:none;"></div>
+<script src="js/idioma.js"></script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
 </body>
 

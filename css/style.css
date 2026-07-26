@@ -1060,13 +1060,13 @@ input[type="number"]:focus {
 
 #subirResultados {
 
-    bottom: 25px;
+    bottom: 95px;
 
 }
 
 #bajarResultados {
 
-    bottom: 95px;
+    bottom: 25px;
 
 }
 
@@ -1329,19 +1329,10 @@ input[type="number"]:focus {
 
     }
 
-    #subirResultados {
-
-        right: 15px;
-
-        bottom: 15px;
-
-    }
-
+    #subirResultados,
     #bajarResultados {
 
-        right: 15px;
-
-        bottom: 80px;
+        display: none !important;
 
     }
 

@@ -45,6 +45,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const botonBajar = document.getElementById("bajarResultados");
 
     window.addEventListener("scroll", () => {
+        if (window.innerWidth <= 700) {
+            if (botonSubir) botonSubir.style.display = "none";
+            if (botonBajar) botonBajar.style.display = "none";
+            return;
+        }
+
         const scrollY = window.scrollY;
         const totalHeight = document.documentElement.scrollHeight;
         const viewportHeight = window.innerHeight;

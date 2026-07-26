@@ -25,10 +25,30 @@ function iniciarPantallaCarga() {
     const pantalla = document.getElementById("pantallaCarga");
     const barra = document.getElementById("barraCargaProgreso");
     const fraseEl = document.getElementById("fraseCarga");
+    const fondo = document.getElementById("pantallaCargaFondo");
 
     if (!pantalla || !barra) {
         console.warn("[Pantalla de carga] No se encontraron los elementos en el HTML.");
         return;
+    }
+
+    // ── Imagen de fondo según modo día / noche ──
+    if (fondo) {
+        const modoTema = localStorage.getItem("modoTema");
+        const imgNoche = "img/pantalla%20carga/carga%20Noche.png";
+        const imgDia   = "img/pantalla%20carga/carga%20Dia.png";
+        const imgFallback = "img/pantalla%20carga/Pantalla%20carga%20inicio.png";
+
+        const rutaElegida = (modoTema === "dia") ? imgDia : imgNoche;
+
+        const testImg = new Image();
+        testImg.onload = () => {
+            fondo.style.backgroundImage = `url('${rutaElegida}')`;
+        };
+        testImg.onerror = () => {
+            fondo.style.backgroundImage = `url('${imgFallback}')`;
+        };
+        testImg.src = rutaElegida;
     }
 
     let paginaCargada = (document.readyState === "complete");
@@ -42,6 +62,15 @@ function iniciarPantallaCarga() {
     function actualizarBarra(porcentaje) {
         progresoActual = porcentaje;
         barra.style.width = porcentaje + "%";
+
+        // Efecto progresivo de desenfoque / pixelado (de 25px a 0px conforme sube el porcentaje)
+        const blurVal = Math.max(0, (1 - (porcentaje / 100)) * 25);
+        const contrastVal = 100 + ((1 - (porcentaje / 100)) * 35);
+        const fondo = document.getElementById("pantallaCargaFondo");
+        if (fondo) {
+            fondo.style.setProperty("--pixel-blur", blurVal + "px");
+            fondo.style.setProperty("--pixel-contrast", contrastVal + "%");
+        }
     }
 
     function programarSiguienteFrase() {

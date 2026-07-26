@@ -119,14 +119,13 @@ function generarReto(esAleatorio = false) {
         }
     });
 
-    // Selección de solar si corresponde (respetando restricciones del propio reto)
+    // Selección de solar si corresponde.
+    // IMPORTANTE: el "límite de packs" restringe qué packs de contenido/objetos
+    // se pueden usar, NO en qué mundo/solar se construye. Por eso el pool de
+    // solares siempre usa los packs completos del usuario.
     let solarSeleccionado = null;
     if (tipoReto === "con-solar") {
-        let poolPacksSolar = packsUsuario;
-        if (categoriasGeneradas.limitePacks && categoriasGeneradas.limitePacks.resultado.packsPermitidos && categoriasGeneradas.limitePacks.resultado.packsPermitidos.length > 0) {
-            poolPacksSolar = categoriasGeneradas.limitePacks.resultado.packsPermitidos;
-        }
-        solarSeleccionado = seleccionarSolarParaReto(poolPacksSolar, categoriasGeneradas);
+        solarSeleccionado = seleccionarSolarParaReto(packsUsuario, categoriasGeneradas);
     }
 
     // Calcular dificultad total
@@ -160,6 +159,7 @@ function generarReto(esAleatorio = false) {
     retoActual = {
         tipo: tipoReto,
         solar: solarSeleccionado,
+        rerollsSolar: 3,
         categorias: categoriasGeneradas,
         dificultad: dificultad,
         contexto: contexto
@@ -211,14 +211,7 @@ function rerollCategoria(categoriaId) {
         tempCat.resultado = tempCat.modulo.generar(retoActual.contexto);
     }
 
-    // Si se rerollea limitePacks y el reto es con solar, actualizar el solar asignado
-    if (categoriaId === "limitePacks" && retoActual.tipo === "con-solar") {
-        let poolPacksSolar = retoActual.contexto.packsUsuario;
-        if (resNuevo.packsPermitidos && resNuevo.packsPermitidos.length > 0) {
-            poolPacksSolar = resNuevo.packsPermitidos;
-        }
-        retoActual.solar = seleccionarSolarParaReto(poolPacksSolar, retoActual.categorias);
-    }
+    // El reroll de limitePacks NO cambia el solar (el solar es independiente).
 
     sincronizarTemporizadorConReto();
 
@@ -227,3 +220,18 @@ function rerollCategoria(categoriaId) {
         renderizarResultadoReto(retoActual);
     }
 }
+
+// Reroll exclusivo del solar seleccionado (independiente de los rerolls de categorías)
+function rerollSolar() {
+    if (!retoActual || retoActual.tipo !== "con-solar") return;
+    if (typeof retoActual.rerollsSolar !== "number") retoActual.rerollsSolar = 3;
+    if (retoActual.rerollsSolar <= 0) return;
+
+    retoActual.rerollsSolar--;
+    retoActual.solar = seleccionarSolarParaReto(retoActual.contexto.packsUsuario, retoActual.categorias);
+
+    if (typeof renderizarResultadoReto === "function") {
+        renderizarResultadoReto(retoActual);
+    }
+}
+window.rerollSolar = rerollSolar;

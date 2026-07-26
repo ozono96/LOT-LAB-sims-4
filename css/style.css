@@ -2268,13 +2268,7 @@ body.modo-noche .toggleModo:hover {
 
     z-index: 999999;
 
-    background-image: url('../img/pantalla%20carga/Pantalla%20carga%20inicio.png');
-
-    background-size: cover;
-
-    background-position: center;
-
-    background-repeat: no-repeat;
+    background-color: #0b1d33;
 
     display: flex;
 
@@ -2282,13 +2276,48 @@ body.modo-noche .toggleModo:hover {
 
     align-items: center;
 
-    justify-content: flex-end;
+    justify-content: space-between;
 
-    gap: 14px;
-
-    padding-bottom: 8%;
+    padding: 40px 20px 6vh 20px;
 
     transition: opacity .5s ease;
+
+    overflow: hidden;
+
+}
+
+#pantallaCargaFondo {
+
+    position: absolute;
+
+    top: -5%;
+
+    left: -5%;
+
+    width: 110%;
+
+    height: 110%;
+
+    /* La imagen se aplica dinámicamente desde loading.js según el modo día/noche.
+       Esta URL actúa solo como fallback por si el JS aún no ha actuado. */
+    background-image: url('../img/pantalla%20carga/Pantalla%20carga%20inicio.png');
+
+
+    background-size: cover;
+
+    background-position: center;
+
+    background-repeat: no-repeat;
+
+    filter: blur(var(--pixel-blur, 25px)) contrast(var(--pixel-contrast, 135%));
+
+    transform: scale(1.05);
+
+    transition: filter 0.12s linear;
+
+    z-index: -1;
+
+    pointer-events: none;
 
 }
 
@@ -2300,11 +2329,198 @@ body.modo-noche .toggleModo:hover {
 
 }
 
+.pantallaCargaCentro {
+
+    margin: auto;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    text-align: center;
+
+    padding: 45px 65px;
+
+    background: rgba(0, 0, 0, 0.50);
+
+    backdrop-filter: blur(14px);
+
+    -webkit-backdrop-filter: blur(14px);
+
+    border-radius: var(--radio-grande);
+
+    border: 1px solid var(--borde);
+
+    box-shadow: var(--sombra-fuerte);
+
+    max-width: min(92%, 1050px);
+
+}
+
+.pantallaCargaHeader {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 30px;
+
+    flex-wrap: wrap;
+
+}
+
+.pantallaCargaLogo1 {
+
+    width: 140px;
+
+    height: 140px;
+
+    object-fit: contain;
+
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+
+}
+
+.pantallaCargaTexto {
+
+    text-align: center;
+
+}
+
+.pantallaCargaTexto h1 {
+
+    font-size: 3.8rem;
+
+    font-weight: 700;
+
+    color: #EDEDED;
+
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+
+    margin-bottom: 10px;
+
+}
+
+.pantallaCargaTexto p {
+
+    font-size: 1.25rem;
+
+    color: #E0E0E0;
+
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+
+    line-height: 1.45;
+
+}
+
+.pantallaCargaBy {
+
+    font-size: 1.5rem;
+
+    font-weight: bold;
+
+    color: var(--color-resaltado);
+
+    margin: 25px 0 16px 0;
+
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+
+    letter-spacing: 1.5px;
+
+}
+
+.pantallaCargaLogo2 {
+
+    width: 110px;
+
+    height: 110px;
+
+    object-fit: cover;
+
+    border-radius: 50%;
+
+    border: 3px solid rgba(255, 255, 255, 0.85);
+
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+
+}
+
+/* ── Modo noche (default): textos claros ── */
+body.modo-noche .pantallaCargaTexto h1 {
+    color: #EDEDED;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.85);
+}
+
+body.modo-noche .pantallaCargaTexto p {
+    color: #D5D5D5;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.85);
+}
+
+body.modo-noche .pantallaCargaBy {
+    color: var(--color-resaltado);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
+}
+
+body.modo-noche .fraseCarga {
+    color: #FFFFFF;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
+}
+
+/* ── Modo día: textos oscuros ── */
+body.modo-dia .pantallaCargaCentro {
+    background: rgba(255, 255, 255, 0.45);
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+body.modo-dia .pantallaCargaTexto h1 {
+    color: #1A1A2E;
+    text-shadow: 0 2px 8px rgba(255, 255, 255, 0.6);
+}
+
+body.modo-dia .pantallaCargaTexto p {
+    color: #2B2B2B;
+    text-shadow: 0 1px 4px rgba(255, 255, 255, 0.5);
+}
+
+body.modo-dia .pantallaCargaBy {
+    color: #16763F;
+    text-shadow: 0 1px 4px rgba(255, 255, 255, 0.5);
+}
+
+body.modo-dia .fraseCarga {
+    color: #1A1A2E;
+    text-shadow: 0 1px 4px rgba(255, 255, 255, 0.5);
+}
+
+body.modo-dia .pantallaCargaLogo2 {
+    border-color: rgba(0, 0, 0, 0.3);
+}
+
+.pantallaCargaInferior {
+
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 14px;
+
+    margin-bottom: 5vh;
+
+}
+
 .fraseCargaContenedor {
 
-    width: min(90%, 600px);
+    width: min(90%, 750px);
 
-    height: 28px;
+    height: 36px;
 
     display: flex;
 
@@ -2320,13 +2536,13 @@ body.modo-noche .toggleModo:hover {
 
     color: white;
 
-    font-size: 1.05rem;
+    font-size: 1.3rem;
 
     font-weight: bold;
 
     text-align: center;
 
-    text-shadow: 0 2px 8px rgba(0, 0, 0, .6);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, .8);
 
     display: inline-block;
 
@@ -2346,47 +2562,11 @@ body.modo-noche .toggleModo:hover {
 
 }
 
-@keyframes animFraseCarga {
-
-    0% {
-
-        transform: translateX(60px);
-
-        opacity: 0;
-
-    }
-
-    18% {
-
-        transform: translateX(0);
-
-        opacity: 1;
-
-    }
-
-    75% {
-
-        transform: translateX(0);
-
-        opacity: 1;
-
-    }
-
-    100% {
-
-        transform: translateX(60px);
-
-        opacity: 0;
-
-    }
-
-}
-
 .barraCargaContenedor {
 
-    width: min(90%, 600px);
+    width: min(90%, 750px);
 
-    height: 22px;
+    height: 28px;
 
     background: rgba(255, 255, 255, .25);
 
@@ -2416,10 +2596,85 @@ body.modo-noche .toggleModo:hover {
 
 @media(max-width:700px) {
 
+    #pantallaCarga {
+
+        padding: 20px 15px 4vh 15px;
+
+    }
+
+    .pantallaCargaCentro {
+
+        padding: 20px 15px;
+
+    }
+
+    .pantallaCargaHeader {
+
+        gap: 15px;
+
+    }
+
+    .pantallaCargaLogo1 {
+
+        width: 75px;
+
+        height: 75px;
+
+    }
+
+    .pantallaCargaTexto h1 {
+
+        font-size: 2.1rem;
+
+    }
+
+    .pantallaCargaTexto p {
+
+        font-size: 0.9rem;
+
+    }
+
+    .pantallaCargaBy {
+
+        margin: 14px 0 10px 0;
+
+        font-size: 1.1rem;
+
+    }
+
+    .pantallaCargaLogo2 {
+
+        width: 70px;
+
+        height: 70px;
+
+    }
+
+    .pantallaCargaInferior {
+
+        margin-bottom: 2vh;
+
+        gap: 10px;
+
+    }
+
     .fraseCargaContenedor,
+
     .barraCargaContenedor {
 
         width: 88%;
+
+    }
+
+    .fraseCargaContenedor {
+
+        height: 28px;
+
+    }
+
+    .barraCargaContenedor {
+
+        height: 22px;
 
     }
 

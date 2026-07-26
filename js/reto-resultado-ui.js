@@ -24,20 +24,41 @@ function renderizarResultadoReto(reto) {
 
     // 2. Solar asignado (si aplica)
     if (reto.tipo === "con-solar") {
-        html += `<div class="seccionSolarReto" style="margin-bottom: 30px;">`;
-        html += `<h3 style="text-align: center; margin-bottom: 12px;">🏡 Solar Seleccionado</h3>`;
-        if (reto.solar) {
-            html += typeof crearFichaSolar === "function" ? crearFichaSolar(reto.solar) : `
+        const rerollsSolarLeft = typeof reto.rerollsSolar === "number" ? reto.rerollsSolar : 3;
+        const disabledSolar = rerollsSolarLeft <= 0 ? "disabled" : "";
+        const btnSolarClass = rerollsSolarLeft <= 0 ? "btnReroll deshabilitado" : "btnReroll";
+
+        const solarHtml = reto.solar
+            ? (typeof crearFichaSolar === "function" ? crearFichaSolar(reto.solar) : `
                 <div class="fichaSolar">
                     <strong>${reto.solar.nombre}</strong><br>
                     📦 ${reto.solar.nombrePack} | 🌎 ${reto.solar.mundo} | 📐 ${reto.solar.tamaño}
+                </div>`)
+            : `<p style="color: var(--color-error);">No se encontró ningún solar en los packs seleccionados.</p>`;
+
+        html += `
+            <div class="seccionSolarReto" style="margin-bottom: 30px;">
+                <h3 style="text-align: center; margin-bottom: 12px;">🏡 Solar Seleccionado</h3>
+                <div style="position: relative; display: flex; align-items: center; justify-content: center; min-height: 60px; max-width: 650px; margin: 0 auto; padding: 0 20px;">
+                    <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
+                        ${solarHtml}
+                    </div>
+                    <button
+                        class="${btnSolarClass}"
+                        onclick="rerollSolar()"
+                        ${disabledSolar}
+                        data-tooltip=" ¡RECUERDA! Solo tienes 3 intentos para regenerar el solar."
+                        style="position: absolute; right: 20px; display: flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 0.95rem; flex-shrink: 0;"
+                    >
+                        🔄 (${rerollsSolarLeft}/3)
+                    </button>
                 </div>
-            `;
-        } else {
-            html += `<p style="text-align:center; color: var(--color-error);">No se encontró ningún solar en los packs seleccionados.</p>`;
-        }
-        html += `</div>`;
+            </div>
+        `;
     }
+
+
+
 
     // 3. Tarjetas de Categorías Activas
     html += `<div class="listaCategoriasReto" style="display: flex; flex-direction: column; gap: 15px; max-width: 650px; margin: 0 auto;">`;

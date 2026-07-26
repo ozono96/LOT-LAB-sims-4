@@ -14,12 +14,31 @@
 
 </head>
 
-<body class="modo-dia">
+<body class="modo-noche">
+
+    <div id="pantallaCarga">
+    <div class="fraseCargaContenedor">
+        <span class="fraseCarga" id="fraseCarga"></span>
+    </div>
+    <div class="barraCargaContenedor">
+        <div class="barraCargaProgreso" id="barraCargaProgreso"></div>
+    </div>
+</div>
+
 
     <header>
 
+    <div class="header-contenido">
+
+    <a href="https://bio.site/ozono96" target="_blank" rel="noopener noreferrer" class="header-logo" id="headerLogo">
+    <img src="img/logo/logo1.png" alt="Logo LOT-LAB Sims 4" class="logoImg logoImg1">
+    <img src="img/logo/logo2.jpg" alt="Logo LOT-LAB Sims 4 alternativo" class="logoImg logoImg2">
+   </a>
+
+    <div class="header-texto">
+
         <h1>
-            🧪LOT-LAB Sims 4
+            LOT-LAB Sims 4
         </h1>
 
         <p>
@@ -28,7 +47,9 @@
 
         </p>
 
-    </header>
+    </div>
+
+</div>
 
     <main>
 
@@ -625,6 +646,7 @@
 
     </main>
 
+    <script src="js/loading.js"></script>
     <script src="js/config.js"></script>
     <script src="js/database.js"></script>
     <script src="js/sheets.js"></script>
@@ -719,5 +741,7 @@
     <div id="tooltipOpciones" class="tooltip"></div>
 
 </body>
+
+
 
 </html>

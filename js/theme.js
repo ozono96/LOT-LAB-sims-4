@@ -13,15 +13,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const modoGuardado = localStorage.getItem("modoTema");
 
-    if (modoGuardado === "noche") {
-
-        body.classList.remove("modo-dia");
-        body.classList.add("modo-noche");
-
-    } else {
+    if (modoGuardado === "dia") {
 
         body.classList.remove("modo-noche");
         body.classList.add("modo-dia");
+
+    } else {
+
+        // Por defecto (o si no hay nada guardado aún): modo noche
+        body.classList.remove("modo-dia");
+        body.classList.add("modo-noche");
 
     }
 

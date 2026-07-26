@@ -320,13 +320,9 @@ header p{
 
     gap:12px;
 
-    position: absolute;
-    
-    top: 20px;
+    position: relative;
 
-    right: 20px;
-    
-    z-index: 10;
+    margin-bottom: 15px;
 
 }
 .cabeceraVentana button{
@@ -1942,4 +1938,4 @@ body.modo-noche .toggleModo:hover{
     gap: 6px;
     margin-top: 8px;
 }
-
+

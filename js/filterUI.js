@@ -96,15 +96,15 @@ function mostrarPanelFiltro() {
 
             <button id="hiddenTamanoBoton" class="opcionFiltro ${!modoMultiple ? 'seleccionada' : ''}" style="display:none;" data-valor="${valActualUnico}"></button>
         `;
-        
+
         const slider = document.getElementById("sliderFiltroTamano");
         slider.dataset.tamanos = JSON.stringify(arrTamanos);
-        
+
         slider.addEventListener("input", (e) => {
             const arr = JSON.parse(e.target.dataset.tamanos);
             const seleccionado = arr[e.target.value];
             document.getElementById("valFiltroTamano").textContent = seleccionado;
-            
+
             const btnOculto = document.getElementById("hiddenTamanoBoton");
             btnOculto.classList.add("seleccionada");
             btnOculto.dataset.valor = seleccionado;
@@ -121,7 +121,7 @@ function mostrarPanelFiltro() {
             btnModoMultiple.classList.remove("seleccionada");
             contenedorUnTamano.style.display = "block";
             contenedorVariosTamanos.style.display = "none";
-            
+
             // Quitar seleccionada a los del grid para no confirmarlos
             document.querySelectorAll(".btnTamanoGrid").forEach(b => b.classList.remove("seleccionada"));
             // Reactivar el oculto
@@ -133,7 +133,7 @@ function mostrarPanelFiltro() {
             btnModoUnico.classList.remove("seleccionada");
             contenedorUnTamano.style.display = "none";
             contenedorVariosTamanos.style.display = "grid";
-            
+
             // Quitar seleccionada al botón oculto
             btnOculto.classList.remove("seleccionada");
         });
@@ -180,31 +180,31 @@ function mostrarPanelFiltro() {
 
 
     lista
-    .querySelectorAll(".opcionFiltro")
-    .forEach(boton => {
-        boton.addEventListener("click", () => {
-            // Ignorar los botones que tienen una lógica de evento especial
-            if (boton.id !== "hiddenTamanoBoton" && boton.id !== "btnModoUnico" && boton.id !== "btnModoMultiple") {
-                boton.classList.toggle("seleccionada");
-            }
+        .querySelectorAll(".opcionFiltro")
+        .forEach(boton => {
+            boton.addEventListener("click", () => {
+                // Ignorar los botones que tienen una lógica de evento especial
+                if (boton.id !== "hiddenTamanoBoton" && boton.id !== "btnModoUnico" && boton.id !== "btnModoMultiple") {
+                    boton.classList.toggle("seleccionada");
+                }
+            });
         });
-    });
 
 
 
 
 
     document
-    .getElementById("confirmarFiltro")
-    .addEventListener("click", confirmarFiltroUI);
+        .getElementById("confirmarFiltro")
+        .addEventListener("click", confirmarFiltroUI);
 
 
 
 
 
     document
-    .getElementById("eliminarFiltro")
-    .addEventListener("click", eliminarFiltroUI);
+        .getElementById("eliminarFiltro")
+        .addEventListener("click", eliminarFiltroUI);
 
 }
 
@@ -219,12 +219,12 @@ function confirmarFiltroUI() {
     const valores = [];
 
     document
-    .querySelectorAll(".opcionFiltro.seleccionada")
-    .forEach(boton => {
-        if (boton.dataset.valor !== undefined) {
-            valores.push(boton.dataset.valor);
-        }
-    });
+        .querySelectorAll(".opcionFiltro.seleccionada")
+        .forEach(boton => {
+            if (boton.dataset.valor !== undefined) {
+                valores.push(boton.dataset.valor);
+            }
+        });
 
     aplicarFiltro(
 
@@ -269,8 +269,8 @@ function eliminarFiltroUI() {
 function cerrarPanelFiltro() {
 
     document
-    .getElementById("panelFiltro")
-    .innerHTML = "";
+        .getElementById("panelFiltro")
+        .innerHTML = "";
 
     cerrarFiltro();
 
@@ -298,16 +298,16 @@ function actualizarBotonesFiltros() {
     }
 
     document
-    .querySelectorAll(".botonFiltro")
-    .forEach(boton => {
+        .querySelectorAll(".botonFiltro")
+        .forEach(boton => {
 
-        const nombre = boton.dataset.filtro;
+            const nombre = boton.dataset.filtro;
 
-        const total = contarValoresFiltro(nombre);
+            const total = contarValoresFiltro(nombre);
 
-        boton.classList.remove("activo");
+            boton.classList.remove("activo");
 
-        boton.innerHTML = `
+            boton.innerHTML = `
 
             ${obtenerIconoFiltro(nombre)}
 
@@ -315,11 +315,11 @@ function actualizarBotonesFiltros() {
 
         `;
 
-        if (total > 0) {
+            if (total > 0) {
 
-            boton.classList.add("activo");
+                boton.classList.add("activo");
 
-            boton.innerHTML += `
+                boton.innerHTML += `
 
                 <br>
 
@@ -327,13 +327,13 @@ function actualizarBotonesFiltros() {
 
             `;
 
-        }
+            }
 
-        boton.onmouseenter = () => {
+            boton.onmouseenter = () => {
 
-            const datos = obtenerDatosTooltip(nombre);
+                const datos = obtenerDatosTooltip(nombre);
 
-            tooltip.innerHTML = `
+                tooltip.innerHTML = `
 
                 <h4>${obtenerIconoFiltro(nombre)} ${datos.titulo}</h4>
 
@@ -347,25 +347,25 @@ function actualizarBotonesFiltros() {
 
             `;
 
-            tooltip.style.display = "block";
+                tooltip.style.display = "block";
 
-        };
+            };
 
-        boton.onmousemove = e => {
+            boton.onmousemove = e => {
 
-            tooltip.style.left = (e.clientX + 18) + "px";
+                tooltip.style.left = (e.clientX + 18) + "px";
 
-            tooltip.style.top = (e.clientY + 18) + "px";
+                tooltip.style.top = (e.clientY + 18) + "px";
 
-        };
+            };
 
-        boton.onmouseleave = () => {
+            boton.onmouseleave = () => {
 
-            tooltip.style.display = "none";
+                tooltip.style.display = "none";
 
-        };
+            };
 
-    });
+        });
 
     actualizarContadorSolares();
 
@@ -375,15 +375,15 @@ function actualizarBotonesFiltros() {
 
 
 
-function actualizarZonaBorrar(){
+function actualizarZonaBorrar() {
 
     const boton = document.getElementById("borrarFiltros");
 
-    if(hayFiltros()){
+    if (hayFiltros()) {
 
         boton.style.display = "inline-flex";
 
-    }else{
+    } else {
 
         boton.style.display = "none";
 

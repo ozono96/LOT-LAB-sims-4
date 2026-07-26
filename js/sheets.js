@@ -179,7 +179,7 @@ function construirMapaIconosPacks() {
     database.packs.forEach(fila => {
         pares.forEach(([colNombre, colId]) => {
             const nombre = (fila[colNombre] || "").trim();
-            const id     = (fila[colId]     || "").trim();
+            const id = (fila[colId] || "").trim();
             if (!nombre || !id) return;
 
             const prefijo = id.match(/^[A-Za-z]+/)?.[0]?.toUpperCase() || "";
@@ -256,7 +256,7 @@ function construirMapaIconosMundos() {
 
     database.mundos.forEach(fila => {
         const nombre = (fila[0] || "").trim(); // Columna A: nombre del mundo
-        const id     = (fila[1] || "").trim(); // Columna B: ID de la carpeta
+        const id = (fila[1] || "").trim(); // Columna B: ID de la carpeta
 
         if (!nombre || !id) return;
 

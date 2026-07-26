@@ -99,15 +99,15 @@ function renderizarResultadoReto(reto) {
     const tooltip = document.getElementById("tooltipOpciones");
     if (tooltip) {
         contenedor.querySelectorAll(".btnReroll").forEach(boton => {
-            boton.addEventListener("mouseenter", function() {
+            boton.addEventListener("mouseenter", function () {
                 tooltip.textContent = this.getAttribute("data-tooltip");
                 tooltip.style.display = "block";
             });
-            boton.addEventListener("mousemove", function(e) {
+            boton.addEventListener("mousemove", function (e) {
                 tooltip.style.left = e.pageX + "px";
                 tooltip.style.top = (e.pageY - 10) + "px";
             });
-            boton.addEventListener("mouseleave", function() {
+            boton.addEventListener("mouseleave", function () {
                 tooltip.style.display = "none";
             });
         });

@@ -35,11 +35,11 @@ function generarReto(esAleatorio = false) {
             "presupuesto", "colores", "estilo-exterior", "estilo-interior",
             "temporizador", "limite-packs", "tipo-solar-aleatorio", "limite-altura", "tamano-solar"
         ];
-        
+
         // Mezclar array
         const mezcladas = [...todasOpciones].sort(() => 0.5 - Math.random());
         const numOpciones = Math.floor(Math.random() * 5) + 2; // 2 a 6 opciones
-        
+
         for (let i = 0; i < numOpciones; i++) {
             opcionesActivas.push(mezcladas[i]);
         }

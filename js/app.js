@@ -2,18 +2,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document
         .getElementById("buscarSolares")
-        .addEventListener("click", buscarSolares);
+        ?.addEventListener("click", buscarSolares);
 
 
 
     document
         .getElementById("botonListado")
-        .addEventListener("click", abrirListadoCompleto);
+        ?.addEventListener("click", abrirListadoCompleto);
 
 
     document
         .getElementById("cerrarAvisoFiltros")
-        .addEventListener("click", () => {
+        ?.addEventListener("click", () => {
 
             cerrarVentana("ventanaAvisoFiltros");
 
@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document
         .getElementById("subirResultados")
-        .addEventListener("click", () => {
+        ?.addEventListener("click", () => {
             window.scrollTo({
                 top: 0,
                 behavior: "smooth"
@@ -63,31 +63,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     document
-   .getElementById("ventanaFichaSolar")
-   .querySelector(".cerrar")
-   .addEventListener("click",()=>{
+        .getElementById("ventanaFichaSolar")
+        ?.querySelector(".cerrar")
+        ?.addEventListener("click", () => {
 
-    cerrarVentana("ventanaFichaSolar");
+            cerrarVentana("ventanaFichaSolar");
 
-    if (window.ventanaAnterior) {
-        abrirVentana(window.ventanaAnterior);
-    } else {
-        abrirVentana("ventanaBuscador");
-    }
+            if (window.ventanaAnterior) {
+                abrirVentana(window.ventanaAnterior);
+            } else {
+                abrirVentana("ventanaBuscador");
+            }
 
-   });
+        });
 
 
     document
-   .getElementById("ventanaResultados")
-   .querySelector(".cerrar")
-   .addEventListener("click",()=>{
+        .getElementById("ventanaResultados")
+        ?.querySelector(".cerrar")
+        ?.addEventListener("click", () => {
 
-    cerrarVentana("ventanaResultados");
+            cerrarVentana("ventanaResultados");
 
-    abrirVentana("ventanaBuscador");
+            abrirVentana("ventanaBuscador");
 
-   });
+        });
 
 });
 
@@ -166,17 +166,17 @@ function mostrarResultados() {
     if (botonVolver) botonVolver.style.display = "none";
     if (botonBajar) botonBajar.style.display = "none";
 
-    if(lista.length > 3){
+    if (lista.length > 3) {
 
-    window.scrollTo({
+        window.scrollTo({
 
-        top:0,
+            top: 0,
 
-        behavior:"instant"
+            behavior: "instant"
 
-    });
+        });
 
-}
+    }
 
 }
 
@@ -229,7 +229,7 @@ function mostrarListadoCompleto() {
         if (mundosSolares[nombreMundo]) {
             procesados.add(nombreMundo);
             const tipoPack = mundosSolares[nombreMundo][0].tipoPack.toLowerCase();
-            
+
             if (tipoPack.includes("base")) {
                 mundosJuegoBase.push(nombreMundo);
             } else if (tipoPack.includes("expansión") || tipoPack.includes("expansion")) {
@@ -242,10 +242,10 @@ function mostrarListadoCompleto() {
 
     Object.keys(mundosSolares).forEach(nombreMundo => {
         if (!procesados.has(nombreMundo)) {
-             const tipoPack = mundosSolares[nombreMundo][0].tipoPack.toLowerCase();
-             if (tipoPack.includes("base")) mundosJuegoBase.push(nombreMundo);
-             else if (tipoPack.includes("expansión") || tipoPack.includes("expansion")) mundosExpansion.push(nombreMundo);
-             else mundosContenido.push(nombreMundo);
+            const tipoPack = mundosSolares[nombreMundo][0].tipoPack.toLowerCase();
+            if (tipoPack.includes("base")) mundosJuegoBase.push(nombreMundo);
+            else if (tipoPack.includes("expansión") || tipoPack.includes("expansion")) mundosExpansion.push(nombreMundo);
+            else mundosContenido.push(nombreMundo);
         }
     });
 
@@ -290,13 +290,13 @@ function mostrarListadoCompleto() {
     `;
 
     document
-    .querySelectorAll("#listaCompletaSolares .tituloMundo")
-    .forEach(boton => {
-        boton.addEventListener("click", () => {
-            boton.classList.toggle("abierto");
-            boton.nextElementSibling.classList.toggle("abierto");
+        .querySelectorAll("#listaCompletaSolares .tituloMundo")
+        .forEach(boton => {
+            boton.addEventListener("click", () => {
+                boton.classList.toggle("abierto");
+                boton.nextElementSibling.classList.toggle("abierto");
+            });
         });
-    });
 
 }
 

@@ -8,7 +8,7 @@ const RetoModulos = {
     estiloExterior: {
         id: "estiloExterior",
         titulo: "🏛 Estilo Exterior",
-        generar: function(contexto) {
+        generar: function (contexto) {
             const lista = database.estilosArquitectonicos || [];
             if (lista.length === 0) return { texto: "Cualquiera" };
             const fila = lista[Math.floor(Math.random() * lista.length)];
@@ -21,7 +21,7 @@ const RetoModulos = {
     estiloInterior: {
         id: "estiloInterior",
         titulo: "🛋 Estilo Interior",
-        generar: function(contexto) {
+        generar: function (contexto) {
             const lista = database.estilosDecoracion || [];
             if (lista.length === 0) return { texto: "Cualquiera" };
             const fila = lista[Math.floor(Math.random() * lista.length)];
@@ -34,7 +34,7 @@ const RetoModulos = {
     limitePacks: {
         id: "limitePacks",
         titulo: "📦 Límite de Packs",
-        generar: function(contexto) {
+        generar: function (contexto) {
             const packsUsuario = contexto.packsUsuario || [];
             const maxPacks = contexto.configPacks?.maxPacks || 3;
             const tiposPermitidos = contexto.configPacks?.tiposPermitidos || ["Expansión", "Contenido", "Accesorios", "Kits"];
@@ -107,7 +107,7 @@ const RetoModulos = {
     presupuesto: {
         id: "presupuesto",
         titulo: "💰 Presupuesto",
-        generar: function(contexto) {
+        generar: function (contexto) {
             const rand = Math.random() * 100;
             let valor;
             let esIlimitado = false;
@@ -136,7 +136,7 @@ const RetoModulos = {
     limiteAltura: {
         id: "limiteAltura",
         titulo: "🏢 Límite de altura",
-        generar: function(contexto) {
+        generar: function (contexto) {
             const plantas = Math.floor(Math.random() * 5) + 1; // 1 a 5
             return { texto: `Mínimo ${plantas} ${plantas === 1 ? "planta" : "plantas"}` };
         }
@@ -146,13 +146,13 @@ const RetoModulos = {
     tamanoSolar: {
         id: "tamanoSolar",
         titulo: "📏 Tamaño de solar",
-        generar: function(contexto) {
+        generar: function (contexto) {
             const tamano = contexto.configTamano?.tamano;
             if (!tamano) {
                 // Si por algún motivo no hay tamaño configurado, devuelve uno al azar genérico o error
                 return { texto: "Cualquier tamaño" };
             }
-            return { 
+            return {
                 texto: `Obligatorio: ${tamano}`,
                 tamanoRequerido: tamano
             };
@@ -163,7 +163,7 @@ const RetoModulos = {
     objetivo: {
         id: "objetivo",
         titulo: "🎯 Tipo de solar",
-        generar: function(contexto) {
+        generar: function (contexto) {
             const packsUsuario = contexto.packsUsuario || [];
             const lista = database.objetivos || [];
             const opcionesActivas = contexto.opcionesActivas || [];
@@ -228,7 +228,7 @@ const RetoModulos = {
     colores: {
         id: "colores",
         titulo: "🎨 Colores",
-        generar: function(contexto) {
+        generar: function (contexto) {
             const numColores = contexto.configColores?.cantidad || 3;
             const lista = database.colores || [];
 
@@ -258,7 +258,7 @@ const RetoModulos = {
     temporizador: {
         id: "temporizador",
         titulo: "⏱ Temporizador",
-        generar: function(contexto) {
+        generar: function (contexto) {
             const presup = contexto.resultadosGenerados?.presupuesto;
             let minutos;
 

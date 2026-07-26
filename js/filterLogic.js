@@ -159,7 +159,7 @@ function obtenerSolarAleatorio() {
 function obtenerResultadosOrdenados(campo = null) {
 
     const lista = [...obtenerResultadosBusqueda()];
-    
+
     if (campo) {
         lista.sort((a, b) => {
             const A = (a[campo] || "").toString();

@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-    botonModo.addEventListener("click", () => {
+    botonModo?.addEventListener("click", () => {
 
         const esNoche = body.classList.contains("modo-noche");
 

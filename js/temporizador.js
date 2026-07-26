@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault(); // Evita que la página entera haga scroll
             let val = parseInt(inputMinutos.value, 10);
             if (isNaN(val)) val = 15;
-            
+
             if (e.deltaY < 0) {
                 val++;
             } else {
@@ -39,10 +39,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const max = parseInt(inputMinutos.max, 10);
             const min = parseInt(inputMinutos.min, 10);
-            
+
             if (val > max) val = max;
             if (val < min) val = min;
-            
+
             inputMinutos.value = val;
         });
     }
@@ -63,14 +63,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
             tiempoRestanteEnSegundos = minutos * 60;
             estaPausado = false;
-            if(botonPausar) botonPausar.textContent = "⏸️";
-            
+            if (botonPausar) botonPausar.textContent = "⏸️";
+
             // Cambiar UI a modo activo
             inputMinutos.parentElement.style.display = "none";
             botonIniciar.parentElement.style.display = "none";
             displayTemporizador.style.display = "block";
             divAccionesTemporizador.style.display = "flex";
-            
+
             actualizarDisplay();
 
             if (temporizadorInterval) clearInterval(temporizadorInterval);
@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (temporizadorInterval) clearInterval(temporizadorInterval);
         tiempoRestanteEnSegundos = 0;
         estaPausado = false;
-        if(botonPausar) botonPausar.textContent = "⏸️";
+        if (botonPausar) botonPausar.textContent = "⏸️";
         inputMinutos.parentElement.style.display = "block";
         botonIniciar.parentElement.style.display = "flex";
         displayTemporizador.style.display = "none";

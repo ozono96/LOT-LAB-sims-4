@@ -3,7 +3,7 @@ document.addEventListener("datosCargados", () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-    
+
     // Botón Aceptar para ir a las opciones de reto
     document.getElementById("aceptarPacksRetos")?.addEventListener("click", () => {
         const packsSeleccionados = document.querySelectorAll("#listaPacksRetos .opcionFiltro.seleccionada");
@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Debes tener al menos un pack seleccionado para jugar.");
             return;
         }
-        
+
         if (typeof abrirVentana === "function") {
             abrirVentana("ventanaRetosOpciones");
         }
@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Opciones excluyentes: Reto con solar / Reto sin solar
     const botonesTipoReto = document.querySelectorAll("#tipoRetoOpciones .opcionFiltro");
     botonesTipoReto.forEach(boton => {
-        boton.addEventListener("click", function() {
+        boton.addEventListener("click", function () {
             botonesTipoReto.forEach(b => b.classList.remove("seleccionada"));
             this.classList.add("seleccionada");
             if (typeof actualizarDificultadUI === "function") actualizarDificultadUI();
@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Opciones extra (checkboxes múltiples)
     const botonesOpcionesExtra = document.querySelectorAll("#opcionesExtraRetos .opcionFiltro");
     botonesOpcionesExtra.forEach(boton => {
-        boton.addEventListener("click", function() {
+        boton.addEventListener("click", function () {
             this.classList.toggle("seleccionada");
             actualizarDificultadUI();
         });
@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Opciones excluyentes: Tipo de solar (Aleatorio, Comunitarios, Residenciales, Sin tipo)
     const botonesTipoSolar = document.querySelectorAll("#tipoSolarOpciones .opcionFiltro");
     botonesTipoSolar.forEach(boton => {
-        boton.addEventListener("click", function() {
+        boton.addEventListener("click", function () {
             if (this.classList.contains("seleccionada")) {
                 this.classList.remove("seleccionada");
             } else {
@@ -102,18 +102,18 @@ document.addEventListener("DOMContentLoaded", () => {
     // Lógica para el Tooltip Flotante
     const tooltip = document.getElementById("tooltipOpciones");
     const botonesConTooltip = document.querySelectorAll(".opcionFiltro[data-tooltip]");
-    
+
     if (tooltip) {
         botonesConTooltip.forEach(boton => {
-            boton.addEventListener("mouseenter", function(e) {
+            boton.addEventListener("mouseenter", function (e) {
                 tooltip.textContent = this.getAttribute("data-tooltip");
                 tooltip.style.display = "block";
             });
-            boton.addEventListener("mousemove", function(e) {
+            boton.addEventListener("mousemove", function (e) {
                 tooltip.style.left = e.pageX + "px";
                 tooltip.style.top = (e.pageY - 10) + "px";
             });
-            boton.addEventListener("mouseleave", function() {
+            boton.addEventListener("mouseleave", function () {
                 tooltip.style.display = "none";
             });
         });
@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function renderizarPacksRetos() {
     const contenedor = document.getElementById("listaPacksRetos");
     if (!contenedor) return;
-    
+
     contenedor.innerHTML = "";
 
     const packsExpansion = [];
@@ -158,7 +158,7 @@ function renderizarPacksRetos() {
         if (fila[0] && fila[0].trim() !== "") packsExpansion.push(fila[0]);
         if (fila[2] && fila[2].trim() !== "") packsContenido.push(fila[2]);
         if (fila[4] && fila[4].trim() !== "") packsAccesorios.push(fila[4]);
-        
+
         if (fila[6] && fila[6].trim() !== "") {
             const kitId = (fila[7] || "").trim().toUpperCase();
             if (!kitId.includes("CAS")) {
@@ -209,7 +209,7 @@ function renderizarPacksRetos() {
         if (listaPacks.length === 0) return "";
 
         let botonesPacks = "";
-        listaPacks.forEach(function(pack) {
+        listaPacks.forEach(function (pack) {
             botonesPacks += htmlBotonPackIcono(pack, "", `data-pack="${pack}"`);
         });
 
@@ -234,14 +234,14 @@ function renderizarPacksRetos() {
 
     // Eventos click en botones de pack (toggle individual)
     document.querySelectorAll("#listaPacksRetos .opcionFiltro").forEach(boton => {
-        boton.addEventListener("click", function() {
+        boton.addEventListener("click", function () {
             this.classList.toggle("seleccionada");
         });
     });
 
     // Evento toggle marcar/desmarcar todos (un solo botón por sección)
     document.querySelectorAll(".toggleSeccionBtn").forEach(btn => {
-        btn.addEventListener("click", function() {
+        btn.addEventListener("click", function () {
             const idTarget = this.getAttribute("data-target");
             const estado = this.getAttribute("data-estado");
             const opciones = document.querySelectorAll(`#${idTarget} .opcionFiltro`);

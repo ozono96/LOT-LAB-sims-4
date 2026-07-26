@@ -41,10 +41,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function inicializarSliderTamano() {
         if (typeof obtenerPacksSeleccionadosUsuario !== "function" || typeof database === "undefined" || !database.solares) return;
-        
+
         const packsUsuario = obtenerPacksSeleccionadosUsuario();
         const tamañosValidos = new Set();
-        
+
         database.solares.forEach(solar => {
             const packRequerido = (solar.nombrePack || "").trim().toLowerCase();
             let tienePack = false;
@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
             } else {
                 tienePack = packsUsuario.some(p => p.toLowerCase().includes(packRequerido) || packRequerido.includes(p.toLowerCase()));
             }
-            
+
             if (tienePack && solar.tamaño) {
                 tamañosValidos.add(solar.tamaño.trim());
             }
@@ -107,7 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (tamanoActual.trim().toUpperCase() === "ND") {
                     btnAleatorio.classList.add('deshabilitado');
                     btnComunitario.classList.add('deshabilitado');
-                    
+
                     // Si estaban seleccionados, cambiamos a "Sin tipo de solar"
                     if (btnAleatorio.classList.contains("seleccionada") || btnComunitario.classList.contains("seleccionada")) {
                         btnAleatorio.classList.remove("seleccionada");

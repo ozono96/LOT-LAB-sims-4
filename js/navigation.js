@@ -1,41 +1,21 @@
-document.addEventListener("DOMContentLoaded", function(){
+document.addEventListener("DOMContentLoaded", function () {
 
 
 
 
 
-document.getElementById("botonBuscador")
-.addEventListener("click",function(){
+    document.getElementById("botonBuscador")
+        ?.addEventListener("click", function () {
 
 
 
-abrirVentana(
-"ventanaBuscador"
-);
+            abrirVentana(
+                "ventanaBuscador"
+            );
 
 
 
-});
-
-
-
-
-
-
-
-
-document.getElementById("botonRetos")
-.addEventListener("click",function(){
-
-
-
-abrirVentana(
-"ventanaRetos"
-);
-
-
-
-});
+        });
 
 
 
@@ -44,35 +24,55 @@ abrirVentana(
 
 
 
-document.querySelectorAll(".cerrar")
-.forEach(boton=>{
+    document.getElementById("botonRetos")
+        ?.addEventListener("click", function () {
 
-    boton.addEventListener("click",function(){
 
-        const ventana = this.closest(".ventana");
 
-        if(ventana){
-            if (ventana.id === "ventanaTemporizador" && document.getElementById("app")?.classList.contains("modo-paralelo")) {
-                cerrarTemporizadorAcoplado();
-                return;
-            }
-            if (ventana.id === "ventanaRetosOpciones") {
-                abrirVentana(window.ventanaAnterior || "ventanaRetos");
-                return;
-            }
-            if (ventana.id === "ventanaRetoResultado") {
-                cerrarTemporizadorAcoplado();
-                abrirVentana("ventanaRetosOpciones");
-                return;
-            }
+            abrirVentana(
+                "ventanaRetos"
+            );
 
-            ventana.style.display="none";
-            comprobarVentanaVisible();
-        }
 
-    });
 
-});
+        });
+
+
+
+
+
+
+
+
+    document.querySelectorAll(".cerrar")
+        .forEach(boton => {
+
+            boton.addEventListener("click", function () {
+
+                const ventana = this.closest(".ventana");
+
+                if (ventana) {
+                    if (ventana.id === "ventanaTemporizador" && document.getElementById("app")?.classList.contains("modo-paralelo")) {
+                        cerrarTemporizadorAcoplado();
+                        return;
+                    }
+                    if (ventana.id === "ventanaRetosOpciones") {
+                        abrirVentana(window.ventanaAnterior || "ventanaRetos");
+                        return;
+                    }
+                    if (ventana.id === "ventanaRetoResultado") {
+                        cerrarTemporizadorAcoplado();
+                        abrirVentana("ventanaRetosOpciones");
+                        return;
+                    }
+
+                    ventana.style.display = "none";
+                    comprobarVentanaVisible();
+                }
+
+            });
+
+        });
 
     // Tooltip global para cualquier elemento con data-tooltip
     const tooltipGlobal = document.getElementById("tooltipOpciones");
@@ -118,7 +118,7 @@ document.querySelectorAll(".cerrar")
 window.ventanaAnterior = "ventanaBuscador";
 window.ventanaActual = "ventanaBuscador";
 
-function abrirVentana(id){
+function abrirVentana(id) {
 
     if (window.ventanaActual !== id) {
         window.ventanaAnterior = window.ventanaActual;
@@ -130,15 +130,15 @@ function abrirVentana(id){
     }
 
     document.querySelectorAll(".ventana")
-    .forEach(ventana=>{
-        if (!(id === "ventanaTemporizador" && ventana.id === "ventanaRetoResultado" && document.getElementById("app")?.classList.contains("modo-paralelo"))) {
-            ventana.style.display="none";
-        }
-    });
+        .forEach(ventana => {
+            if (!(id === "ventanaTemporizador" && ventana.id === "ventanaRetoResultado" && document.getElementById("app")?.classList.contains("modo-paralelo"))) {
+                ventana.style.display = "none";
+            }
+        });
 
     const ventana = document.getElementById(id);
-    if(ventana){
-        ventana.style.display="block";
+    if (ventana) {
+        ventana.style.display = "block";
     }
 }
 
@@ -174,15 +174,15 @@ function cerrarTemporizadorAcoplado() {
     if (btnToggle) btnToggle.innerHTML = "⏱️ Abrir temporizador";
 }
 
-function cerrarVentana(id){
+function cerrarVentana(id) {
 
     const ventana = document.getElementById(id);
 
-    if(ventana){
+    if (ventana) {
         if (id === "ventanaTemporizador" && document.getElementById("app")?.classList.contains("modo-paralelo")) {
             cerrarTemporizadorAcoplado();
         } else {
-            ventana.style.display="none";
+            ventana.style.display = "none";
         }
         comprobarVentanaVisible();
     }

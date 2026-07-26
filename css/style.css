@@ -217,6 +217,11 @@ header {
     color: var(--color-texto);
     text-align: center;
     box-shadow: var(--sombra-normal);
+
+    /* Cabecera fija: siempre visible y en primer plano al hacer scroll */
+    position: sticky;
+    top: 0;
+    z-index: 900;
 }
 
 header h1 {
@@ -242,12 +247,9 @@ header p {
 ========================================================== */
 
 .menu-principal {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    justify-content: center;
     max-width: 900px;
     margin: 0 auto 20px auto;
+    position: relative;
 
     /* Estilos de ventana */
     padding: 25px;
@@ -257,6 +259,15 @@ header p {
     -webkit-backdrop-filter: blur(var(--blur));
     border: 1px solid var(--borde);
     box-shadow: var(--sombra-normal);
+
+    transition: padding .25s ease, border-radius .25s ease, box-shadow .25s ease, max-width .25s ease;
+}
+
+.menu-principal-track {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    justify-content: center;
 }
 
 .menu-principal button {
@@ -265,16 +276,113 @@ header p {
 }
 
 @media (max-width: 768px) {
-    .menu-principal {
+    .menu-principal-track {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (max-width: 480px) {
-    .menu-principal {
+    .menu-principal-track {
         grid-template-columns: 1fr;
     }
 }
+
+/* ==========================================================
+   MENÚ PRINCIPAL FLOTANTE (SE ACTIVA AL TAPARLO EL SCROLL)
+========================================================== */
+
+#sentinelMenuPrincipal {
+    width: 100%;
+    height: 1px;
+}
+
+.menu-principal.menuFlotante {
+    position: sticky;
+    z-index: 850;
+    width: 100%;
+    max-width: 1150px;
+    padding: clamp(8px, 2vw, 12px) clamp(38px, 10vw, 50px);
+    border-radius: var(--radio-normal);
+    box-shadow: var(--sombra-fuerte);
+}
+
+.menu-principal.menuFlotante .menu-principal-track {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: clamp(6px, 2vw, 10px);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.menu-principal.menuFlotante .menu-principal-track::-webkit-scrollbar {
+    display: none;
+}
+
+.menu-principal.menuFlotante button {
+    white-space: nowrap;
+    font-size: clamp(.78rem, 2.2vw, .95rem);
+    padding: clamp(7px, 1.8vw, 10px) clamp(10px, 3vw, 16px);
+}
+
+/* Flechas de navegación (solo visibles si hay más botones de los que caben) */
+.flechaMenu {
+    display: none;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: clamp(26px, 6vw, 36px);
+    height: clamp(26px, 6vw, 36px);
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background: var(--color-principal);
+    color: var(--color-texto);
+    font-size: clamp(1rem, 3vw, 1.4rem);
+    cursor: pointer;
+    z-index: 5;
+    box-shadow: var(--sombra-suave);
+    transition: background .25s ease, color .25s ease, box-shadow .25s ease;
+}
+
+@keyframes flechaMenuZoom {
+    0% {
+        transform: translateY(-50%) scale(1);
+    }
+
+    50% {
+        transform: translateY(-50%) scale(1.22);
+    }
+
+    100% {
+        transform: translateY(-50%) scale(1);
+    }
+}
+
+.flechaMenu:hover {
+    background: var(--color-resaltado);
+    color: white;
+    transform: translateY(-50%);
+    box-shadow:
+        0 0 8px rgba(46, 204, 113, .60),
+        0 0 18px rgba(46, 204, 113, .45),
+        0 0 30px rgba(46, 204, 113, .25);
+    animation: flechaMenuZoom .4s ease;
+}
+
+.flechaMenuIzq {
+    left: 8px;
+}
+
+.flechaMenuDer {
+    right: 8px;
+}
+
+
 
 /* ==========================================================
    VENTANAS
@@ -2782,11 +2890,28 @@ body.modo-dia .pantallaCargaLogo2 {
 
 @media(max-width:700px) {
 
+    header {
+        padding: 14px 15px;
+    }
+
+    header h1 {
+        font-size: 1.8rem;
+        margin-bottom: 6px;
+    }
+
+    header p {
+        font-size: .85rem;
+    }
+
+    .header-contenido {
+        gap: 12px;
+    }
+
     .header-logo {
 
-        width: 80px;
+        width: 55px;
 
-        height: 80px;
+        height: 55px;
 
     }
 
@@ -3183,10 +3308,7 @@ body.galeria-ampliada .ventana {
     background: var(--color-resaltado);
 }
 
-/* ==========================================================
-   BLOQUEO TOTAL DE LA BARRA DE GOOGLE TRANSLATE
-   (además del bloqueo por JS en idioma.js)
-========================================================== */
+/* ── Evitar que Google Translate rompa el diseño ── */
 
 html body {
     top: 0px !important;

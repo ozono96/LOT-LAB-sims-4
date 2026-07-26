@@ -206,13 +206,17 @@ main {
 ========================================================== */
 
 header {
-
-    text-align: center;
-
-    margin-top: 50px;
-
+    width: 100%;
+    margin-top: 0;
     margin-bottom: 35px;
-
+    padding: 25px 20px;
+    background: var(--color-tarjeta);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    border-bottom: 1px solid var(--borde);
+    color: var(--color-texto);
+    text-align: center;
+    box-shadow: var(--sombra-normal);
 }
 
 header h1 {
@@ -2441,6 +2445,10 @@ body.modo-noche .toggleModo:hover {
 ========================================================== */
 
 .header-contenido {
+
+    max-width: 1150px;
+
+    margin: 0 auto;
 
     display: flex;
 

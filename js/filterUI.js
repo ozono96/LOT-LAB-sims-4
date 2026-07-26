@@ -209,7 +209,7 @@ function actualizarBotonesFiltros() {
 
     const tooltip = document.getElementById("tooltipFiltro");
 
-     // ── Dependencia: Barrio solo disponible si hay Mundo filtrado ──
+    // ── Dependencia: Barrio solo disponible si hay Mundo filtrado ──
     const botonBarrio = document.querySelector('.botonFiltro[data-filtro="barrio"]');
     const hayMundoFiltrado = contarValoresFiltro("mundo") > 0;
 
@@ -223,10 +223,6 @@ function actualizarBotonesFiltros() {
             botonBarrio.style.display = "none";
         }
     }
-
-    document
-    .querySelectorAll(".botonFiltro")
-    .forEach(boton => {
 
     document
     .querySelectorAll(".botonFiltro")

@@ -44,7 +44,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const botonSubir = document.getElementById("subirResultados");
     const botonBajar = document.getElementById("bajarResultados");
 
-    window.addEventListener("scroll", () => {
+    let scrollBotonesProgramado = false;
+
+    function actualizarBotonesScroll() {
         if (window.innerWidth <= 700) {
             if (botonSubir) botonSubir.style.display = "none";
             if (botonBajar) botonBajar.style.display = "none";
@@ -64,7 +66,17 @@ document.addEventListener("DOMContentLoaded", () => {
             const quedanPorBajar = totalHeight - (scrollY + viewportHeight);
             botonBajar.style.display = (totalHeight > viewportHeight + 300 && quedanPorBajar > 200) ? "flex" : "none";
         }
-    });
+    }
+
+    window.addEventListener("scroll", () => {
+        if (!scrollBotonesProgramado) {
+            window.requestAnimationFrame(() => {
+                actualizarBotonesScroll();
+                scrollBotonesProgramado = false;
+            });
+            scrollBotonesProgramado = true;
+        }
+    }, { passive: true });
 
 
 
@@ -137,7 +149,87 @@ function abrirListadoCompleto() {
 
 }
 
+let ultimoNumeroResultados = 0;
 
+function ajustarAnchoVentanaResultados(cantidad) {
+
+    const ventana = document.getElementById("ventanaResultados");
+    if (!ventana) return;
+
+    // En móvil dejamos que el CSS responsive controle el ancho (96%)
+    if (window.innerWidth <= 700) {
+        ventana.style.width = "";
+        return;
+    }
+
+    const ANCHO_TARJETA = 150;
+    const GAP = 16;
+    const PADDING_VENTANA = 50; // 25px a cada lado
+    const MAX_COLUMNAS = 7;
+    const MIN_COLUMNAS = 2;
+
+    const columnas = Math.min(MAX_COLUMNAS, Math.max(MIN_COLUMNAS, cantidad || MIN_COLUMNAS));
+
+    const anchoCalculado = (columnas * ANCHO_TARJETA) + ((columnas - 1) * GAP) + PADDING_VENTANA;
+
+    // El CSS "max-width" ya actúa como límite de seguridad si esto se pasara
+    ventana.style.width = anchoCalculado + "px";
+}
+
+window.addEventListener("resize", () => {
+    ajustarAnchoVentanaResultados(ultimoNumeroResultados);
+});
+
+function mostrarResultados() {
+
+    const lista = obtenerResultadosOrdenados();
+
+    const zona = document.getElementById("listaResultados");
+
+    const botonVolver = document.getElementById("subirResultados");
+    const botonBajar = document.getElementById("bajarResultados");
+
+    zona.innerHTML = "";
+
+    ultimoNumeroResultados = lista.length;
+
+    if (lista.length === 0) {
+
+        zona.innerHTML = "<p>No existen solares con esos filtros.</p>";
+
+        if (botonVolver) botonVolver.style.display = "none";
+        if (botonBajar) botonBajar.style.display = "none";
+
+        ajustarAnchoVentanaResultados(0);
+
+        return;
+
+    }
+
+    lista.forEach(solar => {
+
+        zona.innerHTML += crearFichaSolar(solar);
+
+    });
+
+    ajustarAnchoVentanaResultados(lista.length);
+
+    if (botonVolver) botonVolver.style.display = "none";
+    if (botonBajar) botonBajar.style.display = "none";
+
+    if (lista.length > 3) {
+
+        window.scrollTo({
+
+            top: 0,
+
+            behavior: "instant"
+
+        });
+
+    }
+
+}
 
 
 
@@ -185,8 +277,6 @@ function mostrarResultados() {
     }
 
 }
-
-
 
 
 

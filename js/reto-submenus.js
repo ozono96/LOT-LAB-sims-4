@@ -19,6 +19,34 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // Rueda del ratón para el input de Límite de Packs
+    const inputMaxPacks = document.getElementById("inputMaxPacks");
+    if (inputMaxPacks) {
+        inputMaxPacks.addEventListener("wheel", (e) => {
+            e.preventDefault();
+            let val = parseInt(inputMaxPacks.value, 10);
+            if (isNaN(val)) val = 3;
+
+            val += (e.deltaY < 0) ? 1 : -1;
+
+            const max = parseInt(inputMaxPacks.max, 10) || 30;
+            const min = parseInt(inputMaxPacks.min, 10) || 1;
+
+            if (val > max) val = max;
+            if (val < min) val = min;
+
+            inputMaxPacks.value = val;
+        }, { passive: false });
+
+        inputMaxPacks.addEventListener("input", () => {
+            let val = parseInt(inputMaxPacks.value, 10);
+            if (isNaN(val)) val = 1;
+            if (val > 30) val = 30;
+            if (val < 1) val = 1;
+            inputMaxPacks.value = val;
+        });
+    }
+
     // Submenú Límite de Packs
     const btnLimitePacks = document.querySelector('#opcionesExtraRetos .opcionFiltro[data-opcion="limite-packs"]');
     const submenuLimitePacks = document.getElementById("submenuLimitePacks");

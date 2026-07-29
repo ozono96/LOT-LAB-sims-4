@@ -93,6 +93,20 @@ body.modo-dia {
 
     --color-titulo: #000000;
 
+    --borde: rgba(0, 0, 0, .22);
+
+}
+
+.submenuOpcion {
+    border: 1px solid var(--borde);
+}
+
+body.modo-dia .submenuOpcion {
+    background: rgba(0, 0, 0, .06) !important;
+}
+
+body.modo-noche .submenuOpcion {
+    background: rgba(255, 255, 255, .06) !important;
 }
 
 
@@ -297,10 +311,13 @@ header p {
 }
 
 .menu-principal.menuFlotante {
-    position: sticky;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 850;
-    width: 100%;
+    width: calc(100% - 30px);
     max-width: 1150px;
+    margin: 0;
     padding: clamp(8px, 2vw, 12px) clamp(38px, 10vw, 50px);
     border-radius: var(--radio-normal);
     box-shadow: var(--sombra-fuerte);
@@ -678,6 +695,7 @@ button:hover {
 #iniciarTemporizador,
 #cerrarTiempoAgotado,
 #pausarTemporizador,
+#botonTirarDados,
 #botonAcercaDe {
 
     background: var(--color-principal);
@@ -708,6 +726,7 @@ button:hover {
 #botonTemporizador:hover,
 #iniciarTemporizador:hover,
 #pausarTemporizador:hover,
+#botonTirarDados:hover,
 #botonAcercaDe:hover {
 
     background: var(--color-secundario);
@@ -2160,6 +2179,22 @@ body.modo-noche .toggleModo:hover {
 
     gap: 16px;
 
+    justify-content: center;
+
+}
+
+/* La ventana de resultados se adapta al número de solares:
+   si hay pocos, la ventana se hace más estrecha en vez de
+   dejar un hueco vacío a la derecha. */
+#ventanaResultados {
+    max-width: min(92%, 1150px);
+}
+
+@media(max-width:700px) {
+    #ventanaResultados {
+        width: 96% !important;
+        max-width: 96%;
+    }
 }
 
 .contenidoMundo {
@@ -3339,4 +3374,248 @@ body > .skiptranslate {
 
 #google_translate_element {
     display: none !important;
+}
+
+/* ==========================================================
+   RULETA DE COLORES
+========================================================== */
+
+#botonRuletaColor {
+    background: var(--color-principal);
+    color: var(--color-texto);
+    box-shadow: var(--sombra-suave);
+}
+
+#botonRuletaColor:hover {
+    background: var(--color-secundario);
+}
+
+.ventanaEstrecha {
+    max-width: 480px;
+}
+
+.ruletaColorControles {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.ruletaColorControles label {
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+#inputTiradasRuleta,
+#inputTiradasDados {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--borde);
+    width: 70px;
+    text-align: center;
+    font-size: 1rem;
+    background: transparent;
+    color: var(--color-texto);
+}
+
+.ruletaColorAyuda {
+    font-size: 0.85rem;
+    opacity: 0.75;
+    margin-top: 8px;
+}
+
+.ruletaColorPuntero {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 14px solid transparent;
+    border-right: 14px solid transparent;
+    border-top: 22px solid var(--color-resaltado);
+    z-index: 5;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .35));
+}
+
+.btnGirarRuleta,
+.btnGirarRuleta:hover,
+.btnGirarRuleta:focus,
+.btnGirarRuleta:active {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) !important;
+    width: 64px;
+    height: 64px;
+    min-width: 64px;
+    min-height: 64px;
+    border-radius: 50% !important;
+    border: 3px solid rgba(255, 255, 255, .85);
+    background: var(--color-principal);
+    color: var(--color-texto);
+    font-weight: bold;
+    font-size: 0.95rem;
+    cursor: pointer;
+    box-shadow: var(--sombra-suave);
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .25s, color .25s, box-shadow .25s;
+    padding: 0 !important;
+}
+
+.btnGirarRuleta:hover:not(:disabled) {
+    background: var(--color-resaltado);
+    color: white;
+    box-shadow:
+        0 0 8px rgba(46, 204, 113, .60),
+        0 0 18px rgba(46, 204, 113, .45),
+        0 0 30px rgba(46, 204, 113, .25);
+}
+
+.btnGirarRuleta:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+
+.ruletaColorMensaje {
+    text-align: center;
+    margin: 10px 0 20px 0;
+    font-weight: bold;
+}
+
+.ruletaColorResultados {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+}
+
+.chipColorRuleta__muestra {
+    display: inline-block;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, .85);
+    box-shadow: var(--sombra-suave);
+    cursor: pointer;
+    transition: transform .2s;
+}
+
+.chipColorRuleta__muestra:hover {
+    transform: scale(1.15);
+}
+
+@media(max-width:700px) {
+    .ruletaColorWheelWrapper {
+        width: 220px !important;
+        height: 220px !important;
+    }
+
+    .btnGirarRuleta {
+        width: 54px;
+        height: 54px;
+        min-width: 54px;
+        min-height: 54px;
+        font-size: .85rem;
+    }
+}
+
+.ruletaColorWheel {
+    width: 100%;
+    height: 100%;
+    transform-origin: 50% 50%;
+    display: block;
+}
+
+.ruletaColorWheel svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* ==========================================================
+   TIRADOR DE DADOS
+========================================================== */
+
+#botonDados {
+    background: var(--color-principal);
+    color: var(--color-texto);
+    box-shadow: var(--sombra-suave);
+}
+
+#botonDados:hover {
+    background: var(--color-secundario);
+}
+
+.resultadoDadosContenedor {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: center;
+}
+
+.filaTiradaDados {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    background: var(--color-tarjeta);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-normal);
+    padding: 12px 18px;
+    box-shadow: var(--sombra-suave);
+}
+
+.dadoCara {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.6rem;
+    line-height: 1;
+    color: var(--color-texto);
+    background: var(--color-principal);
+    border: 2px solid var(--borde);
+    border-radius: 12px;
+    box-shadow: var(--sombra-suave);
+    transition: transform .15s;
+}
+
+.dadoCara.rodando {
+    filter: blur(.3px);
+}
+
+.etiquetaTiradaDados {
+    font-weight: bold;
+    font-size: 1rem;
+    color: var(--color-texto);
+    margin-left: 6px;
+}
+
+@media(max-width:700px) {
+    .dadoCara {
+        width: 46px;
+        height: 46px;
+        font-size: 2.1rem;
+    }
+}
+
+
+/* ==========================================================
+   FIX SCROLL ANCHORING (GLOBAL)
+   Desactivamos el ajuste automático de scroll del navegador
+   en toda la página. Este mecanismo intenta "anclar" el
+   scroll cuando detecta cambios de altura en cualquier punto
+   del documento (por ejemplo, al abrir paneles de filtro
+   grandes como "Nombre del pack" o "Mundo"), y puede entrar
+   en conflicto con nuestro propio cálculo del menú flotante,
+   causando saltos al hacer scroll lento hacia arriba.
+========================================================== */
+
+html {
+    overflow-anchor: none;
 }

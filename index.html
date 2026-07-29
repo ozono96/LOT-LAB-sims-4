@@ -98,9 +98,19 @@
                     ⌛ Temporizador retos
                 </button>
 
+                <button id="botonRuletaColor">
+                    🎨 Ruleta de colores
+                </button>
+
+                <button id="botonDados">
+                   🎲 Tirador de dados
+                </button>
+
                 <button id="botonAcercaDe">
                     👋 Acerca de...
                 </button>
+
+                
 
             </div>
 
@@ -400,8 +410,9 @@
                     style="display: none; margin-top: 20px; text-align: center; background: rgba(0,0,0,0.1); padding: 15px; border-radius: var(--radio-normal);">
                     <div style="margin-bottom: 12px;">
                         <label for="inputMaxPacks" style="font-weight: bold;">Número máximo de packs: </label>
-                        <input type="number" id="inputMaxPacks" min="1" max="20" value="3"
+                        <input type="number" id="inputMaxPacks" min="1" max="30" value="3"
                             style="padding: 6px 10px; border-radius: 8px; border: 1px solid var(--borde); width: 70px; text-align: center; font-size: 1rem;">
+                        <p style="font-size: 0.85rem; opacity: 0.75; margin-top: 8px;">(Usa la rueda del ratón dentro del cuadro para subir o bajar el número. Máximo 30 packs.)</p>
                     </div>
                     <div style="font-weight: bold; margin-bottom: 8px;">Tipos de packs permitidos:</div>
                     <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
@@ -644,9 +655,85 @@
                 ⬆
             </button>
 
-        </section>
+           <div id="ventanaRuletaColor" class="ventana ventanaEstrecha">
 
-    </main>
+    <div class="cabeceraVentana">
+
+        <button class="compartir" title="Compartir">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                    d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+            </svg>
+        </button>
+
+        <button class="cerrar">✕</button>
+
+    </div>
+
+    <h2>🎨 Ruleta de colores</h2>
+
+    <div class="ruletaColorControles">
+        <label for="inputTiradasRuleta">Nº de tiradas:</label>
+        <input type="number" id="inputTiradasRuleta" min="1" max="10" value="1">
+        <p class="ruletaColorAyuda">(Usa la rueda del ratón dentro del cuadro para subir o bajar el tiempo)</p>
+    </div>
+
+    <div class="ruletaColorWheelWrapper" style="position:relative; width:260px; height:260px; margin:10px auto 25px auto;">
+        <div class="ruletaColorPuntero"></div>
+        <div id="ruletaColorWheel" class="ruletaColorWheel" style="width:100%; height:100%;"></div>
+        <button id="botonGirarRuleta" class="btnGirarRuleta">Girar</button>
+    </div>
+
+    <p id="mensajeRuletaColor" class="ruletaColorMensaje"></p>
+
+    <div id="resultadoRuletaColor" class="ruletaColorResultados"></div>
+
+</div>
+<!-- ↑ ESTE cierre es el de ventanaRuletaColor -->
+
+<div id="ventanaDados" class="ventana ventanaEstrecha">
+
+    <div class="cabeceraVentana">
+
+        <button class="compartir" title="Compartir">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                    d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+            </svg>
+        </button>
+
+        <button class="cerrar">✕</button>
+
+    </div>
+
+    <h2>🎲 Tirador de dados</h2>
+
+    <h3 style="text-align: center; margin-bottom: 15px;">Cantidad de dados</h3>
+    <div id="cantidadDadosOpciones" class="listaOpciones" style="justify-content: center; margin-bottom: 25px;">
+        <button class="opcionFiltro seleccionada" data-dados="1">🎲 1 dado</button>
+        <button class="opcionFiltro" data-dados="2">🎲🎲 2 dados</button>
+    </div>
+
+    <div class="ruletaColorControles">
+        <label for="inputTiradasDados">Nº de tiradas:</label>
+        <input type="number" id="inputTiradasDados" min="1" max="10" value="1">
+        <p class="ruletaColorAyuda">(Usa la rueda del ratón dentro del cuadro para subir o bajar el número)</p>
+    </div>
+
+    <div class="accionesBuscador" style="justify-content: center; margin-top: 10px;">
+        <button id="botonTirarDados">🎲 Tirar</button>
+    </div>
+
+    <p id="mensajeDados" class="ruletaColorMensaje"></p>
+
+    <div id="resultadoDados" class="resultadoDadosContenedor"></div>
+
+</div>
+
+
+    </section>
+
+</main>
 
     <script src="js/loading.js"></script>
     <script src="js/config.js"></script>
@@ -654,6 +741,8 @@
     <script src="js/sheets.js"></script>
     <script src="js/render.js"></script>
     <script src="js/solarFicha.js"></script>
+    <script src="js/ruleta-colores.js"></script>
+    <script src="js/dados.js"></script>
     <script src="js/solarGaleria.js"></script>
     <script src="js/filterInfo.js"></script>
     <script src="js/filterLogic.js"></script>
@@ -728,7 +817,7 @@
             </div>
 
             <p>
-                El unico buscador de Solares y generador de retos para construir en Los Sims 4 - Versión 1.1.2
+                El unico buscador de Solares y generador de retos para construir en Los Sims 4 - Versión 1.1.3
             </p>
 
             <p>

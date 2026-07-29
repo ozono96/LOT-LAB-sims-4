@@ -22,6 +22,34 @@ document.addEventListener("DOMContentLoaded", () => {
     sentinel.id = "sentinelMenuPrincipal";
     menu.parentNode.insertBefore(sentinel, menu);
 
+    // Placeholder que reserva SIEMPRE la misma altura (la que el menú
+    // ocupa en su estado normal). Al activar el modo flotante, el menú
+    // sale del flujo (position: fixed) y este placeholder ocupa
+    // exactamente el hueco que dejaba, por lo que el documento NUNCA
+    // cambia de altura en el momento del cambio, en ninguna dirección.
+    const placeholder = document.createElement("div");
+    placeholder.id = "placeholderMenuPrincipal";
+    placeholder.style.height = "0px";
+    menu.parentNode.insertBefore(placeholder, menu);
+
+    // La altura normal del menú se mide UNA SOLA VEZ (y se recalcula
+    // solo en resize), nunca en el momento del toggle. Esto evita medir
+    // el menú en un estado intermedio o incorrecto, que era la causa
+    // del rebote al desactivar el modo flotante (scroll hacia arriba).
+    let alturaMenuNormal = 0;
+
+    function medirAlturaMenuNormal() {
+        const estabaFlotante = menu.classList.contains("menuFlotante");
+        if (estabaFlotante) {
+            menu.classList.remove("menuFlotante");
+            menu.style.top = "";
+        }
+        alturaMenuNormal = menu.offsetHeight;
+        if (estabaFlotante) {
+            menu.classList.add("menuFlotante");
+        }
+    }
+
     function comprobarFlechasMenu() {
 
         if (!menu.classList.contains("menuFlotante")) {
@@ -36,19 +64,36 @@ document.addEventListener("DOMContentLoaded", () => {
         flechaDer.style.display = (hayOverflow && track.scrollLeft < (track.scrollWidth - track.clientWidth - 5)) ? "flex" : "none";
     }
 
+    function activarFlotante() {
+        if (menu.classList.contains("menuFlotante")) return;
+        placeholder.style.height = alturaMenuNormal + "px";
+        menu.classList.add("menuFlotante");
+    }
+
+    function desactivarFlotante() {
+        if (!menu.classList.contains("menuFlotante")) return;
+        menu.classList.remove("menuFlotante");
+        menu.style.top = "";
+        placeholder.style.height = "0px";
+    }
+
     function comprobarPosicionMenu() {
 
         const alturaCabecera = header.offsetHeight;
-        const rectSentinel = sentinel.getBoundingClientRect();
+        const SEPARACION_FLOTANTE = 10; // px de hueco fijo, siempre igual en todas las ventanas
+        const HISTERESIS = 6; // px de margen para evitar parpadeos justo en el límite
 
-        if (rectSentinel.top <= alturaCabecera) {
-            if (!menu.classList.contains("menuFlotante")) {
-                menu.classList.add("menuFlotante");
-            }
-            menu.style.top = alturaCabecera + "px";
-        } else {
-            menu.classList.remove("menuFlotante");
-            menu.style.top = "";
+        const rectSentinel = sentinel.getBoundingClientRect();
+        const yaFlotante = menu.classList.contains("menuFlotante");
+
+        if (!yaFlotante && rectSentinel.top <= alturaCabecera) {
+            activarFlotante();
+        } else if (yaFlotante && rectSentinel.top > alturaCabecera + HISTERESIS) {
+            desactivarFlotante();
+        }
+
+        if (menu.classList.contains("menuFlotante")) {
+            menu.style.top = (alturaCabecera + SEPARACION_FLOTANTE) + "px";
         }
 
         comprobarFlechasMenu();
@@ -64,10 +109,15 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             scrollProgramado = true;
         }
-    });
+    }, { passive: true });
 
-    window.addEventListener("resize", comprobarPosicionMenu);
-    track.addEventListener("scroll", comprobarFlechasMenu);
+    window.addEventListener("resize", () => {
+        desactivarFlotante();
+        medirAlturaMenuNormal();
+        comprobarPosicionMenu();
+    }, { passive: true });
+
+    track.addEventListener("scroll", comprobarFlechasMenu, { passive: true });
 
     flechaIzq?.addEventListener("click", () => {
         track.scrollBy({ left: -180, behavior: "smooth" });
@@ -77,7 +127,8 @@ document.addEventListener("DOMContentLoaded", () => {
         track.scrollBy({ left: 180, behavior: "smooth" });
     });
 
-    // Comprobación inicial (por si la página carga ya con scroll aplicado)
+    // Medición y comprobación inicial (por si la página carga ya con scroll aplicado)
+    medirAlturaMenuNormal();
     comprobarPosicionMenu();
 
 });

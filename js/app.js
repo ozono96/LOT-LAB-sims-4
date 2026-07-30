@@ -115,7 +115,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function buscarSolares() {
 
-    if (!hayFiltros()) {
+    const hayBusquedaNombre = typeof hayBusquedaNombreActiva === "function" && hayBusquedaNombreActiva();
+
+    if (!hayFiltros() && !hayBusquedaNombre) {
 
         abrirVentana("ventanaAvisoFiltros");
         return;
@@ -213,53 +215,6 @@ function mostrarResultados() {
     });
 
     ajustarAnchoVentanaResultados(lista.length);
-
-    if (botonVolver) botonVolver.style.display = "none";
-    if (botonBajar) botonBajar.style.display = "none";
-
-    if (lista.length > 3) {
-
-        window.scrollTo({
-
-            top: 0,
-
-            behavior: "instant"
-
-        });
-
-    }
-
-}
-
-
-
-function mostrarResultados() {
-
-    const lista = obtenerResultadosOrdenados();
-
-    const zona = document.getElementById("listaResultados");
-
-    const botonVolver = document.getElementById("subirResultados");
-    const botonBajar = document.getElementById("bajarResultados");
-
-    zona.innerHTML = "";
-
-    if (lista.length === 0) {
-
-        zona.innerHTML = "<p>No existen solares con esos filtros.</p>";
-
-        if (botonVolver) botonVolver.style.display = "none";
-        if (botonBajar) botonBajar.style.display = "none";
-
-        return;
-
-    }
-
-    lista.forEach(solar => {
-
-        zona.innerHTML += crearFichaSolar(solar);
-
-    });
 
     if (botonVolver) botonVolver.style.display = "none";
     if (botonBajar) botonBajar.style.display = "none";
@@ -395,4 +350,3 @@ function mostrarListadoCompleto() {
         });
 
 }
-

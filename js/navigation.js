@@ -97,6 +97,32 @@ document.addEventListener("DOMContentLoaded", function () {
                 tooltipGlobal.style.display = "none";
             }
         }, true);
+
+        // Versión táctil: el tooltip solo se muestra mientras se mantiene pulsado
+        document.body.addEventListener("touchstart", (e) => {
+            const el = e.target.closest("[data-tooltip]");
+            if (el) {
+                const touch = e.touches[0];
+                tooltipGlobal.textContent = el.getAttribute("data-tooltip");
+                tooltipGlobal.style.left = touch.pageX + "px";
+                tooltipGlobal.style.top = (touch.pageY - 10) + "px";
+                tooltipGlobal.style.display = "block";
+            }
+        }, { capture: true, passive: true });
+
+        document.body.addEventListener("touchend", (e) => {
+            const el = e.target.closest("[data-tooltip]");
+            if (el) {
+                tooltipGlobal.style.display = "none";
+            }
+        }, { capture: true, passive: true });
+
+        document.body.addEventListener("touchcancel", (e) => {
+            const el = e.target.closest("[data-tooltip]");
+            if (el) {
+                tooltipGlobal.style.display = "none";
+            }
+        }, { capture: true, passive: true });
     }
 
 

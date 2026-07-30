@@ -39,7 +39,11 @@ function inicializarRuletaColor() {
     }
 
     inputTiradas.addEventListener("input", () => {
-        inputTiradas.value = String(clampTiradas(parseInt(inputTiradas.value, 10) || 1));
+        const raw = inputTiradas.value;
+        if (raw === "") return; // Permite borrar el campo para escribir un número nuevo
+        const val = parseInt(raw, 10);
+        if (isNaN(val)) return;
+        if (val > 10) inputTiradas.value = "10";
     });
     inputTiradas.addEventListener("change", () => {
         inputTiradas.value = String(clampTiradas(parseInt(inputTiradas.value, 10) || 1));

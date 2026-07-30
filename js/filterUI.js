@@ -51,6 +51,7 @@ function mostrarPanelFiltro() {
     const esFiltroNombrePack = (nombre === "nombrePack");
     const esFiltroMundo = (nombre === "mundo");
     const esFiltroTamano = (nombre === "tamaño");
+    const esFiltroBarrio = (nombre === "barrio");
 
     if (esFiltroTamano) {
         const arrTamanos = opciones.sort((a, b) => {
@@ -143,7 +144,6 @@ function mostrarPanelFiltro() {
             const activo = filtroTieneValor(nombre, opcion);
 
             if (esFiltroNombrePack && typeof htmlBotonPackIcono === "function") {
-                const tieneIcono = typeof rutaIconoPack === "function" && !!rutaIconoPack(opcion);
                 const html = htmlBotonPackIcono(opcion, "", `data-valor="${opcion}"`);
                 const tempDiv = document.createElement("div");
                 tempDiv.innerHTML = html;
@@ -151,25 +151,38 @@ function mostrarPanelFiltro() {
                 if (!activo) btn.classList.remove("seleccionada");
                 lista.appendChild(btn);
             } else if (esFiltroMundo && typeof htmlBotonMundoIcono === "function") {
-                const tieneIcono = typeof rutaIconoMundo === "function" && !!rutaIconoMundo(opcion);
                 const html = htmlBotonMundoIcono(opcion, "", `data-valor="${opcion}"`);
                 const tempDiv = document.createElement("div");
                 tempDiv.innerHTML = html;
                 const btn = tempDiv.firstElementChild;
                 if (!activo) btn.classList.remove("seleccionada");
                 lista.appendChild(btn);
+            } else if (esFiltroBarrio && typeof htmlBotonBarrioIcono === "function") {
+                // Buscamos a qué mundo pertenece este barrio (dentro de los solares ya filtrados)
+                const listaFiltradaBarrio = obtenerSolaresFiltrados("barrio");
+                const solarConBarrio = listaFiltradaBarrio.find(s => s.barrio === opcion);
+                const mundoDelBarrio = solarConBarrio ? solarConBarrio.mundo : null;
+
+                const html = htmlBotonBarrioIcono(opcion, mundoDelBarrio, `data-valor="${opcion}"`);
+                const tempDiv = document.createElement("div");
+                tempDiv.innerHTML = html;
+                const btn = tempDiv.firstElementChild;
+                if (!activo) btn.classList.remove("seleccionada");
+                lista.appendChild(btn);
             } else {
-                lista.innerHTML += `
-                    <button class="opcionFiltro ${activo ? "seleccionada" : ""}" data-valor="${opcion}">
-                        ${opcion}
-                    </button>
-                `;
+
+                const boton = document.createElement("button");
+                boton.className = "opcionFiltro" + (activo ? " seleccionada" : "");
+                boton.dataset.valor = opcion;
+                boton.textContent = opcion;
+                lista.appendChild(boton);
+
             }
         });
     }
 
-    // Estilo extra para la lista cuando muestra iconos de pack
-    if (esFiltroNombrePack || esFiltroMundo) {
+    // Estilo extra para la lista cuando muestra iconos de pack/mundo/barrio
+    if (esFiltroNombrePack || esFiltroMundo || esFiltroBarrio) {
         lista.style.justifyContent = "center";
         lista.style.gap = "10px";
         lista.style.flexWrap = "wrap";
@@ -360,6 +373,47 @@ function actualizarBotonesFiltros() {
             };
 
             boton.onmouseleave = () => {
+
+                tooltip.style.display = "none";
+
+            };
+
+            // Versión táctil: el tooltip solo se muestra mientras se mantiene pulsado
+            boton.ontouchstart = (e) => {
+
+                const datos = obtenerDatosTooltip(nombre);
+
+                tooltip.innerHTML = `
+
+                <h4>${obtenerIconoFiltro(nombre)} ${datos.titulo}</h4>
+
+                <p>${datos.descripcion}</p>
+
+                <hr>
+
+                <strong>Seleccionados:</strong>
+
+                <p>${datos.seleccionados}</p>
+
+            `;
+
+                const touch = e.touches[0];
+
+                tooltip.style.left = (touch.pageX + 18) + "px";
+
+                tooltip.style.top = (touch.pageY - 10) + "px";
+
+                tooltip.style.display = "block";
+
+            };
+
+            boton.ontouchend = () => {
+
+                tooltip.style.display = "none";
+
+            };
+
+            boton.ontouchcancel = () => {
 
                 tooltip.style.display = "none";
 

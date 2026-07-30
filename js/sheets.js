@@ -286,3 +286,39 @@ function htmlBotonMundoIcono(nombreMundo, extraClases = "", extraData = "") {
     // Fallback sin icono
     return `<button class="opcionFiltro seleccionada" ${extraData}><span>🌎 ${nombreMundo}</span></button>`;
 }
+
+
+// ── Iconos de barrios (fotos dentro de img/barrios/{mundo}/{barrio}/) ──
+const EXTENSIONES_FOTO_BARRIO = ["jpg", "png", "jpeg", "webp"];
+
+function manejarErrorImagenBarrio(img) {
+    const intento = parseInt(img.dataset.intento || "0", 10) + 1;
+
+    if (intento < EXTENSIONES_FOTO_BARRIO.length) {
+        img.dataset.intento = String(intento);
+        img.src = `${img.dataset.rutaBase}.${EXTENSIONES_FOTO_BARRIO[intento]}`;
+    } else {
+        img.style.display = "none";
+        const fallback = img.nextElementSibling;
+        if (fallback) fallback.style.display = "inline-flex";
+    }
+}
+
+// Genera HTML de un botón de barrio con foto, mismo estilo que packs/mundos
+// (carpeta plana: img/barrios/ contiene una carpeta por cada barrio, con la foto dentro)
+function htmlBotonBarrioIcono(nombreBarrio, nombreMundo, extraData = "") {
+    const rutaBase = nombreBarrio
+        ? `img/barrios/${nombreBarrio.trim()}/foto`
+        : null;
+
+    if (rutaBase) {
+        return `<button class="opcionFiltro btnPackIcono seleccionada" ${extraData} title="${nombreBarrio}">
+            <img src="${rutaBase}.${EXTENSIONES_FOTO_BARRIO[0]}" data-ruta-base="${rutaBase}" data-intento="0"
+                alt="${nombreBarrio}" class="iconoPack" onerror="manejarErrorImagenBarrio(this)">
+            <span class="iconoPackFallback" style="display:none;">🏘️ ${nombreBarrio}</span>
+        </button>`;
+    }
+
+    // Fallback sin mundo conocido / sin foto
+    return `<button class="opcionFiltro seleccionada" ${extraData}><span>🏘️ ${nombreBarrio}</span></button>`;
+}

@@ -153,12 +153,10 @@ function renderizarGaleria(contenedor) {
     const total = fotosGaleriaActual.length;
     const mostrarPuntos = total > 1;
     const mostrarContador = total > 5;
-    const mostrarFlechas = total > 1;
 
     contenedor.innerHTML = `
         <div class="galeriaSolar">
-            <div class="galeriaImagenContenedor">
-                ${mostrarFlechas ? `<button class="galeriaFlecha galeriaFlechaIzq" onclick="cambiarFotoGaleria(-1)">‹</button>` : ""}
+            <div class="galeriaImagenContenedor" id="galeriaImagenContenedor">
                 <img
                     src="${fotosGaleriaActual[indiceGaleriaActual]}"
                     class="galeriaImagenActual"
@@ -166,7 +164,6 @@ function renderizarGaleria(contenedor) {
                     alt="Foto del solar"
                     onclick="toggleAmpliarGaleria(this)"
                 >
-                ${mostrarFlechas ? `<button class="galeriaFlecha galeriaFlechaDer" onclick="cambiarFotoGaleria(1)">›</button>` : ""}
             </div>
 
             ${mostrarPuntos ? `
@@ -180,6 +177,52 @@ function renderizarGaleria(contenedor) {
 
         <div class="galeriaBackdrop" id="galeriaBackdrop" onclick="cerrarAmpliarGaleria()"></div>
     `;
+
+    activarGestosGaleria();
+}
+
+function activarGestosGaleria() {
+    const contenedorImg = document.getElementById("galeriaImagenContenedor");
+    if (!contenedorImg) return;
+
+    // ── Rueda del ratón (escritorio) ──
+    let bloqueoWheel = false;
+
+    contenedorImg.addEventListener("wheel", (e) => {
+        if (fotosGaleriaActual.length <= 1) return;
+
+        e.preventDefault();
+        if (bloqueoWheel) return;
+        bloqueoWheel = true;
+
+        const direccion = (e.deltaY > 0 || e.deltaX > 0) ? 1 : -1;
+        cambiarFotoGaleria(direccion);
+
+        setTimeout(() => { bloqueoWheel = false; }, 350);
+    }, { passive: false });
+
+    // ── Gesto de deslizar el dedo (móvil) ──
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    contenedorImg.addEventListener("touchstart", (e) => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    contenedorImg.addEventListener("touchend", (e) => {
+        if (fotosGaleriaActual.length <= 1) return;
+
+        const touchEndX = e.changedTouches[0].clientX;
+        const touchEndY = e.changedTouches[0].clientY;
+        const deltaX = touchEndX - touchStartX;
+        const deltaY = touchEndY - touchStartY;
+
+        // Solo si el gesto es principalmente horizontal (evita interferir con el scroll vertical de la página)
+        if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
+            cambiarFotoGaleria(deltaX < 0 ? 1 : -1);
+        }
+    }, { passive: true });
 }
 
 function actualizarGaleriaUI() {

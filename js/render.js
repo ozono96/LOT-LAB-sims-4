@@ -57,6 +57,9 @@ function crearFichaSolar(solar) {
         onclick="abrirFichaSolar('${solar.id}')"
         onmouseenter="mostrarResumenSolar(event,'${solar.id}')"
         onmouseleave="ocultarResumenSolar()"
+        ontouchstart="mostrarResumenSolar(event,'${solar.id}')"
+        ontouchend="ocultarResumenSolar()"
+        ontouchcancel="ocultarResumenSolar()"
     >
 
         <div class="iconoTarjetaSolar ${claseHover}">

@@ -3441,9 +3441,9 @@ body > .skiptranslate {
 .btnGirarRuleta:focus,
 .btnGirarRuleta:active {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) !important;
+    top: calc(50% - 32px);
+    left: calc(50% - 32px);
+    transform: none !important;
     width: 64px;
     height: 64px;
     min-width: 64px;
@@ -3519,6 +3519,8 @@ body > .skiptranslate {
         min-width: 54px;
         min-height: 54px;
         font-size: .85rem;
+        top: calc(50% - 27px);
+        left: calc(50% - 27px);
     }
 }
 
@@ -3554,6 +3556,20 @@ body > .skiptranslate {
     flex-direction: column;
     gap: 14px;
     align-items: center;
+}
+
+.resultadoDadosContenedor.dosColumnas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    align-items: stretch;
+    justify-items: center;
+}
+
+@media(max-width:500px) {
+    .resultadoDadosContenedor.dosColumnas {
+        grid-template-columns: 1fr;
+    }
 }
 
 .filaTiradaDados {
@@ -3618,4 +3634,78 @@ body > .skiptranslate {
 
 html {
     overflow-anchor: none;
+}
+
+
+/* ==========================================================
+   FICHA DE SOLAR - INFO EN DOS COLUMNAS CON ICONOS
+========================================================== */
+
+.fichaSolarInfoGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 26px 24px;
+    margin-top: 10px;
+}
+
+.fichaSolarColumna {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+}
+
+.fichaSolarItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 6px;
+}
+
+.fichaSolarIconoWrap {
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fichaSolarIcono {
+    width: 46px;
+    height: 46px;
+    object-fit: contain;
+    border-radius: 10px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .25));
+}
+
+.fichaSolarIconoFallback {
+    font-size: 1.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media(max-width:600px) {
+    .fichaSolarInfoGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.fichaSolarColumnaIzquierda {
+    margin-top: 2px;
+}
+
+.fichaSolarColumnaDerecha {
+    margin-top: 45px;
+}
+
+.fichaSolarIconoWrapBarrio {
+    width: 62px;
+    height: 62px;
+}
+
+.fichaSolarIconoBarrio {
+    width: 62px;
+    height: 62px;
 }

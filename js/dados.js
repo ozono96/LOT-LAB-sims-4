@@ -79,6 +79,7 @@ function tirarDados() {
     botonTirar.disabled = true;
     mensaje.textContent = "Tirando...";
     resultado.innerHTML = "";
+    resultado.classList.toggle("dosColumnas", numTiradas > 1);
 
     let tiradaActual = 0;
 

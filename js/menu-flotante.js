@@ -119,6 +119,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     track.addEventListener("scroll", comprobarFlechasMenu, { passive: true });
 
+    // Permite desplazar el menú flotante horizontalmente con la rueda del ratón
+    menu.addEventListener("wheel", (e) => {
+        if (!menu.classList.contains("menuFlotante")) return;
+
+        const hayOverflow = track.scrollWidth > track.clientWidth + 2;
+        if (!hayOverflow) return;
+
+        e.preventDefault();
+        track.scrollLeft += (e.deltaY !== 0 ? e.deltaY : e.deltaX);
+    }, { passive: false });
+
     flechaIzq?.addEventListener("click", () => {
         track.scrollBy({ left: -180, behavior: "smooth" });
     });
@@ -132,5 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
     comprobarPosicionMenu();
 
 });
+
+
 
 console.log("✔ menu-flotante cargado");

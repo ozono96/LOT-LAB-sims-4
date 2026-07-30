@@ -131,6 +131,21 @@ function renderizarResultadoReto(reto) {
             boton.addEventListener("mouseleave", function () {
                 tooltip.style.display = "none";
             });
+
+            // Versión táctil: el tooltip solo se muestra mientras se mantiene pulsado
+            boton.addEventListener("touchstart", function (e) {
+                tooltip.textContent = this.getAttribute("data-tooltip");
+                const touch = e.touches[0];
+                tooltip.style.left = touch.pageX + "px";
+                tooltip.style.top = (touch.pageY - 10) + "px";
+                tooltip.style.display = "block";
+            }, { passive: true });
+            boton.addEventListener("touchend", function () {
+                tooltip.style.display = "none";
+            }, { passive: true });
+            boton.addEventListener("touchcancel", function () {
+                tooltip.style.display = "none";
+            }, { passive: true });
         });
     }
 }

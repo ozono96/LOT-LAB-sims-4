@@ -14,6 +14,8 @@ const database = {
 
     estilosDecoracion: [],
 
-    colores: []
+    colores: [],
+
+    etapasVida: []
 
 };

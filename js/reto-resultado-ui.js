@@ -92,6 +92,17 @@ function renderizarResultadoReto(reto) {
             detalleExtra += `<div class="tiraIconosPacks">${htmlIconosPacks(cat.resultado.packsPermitidos)}</div>`;
         }
 
+        // Si es la categoría de tipo de solar y ha salido residencial, mostrar la
+        // composición por etapas de vida de la vivienda (icono + cantidad de cada una)
+        if (catId === "objetivo" && cat.resultado.tipo === "residencial" && cat.resultado.composicion && cat.resultado.composicion.length > 0 && typeof htmlComposicionVivienda === "function") {
+            detalleExtra += `
+                <div style="margin-top: 10px; font-weight: bold; font-size: 0.95rem; opacity: 0.85;">
+                    👪 Etapas de vida de la vivienda:
+                </div>
+                ${htmlComposicionVivienda(cat.resultado.composicion)}
+            `;
+        }
+
         html += `
             <div class="tarjetaCategoriaReto" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.15); border: 1px solid var(--borde); padding: 15px 20px; border-radius: var(--radio-normal); flex-wrap: wrap; gap: 10px;">
                 <div class="infoCategoria" style="flex: 1; min-width: 200px;">

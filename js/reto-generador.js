@@ -128,6 +128,18 @@ function generarReto(esAleatorio = false) {
         solarSeleccionado = seleccionarSolarParaReto(packsUsuario, categoriasGeneradas);
     }
 
+    // Composición por etapas de vida (solo para retos residenciales). Se calcula
+    // aquí, después de conocer el solar, porque la exclusión de "Caballo" depende
+    // de si el solar asignado es de tamaño ND.
+    if (categoriasGeneradas.objetivo && categoriasGeneradas.objetivo.resultado.tipo === "residencial") {
+        const excluirCaballo = (tipoReto === "con-solar" && solarSeleccionado && (solarSeleccionado.tamaño || "").trim().toUpperCase() === "ND");
+        const sims = categoriasGeneradas.objetivo.resultado.sims;
+
+        categoriasGeneradas.objetivo.resultado.composicion = typeof generarComposicionVivienda === "function"
+            ? generarComposicionVivienda(sims, packsUsuario, excluirCaballo)
+            : [];
+    }
+
     // Calcular dificultad total
     let dificultad = 0;
 
@@ -205,6 +217,12 @@ function rerollCategoria(categoriaId) {
     catObj.resultado = resNuevo;
     retoActual.contexto.resultadosGenerados[categoriaId] = resNuevo;
 
+    // Si la categoría es "objetivo" y ha vuelto a salir residencial, recalculamos
+    // también la composición por etapas de vida (respetando el solar ya asignado).
+    if (categoriaId === "objetivo" && typeof recalcularComposicionVivienda === "function") {
+        recalcularComposicionVivienda(retoActual);
+    }
+
     // Si la categoría era presupuesto y también está activo el temporizador, actualizar temporizador
     if (categoriaId === "presupuesto" && retoActual.categorias["temporizador"]) {
         const tempCat = retoActual.categorias["temporizador"];
@@ -229,6 +247,11 @@ function rerollSolar() {
 
     retoActual.rerollsSolar--;
     retoActual.solar = seleccionarSolarParaReto(retoActual.contexto.packsUsuario, retoActual.categorias);
+
+    // El nuevo solar puede cambiar si "Caballo" debe excluirse (tamaño ND) o no
+    if (typeof recalcularComposicionVivienda === "function") {
+        recalcularComposicionVivienda(retoActual);
+    }
 
     if (typeof renderizarResultadoReto === "function") {
         renderizarResultadoReto(retoActual);

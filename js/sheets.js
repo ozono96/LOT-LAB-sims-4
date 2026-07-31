@@ -127,6 +127,15 @@ async function cargarListados() {
 
     console.log("Colores:", database.colores.length);
 
+
+
+
+    datos = await cargarHoja(CONFIG.SHEETS.ETAPAS_VIDA);
+
+    database.etapasVida = datos.slice(1);
+
+    console.log("Etapas de vida:", database.etapasVida.length);
+
 }
 
 
@@ -321,4 +330,28 @@ function htmlBotonBarrioIcono(nombreBarrio, nombreMundo, extraData = "") {
 
     // Fallback sin mundo conocido / sin foto
     return `<button class="opcionFiltro seleccionada" ${extraData}><span>🏘️ ${nombreBarrio}</span></button>`;
+}
+
+// ── Iconos de etapas de vida (fotos en img/iconosetapas/{idFoto}.*) ──
+const EXTENSIONES_ICONO_ETAPA = ["png", "jpg", "webp", "jpeg"];
+
+function manejarErrorImagenEtapa(img) {
+    const intento = parseInt(img.dataset.intento || "0", 10) + 1;
+
+    if (intento < EXTENSIONES_ICONO_ETAPA.length) {
+        img.dataset.intento = String(intento);
+        img.src = `${img.dataset.rutaBase}.${EXTENSIONES_ICONO_ETAPA[intento]}`;
+    } else {
+        img.style.display = "none";
+        const fallback = img.nextElementSibling;
+        if (fallback) fallback.style.display = "inline-flex";
+    }
+}
+
+// Devuelve la ruta base (sin extensión) del icono de una etapa de vida, o null si no hay ID
+function rutaBaseIconoEtapa(idFoto) {
+    if (!idFoto) return null;
+    const id = idFoto.toString().trim();
+    if (!id) return null;
+    return `img/iconosetapas/${id}`;
 }

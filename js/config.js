@@ -9,9 +9,11 @@ const CONFIG = {
         ESTILOS_ARQ: "Listado de estilos exteriores",
         ESTILOS_DECORACION: "Listado de estilos interiores",
         COLORES: "Listado de colores",
-        // AJUSTA este nombre si tu pestaña de Google Sheets se llama distinto.
         // Columnas esperadas: A = Etapa, B = ID de foto, C = Pack requerido.
-        ETAPAS_VIDA: "Listado de etapas de vida"
+        ETAPAS_VIDA: "Listado de etapas de vida",
+        // Columnas esperadas: A = Limitante, B = ID de foto.
+        LIMITANTES_CONSTRUIR: "Listado de limitantes modo construir",
+        LIMITANTES_COMPRAR: "Listado de limitantes modo comprar"
     },
 
     SHEET_ID: "1uGganU7wrnQQ0mHMMcKUg3HrRQUtEs73gTGd4NCIgvI",

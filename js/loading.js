@@ -11,6 +11,29 @@ const FRASES_CARGA = [
 const DURACION_TRANSICION_FRASE = 350; // ms (entrada y salida)
 const TIEMPO_VISIBLE_FRASE = 1300;     // ms visible en el centro
 
+// ── Bloqueo de scroll mientras se muestra la pantalla de carga ──
+// Cubre los tres métodos de scroll: rueda del ratón, barra del navegador
+// (overflow hidden en el body) y gesto táctil en móvil.
+function prevenirScrollCarga(e) {
+    e.preventDefault();
+}
+
+function bloquearScrollCarga() {
+    document.documentElement.classList.add("bloqueoScrollCarga");
+    document.body.classList.add("bloqueoScrollCarga");
+    document.addEventListener("wheel", prevenirScrollCarga, { passive: false });
+    document.addEventListener("touchmove", prevenirScrollCarga, { passive: false });
+}
+
+function desbloquearScrollCarga() {
+    document.documentElement.classList.remove("bloqueoScrollCarga");
+    document.body.classList.remove("bloqueoScrollCarga");
+    document.removeEventListener("wheel", prevenirScrollCarga, { passive: false });
+    document.removeEventListener("touchmove", prevenirScrollCarga, { passive: false });
+}
+
+bloquearScrollCarga();
+
 function mezclarArrayCarga(array) {
     const copia = [...array];
     for (let i = copia.length - 1; i > 0; i--) {
@@ -117,6 +140,7 @@ function iniciarPantallaCarga() {
 
                 setTimeout(() => {
                     pantalla.classList.add("oculta");
+                    desbloquearScrollCarga();
                     setTimeout(() => {
                         pantalla.style.display = "none";
                     }, 600);

@@ -162,6 +162,45 @@ document.addEventListener("DOMContentLoaded", () => {
             valColores.textContent = sliderColores.value;
         });
     }
+
+    // ── Limitantes extra: Construir / Comprar ──
+    const avisoLimitantesExtra = document.getElementById("avisoLimitantesExtra");
+
+    function actualizarAvisoLimitantesExtra() {
+        if (!avisoLimitantesExtra) return;
+        const hayAlgunaActiva = document.querySelector('#limitantesExtraOpciones .opcionFiltro.seleccionada');
+        avisoLimitantesExtra.style.display = hayAlgunaActiva ? "block" : "none";
+    }
+
+    function configurarBotonLimitante(tipo, idSubmenu, idSlider, idValor) {
+        const boton = document.querySelector(`#limitantesExtraOpciones .opcionFiltro[data-limitante="${tipo}"]`);
+        const submenu = document.getElementById(idSubmenu);
+        const slider = document.getElementById(idSlider);
+        const valSpan = document.getElementById(idValor);
+
+        if (!boton || !submenu) return;
+
+        boton.addEventListener("click", () => {
+            boton.classList.toggle("seleccionada");
+            submenu.style.display = boton.classList.contains("seleccionada") ? "block" : "none";
+            actualizarAvisoLimitantesExtra();
+            if (typeof window.actualizarDificultadUI === "function") {
+                window.actualizarDificultadUI();
+            }
+        });
+
+        if (slider && valSpan) {
+            slider.addEventListener("input", () => {
+                valSpan.textContent = slider.value;
+                if (typeof window.actualizarDificultadUI === "function") {
+                    window.actualizarDificultadUI();
+                }
+            });
+        }
+    }
+
+    configurarBotonLimitante("construir", "submenuLimitanteConstruir", "sliderLimitanteConstruir", "valLimitanteConstruir");
+    configurarBotonLimitante("comprar", "submenuLimitanteComprar", "sliderLimitanteComprar", "valLimitanteComprar");
 });
 
 function obtenerConfigSubmenus() {
@@ -190,9 +229,18 @@ function obtenerConfigSubmenus() {
         tamanoElegido = arr[sliderTamano.value];
     }
 
+    // Configuración Limitantes Extra (Construir / Comprar)
+    const sliderLimConstruir = document.getElementById("sliderLimitanteConstruir");
+    const cantidadLimConstruir = sliderLimConstruir ? parseInt(sliderLimConstruir.value, 10) : 1;
+
+    const sliderLimComprar = document.getElementById("sliderLimitanteComprar");
+    const cantidadLimComprar = sliderLimComprar ? parseInt(sliderLimComprar.value, 10) : 1;
+
     return {
         colores: { cantidad: cantidadColores },
         limitePacks: { maxPacks: maxPacks, tiposPermitidos: tiposPermitidos, juegoBasePermitido: juegoBaseEnLimitePacks },
-        tamanoSolar: { tamano: tamanoElegido }
+        tamanoSolar: { tamano: tamanoElegido },
+        limitantesConstruir: { cantidad: cantidadLimConstruir },
+        limitantesComprar: { cantidad: cantidadLimComprar }
     };
 }

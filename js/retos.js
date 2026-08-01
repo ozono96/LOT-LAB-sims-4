@@ -67,6 +67,19 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
+        // Limitantes extra (Construir / Comprar): suman tantos puntos como limitantes se vayan a sacar
+        const btnConstruir = document.querySelector('#limitantesExtraOpciones .opcionFiltro[data-limitante="construir"]');
+        if (btnConstruir && btnConstruir.classList.contains("seleccionada")) {
+            const sliderConstruir = document.getElementById("sliderLimitanteConstruir");
+            dificultad += sliderConstruir ? (parseInt(sliderConstruir.value, 10) || 1) : 1;
+        }
+
+        const btnComprar = document.querySelector('#limitantesExtraOpciones .opcionFiltro[data-limitante="comprar"]');
+        if (btnComprar && btnComprar.classList.contains("seleccionada")) {
+            const sliderComprar = document.getElementById("sliderLimitanteComprar");
+            dificultad += sliderComprar ? (parseInt(sliderComprar.value, 10) || 1) : 1;
+        }
+
         valUI.textContent = dificultad;
     }
 

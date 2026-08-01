@@ -136,6 +136,24 @@ async function cargarListados() {
 
     console.log("Etapas de vida:", database.etapasVida.length);
 
+
+
+
+    datos = await cargarHoja(CONFIG.SHEETS.LIMITANTES_CONSTRUIR);
+
+    database.limitantesConstruir = datos.slice(1);
+
+    console.log("Limitantes construir:", database.limitantesConstruir.length);
+
+
+
+
+    datos = await cargarHoja(CONFIG.SHEETS.LIMITANTES_COMPRAR);
+
+    database.limitantesComprar = datos.slice(1);
+
+    console.log("Limitantes comprar:", database.limitantesComprar.length);
+
 }
 
 
@@ -354,4 +372,28 @@ function rutaBaseIconoEtapa(idFoto) {
     const id = idFoto.toString().trim();
     if (!id) return null;
     return `img/iconosetapas/${id}`;
+}
+
+// ── Iconos de limitantes extra (fotos en img/iconosbb/{idFoto}.*) ──
+const EXTENSIONES_ICONO_LIMITANTE = ["png", "jpg", "webp", "jpeg"];
+
+function manejarErrorImagenLimitante(img) {
+    const intento = parseInt(img.dataset.intento || "0", 10) + 1;
+
+    if (intento < EXTENSIONES_ICONO_LIMITANTE.length) {
+        img.dataset.intento = String(intento);
+        img.src = `${img.dataset.rutaBase}.${EXTENSIONES_ICONO_LIMITANTE[intento]}`;
+    } else {
+        img.style.display = "none";
+        const fallback = img.nextElementSibling;
+        if (fallback) fallback.style.display = "flex";
+    }
+}
+
+// Devuelve la ruta base (sin extensión) del icono de una limitante, o null si no hay ID
+function rutaBaseIconoLimitante(idFoto) {
+    if (!idFoto) return null;
+    const id = idFoto.toString().trim();
+    if (!id) return null;
+    return `img/iconosbb/${id}`;
 }

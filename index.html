@@ -443,6 +443,40 @@
                         según tus packs.</div>
                 </div>
 
+                <!-- Limitantes extra -->
+                <h3 style="text-align: center; margin-top: 30px; margin-bottom: 15px;">🔥 Limitantes extra</h3>
+                <div id="limitantesExtraOpciones" class="listaOpciones" style="justify-content: center;">
+                    <button class="opcionFiltro" data-limitante="construir"
+                        data-tooltip="Añade restricciones aleatorias sobre CÓMO construyes. Puede llegar a ser muy difícil.">🔨 Construir</button>
+                    <button class="opcionFiltro" data-limitante="comprar"
+                        data-tooltip="Añade restricciones aleatorias sobre QUÉ puedes comprar/usar. Puede llegar a ser muy difícil.">🛒 Comprar</button>
+                </div>
+
+                <div id="avisoLimitantesExtra"
+                    style="display: none; text-align: center; margin-top: 12px; font-size: 0.9rem; opacity: 0.85; max-width: 520px; margin-left: auto; margin-right: auto;">
+                    ⚠️ Estas limitantes añaden restricciones aleatorias extra a tu reto y pueden llegar a ser <strong>muy difíciles</strong>.
+                </div>
+
+                <!-- Submenú Limitante Construir -->
+                <div id="submenuLimitanteConstruir" class="submenuOpcion"
+                    style="display: none; margin-top: 20px; text-align: center; background: rgba(0,0,0,0.1); padding: 15px; border-radius: var(--radio-normal);">
+                    <label for="sliderLimitanteConstruir" style="font-weight: bold; display: block; margin-bottom: 8px;">
+                        Cantidad de limitantes de Construir: <span id="valLimitanteConstruir">1</span>
+                    </label>
+                    <input type="range" id="sliderLimitanteConstruir" min="1" max="5" value="1"
+                        style="width: 80%; max-width: 300px;">
+                </div>
+
+                <!-- Submenú Limitante Comprar -->
+                <div id="submenuLimitanteComprar" class="submenuOpcion"
+                    style="display: none; margin-top: 20px; text-align: center; background: rgba(0,0,0,0.1); padding: 15px; border-radius: var(--radio-normal);">
+                    <label for="sliderLimitanteComprar" style="font-weight: bold; display: block; margin-bottom: 8px;">
+                        Cantidad de limitantes de Comprar: <span id="valLimitanteComprar">1</span>
+                    </label>
+                    <input type="range" id="sliderLimitanteComprar" min="1" max="5" value="1"
+                        style="width: 80%; max-width: 300px;">
+                </div>
+
                 <!-- Contador de Dificultad UI -->
                 <div id="contadorDificultadUI"
                     style="text-align: center; margin-top: 30px; font-weight: bold; font-size: 1.2rem; color: var(--color-secundario);">
@@ -759,9 +793,10 @@
     <script src="js/reto-modulos.js"></script>
     <script src="js/reto-solar.js"></script>
     <script src="js/reto-etapas.js"></script>
+    <script src="js/reto-limitantes.js"></script>
     <script src="js/reto-submenus.js"></script>
     <script src="js/reto-generador.js"></script>
-    <script src="js/reto-resultado-ui.js?v=2"></script>
+    <script src="js/reto-resultado-ui.js"></script>
     <script src="js/temporizador.js"></script>
     <script src="js/acercade.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -823,7 +858,7 @@
             </div>
 
             <p>
-                El unico buscador de Solares y generador de retos para construir en Los Sims 4 - Versión 1.1.4
+                El unico buscador de Solares y generador de retos para construir en Los Sims 4 - Versión 1.1.5
             </p>
 
             <p>

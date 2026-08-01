@@ -841,6 +841,7 @@ input[type="number"] {
     color: var(--color-texto);
     font-family: inherit;
     outline: none;
+    appearance: textfield;
     -moz-appearance: textfield;
     /* Firefox */
 }
@@ -3814,4 +3815,65 @@ html {
     border: 1px solid var(--borde);
     border-radius: 8px;
     padding: 4px 8px;
+}
+
+
+/* ==========================================================
+   LIMITANTES EXTRA (CONSTRUIR / COMPRAR)
+========================================================== */
+
+.tiraLimitantes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.chipLimitante {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--borde);
+    overflow: hidden;
+    transition: transform 0.15s;
+}
+
+.chipLimitante:hover {
+    transform: scale(1.08);
+}
+
+.iconoLimitante {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.chipLimitanteFallback {
+    display: none;
+    position: absolute;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.62rem;
+    line-height: 1.15;
+    padding: 4px;
+    background: rgba(0, 0, 0, 0.35);
+    color: white;
+}
+
+.chipLimitanteTexto {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.85rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    padding: 6px 10px;
 }

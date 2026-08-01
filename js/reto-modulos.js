@@ -277,5 +277,47 @@ const RetoModulos = {
 
             return { texto: `${minutos} minutos`, minutos: minutos };
         }
+    },
+
+    // 🔨 Limitantes de Construir
+    limitanteConstruir: {
+        id: "limitanteConstruir",
+        titulo: "🔨 Limitantes: Construir",
+        generar: function (contexto) {
+            const cantidad = contexto.configLimitantesConstruir?.cantidad || 1;
+            const seleccionados = typeof seleccionarLimitantesAleatorios === "function"
+                ? seleccionarLimitantesAleatorios(database.limitantesConstruir, cantidad)
+                : [];
+
+            if (seleccionados.length === 0) {
+                return { texto: "No hay limitantes disponibles en la tabla.", elementos: [] };
+            }
+
+            return {
+                texto: `${seleccionados.length} limitante${seleccionados.length === 1 ? "" : "s"} de construcción`,
+                elementos: seleccionados
+            };
+        }
+    },
+
+    // 🛒 Limitantes de Comprar
+    limitanteComprar: {
+        id: "limitanteComprar",
+        titulo: "🛒 Limitantes: Comprar",
+        generar: function (contexto) {
+            const cantidad = contexto.configLimitantesComprar?.cantidad || 1;
+            const seleccionados = typeof seleccionarLimitantesAleatorios === "function"
+                ? seleccionarLimitantesAleatorios(database.limitantesComprar, cantidad)
+                : [];
+
+            if (seleccionados.length === 0) {
+                return { texto: "No hay limitantes disponibles en la tabla.", elementos: [] };
+            }
+
+            return {
+                texto: `${seleccionados.length} limitante${seleccionados.length === 1 ? "" : "s"} de compra`,
+                elementos: seleccionados
+            };
+        }
     }
 };

@@ -19,6 +19,11 @@ function renderizarResultadoReto(reto) {
             <div class="dificultadReto" style="font-size: 1.4rem; font-weight: bold; margin-top: 10px;">
                 Dificultad: <span style="color: #f39c12;">${estrellas}</span> (${reto.dificultad} pts)
             </div>
+            ${reto.dificultadExtra > 0 ? `
+                <div class="dificultadExtraReto" style="font-size: 1.2rem; font-weight: bold; margin-top: 6px;">
+                    Dificultad Extra: <span style="color: #e74c3c;">${"🔥".repeat(reto.dificultadExtra)}</span> (${reto.dificultadExtra} pts)
+                </div>
+            ` : ""}
         </div>
     `;
 
@@ -101,6 +106,12 @@ function renderizarResultadoReto(reto) {
                 </div>
                 ${htmlComposicionVivienda(cat.resultado.composicion)}
             `;
+        }
+
+        // Limitantes extra (Construir / Comprar): lista con foto o texto (sin 🔥 aquí,
+        // la Dificultad Extra ya se muestra arriba, junto a la dificultad normal)
+        if ((catId === "limitanteConstruir" || catId === "limitanteComprar") && cat.resultado.elementos && cat.resultado.elementos.length > 0) {
+            detalleExtra += typeof htmlListaLimitantes === "function" ? htmlListaLimitantes(cat.resultado.elementos) : "";
         }
 
         html += `

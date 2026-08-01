@@ -15,6 +15,21 @@ function obtenerPacksSeleccionadosUsuario() {
     return seleccionados;
 }
 
+// Suma total de limitantes de Construir + Comprar (1 limitante = 1 punto de Dificultad Extra)
+function calcularDificultadExtra(categorias) {
+    let extra = 0;
+
+    if (categorias.limitanteConstruir && categorias.limitanteConstruir.resultado && categorias.limitanteConstruir.resultado.elementos) {
+        extra += categorias.limitanteConstruir.resultado.elementos.length;
+    }
+
+    if (categorias.limitanteComprar && categorias.limitanteComprar.resultado && categorias.limitanteComprar.resultado.elementos) {
+        extra += categorias.limitanteComprar.resultado.elementos.length;
+    }
+
+    return extra;
+}
+
 function generarReto(esAleatorio = false) {
     const packsUsuario = obtenerPacksSeleccionadosUsuario();
 
@@ -33,7 +48,8 @@ function generarReto(esAleatorio = false) {
         // Seleccionar aleatoriamente entre 2 y 6 opciones extra
         const todasOpciones = [
             "presupuesto", "colores", "estilo-exterior", "estilo-interior",
-            "temporizador", "limite-packs", "tipo-solar-aleatorio", "limite-altura", "tamano-solar"
+            "temporizador", "limite-packs", "tipo-solar-aleatorio", "limite-altura", "tamano-solar",
+            "limitante-construir", "limitante-comprar"
         ];
 
         // Mezclar array
@@ -64,6 +80,13 @@ function generarReto(esAleatorio = false) {
                 opcionesActivas.push(op);
             }
         }
+
+        // Leer botones de limitantes extra (Construir / Comprar)
+        document.querySelectorAll("#limitantesExtraOpciones .opcionFiltro.seleccionada").forEach(btn => {
+            const lim = btn.getAttribute("data-limitante");
+            if (lim === "construir") opcionesActivas.push("limitante-construir");
+            if (lim === "comprar") opcionesActivas.push("limitante-comprar");
+        });
     }
 
     const submenusConfig = typeof obtenerConfigSubmenus === "function" ? obtenerConfigSubmenus() : {
@@ -84,7 +107,9 @@ function generarReto(esAleatorio = false) {
         "solo-comunitarios": RetoModulos.objetivo,
         "solo-residenciales": RetoModulos.objetivo,
         "colores": RetoModulos.colores,
-        "temporizador": RetoModulos.temporizador
+        "temporizador": RetoModulos.temporizador,
+        "limitante-construir": RetoModulos.limitanteConstruir,
+        "limitante-comprar": RetoModulos.limitanteComprar
     };
 
     const contexto = {
@@ -92,6 +117,8 @@ function generarReto(esAleatorio = false) {
         configColores: submenusConfig.colores,
         configPacks: submenusConfig.limitePacks,
         configTamano: submenusConfig.tamanoSolar,
+        configLimitantesConstruir: submenusConfig.limitantesConstruir,
+        configLimitantesComprar: submenusConfig.limitantesComprar,
         resultadosGenerados: {},
         opcionesActivas: opcionesActivas // Para pasarlo al módulo de objetivo
     };
@@ -101,7 +128,8 @@ function generarReto(esAleatorio = false) {
     // Orden de ejecución importante: Presupuesto antes de Temporizador
     const ordenEjecucion = [
         "presupuesto", "colores", "estilo-exterior", "estilo-interior",
-        "limite-packs", "tamano-solar", "tipo-solar-aleatorio", "solo-comunitarios", "solo-residenciales", "limite-altura", "temporizador"
+        "limite-packs", "tamano-solar", "tipo-solar-aleatorio", "solo-comunitarios", "solo-residenciales", "limite-altura",
+        "limitante-construir", "limitante-comprar", "temporizador"
     ];
 
     ordenEjecucion.forEach(opKey => {
@@ -161,11 +189,18 @@ function generarReto(esAleatorio = false) {
                     }
                 }
             }
+        } else if (catId === "limitanteConstruir" || catId === "limitanteComprar") {
+            // Las limitantes NO suman a la dificultad normal: tienen su propia
+            // "Dificultad Extra" independiente (ver calcularDificultadExtra).
         } else {
             // El resto suma 1 siempre
             dificultad++;
         }
     });
+
+    // Dificultad Extra: independiente de la dificultad normal, solo cuenta
+    // las limitantes de Construir/Comprar (1 punto = 1 🔥 por limitante).
+    const dificultadExtra = calcularDificultadExtra(categoriasGeneradas);
 
     // Crear objeto reto actual
     retoActual = {
@@ -174,6 +209,7 @@ function generarReto(esAleatorio = false) {
         rerollsSolar: 3,
         categorias: categoriasGeneradas,
         dificultad: dificultad,
+        dificultadExtra: dificultadExtra,
         contexto: contexto
     };
     window.retoActual = retoActual;
@@ -221,6 +257,12 @@ function rerollCategoria(categoriaId) {
     // también la composición por etapas de vida (respetando el solar ya asignado).
     if (categoriaId === "objetivo" && typeof recalcularComposicionVivienda === "function") {
         recalcularComposicionVivienda(retoActual);
+    }
+
+    // Si la categoría es una limitante, recalculamos la Dificultad Extra
+    // (por si la nueva tirada tiene una cantidad distinta de elementos disponibles)
+    if (categoriaId === "limitanteConstruir" || categoriaId === "limitanteComprar") {
+        retoActual.dificultadExtra = calcularDificultadExtra(retoActual.categorias);
     }
 
     // Si la categoría era presupuesto y también está activo el temporizador, actualizar temporizador

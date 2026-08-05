@@ -303,17 +303,68 @@ function mostrarListadoCompleto() {
     const renderGrupoMundos = (listaMundos) => {
         return listaMundos.map(mundo => {
             const solaresMundo = mundosSolares[mundo];
+
+            // ── Icono del mundo ──────────────────────────────────────
+            const rutaMundo = rutaIconoMundo(mundo);
+            const iconoMundoHTML = rutaMundo
+                ? `<img src="${rutaMundo}" alt="${mundo}" class="iconoMundo"
+                       onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">`
+                : "";
+            const fallbackMundo = rutaMundo
+                ? `<span class="iconoMundoFallback" style="display:none;">🌎</span>`
+                : `<span class="iconoMundoFallback">🌎</span>`;
+
+            // ── Sub-agrupación por barrio ─────────────────────────────
+            const barriosSolares = {};
+            solaresMundo.forEach(solar => {
+                const barrio = solar.barrio || "Sin barrio";
+                if (!barriosSolares[barrio]) barriosSolares[barrio] = [];
+                barriosSolares[barrio].push(solar);
+            });
+
+            const barriosHTML = Object.entries(barriosSolares).map(([barrio, solaresBarrio]) => {
+                const rutaBaseBarrio = barrio !== "Sin barrio"
+                    ? `img/barrios/${barrio.trim()}/foto`
+                    : null;
+                const iconoBarrioHTML = rutaBaseBarrio
+                    ? `<img src="${rutaBaseBarrio}.png"
+                           data-ruta-base="${rutaBaseBarrio}" data-intento="0"
+                           alt="${barrio}" class="iconoBarrio"
+                           onerror="manejarErrorImagenBarrio(this)">`
+                    : `<span class="iconoBarrioFallback">🏘️</span>`;
+
+                return `
+                <div class="grupoBarrio">
+                    <button class="tituloBarrio">
+                        <span class="nombreBarrioConIcono">
+                            ${iconoBarrioHTML}
+                            <span class="nombreBarrio">${barrio}</span>
+                        </span>
+                        <span class="ladoDerechoBarrio">
+                            <span class="contadorBarrio">${solaresBarrio.length}</span>
+                            <span class="flechaBarrio">▼</span>
+                        </span>
+                    </button>
+                    <div class="contenidoBarrio">
+                        ${solaresBarrio.map(solar => crearFichaSolar(solar)).join("")}
+                    </div>
+                </div>`;
+            }).join("");
+
             return `
             <div class="grupoMundo">
                 <button class="tituloMundo">
-                    <span class="nombreMundo">🌎 ${mundo}</span>
+                    <span class="nombreMundoConIcono">
+                        ${iconoMundoHTML}${fallbackMundo}
+                        <span class="nombreMundo">${mundo}</span>
+                    </span>
                     <span class="ladoDerechoMundo">
                         <span class="contadorMundo">${solaresMundo.length}</span>
                         <span class="flechaMundo">▼</span>
                     </span>
                 </button>
                 <div class="contenidoMundo">
-                    ${solaresMundo.map(solar => crearFichaSolar(solar)).join("")}
+                    ${barriosHTML}
                 </div>
             </div>
             `;
@@ -340,8 +391,19 @@ function mostrarListadoCompleto() {
         </div>
     `;
 
+    // Listeners acordeón de mundos
     document
         .querySelectorAll("#listaCompletaSolares .tituloMundo")
+        .forEach(boton => {
+            boton.addEventListener("click", () => {
+                boton.classList.toggle("abierto");
+                boton.nextElementSibling.classList.toggle("abierto");
+            });
+        });
+
+    // Listeners acordeón de barrios
+    document
+        .querySelectorAll("#listaCompletaSolares .tituloBarrio")
         .forEach(boton => {
             boton.addEventListener("click", () => {
                 boton.classList.toggle("abierto");

@@ -15,18 +15,74 @@ document.addEventListener("DOMContentLoaded", () => {
     const displayTemporizador = document.getElementById("displayTemporizador");
     const divAccionesTemporizador = document.getElementById("accionesTemporizadorEnCurso");
 
+    // Contexto de audio compartido para el tic-tac (se crea una sola vez)
+    let audioCtx = null;
+    function obtenerAudioCtx() {
+        if (!audioCtx || audioCtx.state === "closed") {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        return audioCtx;
+    }
+
+    function sonarTicTac() {
+        try {
+            const ctx = obtenerAudioCtx();
+            const esTic = tiempoRestanteEnSegundos % 2 === 0; // alterna tic/tac
+
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.type = "sine";
+            osc.frequency.value = esTic ? 800 : 670; // tic más agudo, tac más grave
+
+            gain.gain.setValueAtTime(0, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 0.008);
+            gain.gain.linearRampToValueAtTime(0, ctx.currentTime + (esTic ? 0.06 : 0.09));
+
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.10);
+        } catch (e) { /* silencioso si no hay soporte */ }
+    }
+
     function tick() {
         tiempoRestanteEnSegundos--;
         actualizarDisplay();
 
         if (tiempoRestanteEnSegundos <= 0) {
             finalizarTemporizador();
+        } else if (tiempoRestanteEnSegundos <= 30) {
+            sonarTicTac();
         }
     }
 
-    // Controlar el input con la rueda del ratón
-    if (inputMinutos) {
-        inputMinutos.addEventListener("wheel", (e) => {
+    // Botones + / - para ajustar los minutos
+    const btnRestar = document.getElementById("btnRestarMinuto");
+    const btnSumar = document.getElementById("btnSumarMinuto");
+
+    if (btnRestar && inputMinutos) {
+        btnRestar.addEventListener("click", () => {
+            let val = parseInt(inputMinutos.value, 10) || 15;
+            if (val > 1) {
+                inputMinutos.value = val - 1;
+            }
+        });
+    }
+
+    if (btnSumar && inputMinutos) {
+        btnSumar.addEventListener("click", () => {
+            let val = parseInt(inputMinutos.value, 10) || 15;
+            if (val < 60) {
+                inputMinutos.value = val + 1;
+            }
+        });
+    }
+
+    // Controlar el input con la rueda del ratón en todo el contenedor del selector
+    const tempWrap = document.querySelector("#ventanaTemporizador .habNumeroWrap") || inputMinutos;
+    if (tempWrap && inputMinutos) {
+        tempWrap.addEventListener("wheel", (e) => {
             e.preventDefault(); // Evita que la página entera haga scroll
             let val = parseInt(inputMinutos.value, 10);
             if (isNaN(val)) val = 15;
@@ -37,14 +93,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 val--;
             }
 
-            const max = parseInt(inputMinutos.max, 10);
-            const min = parseInt(inputMinutos.min, 10);
+            const max = parseInt(inputMinutos.max, 10) || 60;
+            const min = parseInt(inputMinutos.min, 10) || 1;
 
             if (val > max) val = max;
             if (val < min) val = min;
 
             inputMinutos.value = val;
-        });
+        }, { passive: false });
     }
 
     // Abrir ventana desde el menú
@@ -63,12 +119,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
             tiempoRestanteEnSegundos = minutos * 60;
             estaPausado = false;
-            if (botonPausar) botonPausar.textContent = "⏸️";
+            
+            if (botonPausar) {
+                botonPausar.innerHTML = '<span class="iconoTimerAction">⏸️</span><span class="textoTimerAction">Pausar</span>';
+                botonPausar.setAttribute("data-tooltip", "Pausar temporizador");
+                botonPausar.classList.remove("enPausa");
+            }
 
-            // Cambiar UI a modo activo
-            inputMinutos.parentElement.style.display = "none";
+            const contenedorConfig = document.getElementById("configuracionTiempoContenedor");
+            if (contenedorConfig) contenedorConfig.style.display = "none";
             botonIniciar.parentElement.style.display = "none";
-            displayTemporizador.style.display = "block";
+            displayTemporizador.style.display = "flex";
+            displayTemporizador.classList.remove("pausado");
             divAccionesTemporizador.style.display = "flex";
 
             actualizarDisplay();
@@ -85,12 +147,18 @@ document.addEventListener("DOMContentLoaded", () => {
             if (estaPausado) {
                 // Reanudar
                 estaPausado = false;
-                botonPausar.textContent = "⏸️";
+                botonPausar.innerHTML = '<span class="iconoTimerAction">⏸️</span><span class="textoTimerAction">Pausar</span>';
+                botonPausar.setAttribute("data-tooltip", "Pausar temporizador");
+                botonPausar.classList.remove("enPausa");
+                displayTemporizador.classList.remove("pausado");
                 temporizadorInterval = setInterval(tick, 1000);
             } else {
                 // Pausar
                 estaPausado = true;
-                botonPausar.textContent = "▶️";
+                botonPausar.innerHTML = '<span class="iconoTimerAction">▶️</span><span class="textoTimerAction">Reanudar</span>';
+                botonPausar.setAttribute("data-tooltip", "Reanudar temporizador");
+                botonPausar.classList.add("enPausa");
+                displayTemporizador.classList.add("pausado");
                 if (temporizadorInterval) clearInterval(temporizadorInterval);
             }
         });
@@ -109,25 +177,74 @@ document.addEventListener("DOMContentLoaded", () => {
         const segundos = tiempoRestanteEnSegundos % 60;
         const formatoMinutos = minutos < 10 ? "0" + minutos : minutos;
         const formatoSegundos = segundos < 10 ? "0" + segundos : segundos;
-        displayTemporizador.textContent = `${formatoMinutos}:${formatoSegundos}`;
+        const texto = `${formatoMinutos}:${formatoSegundos}`;
+
+        const elTexto = document.getElementById("textoTiempoDigital");
+        if (elTexto) {
+            elTexto.textContent = texto;
+        } else {
+            displayTemporizador.textContent = texto;
+        }
+    }
+
+    // Genera la alarma de fin de tiempo con Web Audio API (sin archivos externos)
+    function sonarAlarma() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+            // Tres pitidos cortos tipo despertador
+            const pitidos = [0, 0.35, 0.70]; // tiempos de inicio de cada pitido (segundos)
+            pitidos.forEach(inicio => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(880, ctx.currentTime + inicio);        // La5 (880 Hz)
+                osc.frequency.setValueAtTime(1046, ctx.currentTime + inicio + 0.1); // Do6 (1046 Hz)
+
+                gain.gain.setValueAtTime(0, ctx.currentTime + inicio);
+                gain.gain.linearRampToValueAtTime(0.4, ctx.currentTime + inicio + 0.02);
+                gain.gain.setValueAtTime(0.4, ctx.currentTime + inicio + 0.20);
+                gain.gain.linearRampToValueAtTime(0, ctx.currentTime + inicio + 0.28);
+
+                osc.start(ctx.currentTime + inicio);
+                osc.stop(ctx.currentTime + inicio + 0.30);
+            });
+        } catch (e) {
+            // Si el navegador no soporta Web Audio API, silencioso
+        }
     }
 
     function finalizarTemporizador() {
         if (temporizadorInterval) clearInterval(temporizadorInterval);
+        sonarAlarma();
         reiniciarUI();
         cerrarVentana("ventanaTemporizador");
         abrirVentana("ventanaTiempoAgotado");
     }
 
+
     function reiniciarUI() {
         if (temporizadorInterval) clearInterval(temporizadorInterval);
         tiempoRestanteEnSegundos = 0;
         estaPausado = false;
-        if (botonPausar) botonPausar.textContent = "⏸️";
-        inputMinutos.parentElement.style.display = "block";
+        if (botonPausar) {
+            botonPausar.innerHTML = '<span class="iconoTimerAction">⏸️</span><span class="textoTimerAction">Pausar</span>';
+            botonPausar.setAttribute("data-tooltip", "Pausar temporizador");
+            botonPausar.classList.remove("enPausa");
+        }
+        const contenedorConfig = document.getElementById("configuracionTiempoContenedor");
+        if (contenedorConfig) contenedorConfig.style.display = "block";
         botonIniciar.parentElement.style.display = "flex";
         displayTemporizador.style.display = "none";
+        displayTemporizador.classList.remove("pausado");
         divAccionesTemporizador.style.display = "none";
-        displayTemporizador.textContent = "00:00";
+        
+        const elTexto = document.getElementById("textoTiempoDigital");
+        if (elTexto) elTexto.textContent = "00:00";
+        else displayTemporizador.textContent = "00:00";
     }
 });

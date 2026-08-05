@@ -66,12 +66,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function activarFlotante() {
         if (menu.classList.contains("menuFlotante")) return;
+        header.classList.add("headerCompacto");
         placeholder.style.height = alturaMenuNormal + "px";
         menu.classList.add("menuFlotante");
     }
 
     function desactivarFlotante() {
         if (!menu.classList.contains("menuFlotante")) return;
+        header.classList.remove("headerCompacto");
         menu.classList.remove("menuFlotante");
         menu.style.top = "";
         placeholder.style.height = "0px";
@@ -93,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (menu.classList.contains("menuFlotante")) {
-            menu.style.top = (alturaCabecera + SEPARACION_FLOTANTE) + "px";
+            menu.style.top = (header.offsetHeight + SEPARACION_FLOTANTE) + "px";
         }
 
         comprobarFlechasMenu();
@@ -120,6 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
     track.addEventListener("scroll", comprobarFlechasMenu, { passive: true });
 
     // Permite desplazar el menú flotante horizontalmente con la rueda del ratón
+    // Usa un paso fijo y scroll suave para una experiencia fluida
     menu.addEventListener("wheel", (e) => {
         if (!menu.classList.contains("menuFlotante")) return;
 
@@ -127,7 +130,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!hayOverflow) return;
 
         e.preventDefault();
-        track.scrollLeft += (e.deltaY !== 0 ? e.deltaY : e.deltaX);
+
+        const delta = e.deltaY !== 0 ? e.deltaY : e.deltaX;
+        const direccion = delta > 0 ? 1 : -1;
+        track.scrollBy({ left: direccion * 300 });
     }, { passive: false });
 
     flechaIzq?.addEventListener("click", () => {
@@ -138,7 +144,9 @@ document.addEventListener("DOMContentLoaded", () => {
         track.scrollBy({ left: 180, behavior: "smooth" });
     });
 
-    // Medición y comprobación inicial (por si la página carga ya con scroll aplicado)
+    // Al inicializar, garantizar siempre la vista completa (título normal + botones normales)
+    header.classList.remove("headerCompacto");
+    desactivarFlotante();
     medirAlturaMenuNormal();
     comprobarPosicionMenu();
 

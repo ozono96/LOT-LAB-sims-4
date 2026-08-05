@@ -7,6 +7,9 @@
 let retoActual = null;
 
 function obtenerPacksSeleccionadosUsuario() {
+    if (window.PACKS_SELECCIONADOS_SET && window.PACKS_SELECCIONADOS_SET instanceof Set && window.PACKS_SELECCIONADOS_SET.size > 0) {
+        return Array.from(window.PACKS_SELECCIONADOS_SET);
+    }
     const seleccionados = [];
     document.querySelectorAll("#listaPacksRetos .opcionFiltro.seleccionada").forEach(btn => {
         const pack = btn.getAttribute("data-pack");
@@ -30,6 +33,38 @@ function calcularDificultadExtra(categorias) {
     return extra;
 }
 
+// Función para calcular la dificultad total del reto
+function calcularDificultadTotal(tipoRetoVal, categorias) {
+    let dificultad = 0;
+    if (tipoRetoVal === "con-solar") dificultad++;
+
+    Object.keys(categorias).forEach(catId => {
+        const cat = categorias[catId];
+        if (!cat || !cat.resultado) return;
+
+        if (catId === "tamanoSolar") {
+            if (cat.resultado.tamanoRequerido) {
+                const match = cat.resultado.tamanoRequerido.match(/(\d+)\s*x\s*(\d+)/i);
+                if (match) {
+                    const area = parseInt(match[1]) * parseInt(match[2]);
+                    if (area > 900) dificultad++;
+                }
+            }
+        } else if (catId === "limitanteConstruir" || catId === "limitanteComprar") {
+            // Las limitantes NO suman a la dificultad normal
+        } else if (catId === "ayudaCC" || catId === "ayudaTrucos" || catId === "ayudaMods") {
+            if (typeof cat.resultado.dificultadDelta === "number") {
+                dificultad += cat.resultado.dificultadDelta;
+            }
+        } else {
+            dificultad++;
+        }
+    });
+
+    return dificultad;
+}
+window.calcularDificultadTotal = calcularDificultadTotal;
+
 function generarReto(esAleatorio = false) {
     const packsUsuario = obtenerPacksSeleccionadosUsuario();
 
@@ -47,7 +82,7 @@ function generarReto(esAleatorio = false) {
 
         // Seleccionar aleatoriamente entre 2 y 6 opciones extra
         const todasOpciones = [
-            "presupuesto", "colores", "estilo-exterior", "estilo-interior",
+            "presupuesto", "colores", "habilidades", "estilo-exterior", "estilo-interior",
             "temporizador", "limite-packs", "tipo-solar-aleatorio", "limite-altura", "tamano-solar",
             "limitante-construir", "limitante-comprar"
         ];
@@ -70,6 +105,12 @@ function generarReto(esAleatorio = false) {
         document.querySelectorAll("#opcionesExtraRetos .opcionFiltro.seleccionada").forEach(btn => {
             const op = btn.getAttribute("data-opcion");
             if (op) opcionesActivas.push(op);
+        });
+
+        // Leer opciones de ayuda seleccionadas por el usuario
+        document.querySelectorAll("#opcionesAyudaRetos .opcionFiltro.seleccionada").forEach(btn => {
+            const ayudaKey = btn.getAttribute("data-ayuda");
+            if (ayudaKey) opcionesActivas.push(ayudaKey);
         });
 
         // Leer opción de tipo de solar (solo puede haber una)
@@ -107,14 +148,19 @@ function generarReto(esAleatorio = false) {
         "solo-comunitarios": RetoModulos.objetivo,
         "solo-residenciales": RetoModulos.objetivo,
         "colores": RetoModulos.colores,
+        "habilidades": RetoModulos.habilidades,
         "temporizador": RetoModulos.temporizador,
         "limitante-construir": RetoModulos.limitanteConstruir,
-        "limitante-comprar": RetoModulos.limitanteComprar
+        "limitante-comprar": RetoModulos.limitanteComprar,
+        "ayudaCC": RetoModulos.ayudaCC,
+        "ayudaTrucos": RetoModulos.ayudaTrucos,
+        "ayudaMods": RetoModulos.ayudaMods
     };
 
     const contexto = {
         packsUsuario: packsUsuario,
         configColores: submenusConfig.colores,
+        configHabilidades: submenusConfig.habilidades,
         configPacks: submenusConfig.limitePacks,
         configTamano: submenusConfig.tamanoSolar,
         configLimitantesConstruir: submenusConfig.limitantesConstruir,
@@ -127,9 +173,10 @@ function generarReto(esAleatorio = false) {
 
     // Orden de ejecución importante: Presupuesto antes de Temporizador
     const ordenEjecucion = [
-        "presupuesto", "colores", "estilo-exterior", "estilo-interior",
+        "presupuesto", "colores", "habilidades", "estilo-exterior", "estilo-interior",
         "limite-packs", "tamano-solar", "tipo-solar-aleatorio", "solo-comunitarios", "solo-residenciales", "limite-altura",
-        "limitante-construir", "limitante-comprar", "temporizador"
+        "limitante-construir", "limitante-comprar", "temporizador",
+        "ayudaCC", "ayudaTrucos", "ayudaMods"
     ];
 
     ordenEjecucion.forEach(opKey => {
@@ -169,34 +216,7 @@ function generarReto(esAleatorio = false) {
     }
 
     // Calcular dificultad total
-    let dificultad = 0;
-
-    // "Reto con solar" suma 1
-    if (tipoReto === "con-solar") {
-        dificultad++;
-    }
-
-    // Categorías activas
-    Object.keys(categoriasGeneradas).forEach(catId => {
-        if (catId === "tamanoSolar") {
-            const cat = categoriasGeneradas[catId];
-            if (cat && cat.resultado && cat.resultado.tamanoRequerido) {
-                const match = cat.resultado.tamanoRequerido.match(/(\d+)\s*x\s*(\d+)/i);
-                if (match) {
-                    const area = parseInt(match[1]) * parseInt(match[2]);
-                    if (area > 900) {
-                        dificultad++;
-                    }
-                }
-            }
-        } else if (catId === "limitanteConstruir" || catId === "limitanteComprar") {
-            // Las limitantes NO suman a la dificultad normal: tienen su propia
-            // "Dificultad Extra" independiente (ver calcularDificultadExtra).
-        } else {
-            // El resto suma 1 siempre
-            dificultad++;
-        }
-    });
+    const dificultad = calcularDificultadTotal(tipoReto, categoriasGeneradas);
 
     // Dificultad Extra: independiente de la dificultad normal, solo cuenta
     // las limitantes de Construir/Comprar (1 punto = 1 🔥 por limitante).
@@ -260,9 +280,13 @@ function rerollCategoria(categoriaId) {
     }
 
     // Si la categoría es una limitante, recalculamos la Dificultad Extra
-    // (por si la nueva tirada tiene una cantidad distinta de elementos disponibles)
     if (categoriaId === "limitanteConstruir" || categoriaId === "limitanteComprar") {
         retoActual.dificultadExtra = calcularDificultadExtra(retoActual.categorias);
+    }
+
+    // Si la categoría es de ayuda o afecta a la dificultad, recalculamos dificultad total
+    if (categoriaId === "ayudaCC" || categoriaId === "ayudaTrucos" || categoriaId === "ayudaMods" || categoriaId === "tamanoSolar") {
+        retoActual.dificultad = calcularDificultadTotal(retoActual.tipo, retoActual.categorias);
     }
 
     // Si la categoría era presupuesto y también está activo el temporizador, actualizar temporizador

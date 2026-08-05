@@ -216,7 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (botonAcercaDe) {
         botonAcercaDe.addEventListener("click", () => {
             cargarVideos(); // Recargar aleatorios al abrir
-            abrirVentana("ventanaAcercaDe");
+            abrirVentana("ventanaAcercaDe", true);
             position = 0;
             if (animFrame) cancelAnimationFrame(animFrame);
             animarCarrusel();

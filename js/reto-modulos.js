@@ -319,5 +319,96 @@ const RetoModulos = {
                 elementos: seleccionados
             };
         }
+    },
+
+    // 🎨 Usar CC (Contenido Personalizado)
+    ayudaCC: {
+        id: "ayudaCC",
+        titulo: "🎨 Contenido Personalizado (CC)",
+        generar: function (contexto) {
+            const esPermitido = Math.random() < 0.5;
+            return {
+                permitido: esPermitido,
+                dificultadDelta: esPermitido ? -1 : 1,
+                texto: esPermitido
+                    ? "✅ SÍ se puede usar CC (-1 Dificultad)"
+                    : "❌ NO se puede usar CC (+1 Dificultad)"
+            };
+        }
+    },
+
+    // 🏗️ Trucos de Construcción
+    ayudaTrucos: {
+        id: "ayudaTrucos",
+        titulo: "🏗️ Trucos de Construcción",
+        generar: function (contexto) {
+            const esPermitido = Math.random() < 0.5;
+            return {
+                permitido: esPermitido,
+                dificultadDelta: esPermitido ? -1 : 1,
+                texto: esPermitido
+                    ? "✅ SÍ se pueden usar trucos (bb.moveobjects on...) (-1 Dificultad)"
+                    : "❌ NO se pueden usar trucos de construcción (+1 Dificultad)"
+            };
+        }
+    },
+
+    // 🛠️ Mods de Ayuda
+    ayudaMods: {
+        id: "ayudaMods",
+        titulo: "🛠️ Mods de Ayuda",
+        generar: function (contexto) {
+            const esPermitido = Math.random() < 0.5;
+            return {
+                permitido: esPermitido,
+                dificultadDelta: esPermitido ? -1 : 1,
+                texto: esPermitido
+                    ? "✅ SÍ se pueden usar mods de ayuda (T.O.O.L...) (-1 Dificultad)"
+                    : "❌ NO se pueden usar mods de ayuda (+1 Dificultad)"
+            };
+        }
+    },
+
+    // 🧠 Habilidades al azar
+    habilidades: {
+        id: "habilidades",
+        titulo: "🧠 Habilidades Requeridas",
+        generar: function (contexto) {
+            const lista = database.habilidades || [];
+            const packsUsuario = (contexto.packsUsuario || []).map(p => p.trim().toLowerCase());
+            const cantidad = contexto.configHabilidades?.cantidad || 3;
+
+            if (lista.length === 0) {
+                return { texto: "No hay habilidades disponibles.", elementos: [] };
+            }
+
+            // Filtrar habilidades por packs del usuario (col B = pack requerido)
+            const disponibles = lista.filter(fila => {
+                const packReq = (fila[1] || "").trim().toLowerCase();
+                if (!packReq || packReq === "base" || packReq.includes("juego base") || packReq === "-" || packReq === "") {
+                    return true;
+                }
+                return packsUsuario.some(p => p.includes(packReq) || packReq.includes(p));
+            });
+
+            if (disponibles.length === 0) {
+                return { texto: "No hay habilidades disponibles para tus packs.", elementos: [] };
+            }
+
+            const copia = [...disponibles];
+            const seleccionadas = [];
+            const n = Math.min(cantidad, copia.length);
+            for (let i = 0; i < n; i++) {
+                const idx = Math.floor(Math.random() * copia.length);
+                seleccionadas.push(copia.splice(idx, 1)[0]);
+            }
+
+            const nombres = seleccionadas.map(f => (f[0] || "").trim()).join(", ");
+            return {
+                texto: `${seleccionadas.length} habilidad(es): ${nombres}`,
+                elementos: seleccionadas
+            };
+        }
     }
 };
+

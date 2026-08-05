@@ -154,6 +154,13 @@ async function cargarListados() {
 
     console.log("Limitantes comprar:", database.limitantesComprar.length);
 
+
+    datos = await cargarHoja(CONFIG.SHEETS.HABILIDADES);
+
+    database.habilidades = datos.slice(1); // Fila 0 es cabecera
+
+    console.log("Habilidades:", database.habilidades.length);
+
 }
 
 
@@ -252,13 +259,13 @@ function rutaIconoPack(nombrePack) {
 function htmlBotonPackIcono(nombrePack, extraClases = "", extraData = "") {
     const ruta = rutaIconoPack(nombrePack);
     if (ruta) {
-        return `<button class="opcionFiltro btnPackIcono seleccionada" ${extraData} title="${nombrePack}">
+        return `<button class="opcionFiltro btnPackIcono ${extraClases}" ${extraData} title="${nombrePack}">
             <img src="${ruta}" alt="${nombrePack}" class="iconoPack" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
             <span class="iconoPackFallback" style="display:none;">📦</span>
         </button>`;
     }
     // Fallback sin icono
-    return `<button class="opcionFiltro seleccionada" ${extraData}><span>📦 ${nombrePack}</span></button>`;
+    return `<button class="opcionFiltro ${extraClases}" ${extraData}><span>📦 ${nombrePack}</span></button>`;
 }
 
 // Genera HTML de una tira de iconos de packs (para resultados del reto)
@@ -305,18 +312,18 @@ function rutaIconoMundo(nombreMundo) {
 function htmlBotonMundoIcono(nombreMundo, extraClases = "", extraData = "") {
     const ruta = rutaIconoMundo(nombreMundo);
     if (ruta) {
-        return `<button class="opcionFiltro btnPackIcono seleccionada" ${extraData} title="${nombreMundo}">
+        return `<button class="opcionFiltro btnPackIcono ${extraClases}" ${extraData} title="${nombreMundo}">
             <img src="${ruta}" alt="${nombreMundo}" class="iconoPack" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
             <span class="iconoPackFallback" style="display:none;">🌎</span>
         </button>`;
     }
     // Fallback sin icono
-    return `<button class="opcionFiltro seleccionada" ${extraData}><span>🌎 ${nombreMundo}</span></button>`;
+    return `<button class="opcionFiltro ${extraClases}" ${extraData}><span>🌎 ${nombreMundo}</span></button>`;
 }
 
 
 // ── Iconos de barrios (fotos dentro de img/barrios/{mundo}/{barrio}/) ──
-const EXTENSIONES_FOTO_BARRIO = ["jpg", "png", "jpeg", "webp"];
+const EXTENSIONES_FOTO_BARRIO = ["png", "jpg", "jpeg", "webp"];
 
 function manejarErrorImagenBarrio(img) {
     const intento = parseInt(img.dataset.intento || "0", 10) + 1;

@@ -5,16 +5,53 @@
    ========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
+    function cerrarTodosSubmenusFlotantes(excepto) {
+        document.querySelectorAll(".submenuOpcion.popoverFlotante").forEach(sub => {
+            if (sub !== excepto) sub.style.display = "none";
+        });
+    }
+
     // Submenú Colores
     const btnColores = document.querySelector('#opcionesExtraRetos .opcionFiltro[data-opcion="colores"]');
     const submenuColores = document.getElementById("submenuColores");
 
     if (btnColores && submenuColores) {
-        btnColores.addEventListener("click", () => {
+        btnColores.addEventListener("click", (e) => {
             if (btnColores.classList.contains("seleccionada")) {
+                cerrarTodosSubmenusFlotantes(submenuColores);
                 submenuColores.style.display = "block";
             } else {
                 submenuColores.style.display = "none";
+            }
+        });
+    }
+
+    // Submenú Habilidades
+    const btnHabilidades = document.querySelector('#opcionesExtraRetos .opcionFiltro[data-opcion="habilidades"]');
+    const submenuHabilidades = document.getElementById("submenuHabilidades");
+
+    if (btnHabilidades && submenuHabilidades) {
+        btnHabilidades.addEventListener("click", (e) => {
+            if (btnHabilidades.classList.contains("seleccionada")) {
+                cerrarTodosSubmenusFlotantes(submenuHabilidades);
+                submenuHabilidades.style.display = "block";
+            } else {
+                submenuHabilidades.style.display = "none";
+            }
+        });
+    }
+
+    // Submenú Límite de Packs
+    const btnLimitePacks = document.querySelector('#opcionesExtraRetos .opcionFiltro[data-opcion="limite-packs"]');
+    const submenuLimitePacks = document.getElementById("submenuLimitePacks");
+
+    if (btnLimitePacks && submenuLimitePacks) {
+        btnLimitePacks.addEventListener("click", (e) => {
+            if (btnLimitePacks.classList.contains("seleccionada")) {
+                cerrarTodosSubmenusFlotantes(submenuLimitePacks);
+                submenuLimitePacks.style.display = "block";
+            } else {
+                submenuLimitePacks.style.display = "none";
             }
         });
     }
@@ -24,6 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (inputMaxPacks) {
         inputMaxPacks.addEventListener("wheel", (e) => {
             e.preventDefault();
+            e.stopPropagation();
             let val = parseInt(inputMaxPacks.value, 10);
             if (isNaN(val)) val = 3;
 
@@ -36,6 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (val < min) val = min;
 
             inputMaxPacks.value = val;
+            inputMaxPacks.dispatchEvent(new Event('input'));
         }, { passive: false });
 
         inputMaxPacks.addEventListener("input", () => {
@@ -44,19 +83,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (val > 30) val = 30;
             if (val < 1) val = 1;
             inputMaxPacks.value = val;
-        });
-    }
-
-    // Submenú Límite de Packs
-    const btnLimitePacks = document.querySelector('#opcionesExtraRetos .opcionFiltro[data-opcion="limite-packs"]');
-    const submenuLimitePacks = document.getElementById("submenuLimitePacks");
-
-    if (btnLimitePacks && submenuLimitePacks) {
-        btnLimitePacks.addEventListener("click", () => {
-            if (btnLimitePacks.classList.contains("seleccionada")) {
-                submenuLimitePacks.style.display = "block";
-            } else {
-                submenuLimitePacks.style.display = "none";
+            if (typeof window.actualizarDificultadUI === "function") {
+                window.actualizarDificultadUI();
             }
         });
     }
@@ -99,7 +127,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (arrTamanos.length > 0 && sliderTamano) {
             sliderTamano.min = 0;
             sliderTamano.max = arrTamanos.length - 1;
-            // Si es la primera vez, poner en el medio
             if (!sliderTamano.dataset.tamanos) {
                 sliderTamano.value = Math.floor(arrTamanos.length / 2);
             }
@@ -112,6 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (btnTamanoSolar && submenuTamano) {
         btnTamanoSolar.addEventListener("click", () => {
             if (btnTamanoSolar.classList.contains("seleccionada")) {
+                cerrarTodosSubmenusFlotantes(submenuTamano);
                 submenuTamano.style.display = "block";
                 inicializarSliderTamano();
             } else {
@@ -119,6 +147,38 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    // Configuración de botones de popover (Aceptar / Desmarcar)
+    function configurarBotonesPopover(btnAceptarId, btnDesmarcarId, btnFiltro, submenu) {
+        const btnAceptar = document.getElementById(btnAceptarId);
+        const btnDesmarcar = document.getElementById(btnDesmarcarId);
+
+        btnAceptar?.addEventListener("click", (e) => {
+            e.stopPropagation();
+            submenu.style.display = "none";
+            btnFiltro?.classList.add("seleccionada");
+            if (typeof window.actualizarDificultadUI === "function") window.actualizarDificultadUI();
+        });
+
+        btnDesmarcar?.addEventListener("click", (e) => {
+            e.stopPropagation();
+            submenu.style.display = "none";
+            btnFiltro?.classList.remove("seleccionada");
+            if (typeof window.actualizarDificultadUI === "function") window.actualizarDificultadUI();
+        });
+    }
+
+    configurarBotonesPopover("btnAceptarColores", "btnDesmarcarColores", btnColores, submenuColores);
+    configurarBotonesPopover("btnAceptarHabilidades", "btnDesmarcarHabilidades", btnHabilidades, submenuHabilidades);
+    configurarBotonesPopover("btnAceptarLimitePacks", "btnDesmarcarLimitePacks", btnLimitePacks, submenuLimitePacks);
+    configurarBotonesPopover("btnAceptarTamano", "btnDesmarcarTamano", btnTamanoSolar, submenuTamano);
+
+    // Cerrar submenús al hacer clic fuera del contenedor flotante
+    document.addEventListener("click", (e) => {
+        if (!e.target.closest(".contenedorOpcionFlotante")) {
+            cerrarTodosSubmenusFlotantes();
+        }
+    });
 
     if (sliderTamano && valTamano) {
         sliderTamano.addEventListener("input", () => {
@@ -160,6 +220,15 @@ document.addEventListener("DOMContentLoaded", () => {
     if (sliderColores && valColores) {
         sliderColores.addEventListener("input", () => {
             valColores.textContent = sliderColores.value;
+        });
+    }
+
+    // Actualizar texto del slider de habilidades
+    const sliderHab = document.getElementById("sliderCantidadHabilidades");
+    const valHab = document.getElementById("valCantidadHabilidades");
+    if (sliderHab && valHab) {
+        sliderHab.addEventListener("input", () => {
+            valHab.textContent = sliderHab.value;
         });
     }
 
@@ -236,8 +305,13 @@ function obtenerConfigSubmenus() {
     const sliderLimComprar = document.getElementById("sliderLimitanteComprar");
     const cantidadLimComprar = sliderLimComprar ? parseInt(sliderLimComprar.value, 10) : 1;
 
+    // Configuración de Habilidades
+    const sliderHabilidades = document.getElementById("sliderCantidadHabilidades");
+    const cantidadHabilidades = sliderHabilidades ? parseInt(sliderHabilidades.value, 10) : 3;
+
     return {
         colores: { cantidad: cantidadColores },
+        habilidades: { cantidad: cantidadHabilidades },
         limitePacks: { maxPacks: maxPacks, tiposPermitidos: tiposPermitidos, juegoBasePermitido: juegoBaseEnLimitePacks },
         tamanoSolar: { tamano: tamanoElegido },
         limitantesConstruir: { cantidad: cantidadLimConstruir },

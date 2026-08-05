@@ -144,18 +144,16 @@ function mostrarPanelFiltro() {
             const activo = filtroTieneValor(nombre, opcion);
 
             if (esFiltroNombrePack && typeof htmlBotonPackIcono === "function") {
-                const html = htmlBotonPackIcono(opcion, "", `data-valor="${opcion}"`);
+                const html = htmlBotonPackIcono(opcion, activo ? "seleccionada" : "", `data-valor="${opcion}"`);
                 const tempDiv = document.createElement("div");
                 tempDiv.innerHTML = html;
                 const btn = tempDiv.firstElementChild;
-                if (!activo) btn.classList.remove("seleccionada");
                 lista.appendChild(btn);
             } else if (esFiltroMundo && typeof htmlBotonMundoIcono === "function") {
-                const html = htmlBotonMundoIcono(opcion, "", `data-valor="${opcion}"`);
+                const html = htmlBotonMundoIcono(opcion, activo ? "seleccionada" : "", `data-valor="${opcion}"`);
                 const tempDiv = document.createElement("div");
                 tempDiv.innerHTML = html;
                 const btn = tempDiv.firstElementChild;
-                if (!activo) btn.classList.remove("seleccionada");
                 lista.appendChild(btn);
             } else if (esFiltroBarrio && typeof htmlBotonBarrioIcono === "function") {
                 // Buscamos a qué mundo pertenece este barrio (dentro de los solares ya filtrados)

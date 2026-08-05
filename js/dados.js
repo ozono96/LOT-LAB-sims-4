@@ -98,11 +98,14 @@ function tirarDados() {
         const fila = document.createElement("div");
         fila.className = "filaTiradaDados";
 
+        const dadosEnFila = document.createElement("div");
+        dadosEnFila.className = "dadosEnFila";
+
         valores.forEach(valor => {
             const dado = document.createElement("div");
             dado.className = "dadoCara rodando";
             dado.textContent = CARAS_DADO_UNICODE[valor];
-            fila.appendChild(dado);
+            dadosEnFila.appendChild(dado);
 
             // Pequeña animación de "rodando" antes de fijar el número final
             let contador = 0;
@@ -116,6 +119,8 @@ function tirarDados() {
                 }
             }, 60);
         });
+
+        fila.appendChild(dadosEnFila);
 
         const suma = valores.reduce((a, b) => a + b, 0);
         const etiqueta = document.createElement("div");

@@ -10,14 +10,25 @@ function renderizarResultadoReto(reto) {
     let html = "";
 
     // 1. Dificultad y Cabecera
-    const estrellas = "⭐".repeat(reto.dificultad || 1);
+    const difVal = typeof reto.dificultad === "number" ? reto.dificultad : 0;
+    let difHTML = "";
+
+    if (difVal > 0) {
+        difHTML = `<span style="color: #f39c12;">${"⭐".repeat(difVal)}</span> (${difVal} pts)`;
+    } else if (difVal === 0) {
+        difHTML = `<span style="color: var(--color-texto); opacity: 0.85;">⚪ (0 pts)</span>`;
+    } else {
+        const absVal = Math.abs(difVal);
+        difHTML = `<span style="color: var(--color-exito, #2ecc71);">${"🟢".repeat(absVal)}</span> (${difVal} pts)`;
+    }
+
     const tipoTexto = reto.tipo === "con-solar" ? "🏡 Reto Con Solar" : "🏗️ Reto Sin Solar";
 
     html += `
         <div class="cabeceraResultadoReto" style="text-align: center; margin-bottom: 25px;">
             <div class="badgeTipoReto">${tipoTexto}</div>
             <div class="dificultadReto" style="font-size: 1.4rem; font-weight: bold; margin-top: 10px;">
-                Dificultad: <span style="color: #f39c12;">${estrellas}</span> (${reto.dificultad} pts)
+                Dificultad: ${difHTML}
             </div>
             ${reto.dificultadExtra > 0 ? `
                 <div class="dificultadExtraReto" style="font-size: 1.2rem; font-weight: bold; margin-top: 6px;">
@@ -77,6 +88,9 @@ function renderizarResultadoReto(reto) {
         let textoHtml = `<div style="font-size: 1.05rem; margin-top: 4px;">${cat.resultado.texto}</div>`;
         if (catId === "colores") {
             textoHtml = "";
+        } else if (cat.resultado.dificultadDelta !== undefined) {
+            const colorStatus = cat.resultado.permitido ? "var(--color-exito, #2ecc71)" : "var(--color-error, #e74c3c)";
+            textoHtml = `<div style="font-size: 1.05rem; margin-top: 4px; font-weight: bold; color: ${colorStatus};">${cat.resultado.texto}</div>`;
         }
 
         let detalleExtra = "";
@@ -87,6 +101,45 @@ function renderizarResultadoReto(reto) {
             cat.resultado.elementos.forEach(c => {
                 detalleExtra += `
                     <span class="chipColor" title="${c.nombre}" data-tooltip="${c.nombre}" style="width: 34px; height: 34px; border-radius: 50%; background: ${c.hex}; border: 2px solid rgba(255,255,255,0.8); display: inline-block; box-shadow: var(--sombra-suave); cursor: pointer; transition: transform 0.2s;" onmouseenter="this.style.transform='scale(1.15)'" onmouseleave="this.style.transform='scale(1)'"></span>
+                `;
+            });
+            detalleExtra += `</div>`;
+        }
+
+        // Si es categoría habilidades y tiene lista de habilidades
+        if (catId === "habilidades" && cat.resultado.elementos && cat.resultado.elementos.length > 0) {
+            textoHtml = "";
+            detalleExtra += `<div class="habResultadoGrid" style="margin-top: 12px; gap: 12px; justify-content: flex-start;">`;
+            cat.resultado.elementos.forEach(fila => {
+                const nombre = (fila[0] || "").trim();
+                const packReq = (fila[1] || "").trim();
+                const id = (fila[2] || "").trim();
+                const esBase = !packReq || packReq.toLowerCase() === "base" || packReq.toLowerCase() === "juego base";
+                const nombrePackNormalizado = esBase ? "Juego Base" : packReq;
+                const imgSrc = id ? "img/Habilidades/" + id + ".png" : "";
+                const rutaIcono = typeof rutaIconoPack === "function" ? rutaIconoPack(nombrePackNormalizado) : null;
+
+                let packBadgeHTML = "";
+                if (rutaIcono) {
+                    packBadgeHTML = `<div class="habResultadoCardPack ${esBase ? "habResultadoCardPackBase" : ""}">
+                        <img src="${rutaIcono}" alt="${nombrePackNormalizado}" class="iconoPackMini" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;margin-right:3px;" onerror="this.style.display='none'">
+                        <span>${nombrePackNormalizado}</span>
+                    </div>`;
+                } else {
+                    packBadgeHTML = `<div class="habResultadoCardPack ${esBase ? "habResultadoCardPackBase" : ""}">
+                        ${esBase ? "🎮 Juego Base" : "📦 " + packReq}
+                    </div>`;
+                }
+
+                detalleExtra += `
+                    <div class="habResultadoCard" style="width: 130px; padding: 12px 8px; opacity: 1; transform: none; animation: none;">
+                        <div class="habResultadoCardImg" style="width: 48px; height: 48px;">
+                            ${imgSrc ? `<img src="${imgSrc}" alt="${nombre}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ""}
+                            <div class="habResultadoCardFallback" style="${imgSrc ? 'display:none' : 'display:flex'}; font-size: 1.8rem;">🧠</div>
+                        </div>
+                        <div class="habResultadoCardNombre" style="font-size: 0.88rem;">${nombre}</div>
+                        ${packBadgeHTML}
+                    </div>
                 `;
             });
             detalleExtra += `</div>`;

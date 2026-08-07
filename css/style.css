@@ -136,8 +136,15 @@ body.modo-dia .submenuOpcion.popoverFlotante {
 }
 
 @keyframes animPopoverRetos {
-    from { opacity: 0; transform: translate(-50%, -8px); }
-    to { opacity: 1; transform: translate(-50%, 0); }
+    from {
+        opacity: 0;
+        transform: translate(-50%, -8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
 }
 
 .btnAceptarPopover {
@@ -1934,7 +1941,7 @@ body.modo-noche .toggleModo:hover {
     border-radius: 50%;
     border: 2px solid rgba(255, 255, 255, 0.18);
     flex-shrink: 0;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 }
 
 .iconoMundoFallback {
@@ -1947,7 +1954,7 @@ body.modo-noche .toggleModo:hover {
 .grupoBarrio {
     border-radius: calc(var(--radio-normal) - 2px);
     overflow: hidden;
-    background: rgba(0,0,0,0.12);
+    background: rgba(0, 0, 0, 0.12);
     margin-bottom: 8px;
 }
 
@@ -1983,9 +1990,9 @@ body.modo-noche .toggleModo:hover {
     height: 36px;
     object-fit: cover;
     border-radius: 50%;
-    border: 1.5px solid rgba(255,255,255,0.18);
+    border: 1.5px solid rgba(255, 255, 255, 0.18);
     flex-shrink: 0;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 .iconoBarrioFallback {
@@ -3571,6 +3578,7 @@ body.galeria-ampliada .ventana {
     }
 
 }
+
 /* ==========================================================
    SELECTOR DE IDIOMA
 ========================================================== */
@@ -3669,7 +3677,7 @@ html body {
 .goog-te-banner-frame,
 .goog-te-banner-frame.skiptranslate,
 iframe.goog-te-banner-frame,
-body > .skiptranslate {
+body>.skiptranslate {
     display: none !important;
     visibility: hidden !important;
     height: 0 !important;
@@ -4291,11 +4299,15 @@ html {
 }
 
 @media (max-width: 680px) {
-    .estadisticasResumen { grid-template-columns: repeat(2, 1fr); }
+    .estadisticasResumen {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 @media (max-width: 380px) {
-    .estadisticasResumen { grid-template-columns: 1fr; }
+    .estadisticasResumen {
+        grid-template-columns: 1fr;
+    }
 }
 
 .estadResumenCard {
@@ -4324,12 +4336,12 @@ html {
 .estatCardTiempoClickable {
     cursor: pointer;
     border-color: var(--color-resaltado);
-    background: linear-gradient(135deg, var(--color-tarjeta), rgba(var(--resaltado-rgb, 52,152,219), 0.08));
+    background: linear-gradient(135deg, var(--color-tarjeta), rgba(var(--resaltado-rgb, 52, 152, 219), 0.08));
 }
 
 .estatCardTiempoClickable:hover {
     border-color: var(--color-resaltado);
-    box-shadow: 0 0 14px rgba(var(--resaltado-rgb, 52,152,219), 0.3), var(--sombra-normal);
+    box-shadow: 0 0 14px rgba(var(--resaltado-rgb, 52, 152, 219), 0.3), var(--sombra-normal);
 }
 
 .estatCardTiempoHint {
@@ -4369,15 +4381,22 @@ html {
     -webkit-backdrop-filter: blur(var(--blur));
     border: 1px solid var(--color-resaltado);
     border-radius: var(--radio-grande);
-    box-shadow: 0 4px 28px rgba(0,0,0,0.18), 0 0 0 1px rgba(var(--resaltado-rgb, 52,152,219), 0.15);
+    box-shadow: 0 4px 28px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(var(--resaltado-rgb, 52, 152, 219), 0.15);
     margin-bottom: 18px;
     overflow: hidden;
-    animation: estatPanelIn 0.28s cubic-bezier(.23,1,.32,1);
+    animation: estatPanelIn 0.28s cubic-bezier(.23, 1, .32, 1);
 }
 
 @keyframes estatPanelIn {
-    from { opacity: 0; transform: translateY(-10px) scale(0.98); }
-    to   { opacity: 1; transform: translateY(0)    scale(1); }
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 .estatTiempoPanelCabecera {
@@ -4386,7 +4405,7 @@ html {
     justify-content: space-between;
     padding: 12px 18px 10px;
     border-bottom: 1px solid var(--borde);
-    background: rgba(var(--resaltado-rgb, 52,152,219), 0.07);
+    background: rgba(var(--resaltado-rgb, 52, 152, 219), 0.07);
 }
 
 .estatTiempoPanelTitulo {
@@ -4406,7 +4425,11 @@ html {
     transition: opacity 0.2s;
     border-radius: var(--radio-pequeño, 8px);
 }
-.estatTiempoPanelCerrar:hover { opacity: 1; background: rgba(255,255,255,0.08); }
+
+.estatTiempoPanelCerrar:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.08);
+}
 
 .estatTiempoPanelCuerpo {
     padding: 16px 18px 18px;
@@ -4434,14 +4457,17 @@ html {
     gap: 8px;
     padding: 9px 14px;
     cursor: pointer;
-    background: rgba(0,0,0,0.08);
+    background: rgba(0, 0, 0, 0.08);
     font-weight: 600;
     font-size: 0.9rem;
     color: var(--color-titulo);
     user-select: none;
     transition: background 0.2s;
 }
-.estatTipoGrupoHeader:hover { background: rgba(var(--resaltado-rgb, 52,152,219), 0.12); }
+
+.estatTipoGrupoHeader:hover {
+    background: rgba(var(--resaltado-rgb, 52, 152, 219), 0.12);
+}
 
 .estatTipoGrupoChevron {
     margin-left: auto;
@@ -4449,14 +4475,17 @@ html {
     transition: transform 0.25s;
     opacity: 0.6;
 }
-.estatTipoGrupo.abierto .estatTipoGrupoChevron { transform: rotate(180deg); }
+
+.estatTipoGrupo.abierto .estatTipoGrupoChevron {
+    transform: rotate(180deg);
+}
 
 .estatTipoGrupoBadge {
     font-size: 0.7rem;
     font-weight: 600;
     padding: 2px 7px;
     border-radius: 20px;
-    background: rgba(var(--resaltado-rgb, 52,152,219), 0.18);
+    background: rgba(var(--resaltado-rgb, 52, 152, 219), 0.18);
     color: var(--color-resaltado);
 }
 
@@ -4502,7 +4531,7 @@ html {
     box-shadow: none !important;
     border-radius: 0 !important;
     display: block;
-    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.35));
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.35));
     opacity: 0.85;
     transition: filter 0.22s ease, transform 0.22s ease, opacity 0.22s ease;
 }
@@ -4531,8 +4560,9 @@ html {
     grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
     gap: 8px;
     padding: 12px 14px;
-    background: rgba(0,0,0,0.04);
+    background: rgba(0, 0, 0, 0.04);
 }
+
 .estatTipoGrupo.abierto .estatTipoIconoGrid {
     display: grid;
     animation: estatGridIn 0.2s ease;
@@ -4555,7 +4585,7 @@ html {
     box-shadow: none !important;
     border-radius: 0 !important;
     flex-shrink: 0;
-    filter: drop-shadow(0 0 10px var(--color-resaltado)) drop-shadow(0 4px 12px rgba(0,0,0,0.4));
+    filter: drop-shadow(0 0 10px var(--color-resaltado)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
 }
 
 .estatTiempoPackTexto {
@@ -4569,8 +4599,8 @@ html {
 /* Resultado del tiempo calculado */
 .estatTiempoResultado {
     padding: 16px 20px;
-    background: rgba(var(--resaltado-rgb, 52,152,219), 0.07);
-    border: 1px solid rgba(var(--resaltado-rgb, 52,152,219), 0.25);
+    background: rgba(var(--resaltado-rgb, 52, 152, 219), 0.07);
+    border: 1px solid rgba(var(--resaltado-rgb, 52, 152, 219), 0.25);
     border-radius: var(--radio-normal);
     text-align: center;
     animation: estatPanelIn 0.25s ease;
@@ -4675,7 +4705,7 @@ html {
     align-items: center;
     gap: 8px;
     flex: 1 1 220px;
-    background: rgba(0,0,0,0.12);
+    background: rgba(0, 0, 0, 0.12);
     border: 1px solid var(--borde);
     border-radius: var(--radio-pequeño);
     padding: 8px 12px;
@@ -4683,15 +4713,19 @@ html {
 }
 
 body.modo-dia .estatControlBusqueda {
-    background: rgba(255,255,255,0.75);
+    background: rgba(255, 255, 255, 0.75);
 }
 
 .estatControlBusqueda:focus-within {
     border-color: var(--color-resaltado);
-    box-shadow: 0 0 0 2px rgba(46,204,113,0.25);
+    box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.25);
 }
 
-.estatBusquedaIcono { font-size: 1rem; opacity: 0.7; flex-shrink: 0; }
+.estatBusquedaIcono {
+    font-size: 1rem;
+    opacity: 0.7;
+    flex-shrink: 0;
+}
 
 .estatControlBusqueda input {
     border: none;
@@ -4703,7 +4737,9 @@ body.modo-dia .estatControlBusqueda {
     font-family: inherit;
 }
 
-.estatControlBusqueda input::placeholder { opacity: 0.6; }
+.estatControlBusqueda input::placeholder {
+    opacity: 0.6;
+}
 
 .estatControlGrupo {
     display: flex;
@@ -4750,12 +4786,12 @@ body.modo-dia .estatCustomTriggerBtn,
 body.modo-dia .estatInputPrecio {
     background: rgba(255, 255, 255, 0.9);
     color: #111111;
-    border: 1px solid rgba(0,0,0,0.22);
+    border: 1px solid rgba(0, 0, 0, 0.22);
 }
 
 .estatCustomTriggerBtn:hover {
     border-color: var(--color-resaltado);
-    box-shadow: 0 2px 8px rgba(46,204,113,0.2);
+    box-shadow: 0 2px 8px rgba(46, 204, 113, 0.2);
 }
 
 .estatTriggerArrow {
@@ -4783,10 +4819,13 @@ body.modo-dia .estatInputPrecio {
 
 .estatInputPrecio:focus {
     border-color: var(--color-resaltado);
-    box-shadow: 0 0 0 2px rgba(46,204,113,0.25);
+    box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.25);
 }
 
-.estatSeparador { opacity: 0.5; font-weight: bold; }
+.estatSeparador {
+    opacity: 0.5;
+    font-weight: bold;
+}
 
 /* ── Menú Desplegable Personalizado (Tipo de Pack) ──── */
 .estatCustomDropdown {
@@ -4807,8 +4846,15 @@ body.modo-dia .estatInputPrecio {
 }
 
 @keyframes estatPopIn {
-    from { opacity: 0; transform: translateY(-8px) scale(0.96); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 body.modo-noche .estatCustomDropdown {
@@ -4818,7 +4864,7 @@ body.modo-noche .estatCustomDropdown {
 
 body.modo-dia .estatCustomDropdown {
     background: rgba(255, 255, 255, 0.96);
-    border: 1px solid rgba(0,0,0,0.18);
+    border: 1px solid rgba(0, 0, 0, 0.18);
 }
 
 .estatDropdownItem {
@@ -4883,8 +4929,15 @@ body.modo-dia .estatCustomDropdown {
 }
 
 @keyframes estatModalPop {
-    from { opacity: 0; transform: scale(0.9); }
-    to   { opacity: 1; transform: scale(1); }
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 body.modo-noche .estatDatePickerCard {
@@ -4895,7 +4948,7 @@ body.modo-noche .estatDatePickerCard {
 
 body.modo-dia .estatDatePickerCard {
     background: rgba(255, 255, 255, 0.97);
-    border: 1px solid rgba(0,0,0,0.18);
+    border: 1px solid rgba(0, 0, 0, 0.18);
     color: #111111;
 }
 
@@ -4924,7 +4977,9 @@ body.modo-dia .estatDatePickerCard {
     transition: opacity var(--transicion);
 }
 
-.estatDatePickerClose:hover { opacity: 1; }
+.estatDatePickerClose:hover {
+    opacity: 1;
+}
 
 .estatDatePickerBreadcrumbs {
     display: flex;
@@ -4933,12 +4988,12 @@ body.modo-dia .estatDatePickerCard {
     font-size: 0.82rem;
     font-weight: 600;
     padding: 8px 12px;
-    background: rgba(0,0,0,0.06);
+    background: rgba(0, 0, 0, 0.06);
     border-radius: var(--radio-pequeño);
 }
 
 body.modo-dia .estatDatePickerBreadcrumbs {
-    background: rgba(0,0,0,0.04);
+    background: rgba(0, 0, 0, 0.04);
 }
 
 .estatStepItem {
@@ -4953,7 +5008,9 @@ body.modo-dia .estatDatePickerBreadcrumbs {
     font-weight: 800;
 }
 
-.estatStepSep { opacity: 0.4; }
+.estatStepSep {
+    opacity: 0.4;
+}
 
 .estatDatePickerBody {
     display: grid;
@@ -4964,15 +5021,23 @@ body.modo-dia .estatDatePickerBreadcrumbs {
 }
 
 /* Grillas por tipo de paso */
-.estatGridYears { grid-template-columns: repeat(3, 1fr); }
-.estatGridMonths { grid-template-columns: repeat(3, 1fr); }
-.estatGridDays { grid-template-columns: repeat(7, 1fr); }
+.estatGridYears {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.estatGridMonths {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.estatGridDays {
+    grid-template-columns: repeat(7, 1fr);
+}
 
 .estatPickerBtn {
     padding: 10px 6px;
     border-radius: var(--radio-pequeño);
     border: 1px solid var(--borde);
-    background: rgba(0,0,0,0.04);
+    background: rgba(0, 0, 0, 0.04);
     color: var(--color-texto);
     font-size: 0.9rem;
     font-family: inherit;
@@ -4983,7 +5048,7 @@ body.modo-dia .estatDatePickerBreadcrumbs {
 }
 
 body.modo-noche .estatPickerBtn {
-    background: rgba(255,255,255,0.06);
+    background: rgba(255, 255, 255, 0.06);
 }
 
 .estatPickerBtn:hover {
@@ -4991,7 +5056,7 @@ body.modo-noche .estatPickerBtn {
     color: #ffffff !important;
     border-color: var(--color-resaltado);
     transform: translateY(-1px);
-    box-shadow: 0 3px 10px rgba(46,204,113,0.3);
+    box-shadow: 0 3px 10px rgba(46, 204, 113, 0.3);
 }
 
 .estatPickerBtnDayHeader {
@@ -5021,7 +5086,9 @@ body.modo-noche .estatPickerBtn {
     transition: opacity var(--transicion);
 }
 
-.estatBtnSecundario:hover { opacity: 1; }
+.estatBtnSecundario:hover {
+    opacity: 1;
+}
 
 /* ── Barras deslizadoras Aero / Chrome ───────────────── */
 .graficoScrollHoriz::-webkit-scrollbar,
@@ -5064,7 +5131,7 @@ body.modo-noche #ventanaEstadisticas::-webkit-scrollbar-track {
     padding: 8px 16px;
     border: 1px solid var(--borde);
     border-radius: var(--radio-pequeño);
-    background: rgba(229,57,53,0.18);
+    background: rgba(229, 57, 53, 0.18);
     color: var(--color-texto);
     font-size: 0.88rem;
     cursor: pointer;
@@ -5076,7 +5143,7 @@ body.modo-noche #ventanaEstadisticas::-webkit-scrollbar-track {
 }
 
 .estatBtnBorrar:hover {
-    background: rgba(229,57,53,0.32);
+    background: rgba(229, 57, 53, 0.32);
     transform: scale(1.03);
 }
 
@@ -5113,7 +5180,7 @@ body.modo-noche #ventanaEstadisticas::-webkit-scrollbar-track {
 
 .estatBtnVista:hover {
     opacity: 1;
-    background: rgba(255,255,255,0.12);
+    background: rgba(255, 255, 255, 0.12);
     transform: translateY(-1px);
 }
 
@@ -5122,11 +5189,13 @@ body.modo-noche #ventanaEstadisticas::-webkit-scrollbar-track {
     color: #ffffff !important;
     border-color: var(--color-resaltado);
     opacity: 1;
-    box-shadow: 0 4px 15px rgba(46,204,113,0.35);
+    box-shadow: 0 4px 15px rgba(46, 204, 113, 0.35);
 }
 
 /* ── Vista Lista ───────────────────────────────────────── */
-.estatVistaLista { width: 100%; }
+.estatVistaLista {
+    width: 100%;
+}
 
 #estatListaPacks {
     display: flex;
@@ -5150,8 +5219,15 @@ body.modo-noche #ventanaEstadisticas::-webkit-scrollbar-track {
 }
 
 @keyframes estatFadeIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .packCardEstat:hover {
@@ -5178,13 +5254,13 @@ body.modo-noche #ventanaEstadisticas::-webkit-scrollbar-track {
     height: 100%;
     object-fit: contain !important;
     display: block;
-    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35));
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
     transition: transform var(--transicion), filter var(--transicion);
 }
 
 .packCardEstat:hover .packIconoEstat {
     transform: scale(1.08);
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7)) drop-shadow(0 4px 10px rgba(0,0,0,0.4));
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7)) drop-shadow(0 4px 10px rgba(0, 0, 0, 0.4));
 }
 
 .packIconoFallback {
@@ -5219,7 +5295,7 @@ body.modo-noche #ventanaEstadisticas::-webkit-scrollbar-track {
     letter-spacing: 0.05em;
     cursor: help;
     font-family: monospace, sans-serif;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     flex-shrink: 0;
 }
 
@@ -5249,8 +5325,8 @@ body.modo-noche #ventanaEstadisticas::-webkit-scrollbar-track {
 .packNotaGratis {
     font-size: 0.8rem;
     color: #10B981;
-    background: rgba(16,185,129,0.1);
-    border: 1px solid rgba(16,185,129,0.25);
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.25);
     padding: 4px 10px;
     border-radius: 6px;
     width: fit-content;
@@ -5268,22 +5344,25 @@ body.modo-noche #ventanaEstadisticas::-webkit-scrollbar-track {
     opacity: 0.75;
 }
 
-.packPrecioWrap { display: flex; align-items: center; }
+.packPrecioWrap {
+    display: flex;
+    align-items: center;
+}
 
 .packPrecio {
     font-size: 1rem;
     font-weight: 800;
     color: var(--color-advertencia);
-    background: rgba(255,213,74,0.14);
+    background: rgba(255, 213, 74, 0.14);
     padding: 2px 10px;
     border-radius: 100px;
-    border: 1px solid rgba(255,213,74,0.3);
+    border: 1px solid rgba(255, 213, 74, 0.3);
 }
 
 .packPrecioGratis {
     color: #10B981;
-    background: rgba(16,185,129,0.14);
-    border-color: rgba(16,185,129,0.3);
+    background: rgba(16, 185, 129, 0.14);
+    border-color: rgba(16, 185, 129, 0.3);
 }
 
 .packObjetos {
@@ -5291,19 +5370,28 @@ body.modo-noche #ventanaEstadisticas::-webkit-scrollbar-track {
     align-items: center;
     gap: 4px;
     font-size: 0.85rem;
-    background: rgba(0,0,0,0.06);
+    background: rgba(0, 0, 0, 0.06);
     border: 1px solid var(--borde);
     padding: 3px 10px;
     border-radius: 100px;
 }
 
 body.modo-dia .packObjetos {
-    background: rgba(0,0,0,0.04);
+    background: rgba(0, 0, 0, 0.04);
 }
 
-.packObjetosIcono { font-size: 0.9rem; }
-.packObjetosNum   { font-weight: 800; color: var(--color-resaltado); }
-.packObjetosLabel { opacity: 0.7; }
+.packObjetosIcono {
+    font-size: 0.9rem;
+}
+
+.packObjetosNum {
+    font-weight: 800;
+    color: var(--color-resaltado);
+}
+
+.packObjetosLabel {
+    opacity: 0.7;
+}
 
 .packObjetosNA {
     opacity: 0.6;
@@ -5315,19 +5403,28 @@ body.modo-dia .packObjetos {
     align-items: center;
     gap: 4px;
     font-size: 0.85rem;
-    background: rgba(0,0,0,0.06);
+    background: rgba(0, 0, 0, 0.06);
     border: 1px solid var(--borde);
     padding: 3px 10px;
     border-radius: 100px;
 }
 
 body.modo-dia .packSolares {
-    background: rgba(0,0,0,0.04);
+    background: rgba(0, 0, 0, 0.04);
 }
 
-.packSolaresIcono { font-size: 0.9rem; }
-.packSolaresNum   { font-weight: 800; color: var(--color-resaltado); }
-.packSolaresLabel { opacity: 0.7; }
+.packSolaresIcono {
+    font-size: 0.9rem;
+}
+
+.packSolaresNum {
+    font-weight: 800;
+    color: var(--color-resaltado);
+}
+
+.packSolaresLabel {
+    opacity: 0.7;
+}
 
 /* ── Vista Gráficos ────────────────────────────────────── */
 .estatVistaGraficos {
@@ -5349,7 +5446,7 @@ body.modo-dia .packSolares {
 }
 
 .estatInstruccionesGraficos kbd {
-    background: rgba(0,0,0,0.2);
+    background: rgba(0, 0, 0, 0.2);
     border: 1px solid var(--borde);
     padding: 2px 6px;
     border-radius: 4px;
@@ -5357,7 +5454,7 @@ body.modo-dia .packSolares {
 }
 
 body.modo-dia .estatInstruccionesGraficos kbd {
-    background: rgba(255,255,255,0.7);
+    background: rgba(255, 255, 255, 0.7);
 }
 
 .graficosGrid {
@@ -5369,7 +5466,9 @@ body.modo-dia .estatInstruccionesGraficos kbd {
 }
 
 @media (max-width: 768px) {
-    .graficosGrid { grid-template-columns: 1fr; }
+    .graficosGrid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .graficoBloque {
@@ -5393,7 +5492,9 @@ body.modo-dia .estatInstruccionesGraficos kbd {
     grid-column: 1 / -1;
 }
 
-.graficoBloque:hover { box-shadow: var(--sombra-normal); }
+.graficoBloque:hover {
+    box-shadow: var(--sombra-normal);
+}
 
 .graficoCabecera {
     display: flex;
@@ -5595,12 +5696,12 @@ body.modo-noche .graficoScrollHoriz::-webkit-scrollbar-thumb:hover {
 
 .estatBtnLinea.activa {
     opacity: 1;
-    background: rgba(255,255,255,0.1);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 body.modo-dia .estatBtnLinea.activa {
-    background: rgba(0,0,0,0.06);
+    background: rgba(0, 0, 0, 0.06);
 }
 
 .estatColorDot {
@@ -5634,7 +5735,9 @@ body.modo-dia .estatBtnLinea.activa {
 }
 
 @keyframes statSpin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* ── Modal Flotante de Selector de Packs por Categoría ── */
@@ -5791,8 +5894,15 @@ body.modo-dia .footerPacksFlotante {
 }
 
 @keyframes animModalPacks {
-    from { transform: scale(0.92); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
+    from {
+        transform: scale(0.92);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 /* Tarjetas de Categoría en Modo Desplegable */
@@ -5890,11 +6000,11 @@ body.modo-dia .btnCategoriaDesplegable .badgeConteoPacks {
 }
 
 /* Cuando el switch está en modo "lista" (checked) */
-.switchModoVista input:checked ~ .sliderSwitch .thumbSwitch {
+.switchModoVista input:checked~.sliderSwitch .thumbSwitch {
     left: 25px;
 }
 
-.switchModoVista input:checked ~ .sliderSwitch {
+.switchModoVista input:checked~.sliderSwitch {
     background: rgba(var(--color-resaltado-rgb, 52, 152, 219), 0.3);
     border-color: var(--color-resaltado);
 }
@@ -6114,11 +6224,13 @@ body.modo-dia .codigoResultadoTruco {
         background: rgba(52, 152, 219, 0.35);
         transform: scale(1.02);
     }
+
     50% {
         box-shadow: 0 0 25px 8px rgba(52, 152, 219, 0.6);
         background: rgba(52, 152, 219, 0.45);
         transform: scale(1.03);
     }
+
     100% {
         box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
         background: transparent;
@@ -6165,7 +6277,7 @@ body.modo-dia .codigoResultadoTruco {
 }
 
 /* El botón dentro del contenedor flotante ocupa 100% del alto y ancho de la celda */
-.gridOpcionesReto .contenedorOpcionFlotante > .opcionFiltroReto {
+.gridOpcionesReto .contenedorOpcionFlotante>.opcionFiltroReto {
     width: 100%;
     height: 100%;
     flex: 1;
@@ -6371,7 +6483,8 @@ body.modo-dia .botonDesastreToggle.activo {
 }
 
 /* Campos de Formulario (Dinero e Intervalo) */
-.formRowDinero, .formRowIntervalo {
+.formRowDinero,
+.formRowIntervalo {
     display: flex;
     gap: 16px 24px;
     flex-wrap: wrap;
@@ -6721,6 +6834,7 @@ body.modo-dia .controlMinutosWrapper {
     -webkit-appearance: none;
     margin: 0;
 }
+
 #inputMinutosTemporizador {
     -moz-appearance: textfield;
 }
@@ -7017,12 +7131,12 @@ body.modo-dia .displayTemporizadorDigital {
 
 .habAnimacion::before {
     left: 0;
-    background: linear-gradient(to right, rgba(0,0,0,0.5), transparent);
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.5), transparent);
 }
 
 .habAnimacion::after {
     right: 0;
-    background: linear-gradient(to left, rgba(0,0,0,0.5), transparent);
+    background: linear-gradient(to left, rgba(0, 0, 0, 0.5), transparent);
 }
 
 body.modo-dia .habAnimacion::before {
@@ -7224,18 +7338,27 @@ body.modo-dia .habAnimacion::after {
     box-shadow: 0 4px 14px rgba(175, 80, 255, 0.35);
 }
 
-/* Botón OBS en menú principal */
+/* Botón OBS en el pie de página (junto a día/noche e idioma).
+   Usa la clase .toggleModo para el tamaño/forma circular, pero con
+   su propio color morado (el mismo que el resto de la marca OBS)
+   para que se distinga y funcione igual de bien en modo día y noche. */
 #botonOBSExport {
-    background: var(--color-principal);
-    color: var(--color-texto);
-    box-shadow: var(--sombra-suave);
-    border: 1.5px solid rgba(175, 80, 255, 0.4);
+    background: rgba(175, 80, 255, 0.18);
+    color: #af50ff;
+    border: 1.5px solid rgba(175, 80, 255, 0.5) !important;
+    font-size: 1.4rem;
+    line-height: 1;
 }
 
 #botonOBSExport:hover {
-    background: rgba(175, 80, 255, 0.25) !important;
+    background: rgba(175, 80, 255, 0.32) !important;
     border-color: #af50ff !important;
     color: #af50ff !important;
+    box-shadow:
+        0 0 8px rgba(175, 80, 255, .55),
+        0 0 18px rgba(175, 80, 255, .40),
+        0 0 30px rgba(175, 80, 255, .22);
+    transform: scale(1.10);
 }
 
 /* Modal Selector de Ventanas OBS */
@@ -7276,8 +7399,15 @@ body.modo-dia .habAnimacion::after {
 }
 
 @keyframes obsModalIn {
-    from { transform: scale(0.93) translateY(16px); opacity: 0; }
-    to   { transform: scale(1) translateY(0); opacity: 1; }
+    from {
+        transform: scale(0.93) translateY(16px);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
 }
 
 .modalOBSHeader {
@@ -7393,9 +7523,18 @@ body.modo-dia .modalOBSItem {
     transform: translateY(-1px);
 }
 
-/* Modo OBS: página completamente limpia y transparente */
+/* ==========================================================
+   MODO OBS: página limpia y con transparencia real
+========================================================== */
+
+/* Toda la página (el "canvas" que pinta OBS) queda transparente:
+   así, en la captura de OBS solo se ve la propia ventana, no un
+   rectángulo de color tapando el resto de la escena/vídeo. */
+html.modo-obs,
 body.modo-obs {
     background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
     overflow: hidden;
 }
 
@@ -7403,25 +7542,57 @@ body.modo-obs header,
 body.modo-obs footer,
 body.modo-obs #pantallaCarga,
 body.modo-obs .menu-principal,
+body.modo-obs #placeholderMenuPrincipal,
+body.modo-obs #sentinelMenuPrincipal,
 body.modo-obs .cabeceraVentana {
     display: none !important;
 }
 
+body.modo-obs main,
 body.modo-obs #app {
+    background: transparent !important;
     padding: 0 !important;
     margin: 0 !important;
 }
 
+/* La ventana conserva su aspecto de "cristal" (el mismo look que ya
+   tiene en el resto de la web: fondo translúcido + desenfoque), en
+   vez de desaparecer del todo. Así se ve la transparencia — se
+   transparenta la escena de fondo a través de la ventana — pero el
+   texto sigue teniendo un fondo sobre el que leerse con contraste. */
 body.modo-obs .ventana {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 8px !important;
-    max-width: 100vw !important;
+    background: var(--color-tarjeta) !important;
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    border: 1px solid var(--borde) !important;
+    box-shadow: var(--sombra-normal) !important;
+    padding: 22px !important;
     width: 100vw !important;
-    min-height: 100vh !important;
+    max-width: 100vw !important;
+    min-height: 0 !important;
     margin: 0 !important;
     border-radius: 0 !important;
+}
+
+/* Modo día dentro de OBS: el cristal claro (rgba blanco al 50%) está
+   pensado para apoyarse sobre el fondo claro propio de la web, y
+   pierde contraste al quedar flotando sobre un vídeo en directo
+   variable. Solo dentro de OBS oscurecemos el cristal y aclaramos
+   el texto para garantizar que siempre se pueda leer, sin tocar el
+   modo día del resto de la página. */
+body.modo-dia.modo-obs {
+    --color-texto: #f5f5f0;
+    --color-titulo: #ffffff;
+    --borde: rgba(255, 255, 255, 0.28);
+}
+
+body.modo-dia.modo-obs .ventana {
+    background: rgba(18, 16, 14, 0.80) !important;
+    color: #f5f5f0 !important;
+}
+
+body.modo-dia.modo-obs .ventana a {
+    color: #7fd6ff;
 }
 
 /* Toast de notificación OBS */
@@ -7457,4 +7628,3 @@ body.modo-dia .toastOBS {
     color: #6a00cc;
     border-color: #af50ff;
 }
-

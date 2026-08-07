@@ -126,10 +126,6 @@
                     📦 Mods & Simfile
                 </button>
 
-                <button id="botonOBSExport" data-tooltip="📺 Enviar una ventana a OBS Studio como Browser Source" onclick="abrirSelectorOBS()">
-                    📺 OBS
-                </button>
-
                 <button id="botonAcercaDe">
                     👋 Acerca de...
                 </button>
@@ -417,7 +413,7 @@
                                     Cantidad de colores m&#xE1;ximos: <span id="valCantidadColores"
                                         style="color: var(--color-resaltado);">3</span>
                                 </label>
-                                 <input type="range" id="sliderCantidadColores" min="1" max="12" value="3"
+                                <input type="range" id="sliderCantidadColores" min="1" max="12" value="3"
                                     style="width: 85%; max-width: 280px; display: block; margin: 0 auto;">
                                 <div class="popoverAcciones"
                                     style="display: flex; gap: 8px; justify-content: center; margin-top: 12px;">
@@ -443,12 +439,14 @@
                                 </label>
                                 <input type="range" id="sliderCantidadHabilidades" min="1" max="10" value="3"
                                     style="width: 85%; max-width: 280px; display: block; margin: 0 auto;">
-                                <div style="font-size: 0.8rem; margin-top: 6px; opacity: 0.8; text-align: center;">Filtradas según tus packs instalados.</div>
+                                <div style="font-size: 0.8rem; margin-top: 6px; opacity: 0.8; text-align: center;">
+                                    Filtradas según tus packs instalados.</div>
                                 <div class="popoverAcciones"
                                     style="display: flex; gap: 8px; justify-content: center; margin-top: 12px;">
                                     <button type="button" class="btnAceptarPopover" id="btnAceptarHabilidades">&#x2705;
                                         Listo</button>
-                                    <button type="button" class="btnDesmarcarPopover" id="btnDesmarcarHabilidades">&#x274C;
+                                    <button type="button" class="btnDesmarcarPopover"
+                                        id="btnDesmarcarHabilidades">&#x274C;
                                         Desmarcar</button>
                                 </div>
                             </div>
@@ -713,7 +711,8 @@
                             data-tooltip="Restar 1 minuto">−</button>
                         <div class="habNumeroDisplay">
                             <input type="number" id="inputMinutosTemporizador" min="1" max="60" value="15" readonly
-                                class="habCantidadInput" data-tooltip="Rueda del ratón o botones para cambiar el tiempo">
+                                class="habCantidadInput"
+                                data-tooltip="Rueda del ratón o botones para cambiar el tiempo">
                         </div>
                         <button type="button" class="habNumeroBtn" id="btnSumarMinuto" aria-label="Más"
                             data-tooltip="Sumar 1 minuto">+</button>
@@ -2714,7 +2713,8 @@
                 </div>
 
                 <h2>🧠 Habilidades al azar</h2>
-                <p class="subtituloVentana">Selecciona los packs que tienes instalados para filtrar las habilidades disponibles:</p>
+                <p class="subtituloVentana">Selecciona los packs que tienes instalados para filtrar las habilidades
+                    disponibles:</p>
 
                 <div id="listaPacksHabilidades"></div>
 
@@ -2739,17 +2739,20 @@
                 </div>
 
                 <h2>🧠 Habilidades al azar</h2>
-                <p class="subtituloVentana" style="text-align: center;">Selecciona el número de habilidades que quieres que salgan en esta tirada</p>
+                <p class="subtituloVentana" style="text-align: center;">Selecciona el número de habilidades que quieres
+                    que salgan en esta tirada</p>
 
                 <!-- SELECTOR NUMÉRICO CON SCROLL -->
                 <div class="habNumeroWrap">
                     <button type="button" class="habNumeroBtn" id="habNumeroMenos" aria-label="Menos">−</button>
                     <div class="habNumeroDisplay">
-                        <input type="number" id="habCantidad" min="1" max="10" value="1" readonly class="habCantidadInput">
+                        <input type="number" id="habCantidad" min="1" max="10" value="1" readonly
+                            class="habCantidadInput">
                     </div>
                     <button type="button" class="habNumeroBtn" id="habNumeroMas" aria-label="Más">+</button>
                 </div>
-                <p style="font-size: 0.8rem; opacity: 0.75; text-align: center; margin-top: 10px; margin-bottom: 20px;">(Usa la rueda del ratón o los botones para cambiar el número)</p>
+                <p style="font-size: 0.8rem; opacity: 0.75; text-align: center; margin-top: 10px; margin-bottom: 20px;">
+                    (Usa la rueda del ratón o los botones para cambiar el número)</p>
 
                 <!-- BOTÓN TIRAR Y VOLVER -->
                 <div class="habAcciones">
@@ -2840,6 +2843,11 @@
                             d="M9.37 5.51A7.35 7.35 0 0 0 9.1 7.5c0 4.08 3.32 7.4 7.4 7.4.68 0 1.35-.09 1.99-.27C17.45 17.19 14.93 19 12 19c-3.86 0-7-3.14-7-7 0-2.93 1.81-5.45 4.37-6.49z" />
                     </svg>
 
+                </button>
+
+                <button id="botonOBSExport" class="toggleModo" title="Enviar a OBS Studio"
+                    data-tooltip="📺 Enviar una ventana a OBS Studio como Browser Source" onclick="abrirSelectorOBS()">
+                    📺
                 </button>
 
                 <div class="selectorIdioma">

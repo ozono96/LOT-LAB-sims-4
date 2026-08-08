@@ -117,6 +117,15 @@ function girarRuletaColor(colores, inputTiradas, mensaje, resultados, botonGirar
         rotacionActual = rotacionObjetivo;
         wheel.dataset.rotacion = String(rotacionActual);
 
+        if (typeof window.emitirEstadoEnVivoOBS === "function") {
+            window.emitirEstadoEnVivoOBS("ventanaRuletaColor", {
+                giroAnimacion: true,
+                wheelColors: wheelColors,
+                rotacionObjetivo: rotacionObjetivo,
+                mensajeHTML: "Girando..."
+            });
+        }
+
         window.setTimeout(() => {
             const chip = document.createElement("div");
             chip.className = "chipColorRuleta";

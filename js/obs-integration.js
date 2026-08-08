@@ -1,7 +1,8 @@
 /* =========================================================
    OBS INTEGRATION MODULE
    Permite enviar cualquier ventana a OBS Studio como
-   Fuente de Navegador (Browser Source) o Popout standalone.
+   Fuente de Navegador (Browser Source) o Popout standalone
+   con sincronización en tiempo real vía WebRTC (PeerJS) y URL State.
    ========================================================= */
 
 (function () {
@@ -23,11 +24,29 @@
         { id: "ventanaEstadisticas",      nombre: "📊 Estadísticas Sims 4" },
     ];
 
-    // Canal BroadcastChannel + Storage fallback para comunicación en tiempo real
-    const OBS_SYNC_CHANNEL = "lotlab_obs_sync_v2";
+    const OBS_SYNC_KEY_PREFIX = "lotlab_sync_";
+    const OBS_SYNC_CHANNEL_NAME = "lotlab_obs_sync_v2";
+
+    // ── PeerJS / WebRTC State ──────────
+    let peerInstance = null;
+    let peerConnections = [];
+    let hostPeerId = null;
     let broadcastChannel = null;
     let syncObsWindowId = null;
     let ultimoTsAplicado = 0;
+
+    // Generar o recuperar ID de Peer persistente para esta sesión de la pestaña principal
+    function obtenerHostPeerId() {
+        if (!hostPeerId) {
+            let id = sessionStorage.getItem("lotlab_host_peer_id");
+            if (!id) {
+                id = "lotlab-" + Math.random().toString(36).substring(2, 9);
+                sessionStorage.setItem("lotlab_host_peer_id", id);
+            }
+            hostPeerId = id;
+        }
+        return hostPeerId;
+    }
 
     // ─── 1. INYECTAR BOTONES OBS EN CADA cabeceraVentana ──────────────────
     function inyectarBotonesOBSEnHeaders() {
@@ -105,6 +124,7 @@
             } else if (windowId === "ventanaRuletaColor") {
                 if (typeof inicializarRuletaColor === "function") {
                     inicializarRuletaColor();
+                    setTimeout(inicializarRuletaColor, 300);
                 }
             } else if (windowId === "ventanaDados") {
                 if (typeof inicializarDados === "function") {
@@ -114,20 +134,53 @@
         };
 
         prepararYMostrarVentana();
-        setTimeout(prepararYMostrarVentana, 300);
 
-        // Iniciar receptor de estado en vivo para OBS / Popouts
-        iniciarReceptorEstadoEnVivo(windowId);
+        // ── Overlay de carga (se oculta al recibir el primer payload) ─────────
+        let overlayOculto = false;
+        const overlay = document.createElement("div");
+        overlay.className = "obsOverlayCargando";
+        overlay.id = "obsOverlayCargando";
+        overlay.innerHTML = [
+            '<div class="obsOverlayCargando__spinner"></div>',
+            '<div class="obsOverlayCargando__texto">⏳ Conectando con la web principal…</div>',
+            '<div class="obsOverlayCargando__sub">Asegúrate de que la pestaña web está abierta en el mismo navegador.</div>'
+        ].join("");
+        document.body.appendChild(overlay);
 
-        // Auto-resize adaptativo si es un Popout (`window.opener`)
+        window._ocultarOverlayCargandoOBS = function () {
+            if (overlayOculto) return;
+            overlayOculto = true;
+            overlay.classList.add("oculto");
+            setTimeout(() => { if (overlay.parentNode) overlay.parentNode.removeChild(overlay); }, 600);
+        };
+
+        // Fallback: ocultar tras 8 segundos si no llega ningún payload
+        setTimeout(() => { if (window._ocultarOverlayCargandoOBS) window._ocultarOverlayCargandoOBS(); }, 8000);
+
+        // 1. Aplicar estado guardado en localStorage síncronamente al instante
+        try {
+            const rawInicial = localStorage.getItem(OBS_SYNC_KEY_PREFIX + windowId);
+            if (rawInicial) {
+                aplicarEstadoObjetivoEnDOM(windowId, JSON.parse(rawInicial));
+                if (window._ocultarOverlayCargandoOBS) window._ocultarOverlayCargandoOBS();
+            }
+        } catch (e) {}
+
+        // 2. Leer parámetros de estado iniciales codificados en la URL
+        procesarEstadoURLInicial(windowId);
+
+        // 3. Iniciar receptor de estado en vivo (WebRTC + Storage + Broadcast)
+        const urlParams = new URLSearchParams(window.location.search);
+        const peerIdConectar = urlParams.get("peer");
+        iniciarReceptorEstadoEnVivo(windowId, peerIdConectar);
+
+        // 4. Auto-resize adaptativo si es un Popout (`window.opener`)
         if (window.opener) {
             activarAutoResizePopoutAdaptativo(windowId);
         }
     }
 
     // ─── 2a. AUTO-REDIMENSIONAR ADAPTATIVO EN TIEMPO REAL (POPOUT) ──────────
-    // Se redimensiona dinámicamente cuando el contenido dentro de la ventana aumenta
-    // o disminuye (p.ej. al cambiar entre pantallas o añadir filas al historial).
     function activarAutoResizePopoutAdaptativo(windowId) {
         if (!window.opener) return;
 
@@ -167,9 +220,7 @@
                     Math.min(Math.max(anchoDeseado, 380), anchoMax),
                     Math.min(Math.max(altoDeseado,  260), altoMax)
                 );
-            } catch (e) {
-                // Ignore security limits
-            }
+            } catch (e) {}
         }
 
         setTimeout(reajustar, 300);
@@ -184,7 +235,7 @@
         }
     }
 
-    // ─── 2b. EVITAR QUE OBS PAUSE TEMPORIZADORES Y ANIMACIONES ─────────────
+    // ─── 2b. FORZAR VISIBILIDAD EN SEGUNDO PLANO ────────────────────────────
     function forzarVisibilidadOBS() {
         try {
             Object.defineProperty(document, "hidden", { configurable: true, get: () => false });
@@ -200,41 +251,119 @@
         window.addEventListener("blur", bloquearEvento, true);
     }
 
-    // ─── 3. EMISOR Y RECEPTOR DE ESTADO EN TIEMPO REAL ──────────────────────
+    // ─── 3. PROCESAR ESTADO CODIFICADO EN URL AL CARGAR EN OBS ──────────────
+    function procesarEstadoURLInicial(windowId) {
+        const params = new URLSearchParams(window.location.search);
+
+        if (windowId === "ventanaRuletaColor") {
+            const colorNombre = params.get("color");
+            const colorHex = params.get("hex");
+            if (colorNombre && colorHex) {
+                const mensaje = document.getElementById("mensajeRuletaColor");
+                const resultados = document.getElementById("resultadoRuletaColor");
+                if (mensaje) mensaje.textContent = `Ha salido: ${colorNombre}`;
+                if (resultados) {
+                    resultados.innerHTML = `
+                        <div class="chipColorRuleta">
+                            <span class="chipColorRuleta__muestra" style="background:${colorHex}" data-tooltip="${colorNombre}"></span>
+                        </div>
+                    `;
+                }
+            }
+        } else if (windowId === "ventanaRuletaDesastres") {
+            const titulo = params.get("disTitle");
+            const desc = params.get("disDesc");
+            const icono = params.get("disIcon");
+            if (titulo && desc) {
+                const elTitulo = document.getElementById("tituloResultadoDesastre");
+                const elDesc = document.getElementById("descResultadoDesastre");
+                const elIcono = document.getElementById("iconoResultadoDesastre");
+                if (elTitulo) elTitulo.textContent = titulo;
+                if (elDesc) elDesc.innerHTML = desc;
+                if (elIcono && icono) elIcono.textContent = icono;
+            }
+        } else if (windowId === "ventanaDados") {
+            const dadosVal = params.get("dadosVal");
+            if (dadosVal) {
+                const res = document.getElementById("resultadoDados");
+                const msg = document.getElementById("mensajeDados");
+                if (msg) msg.textContent = `Tirada guardada: ${dadosVal}`;
+            }
+        }
+    }
+
+    // ─── 4. EMISOR Y RECEPTOR DE ESTADO EN TIEMPO REAL (WebRTC + Storage) ───
+    function iniciarHostPeerJS() {
+        if (typeof Peer === "undefined" || peerInstance) return;
+        const myId = obtenerHostPeerId();
+        try {
+            peerInstance = new Peer(myId, { debug: 0 });
+            peerInstance.on("connection", (conn) => {
+                peerConnections.push(conn);
+                conn.on("close", () => {
+                    peerConnections = peerConnections.filter(c => c !== conn);
+                });
+            });
+        } catch (e) {
+            console.warn("[OBS PeerJS Host Error]", e);
+        }
+    }
+
     function emitirEstadoEnVivoOBS(windowId, payload) {
         if (!payload) return;
         payload.ts = Date.now();
         payload.windowId = windowId;
 
-        // 1. BroadcastChannel (pestañas en el mismo navegador)
+        // 1. Enviar vía WebRTC DataChannel a OBS Studio CEF
+        peerConnections.forEach(conn => {
+            try {
+                if (conn.open) conn.send(payload);
+            } catch (e) {}
+        });
+
+        // 2. BroadcastChannel (pestañas del mismo navegador)
         try {
             if (!broadcastChannel) broadcastChannel = new BroadcastChannel(OBS_SYNC_CHANNEL_NAME);
             broadcastChannel.postMessage(payload);
         } catch (e) {}
 
-        // 2. localStorage (dispara evento 'storage' nativo en otras ventanas/procesos del mismo dominio)
+        // 3. localStorage (dispara evento 'storage' nativo)
         try {
             localStorage.setItem(OBS_SYNC_KEY_PREFIX + windowId, JSON.stringify(payload));
         } catch (e) {}
     }
     window.emitirEstadoEnVivoOBS = emitirEstadoEnVivoOBS;
 
-    function iniciarReceptorEstadoEnVivo(targetWindowId) {
+    function iniciarReceptorEstadoEnVivo(targetWindowId, hostPeerIdToConnect) {
         const procesarPayload = (payload) => {
             if (!payload || payload.windowId !== targetWindowId) return;
             if (payload.ts <= ultimoTsAplicado) return;
             ultimoTsAplicado = payload.ts;
 
             aplicarEstadoObjetivoEnDOM(targetWindowId, payload);
+
+            // Ocultar overlay de carga al recibir el primer payload válido
+            if (window._ocultarOverlayCargandoOBS) window._ocultarOverlayCargandoOBS();
         };
 
-        // 1. Escuchar mensajes BroadcastChannel
+        // 1. Conectar vía WebRTC PeerJS si venimos de una URL emitida por la pestaña principal
+        if (hostPeerIdToConnect && typeof Peer !== "undefined") {
+            try {
+                const clientPeer = new Peer({ debug: 0 });
+                clientPeer.on("open", () => {
+                    const conn = clientPeer.connect(hostPeerIdToConnect);
+                    conn.on("data", (data) => procesarPayload(data));
+                });
+            } catch (e) {}
+        }
+
+        // 2. Escuchar BroadcastChannel
         try {
             if (!broadcastChannel) broadcastChannel = new BroadcastChannel(OBS_SYNC_CHANNEL_NAME);
             broadcastChannel.onmessage = (event) => procesarPayload(event.data);
         } catch (e) {}
 
-        // 2. Escuchar evento native 'storage' de JS (cambios entre ventanas de navegador)
+        // 3. Escuchar evento native 'storage'
         window.addEventListener("storage", (e) => {
             if (e.key === OBS_SYNC_KEY_PREFIX + targetWindowId && e.newValue) {
                 try {
@@ -243,13 +372,18 @@
             }
         });
 
-        // 3. Polling liviano a localStorage como respaldo (cada 500ms)
+        // 4. Carga inicial desde localStorage + Polling liviano (cada 400ms)
+        try {
+            const rawInicial = localStorage.getItem(OBS_SYNC_KEY_PREFIX + targetWindowId);
+            if (rawInicial) procesarPayload(JSON.parse(rawInicial));
+        } catch (err) {}
+
         setInterval(() => {
             try {
                 const raw = localStorage.getItem(OBS_SYNC_KEY_PREFIX + targetWindowId);
                 if (raw) procesarPayload(JSON.parse(raw));
             } catch (err) {}
-        }, 500);
+        }, 400);
     }
 
     function aplicarEstadoObjetivoEnDOM(windowId, payload) {
@@ -282,6 +416,18 @@
                 const el = document.getElementById("listaHistorialDesastres");
                 if (el) el.innerHTML = payload.historialHTML;
             }
+            if (payload.timerText !== undefined) {
+                const elDisplay = document.getElementById("displayCuentaAtrasDesastres");
+                if (elDisplay) elDisplay.textContent = payload.timerText;
+            }
+            if (payload.timerLabelText !== undefined) {
+                const elLabel = document.getElementById("labelEstadoCuentaAtrasDesastres");
+                if (elLabel) elLabel.textContent = payload.timerLabelText;
+            }
+            if (payload.timerVisible !== undefined) {
+                const elDiv = document.getElementById("divCuentaAtrasRuletaDesastres");
+                if (elDiv) elDiv.style.display = payload.timerVisible ? "block" : "none";
+            }
         } else if (windowId === "ventanaRetoResultado") {
             if (payload.retoActual && typeof renderizarResultadoReto === "function") {
                 window.retoActual = payload.retoActual;
@@ -291,15 +437,31 @@
                 if (el) el.innerHTML = payload.contenidoHTML;
             }
         } else if (windowId === "ventanaDados") {
-            if (payload.resultadoHTML !== undefined) {
-                const el = document.getElementById("resultadoDados");
-                if (el) el.innerHTML = payload.resultadoHTML;
+            const elRes = document.getElementById("resultadoDados");
+            if (elRes) {
+                if (payload.resultadoHTML !== undefined) elRes.innerHTML = payload.resultadoHTML;
+                if (payload.resultadoClassName !== undefined) elRes.className = payload.resultadoClassName;
             }
             if (payload.mensajeHTML !== undefined) {
                 const el = document.getElementById("mensajeDados");
                 if (el) el.innerHTML = payload.mensajeHTML;
             }
+            if (payload.inputTiradasVal !== undefined) {
+                const input = document.getElementById("inputTiradasDados");
+                if (input) input.value = payload.inputTiradasVal;
+            }
         } else if (windowId === "ventanaRuletaColor") {
+            if (payload.giroAnimacion && payload.rotacionObjetivo !== undefined) {
+                const wheel = document.getElementById("ruletaColorWheel");
+                if (wheel) {
+                    if (payload.wheelColors && typeof construirSVGRuleta === "function") {
+                        wheel.innerHTML = construirSVGRuleta(payload.wheelColors);
+                    }
+                    wheel.style.transition = "transform 4.2s cubic-bezier(0.22, 1, 0.36, 1)";
+                    wheel.style.transform = `rotate(${payload.rotacionObjetivo}deg)`;
+                    wheel.dataset.rotacion = String(payload.rotacionObjetivo);
+                }
+            }
             if (payload.resultadoHTML !== undefined) {
                 const el = document.getElementById("resultadoRuletaColor");
                 if (el) el.innerHTML = payload.resultadoHTML;
@@ -308,128 +470,183 @@
                 const el = document.getElementById("mensajeRuletaColor");
                 if (el) el.innerHTML = payload.mensajeHTML;
             }
+            if (payload.inputTiradasVal !== undefined) {
+                const input = document.getElementById("inputTiradasRuleta");
+                if (input) input.value = payload.inputTiradasVal;
+            }
         } else if (windowId === "ventanaHabilidadesGenerador") {
             if (payload.resultadoHTML !== undefined) {
                 const el = document.getElementById("habListaResultados");
                 if (el) el.innerHTML = payload.resultadoHTML;
             }
+        } else if (windowId === "ventanaTemporizador") {
+            const displayTemp = document.getElementById("displayTemporizador");
+            const configTemp = document.getElementById("configuracionTiempoContenedor");
+            const accionesTemp = document.getElementById("accionesTemporizadorEnCurso");
+            const inputMin = document.getElementById("inputMinutosTemporizador");
+
+            if (payload.displayVisible !== undefined && displayTemp) displayTemp.style.display = payload.displayVisible;
+            if (payload.configVisible !== undefined && configTemp) configTemp.style.display = payload.configVisible;
+            if (payload.accionesVisible !== undefined && accionesTemp) accionesTemp.style.display = payload.accionesVisible;
+            if (payload.inputMinutosVal !== undefined && inputMin) inputMin.value = payload.inputMinutosVal;
+            if (payload.pausado !== undefined && displayTemp) {
+                displayTemp.classList.toggle("pausado", payload.pausado);
+            }
+            if (payload.displayClassName !== undefined && displayTemp) {
+                displayTemp.className = payload.displayClassName;
+            }
+            if (payload.tempDigitsHTML !== undefined) {
+                const digits = document.getElementById("tempDigits");
+                if (digits) digits.innerHTML = payload.tempDigitsHTML;
+                else if (displayTemp) displayTemp.innerHTML = payload.tempDigitsHTML;
+            }
+        } else if (payload.contenidoGenericoHTML !== undefined) {
+            // ── Ventanas genéricas (solo lectura): trucos, estadísticas, listado, etc.
+            const elVentana = document.getElementById(windowId);
+            if (elVentana) elVentana.innerHTML = payload.contenidoGenericoHTML;
         }
     }
 
-    // ─── 4. HOOKS DE EMISIÓN DESDE LA PESTAÑA PRINCIPAL ─────────────────────
-    function instanciarHooksEmision() {
-        // 1. Hook para Ruleta de Desastres
-        const origGiro = window.ejecutarGiroDesastre;
-        if (typeof origGiro === "function") {
-            window.ejecutarGiroDesastre = function (...args) {
-                const res = origGiro.apply(this, args);
-                setTimeout(() => {
-                    emitirEstadoEnVivoOBS("ventanaRuletaDesastres", {
-                        pantalla: "juego",
-                        iconoHTML: document.getElementById("iconoResultadoDesastre")?.innerHTML,
-                        titulo: document.getElementById("tituloResultadoDesastre")?.textContent,
-                        descripcion: document.getElementById("descResultadoDesastre")?.innerHTML,
-                        detalle: document.getElementById("detalleResultadoDesastre")?.textContent,
-                        historialHTML: document.getElementById("listaHistorialDesastres")?.innerHTML
-                    });
-                }, 220);
-                return res;
-            };
-        }
+    // ─── 5. MUTATION OBSERVERS Y EVENTOS DE EMISIÓN DESDE LA PESTAÑA PRINCIPAL ─
+    function instanciarMutationObserversEmision() {
+        if (document.body.classList.contains("modo-obs")) return; // Solo en la pestaña principal emitimos
 
-        const origComenzarRuleta = window.comenzarRuletaDesastres;
-        if (typeof origComenzarRuleta === "function") {
-            window.comenzarRuletaDesastres = function (...args) {
-                const res = origComenzarRuleta.apply(this, args);
-                setTimeout(() => {
-                    emitirEstadoEnVivoOBS("ventanaRuletaDesastres", {
-                        pantalla: "juego",
-                        iconoHTML: document.getElementById("iconoResultadoDesastre")?.innerHTML,
-                        titulo: document.getElementById("tituloResultadoDesastre")?.textContent,
-                        descripcion: document.getElementById("descResultadoDesastre")?.innerHTML,
-                        detalle: document.getElementById("detalleResultadoDesastre")?.textContent,
-                        historialHTML: document.getElementById("listaHistorialDesastres")?.innerHTML
-                    });
-                }, 100);
-                return res;
-            };
-        }
+        iniciarHostPeerJS();
 
-        const origLimpiarHistorial = window.limpiarHistorialDesastres;
-        if (typeof origLimpiarHistorial === "function") {
-            window.limpiarHistorialDesastres = function (...args) {
-                const res = origLimpiarHistorial.apply(this, args);
-                setTimeout(() => {
-                    emitirEstadoEnVivoOBS("ventanaRuletaDesastres", {
-                        pantalla: "juego",
-                        historialHTML: document.getElementById("listaHistorialDesastres")?.innerHTML
-                    });
-                }, 50);
-                return res;
-            };
-        }
+        const capturarYEmitirEstado = (windowId) => {
+            if (windowId === "ventanaRuletaDesastres") {
+                const pantallaJuego = document.getElementById("pantallaJuegoRuletaDesastres");
+                const divCuentaAtras = document.getElementById("divCuentaAtrasRuletaDesastres");
+                emitirEstadoEnVivoOBS("ventanaRuletaDesastres", {
+                    pantalla: (pantallaJuego && pantallaJuego.style.display !== "none") ? "juego" : "config",
+                    iconoHTML: document.getElementById("iconoResultadoDesastre")?.innerHTML,
+                    titulo: document.getElementById("tituloResultadoDesastre")?.textContent,
+                    descripcion: document.getElementById("descResultadoDesastre")?.innerHTML,
+                    detalle: document.getElementById("detalleResultadoDesastre")?.textContent,
+                    historialHTML: document.getElementById("listaHistorialDesastres")?.innerHTML,
+                    timerText: document.getElementById("displayCuentaAtrasDesastres")?.textContent,
+                    timerLabelText: document.getElementById("labelEstadoCuentaAtrasDesastres")?.textContent,
+                    timerVisible: divCuentaAtras ? divCuentaAtras.style.display !== "none" : false
+                });
+            } else if (windowId === "ventanaRetoResultado") {
+                emitirEstadoEnVivoOBS("ventanaRetoResultado", {
+                    retoActual: window.retoActual,
+                    contenidoHTML: document.getElementById("contenidoRetoResultado")?.innerHTML
+                });
+            } else if (windowId === "ventanaDados") {
+                const elRes = document.getElementById("resultadoDados");
+                emitirEstadoEnVivoOBS("ventanaDados", {
+                    resultadoHTML: elRes?.innerHTML,
+                    resultadoClassName: elRes?.className,
+                    mensajeHTML: document.getElementById("mensajeDados")?.innerHTML,
+                    inputTiradasVal: document.getElementById("inputTiradasDados")?.value
+                });
+            } else if (windowId === "ventanaRuletaColor") {
+                emitirEstadoEnVivoOBS("ventanaRuletaColor", {
+                    resultadoHTML: document.getElementById("resultadoRuletaColor")?.innerHTML,
+                    mensajeHTML: document.getElementById("mensajeRuletaColor")?.innerHTML,
+                    inputTiradasVal: document.getElementById("inputTiradasRuleta")?.value
+                });
+            } else if (windowId === "ventanaHabilidadesGenerador") {
+                emitirEstadoEnVivoOBS("ventanaHabilidadesGenerador", {
+                    resultadoHTML: document.getElementById("habListaResultados")?.innerHTML
+                });
+            } else if (windowId === "ventanaTemporizador") {
+                const displayTemp = document.getElementById("displayTemporizador");
+                const configTemp = document.getElementById("configuracionTiempoContenedor");
+                const accionesTemp = document.getElementById("accionesTemporizadorEnCurso");
+                emitirEstadoEnVivoOBS("ventanaTemporizador", {
+                    displayVisible: displayTemp?.style.display,
+                    configVisible: configTemp?.style.display,
+                    accionesVisible: accionesTemp?.style.display,
+                    inputMinutosVal: document.getElementById("inputMinutosTemporizador")?.value,
+                    pausado: displayTemp ? displayTemp.classList.contains("pausado") : false,
+                    displayClassName: displayTemp ? displayTemp.className : "",
+                    tempDigitsHTML: document.getElementById("tempDigits")?.innerHTML || displayTemp?.innerHTML
+                });
+            }
+        };
 
-        // 2. Hook para Reto Resultado
-        const origRenderizarReto = window.renderizarResultadoReto;
-        if (typeof origRenderizarReto === "function") {
-            window.renderizarResultadoReto = function (...args) {
-                const res = origRenderizarReto.apply(this, args);
-                setTimeout(() => {
-                    emitirEstadoEnVivoOBS("ventanaRetoResultado", {
-                        retoActual: window.retoActual,
-                        contenidoHTML: document.getElementById("contenidoRetoResultado")?.innerHTML
-                    });
-                }, 100);
-                return res;
-            };
-        }
+        const contenedoresAEscuchar = [
+            { id: "tarjetaResultadoDesastre", windowId: "ventanaRuletaDesastres" },
+            { id: "listaHistorialDesastres",   windowId: "ventanaRuletaDesastres" },
+            { id: "displayCuentaAtrasDesastres", windowId: "ventanaRuletaDesastres" },
+            { id: "contenidoRetoResultado",    windowId: "ventanaRetoResultado" },
+            { id: "resultadoDados",            windowId: "ventanaDados" },
+            { id: "mensajeDados",              windowId: "ventanaDados" },
+            { id: "resultadoRuletaColor",      windowId: "ventanaRuletaColor" },
+            { id: "mensajeRuletaColor",        windowId: "ventanaRuletaColor" },
+            { id: "habListaResultados",        windowId: "ventanaHabilidadesGenerador" },
+            { id: "displayTemporizador",       windowId: "ventanaTemporizador" },
+            { id: "tempDigits",                windowId: "ventanaTemporizador" }
+        ];
 
-        // 3. Hook para Dados
-        const origTirarDados = window.tirarDados;
-        if (typeof origTirarDados === "function") {
-            window.tirarDados = function (...args) {
-                const res = origTirarDados.apply(this, args);
-                setTimeout(() => {
-                    emitirEstadoEnVivoOBS("ventanaDados", {
-                        resultadoHTML: document.getElementById("resultadoDados")?.innerHTML,
-                        mensajeHTML: document.getElementById("mensajeDados")?.innerHTML
-                    });
-                }, 150);
-                return res;
-            };
-        }
+        contenedoresAEscuchar.forEach(item => {
+            const el = document.getElementById(item.id);
+            if (el && typeof MutationObserver !== "undefined") {
+                let debounceTimer = null;
+                const mo = new MutationObserver(() => {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(() => capturarYEmitirEstado(item.windowId), 50);
+                });
+                // attributes:true detecta cambios de clase (p.ej. clase "pausado" en displayTemporizador)
+                mo.observe(el, { childList: true, subtree: true, characterData: true, attributes: true });
+            }
+        });
 
-        // 4. Hook para Ruleta de Colores
-        const origGirarColor = window.girarRuletaColor;
-        if (typeof origGirarColor === "function") {
-            window.girarRuletaColor = function (...args) {
-                const res = origGirarColor.apply(this, args);
-                setTimeout(() => {
-                    emitirEstadoEnVivoOBS("ventanaRuletaColor", {
-                        resultadoHTML: document.getElementById("resultadoRuletaColor")?.innerHTML,
-                        mensajeHTML: document.getElementById("mensajeRuletaColor")?.innerHTML
+        // ── Catchall universal para ventanas no cubiertas por handlers específicos ──
+        // Cubre: ventanaTrucos, ventanaTrucosConstruir, ventanaTrucosCAS, ventanaTrucosVivir,
+        //        ventanaTrucosPacks, ventanaEstadisticas, ventanaHabilidadesPacks, ventanaRetos,
+        //        ventanaRetosOpciones, ventanaListado, ventanaBuscador, etc.
+        const VENTANAS_CON_HANDLER_ESPECIFICO = new Set([
+            "ventanaRuletaDesastres", "ventanaRetoResultado", "ventanaDados",
+            "ventanaRuletaColor", "ventanaHabilidadesGenerador", "ventanaTemporizador"
+        ]);
+
+        if (typeof MutationObserver !== "undefined") {
+            let catchallTimer = null;
+            const moCatchall = new MutationObserver(() => {
+                clearTimeout(catchallTimer);
+                catchallTimer = setTimeout(() => {
+                    // Encontrar la ventana visible que NO tiene handler específico
+                    const ventanaVisible = document.querySelector(".ventana[style*='display: block'], .ventana[style*='display:block']");
+                    if (!ventanaVisible || !ventanaVisible.id) return;
+                    if (VENTANAS_CON_HANDLER_ESPECIFICO.has(ventanaVisible.id)) return;
+
+                    emitirEstadoEnVivoOBS(ventanaVisible.id, {
+                        contenidoGenericoHTML: ventanaVisible.innerHTML
                     });
                 }, 200);
-                return res;
-            };
+            });
+            moCatchall.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true });
         }
 
-        // 5. Hook para Habilidades
-        const origHabTirar = window._habTirar;
-        if (typeof origHabTirar === "function") {
-            window._habTirar = function (...args) {
-                const res = origHabTirar.apply(this, args);
-                setTimeout(() => {
-                    emitirEstadoEnVivoOBS("ventanaHabilidadesGenerador", {
-                        resultadoHTML: document.getElementById("habListaResultados")?.innerHTML
-                    });
-                }, 300);
-                return res;
-            };
-        }
+        // Escuchar cambios de valor en todos los inputs (números, scroll de ratón, typing)
+        document.addEventListener("input", (e) => {
+            const windowEl = e.target.closest(".ventana");
+            if (windowEl && windowEl.id) {
+                capturarYEmitirEstado(windowEl.id);
+            }
+        }, true);
+
+        document.addEventListener("change", (e) => {
+            const windowEl = e.target.closest(".ventana");
+            if (windowEl && windowEl.id) {
+                capturarYEmitirEstado(windowEl.id);
+            }
+        }, true);
+
+        document.addEventListener("wheel", (e) => {
+            if (e.target.tagName === "INPUT" || e.target.closest(".habNumeroWrap")) {
+                const windowEl = e.target.closest(".ventana");
+                if (windowEl && windowEl.id) {
+                    setTimeout(() => capturarYEmitirEstado(windowEl.id), 50);
+                }
+            }
+        }, true);
     }
 
-    // ─── 3. COPIAR URL PARA OBS BROWSER SOURCE ─────────────────────────────
+    // ─── 6. COPIAR URL PARA OBS BROWSER SOURCE ─────────────────────────────
     function construirURLOBS(windowId, screenId = null) {
         const loc = window.location;
 
@@ -440,11 +657,37 @@
         const url = new URL(loc.href.split("?")[0].split("#")[0]);
         url.searchParams.set("obs", "1");
         url.searchParams.set("window", windowId);
+
         if (screenId) {
             url.searchParams.set("screen", screenId);
         } else if (windowId === "ventanaRuletaDesastres") {
             url.searchParams.set("screen", "juego");
         }
+
+        // Adjuntar ID de Peer WebRTC para comunicación directa con OBS CEF
+        const peerId = obtenerHostPeerId();
+        if (peerId) {
+            url.searchParams.set("peer", peerId);
+        }
+
+        // Adjuntar estado actual de la tarjeta en la URL
+        if (windowId === "ventanaRuletaColor") {
+            const msg = document.getElementById("mensajeRuletaColor");
+            const res = document.getElementById("resultadoRuletaColor");
+            const sampleChip = res?.querySelector(".chipColorRuleta__muestra");
+            if (sampleChip) {
+                url.searchParams.set("color", sampleChip.getAttribute("data-tooltip") || "Color");
+                url.searchParams.set("hex", sampleChip.style.backgroundColor || "#2ecc71");
+            }
+        } else if (windowId === "ventanaRuletaDesastres") {
+            const elTitulo = document.getElementById("tituloResultadoDesastre");
+            const elDesc = document.getElementById("descResultadoDesastre");
+            const elIcono = document.getElementById("iconoResultadoDesastre");
+            if (elTitulo && elTitulo.textContent) url.searchParams.set("disTitle", elTitulo.textContent);
+            if (elDesc && elDesc.innerHTML) url.searchParams.set("disDesc", elDesc.innerHTML);
+            if (elIcono && elIcono.textContent) url.searchParams.set("disIcon", elIcono.textContent);
+        }
+
         return url.href;
     }
 
@@ -466,7 +709,6 @@
     function copiarURLEnlaceOBSDirecto(windowId, event) {
         if (!windowId) return;
 
-        // Detectar si la ventana actual de la ruleta está en juego o config
         let screenParam = null;
         if (windowId === "ventanaRuletaDesastres") {
             const juego = document.getElementById("pantallaJuegoRuletaDesastres");
@@ -518,11 +760,10 @@
         document.body.removeChild(textarea);
     }
 
-    // ─── 4. ABRIR POPOUT STANDALONE ────────────────────────────────────────
+    // ─── 7. ABRIR POPOUT STANDALONE ────────────────────────────────────────
     window.abrirPopoutOBS = function (windowId, screenId = null) {
         if (!windowId) return;
 
-        // Detectar si la ruleta está en juego o config si no viene definido
         if (!screenId && windowId === "ventanaRuletaDesastres") {
             const juego = document.getElementById("pantallaJuegoRuletaDesastres");
             screenId = (juego && juego.style.display !== "none") ? "juego" : "config";
@@ -532,7 +773,7 @@
         window.open(url, "OBS_" + windowId, "width=920,height=720,scrollbars=yes,resizable=yes");
     };
 
-    // ─── 5. MODAL SELECTOR DE VENTANA PARA OBS ─────────────────────────────
+    // ─── 8. MODAL SELECTOR DE VENTANA PARA OBS ─────────────────────────────
     function crearModalOBS() {
         if (document.getElementById("modalOBSSelector")) return;
 
@@ -599,7 +840,7 @@
         if (modal) modal.classList.add("visible");
     };
 
-    // ─── 6. TOAST NOTIFICACIÓN ─────────────────────────────────────────────
+    // ─── 9. TOAST NOTIFICACIÓN ─────────────────────────────────────────────
     function mostrarToastOBS(mensaje) {
         let toast = document.getElementById("toastOBS");
         if (!toast) {
@@ -613,7 +854,7 @@
         setTimeout(() => toast.classList.remove("visible"), 4500);
     }
 
-    // ─── 7. CLICK EN BOTONES OBS PEQUEÑOS DE CADA CABECERA ─────────────────
+    // ─── 10. CLICK EN BOTONES OBS PEQUEÑOS DE CADA CABECERA ─────────────────
     document.addEventListener("click", (e) => {
         const btn = e.target.closest(".btnOBS");
         if (btn) {
@@ -626,7 +867,7 @@
         }
     });
 
-    // ─── 8. INIT ───────────────────────────────────────────────────────────
+    // ─── 11. INIT ──────────────────────────────────────────────────────────
     document.addEventListener("DOMContentLoaded", () => {
         const urlParams = new URLSearchParams(window.location.search);
         const targetWindowId = urlParams.get("window");
@@ -642,6 +883,6 @@
 
     window.addEventListener("load", () => {
         setTimeout(inyectarBotonesOBSEnHeaders, 1000);
-        setTimeout(instanciarHooksEmision, 600);
+        setTimeout(instanciarMutationObserversEmision, 500);
     });
 })();

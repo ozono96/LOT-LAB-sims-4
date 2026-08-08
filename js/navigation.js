@@ -228,6 +228,11 @@ function abrirVentana(id, esClickUsuario = false) {
         const scrollAjuste = ventanaBCR.top - (menuBCR.bottom + GAP_PX);
         window.scrollBy({ top: scrollAjuste, behavior: "smooth" });
     });
+
+    // Actualizar URL de la barra del navegador (solo en clicks de usuario, no en popstate)
+    if (esClickUsuario && typeof window.actualizarURLParaVentana === "function") {
+        window.actualizarURLParaVentana(id);
+    }
 }
 
 

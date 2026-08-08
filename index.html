@@ -6,6 +6,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- OBS Browser Source usa su propia caché interna, separada de la caché
+         del navegador y de la CDN de GitHub Pages, y no se refresca sola al
+         actualizar los ficheros. Estas cabeceras ayudan a evitar que se quede
+         mostrando una versión antigua de la página. -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
     <title>LOT-LAB Sims 4</title>
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
@@ -413,7 +421,7 @@
                                     Cantidad de colores m&#xE1;ximos: <span id="valCantidadColores"
                                         style="color: var(--color-resaltado);">3</span>
                                 </label>
-                                <input type="range" id="sliderCantidadColores" min="1" max="12" value="3"
+                                 <input type="range" id="sliderCantidadColores" min="1" max="12" value="3"
                                     style="width: 85%; max-width: 280px; display: block; margin: 0 auto;">
                                 <div class="popoverAcciones"
                                     style="display: flex; gap: 8px; justify-content: center; margin-top: 12px;">
@@ -439,14 +447,12 @@
                                 </label>
                                 <input type="range" id="sliderCantidadHabilidades" min="1" max="10" value="3"
                                     style="width: 85%; max-width: 280px; display: block; margin: 0 auto;">
-                                <div style="font-size: 0.8rem; margin-top: 6px; opacity: 0.8; text-align: center;">
-                                    Filtradas según tus packs instalados.</div>
+                                <div style="font-size: 0.8rem; margin-top: 6px; opacity: 0.8; text-align: center;">Filtradas según tus packs instalados.</div>
                                 <div class="popoverAcciones"
                                     style="display: flex; gap: 8px; justify-content: center; margin-top: 12px;">
                                     <button type="button" class="btnAceptarPopover" id="btnAceptarHabilidades">&#x2705;
                                         Listo</button>
-                                    <button type="button" class="btnDesmarcarPopover"
-                                        id="btnDesmarcarHabilidades">&#x274C;
+                                    <button type="button" class="btnDesmarcarPopover" id="btnDesmarcarHabilidades">&#x274C;
                                         Desmarcar</button>
                                 </div>
                             </div>
@@ -711,8 +717,7 @@
                             data-tooltip="Restar 1 minuto">−</button>
                         <div class="habNumeroDisplay">
                             <input type="number" id="inputMinutosTemporizador" min="1" max="60" value="15" readonly
-                                class="habCantidadInput"
-                                data-tooltip="Rueda del ratón o botones para cambiar el tiempo">
+                                class="habCantidadInput" data-tooltip="Rueda del ratón o botones para cambiar el tiempo">
                         </div>
                         <button type="button" class="habNumeroBtn" id="btnSumarMinuto" aria-label="Más"
                             data-tooltip="Sumar 1 minuto">+</button>
@@ -2713,8 +2718,7 @@
                 </div>
 
                 <h2>🧠 Habilidades al azar</h2>
-                <p class="subtituloVentana">Selecciona los packs que tienes instalados para filtrar las habilidades
-                    disponibles:</p>
+                <p class="subtituloVentana">Selecciona los packs que tienes instalados para filtrar las habilidades disponibles:</p>
 
                 <div id="listaPacksHabilidades"></div>
 
@@ -2739,20 +2743,17 @@
                 </div>
 
                 <h2>🧠 Habilidades al azar</h2>
-                <p class="subtituloVentana" style="text-align: center;">Selecciona el número de habilidades que quieres
-                    que salgan en esta tirada</p>
+                <p class="subtituloVentana" style="text-align: center;">Selecciona el número de habilidades que quieres que salgan en esta tirada</p>
 
                 <!-- SELECTOR NUMÉRICO CON SCROLL -->
                 <div class="habNumeroWrap">
                     <button type="button" class="habNumeroBtn" id="habNumeroMenos" aria-label="Menos">−</button>
                     <div class="habNumeroDisplay">
-                        <input type="number" id="habCantidad" min="1" max="10" value="1" readonly
-                            class="habCantidadInput">
+                        <input type="number" id="habCantidad" min="1" max="10" value="1" readonly class="habCantidadInput">
                     </div>
                     <button type="button" class="habNumeroBtn" id="habNumeroMas" aria-label="Más">+</button>
                 </div>
-                <p style="font-size: 0.8rem; opacity: 0.75; text-align: center; margin-top: 10px; margin-bottom: 20px;">
-                    (Usa la rueda del ratón o los botones para cambiar el número)</p>
+                <p style="font-size: 0.8rem; opacity: 0.75; text-align: center; margin-top: 10px; margin-bottom: 20px;">(Usa la rueda del ratón o los botones para cambiar el número)</p>
 
                 <!-- BOTÓN TIRAR Y VOLVER -->
                 <div class="habAcciones">

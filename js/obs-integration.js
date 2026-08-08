@@ -22,6 +22,14 @@
         { id: "ventanaHabilidadesGenerador", nombre: "🧠 Habilidades al Azar" },
     ];
 
+    // ─── SINCRONIZACIÓN: Canal de comunicación entre pestaña principal y OBS ──
+    // BroadcastChannel (Chrome / OBS CEF Chromium) + localStorage (fallback)
+    const OBS_CHANNEL_NAME = "lotlab-obs-sync";
+    let broadcastChannel = null;
+    let localStoragePollInterval = null;
+    let ultimoTs = 0;
+    let obsWindowId = null; // ID de la ventana activa en el modo OBS
+
     // ─── 1. INYECTAR BOTONES OBS EN CADA cabeceraVentana ──────────────────
     function inyectarBotonesOBSEnHeaders() {
         document.querySelectorAll(".ventana").forEach(ventana => {
@@ -52,53 +60,132 @@
         });
     }
 
-    // ─── 2. ACTIVAR MODO OBS (página limpia para browser source) ───────────
+    // ─── 2. ACTIVAR MODO OBS (página limpia para browser source / popout) ──
+    // IMPORTANTE: esta función NUNCA debe tocar el innerHTML de las
+    // ventanas ni sustituir nodos del DOM. Tanto si esta página se usa
+    // como Fuente de Navegador de OBS como si se usa como Popout (donde
+    // el propio streamer interactúa con los botones), el HTML y los
+    // listeners de clic tienen que seguir siendo exactamente los mismos
+    // que en una pestaña normal. Lo único que cambia es qué ventana se
+    // muestra y el aspecto visual (vía CSS, sección "MODO OBS" de
+    // style.css), nunca la lógica ni los elementos interactivos.
     let vigilanteVentanaOBSInterval = null;
 
     function activarModoOBS(windowId) {
+        obsWindowId = windowId;
         document.body.classList.add("modo-obs");
         document.documentElement.classList.add("modo-obs");
 
         forzarVisibilidadOBS();
-        iniciarReceptorSyncOBS(windowId);
 
-        const intentarAbrir = () => {
+        // Muestra la ventana pedida sin llamar a abrirVentana() para no
+        // resetear el estado ni destruir los listeners de los controles
+        // internos (botones "Comenzar", reroll, etc.).
+        const mostrarVentanaOBS = () => {
             const elVentana = document.getElementById(windowId);
-            if (elVentana) {
-                if (typeof abrirVentana === "function") {
-                    abrirVentana(windowId, false);
-                } else {
-                    document.querySelectorAll(".ventana").forEach(v => v.classList.remove("activo"));
-                    elVentana.classList.add("activo");
-                }
-            }
+            if (!elVentana) return;
+            // Ocultar el resto de ventanas sin tocar su estado interno
+            document.querySelectorAll(".ventana").forEach(v => {
+                if (v.id !== windowId) v.style.display = "none";
+            });
+            elVentana.style.display = "block";
         };
 
-        intentarAbrir();
-        setTimeout(intentarAbrir, 200);
-        setTimeout(intentarAbrir, 700);
+        mostrarVentanaOBS();
+        setTimeout(mostrarVentanaOBS, 200);
+        setTimeout(mostrarVentanaOBS, 700);
 
-        // Vigilante permanente: si algún otro script de la web cambia la
-        // ventana activa (por ejemplo al cargar datos o al navegar), esto
-        // la vuelve a colocar en la ventana pedida para OBS, para que la
-        // fuente de navegador nunca se quede "atascada" mostrando otra cosa
-        // ni deje de reflejar cambios en tiempo real.
+        // Vigilante permanente y NO destructivo: únicamente restituye
+        // display:block si algo externo oculta la ventana. NUNCA llama a
+        // abrirVentana() (que resetea el DOM y los controles).
         if (vigilanteVentanaOBSInterval) clearInterval(vigilanteVentanaOBSInterval);
         vigilanteVentanaOBSInterval = setInterval(() => {
             const elVentana = document.getElementById(windowId);
             if (elVentana && elVentana.style.display !== "block") {
-                intentarAbrir();
+                elVentana.style.display = "block";
             }
         }, 1000);
+
+        // Auto-ajuste de tamaño SOLO si esto es un Popout (ventana abierta
+        // con window.open desde la propia web: tiene "window.opener"). Una
+        // Fuente de Navegador de OBS no tiene opener y su tamaño lo decide
+        // OBS, así que ahí resizeTo() no pinta nada y no se ejecuta.
+        if (window.opener) {
+            activarAutoResizePopout(windowId);
+            iniciarReceptorSincronizacion(windowId);
+        } else {
+            // Es un Browser Source de OBS — también escucha actualizaciones
+            iniciarReceptorSincronizacion(windowId);
+        }
+    }
+
+    // ─── 2a. AUTO-REDIMENSIONAR LA VENTANA EMERGENTE (POPOUT) ──────────────
+    // Cada ventana (reto, ruleta, dados...) tiene una altura/anchura de
+    // contenido distinta y puede cambiar de tamaño según lo que se genere.
+    // Redimensionamos la ventana emergente real del sistema operativo para
+    // que encaje exactamente con el contenido, así OBS "Captura de ventana"
+    // no deja huecos ni recorta nada.
+    function activarAutoResizePopout(windowId) {
+        function margenVentanaNavegador() {
+            return {
+                w: Math.max(0, window.outerWidth - window.innerWidth),
+                h: Math.max(0, window.outerHeight - window.innerHeight)
+            };
+        }
+
+        function ajustarTamanoPopout() {
+            const el = document.getElementById(windowId);
+            if (!el || el.style.display !== "block") return;
+
+            // Usamos scrollWidth/scrollHeight para medir el contenido real,
+            // no getBoundingClientRect(), porque en modo OBS el CSS usa
+            // fit-content (no 100vw), así que scroll mide el tamaño natural.
+            const scrollW = el.scrollWidth  || el.offsetWidth;
+            const scrollH = el.scrollHeight || el.offsetHeight;
+            if (scrollW < 10 || scrollH < 10) return; // aún no ha pintado
+
+            const margen = margenVentanaNavegador();
+            const anchoDeseado = Math.ceil(scrollW) + margen.w;
+            const altoDeseado  = Math.ceil(scrollH) + margen.h;
+
+            const anchoMax = window.screen ? window.screen.availWidth  : anchoDeseado;
+            const altoMax  = window.screen ? window.screen.availHeight : altoDeseado;
+
+            try {
+                window.resizeTo(
+                    Math.min(Math.max(anchoDeseado, 360), anchoMax),
+                    Math.min(Math.max(altoDeseado,  240), altoMax)
+                );
+            } catch (e) {
+                // Algunos navegadores bloquean resizeTo en ciertos contextos; se ignora.
+            }
+        }
+
+        // Varios intentos mientras carga todo el contenido (imágenes, fuentes...)
+        setTimeout(ajustarTamanoPopout, 300);
+        setTimeout(ajustarTamanoPopout, 900);
+        setTimeout(ajustarTamanoPopout, 1800);
+        window.addEventListener("load", () => setTimeout(ajustarTamanoPopout, 200));
+
+        // Reajustar si el contenido de la ventana cambia de tamaño más
+        // adelante (por ejemplo, al generar un reto o hacer un reroll).
+        const elInicial = document.getElementById(windowId);
+        if (elInicial && typeof ResizeObserver !== "undefined") {
+            let debounceResize = null;
+            const ro = new ResizeObserver(() => {
+                clearTimeout(debounceResize);
+                debounceResize = setTimeout(ajustarTamanoPopout, 250);
+            });
+            ro.observe(elInicial);
+        }
     }
 
     // ─── 2b. EVITAR QUE OBS PAUSE TEMPORIZADORES Y ANIMACIONES ─────────────
-    // Un Browser Source de OBS se renderiza "fuera de pantalla", y muchos
-    // navegadores tratan eso como una pestaña en segundo plano, pausando
-    // requestAnimationFrame y ralentizando setInterval. Esto es lo que hace
-    // que la información (temporizadores, ruletas, resultados) parezca no
-    // actualizarse aunque la ventana correcta esté siendo mostrada. Forzamos
-    // aquí que la página siempre se reporte a sí misma como visible.
+    // Un Browser Source de OBS (o una ventana Popout minimizada/tapada) se
+    // renderiza "fuera de pantalla", y los navegadores tratan eso como una
+    // pestaña en segundo plano, ralentizando setInterval/requestAnimationFrame.
+    // Forzamos que la página siempre se reporte a sí misma como visible para
+    // que temporizadores, ruletas y cuentas atrás no se congelen.
     function forzarVisibilidadOBS() {
         try {
             Object.defineProperty(document, "hidden", {
@@ -120,151 +207,103 @@
         };
         document.addEventListener("visibilitychange", bloquearEvento, true);
         window.addEventListener("blur", bloquearEvento, true);
-        window.addEventListener("pagehide", bloquearEvento, true);
     }
 
-    // Los estilos de transparencia y de refuerzo de legibilidad en modo día
-    // viven ahora en style.css (sección "MODO OBS"), usando las variables
-    // de tema reales del proyecto (--color-tarjeta, --borde, --blur, etc.)
-    // en vez de un parche aparte por JavaScript.
+    // ─── 3. SINCRONIZACIÓN PESTAÑA PRINCIPAL ↔ OBS (BroadcastChannel) ──────
+    // La pestaña principal emite el contenido de la ventana cada vez que cambia
+    // (reto generado, reroll, etc.). El Browser Source / Popout lo recibe y
+    // actualiza su vista sin recargar la página.
 
-    // ─── 2d. SINCRONIZACIÓN EN TIEMPO REAL ENTRE PESTAÑAS DEL MISMO NAVEGADOR
-    // Una Fuente de Navegador de OBS (URL pegada directamente en OBS) es un
-    // Chromium completamente aparte del navegador de escritorio: no comparte
-    // memoria ni almacenamiento, así que ningún truco de JavaScript puede
-    // "empujar" cambios hacia ella desde fuera. Lo que SÍ es 100% real es
-    // sincronizar entre pestañas/ventanas de TU MISMO navegador (dos pestañas
-    // normales, o la ventana "Popout" que abre este sitio, capturada en OBS
-    // con "Captura de ventana" en vez de "Fuente de navegador"). Eso es lo
-    // que implementa este bloque: cada vez que el contenido de una ventana
-    // cambia en una pestaña, se retransmite y se aplica al instante en
-    // cualquier otra pestaña/ventana abierta de la misma web.
-    const CANAL_SYNC_OBS = "lotlab_obs_sync_v1";
-    const canalSyncOBS = (typeof BroadcastChannel !== "undefined") ? new BroadcastChannel(CANAL_SYNC_OBS) : null;
-    let ventanaObjetivoSyncOBS = null;
-
-    function claveStorageSync(windowId) {
-        return "lotlab_obs_sync_" + windowId;
-    }
-
-    function enviarSnapshotVentana(windowId) {
+    // EMISOR: llamado desde la pestaña principal cuando hay un cambio de contenido
+    function emitirActualizacionOBS(windowId) {
         const el = document.getElementById(windowId);
         if (!el) return;
-
-        const payload = {
-            tipo: "obs_sync_ventana",
-            windowId: windowId,
-            html: el.innerHTML,
-            modoNoche: document.body.classList.contains("modo-noche"),
-            ts: Date.now()
-        };
-
-        if (canalSyncOBS) {
-            try { canalSyncOBS.postMessage(payload); } catch (e) { /* silencioso */ }
-        }
+        const payload = { type: "ventana-actualizada", windowId, html: el.innerHTML, ts: Date.now() };
         try {
-            localStorage.setItem(claveStorageSync(windowId), JSON.stringify(payload));
-        } catch (e) { /* cuota de localStorage superada: se ignora, no es crítico */ }
+            if (!broadcastChannel) broadcastChannel = new BroadcastChannel(OBS_CHANNEL_NAME);
+            broadcastChannel.postMessage(payload);
+        } catch (e) { /* no disponible */ }
+        try { localStorage.setItem("obs-sync-" + windowId, JSON.stringify({ html: payload.html, ts: payload.ts })); } catch (e) { /* quota */ }
     }
+    window.emitirActualizacionOBS = emitirActualizacionOBS;
 
-    function aplicarSnapshotVentana(payload) {
-        if (!payload || payload.windowId !== ventanaObjetivoSyncOBS) return;
-        const el = document.getElementById(payload.windowId);
-        if (!el) return;
-
-        if (el.innerHTML !== payload.html) {
-            el.innerHTML = payload.html;
-        }
-        document.body.classList.toggle("modo-noche", !!payload.modoNoche);
-        document.body.classList.toggle("modo-dia", !payload.modoNoche);
-    }
-
-    // ── Lado emisor: se ejecuta en cualquier pestaña normal (no modo OBS) ──
-    let observerEmisorSyncOBS = null;
-    let ventanasPendientesSyncOBS = new Set();
-    let temporizadorDebounceSyncOBS = null;
-
-    function programarEnvioSyncOBS(windowId) {
-        if (!windowId) return;
-        ventanasPendientesSyncOBS.add(windowId);
-        if (temporizadorDebounceSyncOBS) return;
-
-        temporizadorDebounceSyncOBS = setTimeout(() => {
-            ventanasPendientesSyncOBS.forEach(id => enviarSnapshotVentana(id));
-            ventanasPendientesSyncOBS.clear();
-            temporizadorDebounceSyncOBS = null;
-        }, 250);
-    }
-
-    function iniciarEmisorSyncOBS() {
-        const app = document.getElementById("app");
-        if (!app || observerEmisorSyncOBS) return;
-
-        observerEmisorSyncOBS = new MutationObserver((mutaciones) => {
-            mutaciones.forEach(m => {
-                const nodo = m.target.nodeType === 1 ? m.target : m.target.parentElement;
-                if (!nodo) return;
-                const ventana = nodo.closest(".ventana");
-                if (ventana && ventana.id) {
-                    programarEnvioSyncOBS(ventana.id);
-                }
-            });
-        });
-
-        observerEmisorSyncOBS.observe(app, {
-            childList: true,
-            subtree: true,
-            characterData: true,
-            attributes: true,
-            attributeFilter: ["style", "class", "src"]
-        });
-
-        // Si cambia el tema día/noche, reenviamos la ventana activa para que
-        // las pestañas sincronizadas también actualicen el tema.
-        document.getElementById("botonModo")?.addEventListener("click", () => {
-            setTimeout(() => {
-                if (window.ventanaActual) programarEnvioSyncOBS(window.ventanaActual);
-            }, 50);
-        });
-
-        // Snapshot inicial de la ventana activa al cargar la página.
-        setTimeout(() => {
-            if (window.ventanaActual) enviarSnapshotVentana(window.ventanaActual);
-        }, 1500);
-    }
-
-    // ── Lado receptor: se ejecuta dentro de la página cargada en OBS ───────
-    function iniciarReceptorSyncOBS(windowId) {
-        ventanaObjetivoSyncOBS = windowId;
-
-        if (canalSyncOBS) {
-            canalSyncOBS.onmessage = (e) => {
-                if (e.data && e.data.tipo === "obs_sync_ventana") {
-                    aplicarSnapshotVentana(e.data);
+    // RECEPTOR: escucha actualizaciones en el Popout / Browser Source
+    function iniciarReceptorSincronizacion(windowId) {
+        try {
+            if (!broadcastChannel) broadcastChannel = new BroadcastChannel(OBS_CHANNEL_NAME);
+            broadcastChannel.onmessage = (event) => {
+                const data = event.data;
+                if (data && data.type === "ventana-actualizada" && data.windowId === windowId) {
+                    aplicarActualizacionOBS(windowId, data.html, data.ts);
                 }
             };
-        }
+        } catch (e) { console.warn("[OBS] BroadcastChannel no disponible:", e); }
 
-        // Redundancia vía localStorage + evento "storage": funciona incluso
-        // si BroadcastChannel no está disponible en el navegador.
-        window.addEventListener("storage", (e) => {
-            if (!e.key || e.key !== claveStorageSync(windowId) || !e.newValue) return;
+        // Polling de localStorage como fallback (cada 2 segundos)
+        if (localStoragePollInterval) clearInterval(localStoragePollInterval);
+        localStoragePollInterval = setInterval(() => {
             try {
-                aplicarSnapshotVentana(JSON.parse(e.newValue));
-            } catch (err) { /* silencioso */ }
-        });
-
-        // Si ya había actividad guardada antes de abrir esta vista, la
-        // aplicamos de inmediato en vez de esperar al próximo cambio.
-        try {
-            const guardado = localStorage.getItem(claveStorageSync(windowId));
-            if (guardado) aplicarSnapshotVentana(JSON.parse(guardado));
-        } catch (e) { /* silencioso */ }
+                const raw = localStorage.getItem("obs-sync-" + windowId);
+                if (!raw) return;
+                const data = JSON.parse(raw);
+                if (data && data.ts > ultimoTs) aplicarActualizacionOBS(windowId, data.html, data.ts);
+            } catch (e) { /* ignore */ }
+        }, 2000);
     }
 
-    // ─── 3. COPIAR URL PARA OBS BROWSER SOURCE ─────────────────────────────
+    // Aplica el HTML recibido actualizando solo el contenido interior de la ventana
+    function aplicarActualizacionOBS(windowId, html, ts) {
+        if (ts <= ultimoTs) return;
+        ultimoTs = ts;
+        const el = document.getElementById(windowId);
+        if (!el || !html) return;
+        el.innerHTML = html;
+        // Si hay popout activo, reajustar tamaño tras el cambio de contenido
+        if (window.opener && obsWindowId) {
+            setTimeout(() => {
+                const scrollW = el.scrollWidth || el.offsetWidth;
+                const scrollH = el.scrollHeight || el.offsetHeight;
+                if (scrollW > 10 && scrollH > 10) {
+                    const mw = Math.max(0, window.outerWidth  - window.innerWidth);
+                    const mh = Math.max(0, window.outerHeight - window.innerHeight);
+                    try { window.resizeTo(
+                        Math.min(Math.max(scrollW + mw, 360), window.screen?.availWidth  || 9999),
+                        Math.min(Math.max(scrollH + mh, 240), window.screen?.availHeight || 9999)
+                    ); } catch (e) { /* ignorar */ }
+                }
+            }, 300);
+        }
+    }
+
+    // HOOK: emitir actualización cuando se renderiza un reto o la ruleta gira.
+    // Se aplica con monkey-patching no destructivo en el evento "load".
+    function hookearFuncionesDeActualizacion() {
+        const origRenderizar = window.renderizarResultadoReto;
+        if (typeof origRenderizar === "function") {
+            window.renderizarResultadoReto = function (...args) {
+                const r = origRenderizar.apply(this, args);
+                setTimeout(() => emitirActualizacionOBS("ventanaRetoResultado"), 150);
+                return r;
+            };
+        }
+        const origRuleta = window.iniciarRuleta;
+        if (typeof origRuleta === "function") {
+            window.iniciarRuleta = function (...args) {
+                const r = origRuleta.apply(this, args);
+                setTimeout(() => emitirActualizacionOBS("ventanaRuletaDesastres"), 150);
+                return r;
+            };
+        }
+    }
+
+    // ─── 4. COPIAR URL PARA OBS BROWSER SOURCE ─────────────────────────────
     function construirURLOBS(windowId) {
-        const url = new URL(window.location.href.split("?")[0].split("#")[0]);
+        const loc = window.location;
+        // Advertir en modo local (file://) donde el Browser Source no funciona bien
+        if (loc.protocol === "file:") {
+            setTimeout(() => mostrarToastOBS("⚠️ Estás en local. Para OBS Browser Source usa la URL de GitHub Pages, o usa el Popout."), 100);
+        }
+        const url = new URL(loc.href.split("?")[0].split("#")[0]);
         url.searchParams.set("obs", "1");
         url.searchParams.set("window", windowId);
         return url.href;
@@ -336,8 +375,17 @@
     }
 
     // ─── 4. ABRIR POPOUT STANDALONE ────────────────────────────────────────
+    // El Popout es simplemente esta misma web abierta en una pestaña /
+    // ventana nueva de tu propio navegador, mostrando solo la ventana
+    // elegida. Al ser tu mismo navegador, es 100% interactiva: los botones
+    // funcionan exactamente igual que en la pestaña normal. Para capturarla
+    // en OBS, usa "Captura de ventana" (Window Capture) apuntando a esa
+    // ventana emergente, no "Fuente de navegador".
     window.abrirPopoutOBS = function (windowId) {
         if (!windowId) return;
+        // Emitir el estado actual ANTES de abrir el popout, para que cuando
+        // éste cargue ya tenga datos en localStorage listos para mostrar.
+        emitirActualizacionOBS(windowId);
         window.open(construirURLOBS(windowId), "OBS_" + windowId, "width=900,height=700,scrollbars=yes,resizable=yes");
     };
 
@@ -426,8 +474,8 @@
     }
 
     // ─── 7. CLICK EN BOTONES OBS PEQUEÑOS DE CADA CABECERA ─────────────────
-    // Ahora copian el enlace directamente (sin abrir el selector) y avisan
-    // con el mismo tipo de tooltip verde "copiado" que usa el resto de la web.
+    // Copian el enlace directamente (sin abrir el selector) y avisan con el
+    // mismo tipo de tooltip verde "copiado" que usa el resto de la web.
     document.addEventListener("click", (e) => {
         const btn = e.target.closest(".btnOBS");
         if (btn) {
@@ -449,11 +497,6 @@
 
         if (esOBS) {
             activarModoOBS(targetWindowId);
-        } else {
-            // Pestaña normal (o Popout): emite cambios para que cualquier
-            // otra pestaña/ventana de este mismo navegador que esté
-            // sincronizada (incluida una vista en modo OBS) se actualice.
-            iniciarEmisorSyncOBS();
         }
 
         // Inyectar botones tras carga completa de app
@@ -463,5 +506,8 @@
     // También re-inyectar si se abren ventanas dinámicamente
     window.addEventListener("load", () => {
         setTimeout(inyectarBotonesOBSEnHeaders, 1200);
+        // Hookear funciones de actualización de contenido (se hace en "load"
+        // para asegurar que renderizarResultadoReto y similares ya existen).
+        setTimeout(hookearFuncionesDeActualizacion, 800);
     });
 })();

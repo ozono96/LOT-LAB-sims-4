@@ -5,30 +5,29 @@
    ========================================================= */
 
 (function () {
-    // Ventanas disponibles con nombre legible
+    // Ventanas disponibles con nombre legible y opciones de pantalla
     const VENTANAS_OBS = [
+        { id: "ventanaRuletaDesastres",   nombre: "🎡 Ruleta de Desastres (Juego / Girar)", screen: "juego" },
+        { id: "ventanaRuletaDesastres",   nombre: "⚙️ Ruleta de Desastres (Configuración)", screen: "config" },
+        { id: "ventanaRetoResultado",     nombre: "🎯 Reto Generado" },
+        { id: "ventanaRetosOpciones",     nombre: "⚙️ Opciones del Reto" },
+        { id: "ventanaRuletaColor",       nombre: "🎨 Ruleta de Colores" },
+        { id: "ventanaDados",             nombre: "🎲 Tirador de Dados" },
+        { id: "ventanaTemporizador",      nombre: "⏱️ Temporizador de Retos" },
+        { id: "ventanaHabilidadesGenerador", nombre: "🧠 Habilidades al Azar" },
         { id: "ventanaBuscador",          nombre: "🔍 Filtrador de Solares" },
         { id: "ventanaResultados",        nombre: "🏠 Resultados de Búsqueda" },
         { id: "ventanaFichaSolar",        nombre: "📋 Ficha de Solar" },
         { id: "ventanaListado",           nombre: "📦 Listado de Packs" },
-        { id: "ventanaRetosOpciones",     nombre: "⚙️ Opciones del Reto" },
-        { id: "ventanaRetoResultado",     nombre: "🎯 Reto Generado" },
-        { id: "ventanaTemporizador",      nombre: "⏱️ Temporizador de Retos" },
-        { id: "ventanaRuletaColor",       nombre: "🎨 Ruleta de Colores" },
-        { id: "ventanaDados",             nombre: "🎲 Tirador de Dados" },
         { id: "ventanaTrucos",            nombre: "🕹️ Trucos" },
         { id: "ventanaEstadisticas",      nombre: "📊 Estadísticas Sims 4" },
-        { id: "ventanaRuletaDesastres",   nombre: "🎡 Ruleta de Desastres" },
-        { id: "ventanaHabilidadesGenerador", nombre: "🧠 Habilidades al Azar" },
     ];
 
-    // ─── SINCRONIZACIÓN: Canal de comunicación entre pestaña principal y OBS ──
-    // BroadcastChannel (Chrome / OBS CEF Chromium) + localStorage (fallback)
-    const OBS_CHANNEL_NAME = "lotlab-obs-sync";
+    // Canal BroadcastChannel + Storage fallback para comunicación en tiempo real
+    const OBS_SYNC_CHANNEL = "lotlab_obs_sync_v2";
     let broadcastChannel = null;
-    let localStoragePollInterval = null;
-    let ultimoTs = 0;
-    let obsWindowId = null; // ID de la ventana activa en el modo OBS
+    let syncObsWindowId = null;
+    let ultimoTsAplicado = 0;
 
     // ─── 1. INYECTAR BOTONES OBS EN CADA cabeceraVentana ──────────────────
     function inyectarBotonesOBSEnHeaders() {
@@ -60,145 +59,137 @@
         });
     }
 
-    // ─── 2. ACTIVAR MODO OBS (página limpia para browser source / popout) ──
-    // IMPORTANTE: esta función NUNCA debe tocar el innerHTML de las
-    // ventanas ni sustituir nodos del DOM. Tanto si esta página se usa
-    // como Fuente de Navegador de OBS como si se usa como Popout (donde
-    // el propio streamer interactúa con los botones), el HTML y los
-    // listeners de clic tienen que seguir siendo exactamente los mismos
-    // que en una pestaña normal. Lo único que cambia es qué ventana se
-    // muestra y el aspecto visual (vía CSS, sección "MODO OBS" de
-    // style.css), nunca la lógica ni los elementos interactivos.
-    let vigilanteVentanaOBSInterval = null;
-
-    function activarModoOBS(windowId) {
-        obsWindowId = windowId;
+    // ─── 2. ACTIVAR MODO OBS (Página limpia para browser source / popout) ──
+    function activarModoOBS(windowId, screenParam) {
+        syncObsWindowId = windowId;
         document.body.classList.add("modo-obs");
         document.documentElement.classList.add("modo-obs");
 
         forzarVisibilidadOBS();
 
-        // Muestra la ventana pedida sin llamar a abrirVentana() para no
-        // resetear el estado ni destruir los listeners de los controles
-        // internos (botones "Comenzar", reroll, etc.).
-        const mostrarVentanaOBS = () => {
-            const elVentana = document.getElementById(windowId);
-            if (!elVentana) return;
-            // Ocultar el resto de ventanas sin tocar su estado interno
+        const prepararYMostrarVentana = () => {
             document.querySelectorAll(".ventana").forEach(v => {
                 if (v.id !== windowId) v.style.display = "none";
             });
+
+            const elVentana = document.getElementById(windowId);
+            if (!elVentana) return;
+
             elVentana.style.display = "block";
+
+            // Lógica de pantalla activa según tipo de ventana
+            if (windowId === "ventanaRuletaDesastres") {
+                const pantallaConfig = document.getElementById("pantallaConfigRuletaDesastres");
+                const pantallaJuego = document.getElementById("pantallaJuegoRuletaDesastres");
+
+                if (screenParam === "config") {
+                    if (pantallaConfig) pantallaConfig.style.display = "block";
+                    if (pantallaJuego) pantallaJuego.style.display = "none";
+                } else {
+                    if (pantallaConfig) pantallaConfig.style.display = "none";
+                    if (pantallaJuego) pantallaJuego.style.display = "block";
+
+                    if (typeof renderizarBotonesCategorias === "function") {
+                        renderizarBotonesCategorias();
+                    }
+                }
+            } else if (windowId === "ventanaHabilidadesGenerador") {
+                if (typeof _habFiltrarHabilidades === "function") {
+                    _habFiltrarHabilidades();
+                    if (typeof _habInicializarGenerador === "function") _habInicializarGenerador();
+                }
+            } else if (windowId === "ventanaRetoResultado") {
+                if (!window.retoActual && typeof generarReto === "function") {
+                    generarReto(true);
+                }
+            } else if (windowId === "ventanaRuletaColor") {
+                if (typeof inicializarRuletaColor === "function") {
+                    inicializarRuletaColor();
+                }
+            } else if (windowId === "ventanaDados") {
+                if (typeof inicializarDados === "function") {
+                    inicializarDados();
+                }
+            }
         };
 
-        mostrarVentanaOBS();
-        setTimeout(mostrarVentanaOBS, 200);
-        setTimeout(mostrarVentanaOBS, 700);
+        prepararYMostrarVentana();
+        setTimeout(prepararYMostrarVentana, 300);
 
-        // Vigilante permanente y NO destructivo: únicamente restituye
-        // display:block si algo externo oculta la ventana. NUNCA llama a
-        // abrirVentana() (que resetea el DOM y los controles).
-        if (vigilanteVentanaOBSInterval) clearInterval(vigilanteVentanaOBSInterval);
-        vigilanteVentanaOBSInterval = setInterval(() => {
-            const elVentana = document.getElementById(windowId);
-            if (elVentana && elVentana.style.display !== "block") {
-                elVentana.style.display = "block";
-            }
-        }, 1000);
+        // Iniciar receptor de estado en vivo para OBS / Popouts
+        iniciarReceptorEstadoEnVivo(windowId);
 
-        // Auto-ajuste de tamaño SOLO si esto es un Popout (ventana abierta
-        // con window.open desde la propia web: tiene "window.opener"). Una
-        // Fuente de Navegador de OBS no tiene opener y su tamaño lo decide
-        // OBS, así que ahí resizeTo() no pinta nada y no se ejecuta.
+        // Auto-resize adaptativo si es un Popout (`window.opener`)
         if (window.opener) {
-            activarAutoResizePopout(windowId);
-            iniciarReceptorSincronizacion(windowId);
-        } else {
-            // Es un Browser Source de OBS — también escucha actualizaciones
-            iniciarReceptorSincronizacion(windowId);
+            activarAutoResizePopoutAdaptativo(windowId);
         }
     }
 
-    // ─── 2a. AUTO-REDIMENSIONAR LA VENTANA EMERGENTE (POPOUT) ──────────────
-    // Cada ventana (reto, ruleta, dados...) tiene una altura/anchura de
-    // contenido distinta y puede cambiar de tamaño según lo que se genere.
-    // Redimensionamos la ventana emergente real del sistema operativo para
-    // que encaje exactamente con el contenido, así OBS "Captura de ventana"
-    // no deja huecos ni recorta nada.
-    function activarAutoResizePopout(windowId) {
-        function margenVentanaNavegador() {
-            return {
-                w: Math.max(0, window.outerWidth - window.innerWidth),
-                h: Math.max(0, window.outerHeight - window.innerHeight)
-            };
-        }
+    // ─── 2a. AUTO-REDIMENSIONAR ADAPTATIVO EN TIEMPO REAL (POPOUT) ──────────
+    // Se redimensiona dinámicamente cuando el contenido dentro de la ventana aumenta
+    // o disminuye (p.ej. al cambiar entre pantallas o añadir filas al historial).
+    function activarAutoResizePopoutAdaptativo(windowId) {
+        if (!window.opener) return;
 
-        function ajustarTamanoPopout() {
-            const el = document.getElementById(windowId);
-            if (!el || el.style.display !== "block") return;
+        const el = document.getElementById(windowId);
+        if (!el) return;
 
-            // Usamos scrollWidth/scrollHeight para medir el contenido real,
-            // no getBoundingClientRect(), porque en modo OBS el CSS usa
-            // fit-content (no 100vw), así que scroll mide el tamaño natural.
-            const scrollW = el.scrollWidth  || el.offsetWidth;
+        let prevAncho = 0;
+        let prevAlto = 0;
+        let debounceTimer = null;
+
+        function reajustar() {
+            if (el.style.display !== "block") return;
+
+            const scrollW = el.scrollWidth || el.offsetWidth;
             const scrollH = el.scrollHeight || el.offsetHeight;
-            if (scrollW < 10 || scrollH < 10) return; // aún no ha pintado
+            if (scrollW < 10 || scrollH < 10) return;
 
-            const margen = margenVentanaNavegador();
-            const anchoDeseado = Math.ceil(scrollW) + margen.w;
-            const altoDeseado  = Math.ceil(scrollH) + margen.h;
+            const margenW = Math.max(0, window.outerWidth - window.innerWidth);
+            const margenH = Math.max(0, window.outerHeight - window.innerHeight);
+
+            const anchoDeseado = Math.ceil(scrollW) + margenW;
+            const altoDeseado  = Math.ceil(scrollH) + margenH;
+
+            // Evitar ajustes ínfimos que puedan generar bucles
+            if (Math.abs(anchoDeseado - prevAncho) < 14 && Math.abs(altoDeseado - prevAlto) < 14) {
+                return;
+            }
+
+            prevAncho = anchoDeseado;
+            prevAlto = altoDeseado;
 
             const anchoMax = window.screen ? window.screen.availWidth  : anchoDeseado;
             const altoMax  = window.screen ? window.screen.availHeight : altoDeseado;
 
             try {
                 window.resizeTo(
-                    Math.min(Math.max(anchoDeseado, 360), anchoMax),
-                    Math.min(Math.max(altoDeseado,  240), altoMax)
+                    Math.min(Math.max(anchoDeseado, 380), anchoMax),
+                    Math.min(Math.max(altoDeseado,  260), altoMax)
                 );
             } catch (e) {
-                // Algunos navegadores bloquean resizeTo en ciertos contextos; se ignora.
+                // Ignore security limits
             }
         }
 
-        // Varios intentos mientras carga todo el contenido (imágenes, fuentes...)
-        setTimeout(ajustarTamanoPopout, 300);
-        setTimeout(ajustarTamanoPopout, 900);
-        setTimeout(ajustarTamanoPopout, 1800);
-        window.addEventListener("load", () => setTimeout(ajustarTamanoPopout, 200));
+        setTimeout(reajustar, 300);
+        setTimeout(reajustar, 900);
 
-        // Reajustar si el contenido de la ventana cambia de tamaño más
-        // adelante (por ejemplo, al generar un reto o hacer un reroll).
-        const elInicial = document.getElementById(windowId);
-        if (elInicial && typeof ResizeObserver !== "undefined") {
-            let debounceResize = null;
+        if (typeof ResizeObserver !== "undefined") {
             const ro = new ResizeObserver(() => {
-                clearTimeout(debounceResize);
-                debounceResize = setTimeout(ajustarTamanoPopout, 250);
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(reajustar, 120);
             });
-            ro.observe(elInicial);
+            ro.observe(el);
         }
     }
 
     // ─── 2b. EVITAR QUE OBS PAUSE TEMPORIZADORES Y ANIMACIONES ─────────────
-    // Un Browser Source de OBS (o una ventana Popout minimizada/tapada) se
-    // renderiza "fuera de pantalla", y los navegadores tratan eso como una
-    // pestaña en segundo plano, ralentizando setInterval/requestAnimationFrame.
-    // Forzamos que la página siempre se reporte a sí misma como visible para
-    // que temporizadores, ruletas y cuentas atrás no se congelen.
     function forzarVisibilidadOBS() {
         try {
-            Object.defineProperty(document, "hidden", {
-                configurable: true,
-                get: () => false
-            });
-            Object.defineProperty(document, "visibilityState", {
-                configurable: true,
-                get: () => "visible"
-            });
-        } catch (e) {
-            console.warn("[OBS] No se pudo forzar la visibilidad de la página:", e);
-        }
+            Object.defineProperty(document, "hidden", { configurable: true, get: () => false });
+            Object.defineProperty(document, "visibilityState", { configurable: true, get: () => "visible" });
+        } catch (e) {}
 
         const bloquearEvento = (e) => {
             if (e && typeof e.stopImmediatePropagation === "function") {
@@ -209,109 +200,257 @@
         window.addEventListener("blur", bloquearEvento, true);
     }
 
-    // ─── 3. SINCRONIZACIÓN PESTAÑA PRINCIPAL ↔ OBS (BroadcastChannel) ──────
-    // La pestaña principal emite el contenido de la ventana cada vez que cambia
-    // (reto generado, reroll, etc.). El Browser Source / Popout lo recibe y
-    // actualiza su vista sin recargar la página.
+    // ─── 3. EMISOR Y RECEPTOR DE ESTADO EN TIEMPO REAL ──────────────────────
+    function emitirEstadoEnVivoOBS(windowId, payload) {
+        if (!payload) return;
+        payload.ts = Date.now();
+        payload.windowId = windowId;
 
-    // EMISOR: llamado desde la pestaña principal cuando hay un cambio de contenido
-    function emitirActualizacionOBS(windowId) {
-        const el = document.getElementById(windowId);
-        if (!el) return;
-        const payload = { type: "ventana-actualizada", windowId, html: el.innerHTML, ts: Date.now() };
+        // 1. BroadcastChannel (pestañas en el mismo navegador)
         try {
-            if (!broadcastChannel) broadcastChannel = new BroadcastChannel(OBS_CHANNEL_NAME);
+            if (!broadcastChannel) broadcastChannel = new BroadcastChannel(OBS_SYNC_CHANNEL_NAME);
             broadcastChannel.postMessage(payload);
-        } catch (e) { /* no disponible */ }
-        try { localStorage.setItem("obs-sync-" + windowId, JSON.stringify({ html: payload.html, ts: payload.ts })); } catch (e) { /* quota */ }
-    }
-    window.emitirActualizacionOBS = emitirActualizacionOBS;
+        } catch (e) {}
 
-    // RECEPTOR: escucha actualizaciones en el Popout / Browser Source
-    function iniciarReceptorSincronizacion(windowId) {
+        // 2. localStorage (dispara evento 'storage' nativo en otras ventanas/procesos del mismo dominio)
         try {
-            if (!broadcastChannel) broadcastChannel = new BroadcastChannel(OBS_CHANNEL_NAME);
-            broadcastChannel.onmessage = (event) => {
-                const data = event.data;
-                if (data && data.type === "ventana-actualizada" && data.windowId === windowId) {
-                    aplicarActualizacionOBS(windowId, data.html, data.ts);
-                }
-            };
-        } catch (e) { console.warn("[OBS] BroadcastChannel no disponible:", e); }
+            localStorage.setItem(OBS_SYNC_KEY_PREFIX + windowId, JSON.stringify(payload));
+        } catch (e) {}
+    }
+    window.emitirEstadoEnVivoOBS = emitirEstadoEnVivoOBS;
 
-        // Polling de localStorage como fallback (cada 2 segundos)
-        if (localStoragePollInterval) clearInterval(localStoragePollInterval);
-        localStoragePollInterval = setInterval(() => {
+    function iniciarReceptorEstadoEnVivo(targetWindowId) {
+        const procesarPayload = (payload) => {
+            if (!payload || payload.windowId !== targetWindowId) return;
+            if (payload.ts <= ultimoTsAplicado) return;
+            ultimoTsAplicado = payload.ts;
+
+            aplicarEstadoObjetivoEnDOM(targetWindowId, payload);
+        };
+
+        // 1. Escuchar mensajes BroadcastChannel
+        try {
+            if (!broadcastChannel) broadcastChannel = new BroadcastChannel(OBS_SYNC_CHANNEL_NAME);
+            broadcastChannel.onmessage = (event) => procesarPayload(event.data);
+        } catch (e) {}
+
+        // 2. Escuchar evento native 'storage' de JS (cambios entre ventanas de navegador)
+        window.addEventListener("storage", (e) => {
+            if (e.key === OBS_SYNC_KEY_PREFIX + targetWindowId && e.newValue) {
+                try {
+                    procesarPayload(JSON.parse(e.newValue));
+                } catch (err) {}
+            }
+        });
+
+        // 3. Polling liviano a localStorage como respaldo (cada 500ms)
+        setInterval(() => {
             try {
-                const raw = localStorage.getItem("obs-sync-" + windowId);
-                if (!raw) return;
-                const data = JSON.parse(raw);
-                if (data && data.ts > ultimoTs) aplicarActualizacionOBS(windowId, data.html, data.ts);
-            } catch (e) { /* ignore */ }
-        }, 2000);
+                const raw = localStorage.getItem(OBS_SYNC_KEY_PREFIX + targetWindowId);
+                if (raw) procesarPayload(JSON.parse(raw));
+            } catch (err) {}
+        }, 500);
     }
 
-    // Aplica el HTML recibido actualizando solo el contenido interior de la ventana
-    function aplicarActualizacionOBS(windowId, html, ts) {
-        if (ts <= ultimoTs) return;
-        ultimoTs = ts;
-        const el = document.getElementById(windowId);
-        if (!el || !html) return;
-        el.innerHTML = html;
-        // Si hay popout activo, reajustar tamaño tras el cambio de contenido
-        if (window.opener && obsWindowId) {
-            setTimeout(() => {
-                const scrollW = el.scrollWidth || el.offsetWidth;
-                const scrollH = el.scrollHeight || el.offsetHeight;
-                if (scrollW > 10 && scrollH > 10) {
-                    const mw = Math.max(0, window.outerWidth  - window.innerWidth);
-                    const mh = Math.max(0, window.outerHeight - window.innerHeight);
-                    try { window.resizeTo(
-                        Math.min(Math.max(scrollW + mw, 360), window.screen?.availWidth  || 9999),
-                        Math.min(Math.max(scrollH + mh, 240), window.screen?.availHeight || 9999)
-                    ); } catch (e) { /* ignorar */ }
-                }
-            }, 300);
+    function aplicarEstadoObjetivoEnDOM(windowId, payload) {
+        if (windowId === "ventanaRuletaDesastres") {
+            const pantallaConfig = document.getElementById("pantallaConfigRuletaDesastres");
+            const pantallaJuego = document.getElementById("pantallaJuegoRuletaDesastres");
+
+            if (payload.pantalla === "juego") {
+                if (pantallaConfig) pantallaConfig.style.display = "none";
+                if (pantallaJuego) pantallaJuego.style.display = "block";
+            }
+
+            if (payload.iconoHTML !== undefined) {
+                const containerIcono = document.getElementById("iconoResultadoDesastre");
+                if (containerIcono) containerIcono.innerHTML = payload.iconoHTML;
+            }
+            if (payload.titulo !== undefined) {
+                const el = document.getElementById("tituloResultadoDesastre");
+                if (el) el.textContent = payload.titulo;
+            }
+            if (payload.descripcion !== undefined) {
+                const el = document.getElementById("descResultadoDesastre");
+                if (el) el.innerHTML = payload.descripcion;
+            }
+            if (payload.detalle !== undefined) {
+                const el = document.getElementById("detalleResultadoDesastre");
+                if (el) el.textContent = payload.detalle;
+            }
+            if (payload.historialHTML !== undefined) {
+                const el = document.getElementById("listaHistorialDesastres");
+                if (el) el.innerHTML = payload.historialHTML;
+            }
+        } else if (windowId === "ventanaRetoResultado") {
+            if (payload.retoActual && typeof renderizarResultadoReto === "function") {
+                window.retoActual = payload.retoActual;
+                renderizarResultadoReto(payload.retoActual);
+            } else if (payload.contenidoHTML) {
+                const el = document.getElementById("contenidoRetoResultado");
+                if (el) el.innerHTML = payload.contenidoHTML;
+            }
+        } else if (windowId === "ventanaDados") {
+            if (payload.resultadoHTML !== undefined) {
+                const el = document.getElementById("resultadoDados");
+                if (el) el.innerHTML = payload.resultadoHTML;
+            }
+            if (payload.mensajeHTML !== undefined) {
+                const el = document.getElementById("mensajeDados");
+                if (el) el.innerHTML = payload.mensajeHTML;
+            }
+        } else if (windowId === "ventanaRuletaColor") {
+            if (payload.resultadoHTML !== undefined) {
+                const el = document.getElementById("resultadoRuletaColor");
+                if (el) el.innerHTML = payload.resultadoHTML;
+            }
+            if (payload.mensajeHTML !== undefined) {
+                const el = document.getElementById("mensajeRuletaColor");
+                if (el) el.innerHTML = payload.mensajeHTML;
+            }
+        } else if (windowId === "ventanaHabilidadesGenerador") {
+            if (payload.resultadoHTML !== undefined) {
+                const el = document.getElementById("habListaResultados");
+                if (el) el.innerHTML = payload.resultadoHTML;
+            }
         }
     }
 
-    // HOOK: emitir actualización cuando se renderiza un reto o la ruleta gira.
-    // Se aplica con monkey-patching no destructivo en el evento "load".
-    function hookearFuncionesDeActualizacion() {
-        const origRenderizar = window.renderizarResultadoReto;
-        if (typeof origRenderizar === "function") {
+    // ─── 4. HOOKS DE EMISIÓN DESDE LA PESTAÑA PRINCIPAL ─────────────────────
+    function instanciarHooksEmision() {
+        // 1. Hook para Ruleta de Desastres
+        const origGiro = window.ejecutarGiroDesastre;
+        if (typeof origGiro === "function") {
+            window.ejecutarGiroDesastre = function (...args) {
+                const res = origGiro.apply(this, args);
+                setTimeout(() => {
+                    emitirEstadoEnVivoOBS("ventanaRuletaDesastres", {
+                        pantalla: "juego",
+                        iconoHTML: document.getElementById("iconoResultadoDesastre")?.innerHTML,
+                        titulo: document.getElementById("tituloResultadoDesastre")?.textContent,
+                        descripcion: document.getElementById("descResultadoDesastre")?.innerHTML,
+                        detalle: document.getElementById("detalleResultadoDesastre")?.textContent,
+                        historialHTML: document.getElementById("listaHistorialDesastres")?.innerHTML
+                    });
+                }, 220);
+                return res;
+            };
+        }
+
+        const origComenzarRuleta = window.comenzarRuletaDesastres;
+        if (typeof origComenzarRuleta === "function") {
+            window.comenzarRuletaDesastres = function (...args) {
+                const res = origComenzarRuleta.apply(this, args);
+                setTimeout(() => {
+                    emitirEstadoEnVivoOBS("ventanaRuletaDesastres", {
+                        pantalla: "juego",
+                        iconoHTML: document.getElementById("iconoResultadoDesastre")?.innerHTML,
+                        titulo: document.getElementById("tituloResultadoDesastre")?.textContent,
+                        descripcion: document.getElementById("descResultadoDesastre")?.innerHTML,
+                        detalle: document.getElementById("detalleResultadoDesastre")?.textContent,
+                        historialHTML: document.getElementById("listaHistorialDesastres")?.innerHTML
+                    });
+                }, 100);
+                return res;
+            };
+        }
+
+        const origLimpiarHistorial = window.limpiarHistorialDesastres;
+        if (typeof origLimpiarHistorial === "function") {
+            window.limpiarHistorialDesastres = function (...args) {
+                const res = origLimpiarHistorial.apply(this, args);
+                setTimeout(() => {
+                    emitirEstadoEnVivoOBS("ventanaRuletaDesastres", {
+                        pantalla: "juego",
+                        historialHTML: document.getElementById("listaHistorialDesastres")?.innerHTML
+                    });
+                }, 50);
+                return res;
+            };
+        }
+
+        // 2. Hook para Reto Resultado
+        const origRenderizarReto = window.renderizarResultadoReto;
+        if (typeof origRenderizarReto === "function") {
             window.renderizarResultadoReto = function (...args) {
-                const r = origRenderizar.apply(this, args);
-                setTimeout(() => emitirActualizacionOBS("ventanaRetoResultado"), 150);
-                return r;
+                const res = origRenderizarReto.apply(this, args);
+                setTimeout(() => {
+                    emitirEstadoEnVivoOBS("ventanaRetoResultado", {
+                        retoActual: window.retoActual,
+                        contenidoHTML: document.getElementById("contenidoRetoResultado")?.innerHTML
+                    });
+                }, 100);
+                return res;
             };
         }
-        const origRuleta = window.iniciarRuleta;
-        if (typeof origRuleta === "function") {
-            window.iniciarRuleta = function (...args) {
-                const r = origRuleta.apply(this, args);
-                setTimeout(() => emitirActualizacionOBS("ventanaRuletaDesastres"), 150);
-                return r;
+
+        // 3. Hook para Dados
+        const origTirarDados = window.tirarDados;
+        if (typeof origTirarDados === "function") {
+            window.tirarDados = function (...args) {
+                const res = origTirarDados.apply(this, args);
+                setTimeout(() => {
+                    emitirEstadoEnVivoOBS("ventanaDados", {
+                        resultadoHTML: document.getElementById("resultadoDados")?.innerHTML,
+                        mensajeHTML: document.getElementById("mensajeDados")?.innerHTML
+                    });
+                }, 150);
+                return res;
+            };
+        }
+
+        // 4. Hook para Ruleta de Colores
+        const origGirarColor = window.girarRuletaColor;
+        if (typeof origGirarColor === "function") {
+            window.girarRuletaColor = function (...args) {
+                const res = origGirarColor.apply(this, args);
+                setTimeout(() => {
+                    emitirEstadoEnVivoOBS("ventanaRuletaColor", {
+                        resultadoHTML: document.getElementById("resultadoRuletaColor")?.innerHTML,
+                        mensajeHTML: document.getElementById("mensajeRuletaColor")?.innerHTML
+                    });
+                }, 200);
+                return res;
+            };
+        }
+
+        // 5. Hook para Habilidades
+        const origHabTirar = window._habTirar;
+        if (typeof origHabTirar === "function") {
+            window._habTirar = function (...args) {
+                const res = origHabTirar.apply(this, args);
+                setTimeout(() => {
+                    emitirEstadoEnVivoOBS("ventanaHabilidadesGenerador", {
+                        resultadoHTML: document.getElementById("habListaResultados")?.innerHTML
+                    });
+                }, 300);
+                return res;
             };
         }
     }
 
-    // ─── 4. COPIAR URL PARA OBS BROWSER SOURCE ─────────────────────────────
-    function construirURLOBS(windowId) {
+    // ─── 3. COPIAR URL PARA OBS BROWSER SOURCE ─────────────────────────────
+    function construirURLOBS(windowId, screenId = null) {
         const loc = window.location;
-        // Advertir en modo local (file://) donde el Browser Source no funciona bien
+
         if (loc.protocol === "file:") {
-            setTimeout(() => mostrarToastOBS("⚠️ Estás en local. Para OBS Browser Source usa la URL de GitHub Pages, o usa el Popout."), 100);
+            setTimeout(() => mostrarToastOBS("⚠️ Estás en local (file://). Para Browser Source usa la URL de GitHub Pages, o usa el Popout."), 100);
         }
+
         const url = new URL(loc.href.split("?")[0].split("#")[0]);
         url.searchParams.set("obs", "1");
         url.searchParams.set("window", windowId);
+        if (screenId) {
+            url.searchParams.set("screen", screenId);
+        } else if (windowId === "ventanaRuletaDesastres") {
+            url.searchParams.set("screen", "juego");
+        }
         return url.href;
     }
 
-    window.copiarURLEnlaceOBS = function (windowId) {
+    window.copiarURLEnlaceOBS = function (windowId, screenId = null) {
         if (!windowId) return;
-        const obsURL = construirURLOBS(windowId);
+        const obsURL = construirURLOBS(windowId, screenId);
 
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(obsURL).then(() => {
@@ -324,12 +463,17 @@
         }
     };
 
-    // Copia directa (sin abrir el selector) usada por los botones pequeños
-    // de cada cabecera de ventana. Muestra la misma clase de tooltip verde
-    // "✅ copiado" que ya usa el resto de la web (ver trucos.js).
     function copiarURLEnlaceOBSDirecto(windowId, event) {
         if (!windowId) return;
-        const obsURL = construirURLOBS(windowId);
+
+        // Detectar si la ventana actual de la ruleta está en juego o config
+        let screenParam = null;
+        if (windowId === "ventanaRuletaDesastres") {
+            const juego = document.getElementById("pantallaJuegoRuletaDesastres");
+            screenParam = (juego && juego.style.display !== "none") ? "juego" : "config";
+        }
+
+        const obsURL = construirURLOBS(windowId, screenParam);
 
         const avisarExito = () => {
             if (typeof mostrarTooltipCopiado === "function") {
@@ -375,18 +519,17 @@
     }
 
     // ─── 4. ABRIR POPOUT STANDALONE ────────────────────────────────────────
-    // El Popout es simplemente esta misma web abierta en una pestaña /
-    // ventana nueva de tu propio navegador, mostrando solo la ventana
-    // elegida. Al ser tu mismo navegador, es 100% interactiva: los botones
-    // funcionan exactamente igual que en la pestaña normal. Para capturarla
-    // en OBS, usa "Captura de ventana" (Window Capture) apuntando a esa
-    // ventana emergente, no "Fuente de navegador".
-    window.abrirPopoutOBS = function (windowId) {
+    window.abrirPopoutOBS = function (windowId, screenId = null) {
         if (!windowId) return;
-        // Emitir el estado actual ANTES de abrir el popout, para que cuando
-        // éste cargue ya tenga datos en localStorage listos para mostrar.
-        emitirActualizacionOBS(windowId);
-        window.open(construirURLOBS(windowId), "OBS_" + windowId, "width=900,height=700,scrollbars=yes,resizable=yes");
+
+        // Detectar si la ruleta está en juego o config si no viene definido
+        if (!screenId && windowId === "ventanaRuletaDesastres") {
+            const juego = document.getElementById("pantallaJuegoRuletaDesastres");
+            screenId = (juego && juego.style.display !== "none") ? "juego" : "config";
+        }
+
+        const url = construirURLOBS(windowId, screenId);
+        window.open(url, "OBS_" + windowId, "width=920,height=720,scrollbars=yes,resizable=yes");
     };
 
     // ─── 5. MODAL SELECTOR DE VENTANA PARA OBS ─────────────────────────────
@@ -412,10 +555,8 @@
 
         document.body.appendChild(modal);
 
-        // Rellenar lista de ventanas
         const lista = modal.querySelector("#listaVentanasOBS");
         VENTANAS_OBS.forEach(v => {
-            // Solo mostrar ventanas que existan en el DOM
             if (!document.getElementById(v.id)) return;
 
             const item = document.createElement("div");
@@ -423,11 +564,11 @@
             item.innerHTML = `
                 <span class="modalOBSItemNombre">${v.nombre}</span>
                 <div class="modalOBSItemAcciones">
-                    <button class="btnObsCopiar" data-window="${v.id}" data-tooltip="Copiar URL para OBS Browser Source">
+                    <button class="btnObsCopiar" data-window="${v.id}" data-screen="${v.screen || ''}" data-tooltip="Copiar URL para OBS Browser Source">
                         <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
                         Copiar URL
                     </button>
-                    <button class="btnObsPopout" data-window="${v.id}" data-tooltip="Abrir en ventana emergente">
+                    <button class="btnObsPopout" data-window="${v.id}" data-screen="${v.screen || ''}" data-tooltip="Abrir en ventana emergente">
                         <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
                         Popout
                     </button>
@@ -436,12 +577,11 @@
             lista.appendChild(item);
         });
 
-        // Eventos de botones
         lista.addEventListener("click", (e) => {
             const btnCopiar = e.target.closest(".btnObsCopiar");
             const btnPopout = e.target.closest(".btnObsPopout");
-            if (btnCopiar) window.copiarURLEnlaceOBS(btnCopiar.dataset.window);
-            if (btnPopout) window.abrirPopoutOBS(btnPopout.dataset.window);
+            if (btnCopiar) window.copiarURLEnlaceOBS(btnCopiar.dataset.window, btnCopiar.dataset.screen || null);
+            if (btnPopout) window.abrirPopoutOBS(btnPopout.dataset.window, btnPopout.dataset.screen || null);
         });
 
         document.getElementById("cerrarModalOBS").addEventListener("click", () => {
@@ -474,8 +614,6 @@
     }
 
     // ─── 7. CLICK EN BOTONES OBS PEQUEÑOS DE CADA CABECERA ─────────────────
-    // Copian el enlace directamente (sin abrir el selector) y avisan con el
-    // mismo tipo de tooltip verde "copiado" que usa el resto de la web.
     document.addEventListener("click", (e) => {
         const btn = e.target.closest(".btnOBS");
         if (btn) {
@@ -490,24 +628,20 @@
 
     // ─── 8. INIT ───────────────────────────────────────────────────────────
     document.addEventListener("DOMContentLoaded", () => {
-        // Detectar modo OBS desde URL
         const urlParams = new URLSearchParams(window.location.search);
         const targetWindowId = urlParams.get("window");
+        const screenParam = urlParams.get("screen");
         const esOBS = urlParams.has("obs") && targetWindowId;
 
         if (esOBS) {
-            activarModoOBS(targetWindowId);
+            activarModoOBS(targetWindowId, screenParam);
         }
 
-        // Inyectar botones tras carga completa de app
-        setTimeout(inyectarBotonesOBSEnHeaders, 800);
+        setTimeout(inyectarBotonesOBSEnHeaders, 600);
     });
 
-    // También re-inyectar si se abren ventanas dinámicamente
     window.addEventListener("load", () => {
-        setTimeout(inyectarBotonesOBSEnHeaders, 1200);
-        // Hookear funciones de actualización de contenido (se hace en "load"
-        // para asegurar que renderizarResultadoReto y similares ya existen).
-        setTimeout(hookearFuncionesDeActualizacion, 800);
+        setTimeout(inyectarBotonesOBSEnHeaders, 1000);
+        setTimeout(instanciarHooksEmision, 600);
     });
 })();

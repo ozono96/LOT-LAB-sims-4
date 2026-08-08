@@ -233,6 +233,11 @@ function abrirVentana(id, esClickUsuario = false) {
     if (esClickUsuario && typeof window.actualizarURLParaVentana === "function") {
         window.actualizarURLParaVentana(id);
     }
+
+    // Emitir cambio de ventana a OBS Studio para sincronizar la vista del Browser Source
+    if (typeof window.emitirNavegacionOBS === "function") {
+        window.emitirNavegacionOBS(id);
+    }
 }
 
 
@@ -254,6 +259,10 @@ function toggleTemporizadorReto() {
         if (app) app.classList.add("modo-paralelo");
         if (btnToggleReto) btnToggleReto.innerHTML = "⏱️ Cerrar temporizador";
         if (btnToggleRuleta) btnToggleRuleta.innerHTML = "⏱️ Cerrar temporizador";
+
+        if (typeof window.emitirModoParaleloOBS === "function") {
+            window.emitirModoParaleloOBS(true);
+        }
     } else {
         cerrarTemporizadorAcoplado();
     }
@@ -269,6 +278,10 @@ function cerrarTemporizadorAcoplado() {
     if (app) app.classList.remove("modo-paralelo");
     if (btnToggleReto) btnToggleReto.innerHTML = "⏱️ Abrir temporizador";
     if (btnToggleRuleta) btnToggleRuleta.innerHTML = "⏱️ Abrir temporizador";
+
+    if (typeof window.emitirModoParaleloOBS === "function") {
+        window.emitirModoParaleloOBS(false);
+    }
 }
 
 function cerrarVentana(id) {

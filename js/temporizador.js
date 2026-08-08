@@ -221,9 +221,66 @@ document.addEventListener("DOMContentLoaded", () => {
     function finalizarTemporizador() {
         if (temporizadorInterval) clearInterval(temporizadorInterval);
         sonarAlarma();
-        reiniciarUI();
-        cerrarVentana("ventanaTemporizador");
-        abrirVentana("ventanaTiempoAgotado");
+
+        const app = document.getElementById("app");
+        const estaEnParalelo = app && app.classList.contains("modo-paralelo");
+
+        if (estaEnParalelo) {
+            // Reiniciar internamente pero mantener display visible con alerta
+            if (temporizadorInterval) clearInterval(temporizadorInterval);
+            tiempoRestanteEnSegundos = 0;
+            estaPausado = false;
+            if (botonPausar) {
+                botonPausar.innerHTML = '<span class="iconoTimerAction">⏸️</span><span class="textoTimerAction">Pausar</span>';
+                botonPausar.setAttribute("data-tooltip", "Pausar temporizador");
+                botonPausar.classList.remove("enPausa");
+            }
+            const contenedorConfig = document.getElementById("configuracionTiempoContenedor");
+            if (contenedorConfig) contenedorConfig.style.display = "none";
+            const divAcciones = document.getElementById("accionesTemporizadorEnCurso");
+            if (divAcciones) divAcciones.style.display = "none";
+
+            if (displayTemporizador) {
+                displayTemporizador.classList.remove("pausado");
+                displayTemporizador.classList.add("tiempoAgotadoAlerta");
+                displayTemporizador.style.display = "block";
+                const elTexto = document.getElementById("textoTiempoDigital");
+                if (elTexto) elTexto.textContent = "¡TIEMPO AGOTADO!";
+            }
+
+            // Emitir estado de alerta a OBS
+            if (typeof window.capturarYEmitirEstadoOBS === "function") {
+                // Emitir el estado especial directamente
+                setTimeout(() => {
+                    if (typeof emitirEstadoEnVivoOBS === "function") {
+                        const displayTemp = document.getElementById("displayTemporizador");
+                        const configTemp = document.getElementById("configuracionTiempoContenedor");
+                        const accionesTemp = document.getElementById("accionesTemporizadorEnCurso");
+                        // emitirEstadoEnVivoOBS not accessible here; use capturarYEmitirEstadoOBS
+                    }
+                    window.capturarYEmitirEstadoOBS("ventanaTemporizador");
+                }, 50);
+            }
+
+            // Tras 4s volver al estado inicial
+            setTimeout(() => {
+                if (displayTemporizador) {
+                    displayTemporizador.classList.remove("tiempoAgotadoAlerta");
+                    displayTemporizador.style.display = "none";
+                }
+                if (contenedorConfig) contenedorConfig.style.display = "block";
+                if (botonIniciar) botonIniciar.parentElement.style.display = "flex";
+                const elTexto = document.getElementById("textoTiempoDigital");
+                if (elTexto) elTexto.textContent = "00:00";
+                if (typeof window.capturarYEmitirEstadoOBS === "function") {
+                    window.capturarYEmitirEstadoOBS("ventanaTemporizador");
+                }
+            }, 4000);
+        } else {
+            reiniciarUI();
+            cerrarVentana("ventanaTemporizador");
+            abrirVentana("ventanaTiempoAgotado");
+        }
     }
 
 

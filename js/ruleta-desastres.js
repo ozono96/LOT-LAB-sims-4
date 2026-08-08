@@ -512,6 +512,10 @@ function comenzarRuletaDesastres() {
         if (divCuentaAtras) divCuentaAtras.style.display = "none";
         if (btnPausarReanudar) btnPausarReanudar.style.display = "none";
     }
+
+    if (typeof window.capturarYEmitirEstadoOBS === "function") {
+        window.capturarYEmitirEstadoOBS("ventanaRuletaDesastres");
+    }
 }
 
 function mostrarPantallaConfiguracionDesastres() {
@@ -524,6 +528,10 @@ function mostrarPantallaConfiguracionDesastres() {
     if (pantallaConfig) pantallaConfig.style.display = "block";
     if (pantallaJuego) pantallaJuego.style.display = "none";
     if (btnPausarReanudar) btnPausarReanudar.style.display = "none";
+
+    if (typeof window.capturarYEmitirEstadoOBS === "function") {
+        window.capturarYEmitirEstadoOBS("ventanaRuletaDesastres");
+    }
 }
 
 function togglePausaReanudarRuletaDesastres() {

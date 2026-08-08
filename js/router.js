@@ -65,6 +65,10 @@
     // Se calcula una sola vez al cargar
     const BASE_PATH = obtenerBasePath();
 
+    // Exponer como global para que obs-integration.js pueda construir URLs raíz correctas
+    window.ROUTER_BASE_PATH = BASE_PATH;
+
+
     // ── Construir path absoluto para una ventana ─────────────────────────────
     function construirPath(ventanaId) {
         const ruta = RUTAS_VENTANA[ventanaId];

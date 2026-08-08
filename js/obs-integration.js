@@ -78,62 +78,92 @@
         });
     }
 
+    function prepararYMostrarVentanaOBS(targetId, targetScreen = null, modoParaleloForce = null) {
+        if (!targetId || targetId === "ventanaTemporizador") {
+            if (syncObsWindowId && syncObsWindowId !== "ventanaTemporizador") {
+                targetId = syncObsWindowId;
+            } else {
+                targetId = targetId || "ventanaRetoResultado";
+            }
+        } else {
+            syncObsWindowId = targetId;
+        }
+
+        const app = document.getElementById("app");
+        const estaEnParalelo = modoParaleloForce !== null
+            ? modoParaleloForce
+            : (window.modoParaleloOBSAbierto || false);
+
+        document.querySelectorAll(".ventana").forEach(v => {
+            if (estaEnParalelo) {
+                if (v.id === targetId || v.id === "ventanaTemporizador") {
+                    v.style.display = "block";
+                } else {
+                    v.style.display = "none";
+                }
+            } else {
+                if (v.id !== targetId) v.style.display = "none";
+            }
+        });
+
+        if (app) {
+            if (estaEnParalelo) app.classList.add("modo-paralelo");
+            else app.classList.remove("modo-paralelo");
+        }
+
+        const elVentana = document.getElementById(targetId);
+        if (elVentana) elVentana.style.display = "block";
+
+        if (estaEnParalelo) {
+            const vTemp = document.getElementById("ventanaTemporizador");
+            if (vTemp) vTemp.style.display = "block";
+        }
+
+        // Lógica de pantalla activa según tipo de ventana
+        if (targetId === "ventanaRuletaDesastres") {
+            const pantallaConfig = document.getElementById("pantallaConfigRuletaDesastres");
+            const pantallaJuego = document.getElementById("pantallaJuegoRuletaDesastres");
+
+            if (targetScreen === "config") {
+                if (pantallaConfig) pantallaConfig.style.display = "block";
+                if (pantallaJuego) pantallaJuego.style.display = "none";
+            } else if (targetScreen === "juego") {
+                if (pantallaConfig) pantallaConfig.style.display = "none";
+                if (pantallaJuego) pantallaJuego.style.display = "block";
+
+                if (typeof renderizarBotonesCategorias === "function") {
+                    renderizarBotonesCategorias();
+                }
+            }
+        } else if (targetId === "ventanaHabilidadesGenerador") {
+            if (typeof _habFiltrarHabilidades === "function") {
+                _habFiltrarHabilidades();
+                if (typeof _habInicializarGenerador === "function") _habInicializarGenerador();
+            }
+        } else if (targetId === "ventanaRetoResultado") {
+            if (!window.retoActual && typeof generarReto === "function") {
+                generarReto(true);
+            }
+        } else if (targetId === "ventanaRuletaColor") {
+            if (typeof inicializarRuletaColor === "function") {
+                inicializarRuletaColor();
+                setTimeout(inicializarRuletaColor, 300);
+            }
+        } else if (targetId === "ventanaDados") {
+            if (typeof inicializarDados === "function") {
+                inicializarDados();
+            }
+        }
+    }
+
     // ─── 2. ACTIVAR MODO OBS (Página limpia para browser source / popout) ──
     function activarModoOBS(windowId, screenParam) {
-        syncObsWindowId = windowId;
         document.body.classList.add("modo-obs");
         document.documentElement.classList.add("modo-obs");
 
         forzarVisibilidadOBS();
 
-        const prepararYMostrarVentana = () => {
-            document.querySelectorAll(".ventana").forEach(v => {
-                if (v.id !== windowId) v.style.display = "none";
-            });
-
-            const elVentana = document.getElementById(windowId);
-            if (!elVentana) return;
-
-            elVentana.style.display = "block";
-
-            // Lógica de pantalla activa según tipo de ventana
-            if (windowId === "ventanaRuletaDesastres") {
-                const pantallaConfig = document.getElementById("pantallaConfigRuletaDesastres");
-                const pantallaJuego = document.getElementById("pantallaJuegoRuletaDesastres");
-
-                if (screenParam === "config") {
-                    if (pantallaConfig) pantallaConfig.style.display = "block";
-                    if (pantallaJuego) pantallaJuego.style.display = "none";
-                } else {
-                    if (pantallaConfig) pantallaConfig.style.display = "none";
-                    if (pantallaJuego) pantallaJuego.style.display = "block";
-
-                    if (typeof renderizarBotonesCategorias === "function") {
-                        renderizarBotonesCategorias();
-                    }
-                }
-            } else if (windowId === "ventanaHabilidadesGenerador") {
-                if (typeof _habFiltrarHabilidades === "function") {
-                    _habFiltrarHabilidades();
-                    if (typeof _habInicializarGenerador === "function") _habInicializarGenerador();
-                }
-            } else if (windowId === "ventanaRetoResultado") {
-                if (!window.retoActual && typeof generarReto === "function") {
-                    generarReto(true);
-                }
-            } else if (windowId === "ventanaRuletaColor") {
-                if (typeof inicializarRuletaColor === "function") {
-                    inicializarRuletaColor();
-                    setTimeout(inicializarRuletaColor, 300);
-                }
-            } else if (windowId === "ventanaDados") {
-                if (typeof inicializarDados === "function") {
-                    inicializarDados();
-                }
-            }
-        };
-
-        prepararYMostrarVentana();
+        prepararYMostrarVentanaOBS(windowId, screenParam);
 
         // ── Overlay de carga (se oculta al recibir el primer payload) ─────────
         let overlayOculto = false;
@@ -332,17 +362,150 @@
             localStorage.setItem(OBS_SYNC_KEY_PREFIX + windowId, JSON.stringify(payload));
         } catch (e) {}
     }
-    window.emitirEstadoEnVivoOBS = emitirEstadoEnVivoOBS;
+    const capturarYEmitirEstado = (windowId) => {
+        if (document.body.classList.contains("modo-obs")) return;
+        if (windowId === "ventanaRuletaDesastres") {
+            const pantallaJuego = document.getElementById("pantallaJuegoRuletaDesastres");
+            const divCuentaAtras = document.getElementById("divCuentaAtrasRuletaDesastres");
+            emitirEstadoEnVivoOBS("ventanaRuletaDesastres", {
+                pantalla: (pantallaJuego && pantallaJuego.style.display !== "none") ? "juego" : "config",
+                iconoHTML: document.getElementById("iconoResultadoDesastre")?.innerHTML,
+                titulo: document.getElementById("tituloResultadoDesastre")?.textContent,
+                descripcion: document.getElementById("descResultadoDesastre")?.innerHTML,
+                detalle: document.getElementById("detalleResultadoDesastre")?.textContent,
+                historialHTML: document.getElementById("listaHistorialDesastres")?.innerHTML,
+                timerText: document.getElementById("displayCuentaAtrasDesastres")?.textContent,
+                timerLabelText: document.getElementById("labelEstadoCuentaAtrasDesastres")?.textContent,
+                timerVisible: divCuentaAtras ? divCuentaAtras.style.display !== "none" : false
+            });
+        } else if (windowId === "ventanaRetoResultado") {
+            emitirEstadoEnVivoOBS("ventanaRetoResultado", {
+                contenidoHTML: document.getElementById("contenidoRetoResultado")?.innerHTML
+            });
+        } else if (windowId === "ventanaDados") {
+            const elRes = document.getElementById("resultadoDados");
+            emitirEstadoEnVivoOBS("ventanaDados", {
+                resultadoHTML: elRes?.innerHTML,
+                resultadoClassName: elRes?.className,
+                mensajeHTML: document.getElementById("mensajeDados")?.innerHTML,
+                inputTiradasVal: document.getElementById("inputTiradasDados")?.value
+            });
+        } else if (windowId === "ventanaRuletaColor") {
+            emitirEstadoEnVivoOBS("ventanaRuletaColor", {
+                resultadoHTML: document.getElementById("resultadoRuletaColor")?.innerHTML,
+                mensajeHTML: document.getElementById("mensajeRuletaColor")?.innerHTML,
+                inputTiradasVal: document.getElementById("inputTiradasRuleta")?.value
+            });
+        } else if (windowId === "ventanaHabilidadesGenerador") {
+            const wrap = document.getElementById("habResultadoWrap");
+            const finalEl = document.getElementById("habResultadoFinal");
+            const animEl = document.getElementById("habAnimacion");
+            const gridEl = document.getElementById("habResultadoGrid");
+            const inputCant = document.getElementById("habCantidad");
+            const pista = document.getElementById("habAnimacionPista");
 
-    function iniciarReceptorEstadoEnVivo(targetWindowId, hostPeerIdToConnect) {
+            emitirEstadoEnVivoOBS("ventanaHabilidadesGenerador", {
+                wrapVisible: wrap ? wrap.style.display !== "none" : false,
+                finalVisible: finalEl ? finalEl.style.display !== "none" : false,
+                animVisible: animEl ? animEl.style.display !== "none" : false,
+                gridHTML: gridEl ? gridEl.innerHTML : "",
+                cantidadVal: inputCant ? inputCant.value : "1",
+                pistaHTML: pista ? pista.innerHTML : "",
+                pistaTransform: pista ? pista.style.transform : "",
+                pistaTransition: pista ? pista.style.transition : ""
+            });
+        } else if (windowId === "ventanaTemporizador") {
+            const displayTemp = document.getElementById("displayTemporizador");
+            const configTemp = document.getElementById("configuracionTiempoContenedor");
+            const accionesTemp = document.getElementById("accionesTemporizadorEnCurso");
+            emitirEstadoEnVivoOBS("ventanaTemporizador", {
+                displayVisible: displayTemp?.style.display,
+                configVisible: configTemp?.style.display,
+                accionesVisible: accionesTemp?.style.display,
+                inputMinutosVal: document.getElementById("inputMinutosTemporizador")?.value,
+                pausado: displayTemp ? displayTemp.classList.contains("pausado") : false,
+                displayClassName: displayTemp ? displayTemp.className : "",
+                tempDigitsHTML: document.getElementById("tempDigits")?.innerHTML || displayTemp?.innerHTML
+            });
+        }
+    };
+
+    function emitirNavegacionOBS(ventanaId, screen = null) {
+        if (document.body.classList.contains("modo-obs")) return;
+        const payload = {
+            tipo: "navegacion",
+            windowId: "__global_nav__",
+            nuevaVentanaId: ventanaId,
+            screen: screen,
+            ts: Date.now()
+        };
+        emitirEstadoEnVivoOBS("__global_nav__", payload);
+        setTimeout(() => capturarYEmitirEstado(ventanaId), 50);
+    }
+    window.emitirNavegacionOBS = emitirNavegacionOBS;
+
+    function emitirModoParaleloOBS(abierto) {
+        if (document.body.classList.contains("modo-obs")) return;
+        window.modoParaleloOBSAbierto = abierto;
+        const payload = {
+            tipo: "modoParalelo",
+            abierto: abierto,
+            windowId: "__global_nav__",
+            ts: Date.now()
+        };
+        emitirEstadoEnVivoOBS("__global_nav__", payload);
+        setTimeout(() => capturarYEmitirEstado("ventanaTemporizador"), 50);
+    }
+    window.emitirModoParaleloOBS = emitirModoParaleloOBS;
+
+    window.capturarYEmitirEstadoOBS = function(windowId) {
+        try {
+            capturarYEmitirEstado(windowId);
+        } catch (e) {}
+    };
+
+    function iniciarReceptorEstadoEnVivo(initialWindowId, hostPeerIdToConnect) {
         const procesarPayload = (payload) => {
-            if (!payload || payload.windowId !== targetWindowId) return;
+            if (!payload) return;
             if (payload.ts <= ultimoTsAplicado) return;
             ultimoTsAplicado = payload.ts;
 
-            aplicarEstadoObjetivoEnDOM(targetWindowId, payload);
+            // 0. Manejar evento de toggle del temporizador en modo paralelo
+            if (payload.tipo === "modoParalelo") {
+                window.modoParaleloOBSAbierto = !!payload.abierto;
+                prepararYMostrarVentanaOBS(syncObsWindowId, null, !!payload.abierto);
+                if (window._ocultarOverlayCargandoOBS) window._ocultarOverlayCargandoOBS();
+                return;
+            }
 
-            // Ocultar overlay de carga al recibir el primer payload válido
+            // 1. Manejar evento de navegación explícita entre ventanas principales
+            if (payload.tipo === "navegacion" && payload.nuevaVentanaId) {
+                if (payload.nuevaVentanaId !== "ventanaTemporizador") {
+                    syncObsWindowId = payload.nuevaVentanaId;
+                }
+                prepararYMostrarVentanaOBS(syncObsWindowId, payload.screen);
+                if (window._ocultarOverlayCargandoOBS) window._ocultarOverlayCargandoOBS();
+                return;
+            }
+
+            // 2. Si llega un payload del temporizador, aplicarlo directamente sin cambiar la ventana principal ni ocultarla
+            if (payload.windowId === "ventanaTemporizador") {
+                aplicarEstadoObjetivoEnDOM("ventanaTemporizador", payload);
+                if (window._ocultarOverlayCargandoOBS) window._ocultarOverlayCargandoOBS();
+                return;
+            }
+
+            // 3. Si llega un payload de una nueva ventana principal distinta
+            if (payload.windowId && payload.windowId !== "__global_nav__" && payload.windowId !== syncObsWindowId) {
+                syncObsWindowId = payload.windowId;
+                prepararYMostrarVentanaOBS(payload.windowId, payload.pantalla || payload.screen);
+            }
+
+            // 4. Aplicar estado a la ventana principal activa
+            if (payload.windowId === syncObsWindowId || !payload.windowId) {
+                aplicarEstadoObjetivoEnDOM(syncObsWindowId, payload);
+            }
+
             if (window._ocultarOverlayCargandoOBS) window._ocultarOverlayCargandoOBS();
         };
 
@@ -363,27 +526,32 @@
             broadcastChannel.onmessage = (event) => procesarPayload(event.data);
         } catch (e) {}
 
-        // 3. Escuchar evento native 'storage'
+        // 3. Escuchar evento nativo 'storage' (para cualquier ventana activa o navegación)
         window.addEventListener("storage", (e) => {
-            if (e.key === OBS_SYNC_KEY_PREFIX + targetWindowId && e.newValue) {
+            if (e.key && e.key.startsWith(OBS_SYNC_KEY_PREFIX) && e.newValue) {
                 try {
                     procesarPayload(JSON.parse(e.newValue));
                 } catch (err) {}
             }
         });
 
-        // 4. Carga inicial desde localStorage + Polling liviano (cada 400ms)
+        // 4. Carga inicial desde localStorage + Polling activo (cada 300ms)
         try {
-            const rawInicial = localStorage.getItem(OBS_SYNC_KEY_PREFIX + targetWindowId);
+            const rawInicial = localStorage.getItem(OBS_SYNC_KEY_PREFIX + initialWindowId) ||
+                               localStorage.getItem(OBS_SYNC_KEY_PREFIX + "ventanaRetoResultado");
             if (rawInicial) procesarPayload(JSON.parse(rawInicial));
         } catch (err) {}
 
         setInterval(() => {
             try {
-                const raw = localStorage.getItem(OBS_SYNC_KEY_PREFIX + targetWindowId);
-                if (raw) procesarPayload(JSON.parse(raw));
+                if (syncObsWindowId) {
+                    const raw = localStorage.getItem(OBS_SYNC_KEY_PREFIX + syncObsWindowId);
+                    if (raw) procesarPayload(JSON.parse(raw));
+                }
+                const rawNav = localStorage.getItem(OBS_SYNC_KEY_PREFIX + "__global_nav__");
+                if (rawNav) procesarPayload(JSON.parse(rawNav));
             } catch (err) {}
-        }, 400);
+        }, 300);
     }
 
     function aplicarEstadoObjetivoEnDOM(windowId, payload) {
@@ -394,6 +562,9 @@
             if (payload.pantalla === "juego") {
                 if (pantallaConfig) pantallaConfig.style.display = "none";
                 if (pantallaJuego) pantallaJuego.style.display = "block";
+            } else if (payload.pantalla === "config") {
+                if (pantallaConfig) pantallaConfig.style.display = "block";
+                if (pantallaJuego) pantallaJuego.style.display = "none";
             }
 
             if (payload.iconoHTML !== undefined) {
@@ -429,12 +600,12 @@
                 if (elDiv) elDiv.style.display = payload.timerVisible ? "block" : "none";
             }
         } else if (windowId === "ventanaRetoResultado") {
-            if (payload.retoActual && typeof renderizarResultadoReto === "function") {
+            const el = document.getElementById("contenidoRetoResultado");
+            if (payload.contenidoHTML !== undefined && el) {
+                el.innerHTML = payload.contenidoHTML;
+            }
+            if (payload.retoActual) {
                 window.retoActual = payload.retoActual;
-                renderizarResultadoReto(payload.retoActual);
-            } else if (payload.contenidoHTML) {
-                const el = document.getElementById("contenidoRetoResultado");
-                if (el) el.innerHTML = payload.contenidoHTML;
             }
         } else if (windowId === "ventanaDados") {
             const elRes = document.getElementById("resultadoDados");
@@ -475,15 +646,60 @@
                 if (input) input.value = payload.inputTiradasVal;
             }
         } else if (windowId === "ventanaHabilidadesGenerador") {
-            if (payload.resultadoHTML !== undefined) {
-                const el = document.getElementById("habListaResultados");
-                if (el) el.innerHTML = payload.resultadoHTML;
+            const wrap = document.getElementById("habResultadoWrap");
+            const finalEl = document.getElementById("habResultadoFinal");
+            const animEl = document.getElementById("habAnimacion");
+            const gridEl = document.getElementById("habResultadoGrid");
+            const inputCant = document.getElementById("habCantidad");
+            const pista = document.getElementById("habAnimacionPista");
+
+            if (payload.animacionGiro && payload.pistaHTML !== undefined && pista) {
+                if (wrap) wrap.style.display = "block";
+                if (animEl) animEl.style.display = "block";
+                if (finalEl) finalEl.style.display = "none";
+
+                pista.innerHTML = payload.pistaHTML;
+                pista.style.transition = "none";
+                pista.style.transform = "translateX(0)";
+
+                void pista.offsetHeight; // forzar reflow
+
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        pista.style.transition = "transform 3s cubic-bezier(0.17, 0.67, 0.12, 1)";
+                        pista.style.transform = "translateX(-" + (payload.margen || 0) + "px)";
+                    });
+                });
+                return;
+            }
+
+            if (payload.wrapVisible !== undefined && wrap) wrap.style.display = payload.wrapVisible ? "block" : "none";
+            if (payload.finalVisible !== undefined && finalEl) finalEl.style.display = payload.finalVisible ? "block" : "none";
+            if (payload.animVisible !== undefined && animEl) animEl.style.display = payload.animVisible ? "block" : "none";
+            if (payload.gridHTML !== undefined && gridEl) gridEl.innerHTML = payload.gridHTML;
+            if (payload.cantidadVal !== undefined && inputCant) inputCant.value = payload.cantidadVal;
+            if (payload.pistaHTML !== undefined && pista && !payload.animacionGiro) {
+                pista.innerHTML = payload.pistaHTML;
+                if (payload.pistaTransform !== undefined) pista.style.transform = payload.pistaTransform;
+                if (payload.pistaTransition !== undefined) pista.style.transition = payload.pistaTransition;
             }
         } else if (windowId === "ventanaTemporizador") {
             const displayTemp = document.getElementById("displayTemporizador");
             const configTemp = document.getElementById("configuracionTiempoContenedor");
             const accionesTemp = document.getElementById("accionesTemporizadorEnCurso");
             const inputMin = document.getElementById("inputMinutosTemporizador");
+
+            // Si la clase del display incluye tiempoAgotadoAlerta, aplicar la alerta visual
+            if (payload.displayClassName !== undefined && payload.displayClassName.includes("tiempoAgotadoAlerta")) {
+                if (displayTemp) {
+                    displayTemp.className = payload.displayClassName;
+                    displayTemp.style.display = "block";
+                }
+                const digits = document.getElementById("tempDigits");
+                if (digits && payload.tempDigitsHTML !== undefined) digits.innerHTML = payload.tempDigitsHTML;
+                // La alerta ya se limpiará cuando llegue el siguiente payload de reinicio
+                return;
+            }
 
             if (payload.displayVisible !== undefined && displayTemp) displayTemp.style.display = payload.displayVisible;
             if (payload.configVisible !== undefined && configTemp) configTemp.style.display = payload.configVisible;
@@ -493,7 +709,10 @@
                 displayTemp.classList.toggle("pausado", payload.pausado);
             }
             if (payload.displayClassName !== undefined && displayTemp) {
+                // Preservar la clase tiempoAgotadoAlerta si ya está activa localmente
+                const tieneAlerta = displayTemp.classList.contains("tiempoAgotadoAlerta");
                 displayTemp.className = payload.displayClassName;
+                if (tieneAlerta) displayTemp.classList.add("tiempoAgotadoAlerta");
             }
             if (payload.tempDigitsHTML !== undefined) {
                 const digits = document.getElementById("tempDigits");
@@ -513,70 +732,22 @@
 
         iniciarHostPeerJS();
 
-        const capturarYEmitirEstado = (windowId) => {
-            if (windowId === "ventanaRuletaDesastres") {
-                const pantallaJuego = document.getElementById("pantallaJuegoRuletaDesastres");
-                const divCuentaAtras = document.getElementById("divCuentaAtrasRuletaDesastres");
-                emitirEstadoEnVivoOBS("ventanaRuletaDesastres", {
-                    pantalla: (pantallaJuego && pantallaJuego.style.display !== "none") ? "juego" : "config",
-                    iconoHTML: document.getElementById("iconoResultadoDesastre")?.innerHTML,
-                    titulo: document.getElementById("tituloResultadoDesastre")?.textContent,
-                    descripcion: document.getElementById("descResultadoDesastre")?.innerHTML,
-                    detalle: document.getElementById("detalleResultadoDesastre")?.textContent,
-                    historialHTML: document.getElementById("listaHistorialDesastres")?.innerHTML,
-                    timerText: document.getElementById("displayCuentaAtrasDesastres")?.textContent,
-                    timerLabelText: document.getElementById("labelEstadoCuentaAtrasDesastres")?.textContent,
-                    timerVisible: divCuentaAtras ? divCuentaAtras.style.display !== "none" : false
-                });
-            } else if (windowId === "ventanaRetoResultado") {
-                emitirEstadoEnVivoOBS("ventanaRetoResultado", {
-                    retoActual: window.retoActual,
-                    contenidoHTML: document.getElementById("contenidoRetoResultado")?.innerHTML
-                });
-            } else if (windowId === "ventanaDados") {
-                const elRes = document.getElementById("resultadoDados");
-                emitirEstadoEnVivoOBS("ventanaDados", {
-                    resultadoHTML: elRes?.innerHTML,
-                    resultadoClassName: elRes?.className,
-                    mensajeHTML: document.getElementById("mensajeDados")?.innerHTML,
-                    inputTiradasVal: document.getElementById("inputTiradasDados")?.value
-                });
-            } else if (windowId === "ventanaRuletaColor") {
-                emitirEstadoEnVivoOBS("ventanaRuletaColor", {
-                    resultadoHTML: document.getElementById("resultadoRuletaColor")?.innerHTML,
-                    mensajeHTML: document.getElementById("mensajeRuletaColor")?.innerHTML,
-                    inputTiradasVal: document.getElementById("inputTiradasRuleta")?.value
-                });
-            } else if (windowId === "ventanaHabilidadesGenerador") {
-                emitirEstadoEnVivoOBS("ventanaHabilidadesGenerador", {
-                    resultadoHTML: document.getElementById("habListaResultados")?.innerHTML
-                });
-            } else if (windowId === "ventanaTemporizador") {
-                const displayTemp = document.getElementById("displayTemporizador");
-                const configTemp = document.getElementById("configuracionTiempoContenedor");
-                const accionesTemp = document.getElementById("accionesTemporizadorEnCurso");
-                emitirEstadoEnVivoOBS("ventanaTemporizador", {
-                    displayVisible: displayTemp?.style.display,
-                    configVisible: configTemp?.style.display,
-                    accionesVisible: accionesTemp?.style.display,
-                    inputMinutosVal: document.getElementById("inputMinutosTemporizador")?.value,
-                    pausado: displayTemp ? displayTemp.classList.contains("pausado") : false,
-                    displayClassName: displayTemp ? displayTemp.className : "",
-                    tempDigitsHTML: document.getElementById("tempDigits")?.innerHTML || displayTemp?.innerHTML
-                });
-            }
-        };
-
         const contenedoresAEscuchar = [
             { id: "tarjetaResultadoDesastre", windowId: "ventanaRuletaDesastres" },
             { id: "listaHistorialDesastres",   windowId: "ventanaRuletaDesastres" },
             { id: "displayCuentaAtrasDesastres", windowId: "ventanaRuletaDesastres" },
+            { id: "pantallaConfigRuletaDesastres", windowId: "ventanaRuletaDesastres" },
+            { id: "pantallaJuegoRuletaDesastres",  windowId: "ventanaRuletaDesastres" },
             { id: "contenidoRetoResultado",    windowId: "ventanaRetoResultado" },
             { id: "resultadoDados",            windowId: "ventanaDados" },
             { id: "mensajeDados",              windowId: "ventanaDados" },
             { id: "resultadoRuletaColor",      windowId: "ventanaRuletaColor" },
             { id: "mensajeRuletaColor",        windowId: "ventanaRuletaColor" },
-            { id: "habListaResultados",        windowId: "ventanaHabilidadesGenerador" },
+            { id: "habResultadoGrid",          windowId: "ventanaHabilidadesGenerador" },
+            { id: "habResultadoWrap",          windowId: "ventanaHabilidadesGenerador" },
+            { id: "habResultadoFinal",         windowId: "ventanaHabilidadesGenerador" },
+            { id: "habAnimacionPista",         windowId: "ventanaHabilidadesGenerador" },
+            { id: "habCantidad",               windowId: "ventanaHabilidadesGenerador" },
             { id: "displayTemporizador",       windowId: "ventanaTemporizador" },
             { id: "tempDigits",                windowId: "ventanaTemporizador" }
         ];
@@ -644,9 +815,38 @@
                 }
             }
         }, true);
+
+        // Escuchar clicks en botones de la web para emitir cambios de estado de ventana inmediatamente
+        document.addEventListener("click", (e) => {
+            const btn = e.target.closest("button, .botonReto, .opcionFiltro");
+            if (!btn) return;
+            const windowEl = btn.closest(".ventana");
+            if (windowEl && windowEl.id) {
+                setTimeout(() => capturarYEmitirEstado(windowEl.id), 50);
+                setTimeout(() => capturarYEmitirEstado(windowEl.id), 300);
+            }
+        }, true);
     }
 
     // ─── 6. COPIAR URL PARA OBS BROWSER SOURCE ─────────────────────────────
+    function obtenerBaseURLRaiz() {
+        // Siempre devolver la URL raíz del repositorio (sin sub-paths del router).
+        // Así evitamos que GitHub Pages sirva un 404 cuando el router está en /Ruleta-de-Colores, etc.
+        // Usamos window.ROUTER_BASE_PATH si router.js lo expuso, o lo deducimos.
+        const loc = window.location;
+
+        if (loc.protocol === "file:") {
+            // En local, la base es siempre el archivo index.html directamente
+            return loc.protocol + "//" + loc.host + loc.pathname.split("/").slice(0, -1).join("/") + "/";
+        }
+
+        // https/http: usar el BASE_PATH que router.js expone, o deducirlo
+        const basePath = (typeof window.ROUTER_BASE_PATH !== "undefined")
+            ? window.ROUTER_BASE_PATH
+            : "";
+        return loc.origin + basePath + "/";
+    }
+
     function construirURLOBS(windowId, screenId = null) {
         const loc = window.location;
 
@@ -654,7 +854,9 @@
             setTimeout(() => mostrarToastOBS("⚠️ Estás en local (file://). Para Browser Source usa la URL de GitHub Pages, o usa el Popout."), 100);
         }
 
-        const url = new URL(loc.href.split("?")[0].split("#")[0]);
+        // IMPORTANTE: siempre usar la URL raíz, nunca el sub-path del router.
+        // Si usamos /Ruleta-de-Colores, GitHub Pages devuelve 404 y los params OBS se pierden.
+        const url = new URL(obtenerBaseURLRaiz());
         url.searchParams.set("obs", "1");
         url.searchParams.set("window", windowId);
 
@@ -869,6 +1071,7 @@
 
     // ─── 11. INIT ──────────────────────────────────────────────────────────
     document.addEventListener("DOMContentLoaded", () => {
+        // Intentar activar modo OBS con los parámetros actuales de la URL
         const urlParams = new URLSearchParams(window.location.search);
         const targetWindowId = urlParams.get("window");
         const screenParam = urlParams.get("screen");

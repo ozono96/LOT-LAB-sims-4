@@ -2204,6 +2204,7 @@ body.modo-dia .contadorBarrio {
 ========================================================== */
 
 .tiempoAgotadoTexto {
+    font-family: 'The Sims Sans SC Bold', 'Segoe UI', sans-serif;
     font-size: 3rem;
     font-weight: bold;
     text-align: center;
@@ -6880,6 +6881,11 @@ body.modo-dia .displayTemporizadorDigital {
     max-width: 950px;
 }
 
+#ventanaHabilidadesPacks .subtituloVentana {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
 .habNumeroDisplay {
     display: flex;
     align-items: center;
@@ -7677,4 +7683,56 @@ body.modo-dia .obsOverlayCargando__texto {
 
 body.modo-dia .obsOverlayCargando__sub {
     color: rgba(80, 0, 160, 0.6);
-}
+}
+
+/* Modo paralelo en OBS Studio (Browser Source): muestra ambas ventanas lado a lado */
+body.modo-obs #app.modo-paralelo {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    gap: 20px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+body.modo-obs #app.modo-paralelo .ventana {
+    margin: 10px 0 !important;
+    max-width: 580px !important;
+    flex: 1 !important;
+}
+
+.tiempoAgotadoAlerta {
+    animation: pulsoTiempoAgotado 0.7s ease-in-out infinite alternate !important;
+    color: #e74c3c !important;
+    text-shadow: 0 0 18px rgba(231, 76, 60, 0.9), 0 0 40px rgba(231, 76, 60, 0.5) !important;
+    border-color: rgba(231, 76, 60, 0.6) !important;
+    /* Ajuste para que el texto quepa siempre en una línea */
+    gap: 0 !important;
+    padding: 16px 12px !important;
+}
+
+/* Ocultar el icono del reloj cuando está en modo alerta */
+.tiempoAgotadoAlerta .iconoRelojDigital {
+    display: none !important;
+}
+
+/* Texto de TIEMPO AGOTADO: Fuente Sims, una línea, tamaño adaptable */
+.tiempoAgotadoAlerta .digitosTiempo {
+    font-family: 'The Sims Sans SC Bold', 'Segoe UI', sans-serif !important;
+    font-size: clamp(0.85rem, 4.5vw, 2rem) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    letter-spacing: 0.02em !important;
+    max-width: 100% !important;
+    display: block !important;
+    text-align: center !important;
+    line-height: 1.2 !important;
+}
+
+@keyframes pulsoTiempoAgotado {
+    from { opacity: 1; box-shadow: 0 0 20px rgba(231, 76, 60, 0.4); }
+    to   { opacity: 0.5; box-shadow: 0 0 40px rgba(231, 76, 60, 0.9); }
+}
+

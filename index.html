@@ -3,7 +3,39 @@
 
 <head>
 
+    <!-- BASE HREF DINÁMICA: ancla todas las rutas relativas a la raíz del repo.
+         Sin esto, al cambiar la URL a /Habilidades/Generador via History API,
+         el navegador busca img/ y css/ dentro de /Habilidades/ → 404.
+         Este script se ejecuta sincrónicamente ANTES de que se cargue ningún recurso. -->
+    <script>
+        (function() {
+            var loc = window.location;
+            // Para file:// usar el directorio del index.html
+            if (loc.protocol === 'file:') {
+                var dir = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
+                document.write('<base href="' + loc.protocol + '//' + loc.host + dir + '">');
+                return;
+            }
+            // Para http/https: detectar base path del repo (primer segmento del path)
+            // Ej: /LOT-LAB-sims-4/Habilidades → base = /LOT-LAB-sims-4/
+            // Ej: /Habilidades/Generador       → base = / (es una ruta del router)
+            var m = loc.pathname.match(/^(\/[^/]+)(\/|$)/);
+            var basePath = '/';
+            if (m) {
+                var primerSegmento = (m[1] + '/').toLowerCase();
+                // Lista de prefijos que son rutas del router (no base del repo)
+                var rutasRouter = ['/buscador/', '/trucos/', '/habilidades/', '/estadisticas/',
+                    '/ruleta-de-colores/', '/ruleta-de-desastres/', '/tirador-de-dados/',
+                    '/modo-retos/', '/temporizador/', '/listado-de-packs/'];
+                var esRutaRouter = rutasRouter.some(function(r) { return primerSegmento === r; });
+                if (!esRutaRouter) basePath = m[1] + '/'; // p.ej. /LOT-LAB-sims-4/
+            }
+            document.write('<base href="' + loc.origin + basePath + '">');
+        })();
+    </script>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- OBS Browser Source usa su propia caché interna, separada de la caché

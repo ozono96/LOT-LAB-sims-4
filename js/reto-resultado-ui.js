@@ -223,4 +223,8 @@ function renderizarResultadoReto(reto) {
             }, { passive: true });
         });
     }
+
+    if (typeof window.capturarYEmitirEstadoOBS === "function") {
+        window.capturarYEmitirEstadoOBS("ventanaRetoResultado");
+    }
 }

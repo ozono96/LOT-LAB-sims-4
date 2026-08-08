@@ -343,11 +343,22 @@ function _habTirar() {
 
     pista.innerHTML = pistaHTML;
 
+    const itemW = 130;
+    const numItems = pista.children.length;
+    const margen = Math.max(0, numItems * itemW - animacion.offsetWidth - elegidas.length * itemW - 10);
+
+    // Emitir animación en tiempo real a OBS
+    if (typeof window.emitirEstadoEnVivoOBS === "function") {
+        window.emitirEstadoEnVivoOBS("ventanaHabilidadesGenerador", {
+            animacionGiro: true,
+            pistaHTML: pistaHTML,
+            margen: margen,
+            cantidadVal: HAB.cantidad
+        });
+    }
+
     // Animación con requestAnimationFrame
     requestAnimationFrame(() => {
-        const itemW = 130;
-        const numItems = pista.children.length;
-        const margen = Math.max(0, numItems * itemW - animacion.offsetWidth - elegidas.length * itemW - 10);
         pista.style.transition = "none";
         pista.style.transform = "translateX(0)";
         requestAnimationFrame(() => {
@@ -357,6 +368,10 @@ function _habTirar() {
                 animacion.style.display = "none";
                 _habMostrarResultado(elegidas, final);
                 HAB.animacionActiva = false;
+
+                if (typeof window.capturarYEmitirEstadoOBS === "function") {
+                    window.capturarYEmitirEstadoOBS("ventanaHabilidadesGenerador");
+                }
             }, 3150);
         });
     });

@@ -47,7 +47,7 @@
 
     /* ========= RADIOS ========= */
 
-    --radio-pequeño: 10px;
+    --radio-pequeÃ±o: 10px;
 
     --radio-normal: 14px;
 
@@ -74,7 +74,7 @@
 
     --transicion: .25s;
 
-    /* ========= TÍTULO ========= */
+    /* ========= TÃTULO ========= */
 
     --color-titulo: #000000;
 
@@ -82,7 +82,7 @@
 
 
 /* ==========================================================
-   MODO DÍA / MODO NOCHE
+   MODO DÃA / MODO NOCHE
 ========================================================== */
 
 body.modo-dia {
@@ -101,7 +101,7 @@ body.modo-dia {
     border: 1px solid var(--borde);
 }
 
-/* Suprimir transiciones durante activaciones programáticas (botones principales) */
+/* Suprimir transiciones durante activaciones programÃ¡ticas (botones principales) */
 body.sin-transicion-nav,
 body.sin-transicion-nav *,
 body.sin-transicion-nav *::before,
@@ -110,7 +110,7 @@ body.sin-transicion-nav *::after {
     animation-duration: 0.001s !important;
 }
 
-/* ── Submenús / Popovers flotantes en Opciones del Reto ── */
+/* â”€â”€ SubmenÃºs / Popovers flotantes en Opciones del Reto â”€â”€ */
 .submenuOpcion.popoverFlotante {
     position: absolute;
     z-index: 1000;
@@ -330,7 +330,7 @@ header p {
 }
 
 /* ==========================================================
-   MENÚ PRINCIPAL
+   MENÃš PRINCIPAL
 ========================================================== */
 
 .menu-principal {
@@ -375,7 +375,7 @@ header p {
 }
 
 /* ==========================================================
-   MENÚ PRINCIPAL FLOTANTE (SE ACTIVA AL TAPARLO EL SCROLL)
+   MENÃš PRINCIPAL FLOTANTE (SE ACTIVA AL TAPARLO EL SCROLL)
 ========================================================== */
 
 #sentinelMenuPrincipal {
@@ -418,7 +418,7 @@ header p {
     padding: clamp(7px, 1.8vw, 10px) clamp(10px, 3vw, 16px);
 }
 
-/* Flechas de navegación (solo visibles si hay más botones de los que caben) */
+/* Flechas de navegaciÃ³n (solo visibles si hay mÃ¡s botones de los que caben) */
 .flechaMenu {
     display: none;
     position: absolute;
@@ -518,7 +518,7 @@ header p {
     max-width: 500px;
 }
 
-/* Estas ventanas se muestran con display: flex desde JS, así que podemos usar flex layout directamente */
+/* Estas ventanas se muestran con display: flex desde JS, asÃ­ que podemos usar flex layout directamente */
 #ventanaTemporizador,
 #ventanaTiempoAgotado {
     flex-direction: column;
@@ -572,6 +572,9 @@ header p {
 #app.modo-paralelo #ventanaTemporizador {
     margin: 30px 0 70px 0;
     width: 100%;
+    /* Aislar cada panel para evitar repaints cruzados (destellos) al hacer hover */
+    isolation: isolate;
+    contain: layout style;
 }
 
 #app.modo-paralelo #ventanaRetoResultado,
@@ -714,7 +717,7 @@ button:disabled {
 
 }
 
-/* Cabeceras de sección con botón de compartir inline */
+/* Cabeceras de secciÃ³n con botÃ³n de compartir inline */
 .estatSeccionCabecera {
     display: flex;
     align-items: center;
@@ -747,7 +750,7 @@ button:disabled {
 
 
 /* ==========================================================
-   BOTÓN CERRAR
+   BOTÃ“N CERRAR
 ========================================================== */
 
 .cerrar {
@@ -1184,7 +1187,7 @@ input[type="number"]:focus {
 
 
 /* ==========================================================
-   BOTÓN BORRAR FILTROS
+   BOTÃ“N BORRAR FILTROS
 ========================================================== */
 
 #zonaBorrarFiltros {
@@ -1708,7 +1711,7 @@ input[type="number"]:focus {
 }
 
 /* ==========================================================
-   BOTÓN MODO DÍA / NOCHE
+   BOTÃ“N MODO DÃA / NOCHE
 ========================================================== */
 
 .toggleModo {
@@ -1935,7 +1938,7 @@ body.modo-noche .toggleModo:hover {
 
 }
 
-/* ── Icono del mundo en la cabecera del acordeón ── */
+/* â”€â”€ Icono del mundo en la cabecera del acordeÃ³n â”€â”€ */
 
 .nombreMundoConIcono {
     display: flex;
@@ -1958,7 +1961,7 @@ body.modo-noche .toggleModo:hover {
     flex-shrink: 0;
 }
 
-/* ── Sub-acordeón de barrio ─────────────────────── */
+/* â”€â”€ Sub-acordeÃ³n de barrio â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 .grupoBarrio {
     border-radius: calc(var(--radio-normal) - 2px);
@@ -2145,9 +2148,7 @@ body.modo-dia .contadorBarrio {
    TOOLTIPS
 ========================================================== */
 .tooltip {
-    position: absolute;
-    top: 0;
-    left: 0;
+    position: fixed;
     background: rgba(0, 0, 0, 0.85);
     color: #fff;
     padding: 8px 14px;
@@ -2162,6 +2163,9 @@ body.modo-dia .contadorBarrio {
     white-space: normal;
     text-align: center;
     border: 1px solid rgba(255, 255, 255, 0.2);
+    /* Promover a capa de composiciÃ³n propia para evitar repaints cruzados */
+    will-change: transform;
+    isolation: isolate;
 }
 
 /* ==========================================================
@@ -2172,7 +2176,7 @@ body.modo-dia .contadorBarrio {
     background: var(--color-resaltado);
     color: white;
     border: none;
-    border-radius: var(--radio-pequeño);
+    border-radius: var(--radio-pequeÃ±o);
     padding: 8px 14px;
     cursor: pointer;
     font-size: 0.95rem;
@@ -2317,7 +2321,7 @@ body.modo-dia .contadorBarrio {
    ICONOS DE PACKS
 ========================================================== */
 
-/* Botón de pack con icono (selector de packs del reto) */
+/* BotÃ³n de pack con icono (selector de packs del reto) */
 .btnPackIcono {
     width: 88px;
     height: 88px;
@@ -2490,9 +2494,9 @@ body.modo-dia .contadorBarrio {
 
 }
 
-/* La ventana de resultados se adapta al número de solares:
-   si hay pocos, la ventana se hace más estrecha en vez de
-   dejar un hueco vacío a la derecha. */
+/* La ventana de resultados se adapta al nÃºmero de solares:
+   si hay pocos, la ventana se hace mÃ¡s estrecha en vez de
+   dejar un hueco vacÃ­o a la derecha. */
 #ventanaResultados {
     max-width: min(92%, 1150px);
 }
@@ -2748,8 +2752,8 @@ body.modo-dia .contadorBarrio {
 
     height: 110%;
 
-    /* La imagen se aplica dinámicamente desde loading.js según el modo día/noche.
-       Esta URL actúa solo como fallback por si el JS aún no ha actuado. */
+    /* La imagen se aplica dinÃ¡micamente desde loading.js segÃºn el modo dÃ­a/noche.
+       Esta URL actÃºa solo como fallback por si el JS aÃºn no ha actuado. */
     background-image: url('../img/pantalla%20carga/Pantalla%20carga%20inicio.png');
 
 
@@ -2899,7 +2903,7 @@ body.modo-dia .contadorBarrio {
 
 }
 
-/* ── Modo noche (default): textos claros ── */
+/* â”€â”€ Modo noche (default): textos claros â”€â”€ */
 body.modo-noche .pantallaCargaTexto h1 {
     color: #EDEDED;
     text-shadow: 0 2px 12px rgba(0, 0, 0, 0.85);
@@ -2920,7 +2924,7 @@ body.modo-noche .fraseCarga {
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
 }
 
-/* ── Modo día: textos oscuros ── */
+/* â”€â”€ Modo dÃ­a: textos oscuros â”€â”€ */
 body.modo-dia .pantallaCargaCentro {
     background: rgba(255, 255, 255, 0.45);
     border-color: rgba(0, 0, 0, 0.15);
@@ -3169,7 +3173,7 @@ body.modo-dia .pantallaCargaLogo2 {
     transition: width 0.3s ease, height 0.3s ease;
 }
 
-/* ── Modo Compacto (se activa cuando el menú se convierte en barra al hacer scroll) ── */
+/* â”€â”€ Modo Compacto (se activa cuando el menÃº se convierte en barra al hacer scroll) â”€â”€ */
 header.headerCompacto {
     padding: 8px 20px;
     margin-bottom: 15px;
@@ -3285,7 +3289,7 @@ header.headerCompacto .header-contenido {
 }
 
 /* ==========================================================
-   GALERÍA DE FOTOS EN FICHA DE SOLAR
+   GALERÃA DE FOTOS EN FICHA DE SOLAR
 ========================================================== */
 
 .galeriaFichaSolarWrapper {
@@ -3478,7 +3482,7 @@ header.headerCompacto .header-contenido {
 
 }
 
-/* Puntos de borde en sliding window: indican que hay más fotos fuera de la vista */
+/* Puntos de borde en sliding window: indican que hay mÃ¡s fotos fuera de la vista */
 .puntoGaleria.borde {
 
     opacity: 0.45;
@@ -3535,7 +3539,7 @@ header.headerCompacto .header-contenido {
 
 }
 
-/* Al estar activa la galería, quitamos el filtro de la ventana
+/* Al estar activa la galerÃ­a, quitamos el filtro de la ventana
    para evitar que bloquee y corte el posicionamiento 'fixed' a toda la pantalla */
 body.galeria-ampliada .ventana {
     backdrop-filter: none !important;
@@ -3557,7 +3561,7 @@ body.galeria-ampliada .ventana {
 
     height: auto;
 
-    /* Se amplía más (casi todo el viewport) */
+    /* Se amplÃ­a mÃ¡s (casi todo el viewport) */
     max-width: 95vw;
 
     max-height: 90vh;
@@ -3608,8 +3612,8 @@ body.galeria-ampliada .ventana {
 }
 
 /* No se define color propio: al llevar la clase .toggleModo,
-   el botón de idioma ya respeta automáticamente los colores
-   de modo día / modo noche, igual que el botón de sol/luna. */
+   el botÃ³n de idioma ya respeta automÃ¡ticamente los colores
+   de modo dÃ­a / modo noche, igual que el botÃ³n de sol/luna. */
 .botonIdiomaBtn {
     overflow: hidden;
 }
@@ -3675,7 +3679,7 @@ body.galeria-ampliada .ventana {
     background: var(--color-resaltado);
 }
 
-/* ── Evitar que Google Translate rompa el diseño ── */
+/* â”€â”€ Evitar que Google Translate rompa el diseÃ±o â”€â”€ */
 
 html body {
     top: 0px !important;
@@ -3965,12 +3969,12 @@ body > .skiptranslate {
 
 /* ==========================================================
    FIX SCROLL ANCHORING (GLOBAL)
-   Desactivamos el ajuste automático de scroll del navegador
-   en toda la página. Este mecanismo intenta "anclar" el
+   Desactivamos el ajuste automÃ¡tico de scroll del navegador
+   en toda la pÃ¡gina. Este mecanismo intenta "anclar" el
    scroll cuando detecta cambios de altura en cualquier punto
    del documento (por ejemplo, al abrir paneles de filtro
    grandes como "Nombre del pack" o "Mundo"), y puede entrar
-   en conflicto con nuestro propio cálculo del menú flotante,
+   en conflicto con nuestro propio cÃ¡lculo del menÃº flotante,
    causando saltos al hacer scroll lento hacia arriba.
 ========================================================== */
 
@@ -4096,7 +4100,7 @@ html {
 }
 
 /* ==========================================================
-   ETAPAS DE VIDA (COMPOSICIÓN DE LA VIVIENDA EN RETOS)
+   ETAPAS DE VIDA (COMPOSICIÃ“N DE LA VIVIENDA EN RETOS)
 ========================================================== */
 
 .tiraIconosEtapas {
@@ -4259,7 +4263,7 @@ html {
 
 
 /* ==========================================================
-   BOTONES DE TRUCOS Y MENÚ (RESPETAN MODO DÍA/NOCHE)
+   BOTONES DE TRUCOS Y MENÃš (RESPETAN MODO DÃA/NOCHE)
 ========================================================== */
 
 #botonEstadisticas,
@@ -4286,7 +4290,7 @@ html {
 
 
 /* ==========================================================
-   ESTADÍSTICAS SIMS 4
+   ESTADÃSTICAS SIMS 4
 ========================================================== */
 
 .estatSubtitulo {
@@ -4298,7 +4302,7 @@ html {
     opacity: 0.9;
 }
 
-/* ── Cards de resumen superior ─────────────────────────── */
+/* â”€â”€ Cards de resumen superior â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .estadisticasResumen {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -4378,7 +4382,7 @@ html {
     letter-spacing: 0.05em;
 }
 
-/* ── Panel de tiempo por pack ───────────────────────── */
+/* â”€â”€ Panel de tiempo por pack â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .estatTiempoPanel {
     background: var(--color-tarjeta);
     backdrop-filter: blur(var(--blur));
@@ -4420,7 +4424,7 @@ html {
     padding: 4px 8px;
     opacity: 0.7;
     transition: opacity 0.2s;
-    border-radius: var(--radio-pequeño, 8px);
+    border-radius: var(--radio-pequeÃ±o, 8px);
 }
 .estatTiempoPanelCerrar:hover { opacity: 1; background: rgba(255,255,255,0.08); }
 
@@ -4431,7 +4435,7 @@ html {
     gap: 14px;
 }
 
-/* Grupos de tipo de pack (acordeón) */
+/* Grupos de tipo de pack (acordeÃ³n) */
 .estatTiempoPorTipo {
     display: flex;
     flex-direction: column;
@@ -4541,7 +4545,7 @@ html {
     transform: scale(1.18);
 }
 
-/* Grid más compacto sin nombres */
+/* Grid mÃ¡s compacto sin nombres */
 .estatTipoIconoGrid {
     display: none;
     grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
@@ -4645,7 +4649,7 @@ html {
 }
 
 /* ==========================================================
-   ESTADÍSTICAS SIMS 4
+   ESTADÃSTICAS SIMS 4
 ========================================================== */
 
 #ventanaEstadisticas {
@@ -4667,7 +4671,7 @@ html {
 
 
 
-/* ── Controles de filtro ───────────────────────────────── */
+/* â”€â”€ Controles de filtro â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .estadisticasControles {
     display: flex;
     flex-wrap: wrap;
@@ -4693,7 +4697,7 @@ html {
     flex: 1 1 220px;
     background: rgba(0,0,0,0.12);
     border: 1px solid var(--borde);
-    border-radius: var(--radio-pequeño);
+    border-radius: var(--radio-pequeÃ±o);
     padding: 8px 12px;
     transition: border-color var(--transicion);
 }
@@ -4736,7 +4740,7 @@ body.modo-dia .estatControlBusqueda {
     opacity: 0.8;
 }
 
-/* ── Trigger Buttons Personalizados (Fecha y Select) ──── */
+/* â”€â”€ Trigger Buttons Personalizados (Fecha y Select) â”€â”€â”€â”€ */
 .estatCustomTriggerBtn {
     display: flex;
     align-items: center;
@@ -4745,7 +4749,7 @@ body.modo-dia .estatControlBusqueda {
     padding: 8px 12px;
     height: 38px;
     box-sizing: border-box;
-    border-radius: var(--radio-pequeño);
+    border-radius: var(--radio-pequeÃ±o);
     font-size: 0.88rem;
     font-family: inherit;
     font-weight: 500;
@@ -4786,12 +4790,12 @@ body.modo-dia .estatInputPrecio {
 
 .estatInputPrecio {
     padding: 8px 12px;
-    border-radius: var(--radio-pequeño);
+    border-radius: var(--radio-pequeÃ±o);
     font-size: 0.88rem;
     font-family: inherit;
     outline: none;
     width: 80px;
-    /* Misma altura que los trigger buttons: se estira automáticamente */
+    /* Misma altura que los trigger buttons: se estira automÃ¡ticamente */
     height: 38px;
     box-sizing: border-box;
     transition: border-color var(--transicion), box-shadow var(--transicion);
@@ -4804,7 +4808,7 @@ body.modo-dia .estatInputPrecio {
 
 .estatSeparador { opacity: 0.5; font-weight: bold; }
 
-/* ── Menú Desplegable Personalizado (Tipo de Pack) ──── */
+/* â”€â”€ MenÃº Desplegable Personalizado (Tipo de Pack) â”€â”€â”€â”€ */
 .estatCustomDropdown {
     position: absolute;
     top: calc(100% + 6px);
@@ -4839,7 +4843,7 @@ body.modo-dia .estatCustomDropdown {
 
 .estatDropdownItem {
     padding: 8px 12px;
-    border-radius: var(--radio-pequeño);
+    border-radius: var(--radio-pequeÃ±o);
     font-size: 0.88rem;
     font-weight: 500;
     cursor: pointer;
@@ -4861,7 +4865,7 @@ body.modo-dia .estatCustomDropdown {
     font-weight: 700;
 }
 
-/* ── Modal Selector de Fecha Paso a Paso ─────────────── */
+/* â”€â”€ Modal Selector de Fecha Paso a Paso â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .estatDatePickerModal {
     position: fixed;
     top: 0;
@@ -4950,7 +4954,7 @@ body.modo-dia .estatDatePickerCard {
     font-weight: 600;
     padding: 8px 12px;
     background: rgba(0,0,0,0.06);
-    border-radius: var(--radio-pequeño);
+    border-radius: var(--radio-pequeÃ±o);
 }
 
 body.modo-dia .estatDatePickerBreadcrumbs {
@@ -4986,7 +4990,7 @@ body.modo-dia .estatDatePickerBreadcrumbs {
 
 .estatPickerBtn {
     padding: 10px 6px;
-    border-radius: var(--radio-pequeño);
+    border-radius: var(--radio-pequeÃ±o);
     border: 1px solid var(--borde);
     background: rgba(0,0,0,0.04);
     color: var(--color-texto);
@@ -5026,7 +5030,7 @@ body.modo-noche .estatPickerBtn {
 
 .estatBtnSecundario {
     padding: 8px 14px;
-    border-radius: var(--radio-pequeño);
+    border-radius: var(--radio-pequeÃ±o);
     border: 1px solid var(--borde);
     background: transparent;
     color: var(--color-texto);
@@ -5039,7 +5043,7 @@ body.modo-noche .estatPickerBtn {
 
 .estatBtnSecundario:hover { opacity: 1; }
 
-/* ── Barras deslizadoras Aero / Chrome ───────────────── */
+/* â”€â”€ Barras deslizadoras Aero / Chrome â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .graficoScrollHoriz::-webkit-scrollbar,
 .estatDatePickerBody::-webkit-scrollbar,
 #ventanaEstadisticas::-webkit-scrollbar {
@@ -5079,7 +5083,7 @@ body.modo-noche #ventanaEstadisticas::-webkit-scrollbar-track {
 .estatBtnBorrar {
     padding: 8px 16px;
     border: 1px solid var(--borde);
-    border-radius: var(--radio-pequeño);
+    border-radius: var(--radio-pequeÃ±o);
     background: rgba(229,57,53,0.18);
     color: var(--color-texto);
     font-size: 0.88rem;
@@ -5096,7 +5100,7 @@ body.modo-noche #ventanaEstadisticas::-webkit-scrollbar-track {
     transform: scale(1.03);
 }
 
-/* ── Contador ──────────────────────────────────────────── */
+/* â”€â”€ Contador â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .estatContador {
     text-align: center;
     font-size: 0.85rem;
@@ -5105,7 +5109,7 @@ body.modo-noche #ventanaEstadisticas::-webkit-scrollbar-track {
     font-style: italic;
 }
 
-/* ── Toggle Lista / Gráficos ───────────────────────────── */
+/* â”€â”€ Toggle Lista / GrÃ¡ficos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .estatToggleVista {
     display: flex;
     gap: 8px;
@@ -5141,7 +5145,7 @@ body.modo-noche #ventanaEstadisticas::-webkit-scrollbar-track {
     box-shadow: 0 4px 15px rgba(46,204,113,0.35);
 }
 
-/* ── Vista Lista ───────────────────────────────────────── */
+/* â”€â”€ Vista Lista â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .estatVistaLista { width: 100%; }
 
 #estatListaPacks {
@@ -5345,7 +5349,7 @@ body.modo-dia .packSolares {
 .packSolaresNum   { font-weight: 800; color: var(--color-resaltado); }
 .packSolaresLabel { opacity: 0.7; }
 
-/* ── Vista Gráficos ────────────────────────────────────── */
+/* â”€â”€ Vista GrÃ¡ficos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .estatVistaGraficos {
     width: 100%;
     max-width: 100%;
@@ -5356,7 +5360,7 @@ body.modo-dia .packSolares {
 .estatInstruccionesGraficos {
     background: rgba(46, 204, 113, 0.12);
     border: 1px solid rgba(46, 204, 113, 0.3);
-    border-radius: var(--radio-pequeño);
+    border-radius: var(--radio-pequeÃ±o);
     padding: 10px 16px;
     margin-bottom: 16px;
     font-size: 0.86rem;
@@ -5435,7 +5439,7 @@ body.modo-dia .estatInstruccionesGraficos kbd {
     margin: 0;
 }
 
-/* .graficoBtnCompartir: idéntico en apariencia y hover al botón .compartir de ventana */
+/* .graficoBtnCompartir: idÃ©ntico en apariencia y hover al botÃ³n .compartir de ventana */
 .graficoBtnCompartir {
     width: 40px !important;
     height: 40px !important;
@@ -5486,7 +5490,7 @@ body.modo-dia .estatInstruccionesGraficos kbd {
     overflow-x: auto;
     overflow-y: hidden;
     box-sizing: border-box;
-    /* Scrollbar Aero: gris traslúcido (Chrome 121+, Firefox) */
+    /* Scrollbar Aero: gris traslÃºcido (Chrome 121+, Firefox) */
     scrollbar-width: thin;
     scrollbar-color: rgba(120, 120, 120, 0.40) transparent;
     padding-bottom: 10px;
@@ -5506,7 +5510,7 @@ body.modo-noche .graficoScrollHoriz {
     cursor: grabbing;
 }
 
-/* ── Barras deslizadoras Aero (gris traslúcido estilo Chrome) ── */
+/* â”€â”€ Barras deslizadoras Aero (gris traslÃºcido estilo Chrome) â”€â”€ */
 .graficoScrollHoriz::-webkit-scrollbar {
     height: 8px;
 }
@@ -5516,7 +5520,7 @@ body.modo-noche .graficoScrollHoriz {
     border-radius: 10px;
 }
 
-/* ── Tooltip flotante para gráficos ────────────────── */
+/* â”€â”€ Tooltip flotante para grÃ¡ficos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .estatGraficoTooltip {
     position: fixed;
     z-index: 100000;
@@ -5524,7 +5528,7 @@ body.modo-noche .graficoScrollHoriz {
     background: rgba(20, 24, 33, 0.94);
     color: #ffffff;
     border: 1px solid rgba(255, 255, 255, 0.22);
-    border-radius: var(--radio-pequeño);
+    border-radius: var(--radio-pequeÃ±o);
     font-size: 0.84rem;
     font-family: inherit;
     pointer-events: none;
@@ -5568,13 +5572,13 @@ body.modo-noche .graficoScrollHoriz::-webkit-scrollbar-thumb:hover {
     max-height: 320px;
 }
 
-/* Banner de precio total en gráficos */
+/* Banner de precio total en grÃ¡ficos */
 .estatPrecioTotalBanner {
     text-align: center;
     padding: 10px 16px;
     background: rgba(46, 204, 113, 0.12);
     border: 1px solid rgba(46, 204, 113, 0.3);
-    border-radius: var(--radio-pequeño);
+    border-radius: var(--radio-pequeÃ±o);
     font-size: 0.95rem;
     color: var(--color-texto);
 }
@@ -5584,7 +5588,7 @@ body.modo-noche .graficoScrollHoriz::-webkit-scrollbar-thumb:hover {
     font-size: 1.1rem;
 }
 
-/* Controles de líneas para gráfico temporal */
+/* Controles de lÃ­neas para grÃ¡fico temporal */
 .estatControlesLineas {
     display: flex;
     flex-wrap: wrap;
@@ -5626,7 +5630,7 @@ body.modo-dia .estatBtnLinea.activa {
     display: inline-block;
 }
 
-/* ── Estados cargando / sin resultados ─────────────────── */
+/* â”€â”€ Estados cargando / sin resultados â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .estatCargando,
 .estatSinResultados,
 .estatError {
@@ -5653,7 +5657,7 @@ body.modo-dia .estatBtnLinea.activa {
     to { transform: rotate(360deg); }
 }
 
-/* ── Modal Flotante de Selector de Packs por Categoría ── */
+/* â”€â”€ Modal Flotante de Selector de Packs por CategorÃ­a â”€â”€ */
 .modalPacksFlotante {
     display: none;
     position: fixed;
@@ -5811,7 +5815,7 @@ body.modo-dia .footerPacksFlotante {
     to { transform: scale(1); opacity: 1; }
 }
 
-/* Tarjetas de Categoría en Modo Desplegable */
+/* Tarjetas de CategorÃ­a en Modo Desplegable */
 .gridCategoriasDesplegables {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -5872,7 +5876,7 @@ body.modo-dia .btnCategoriaDesplegable .badgeConteoPacks {
     color: #444444;
 }
 
-/* ── Switch Modo Vista Packs ── */
+/* â”€â”€ Switch Modo Vista Packs â”€â”€ */
 .switchModoVista {
     display: inline-flex;
     align-items: center;
@@ -5905,7 +5909,7 @@ body.modo-dia .btnCategoriaDesplegable .badgeConteoPacks {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 }
 
-/* Cuando el switch está en modo "lista" (checked) */
+/* Cuando el switch estÃ¡ en modo "lista" (checked) */
 .switchModoVista input:checked ~ .sliderSwitch .thumbSwitch {
     left: 25px;
 }
@@ -5916,7 +5920,7 @@ body.modo-dia .btnCategoriaDesplegable .badgeConteoPacks {
 }
 
 /* =========================================================
-   SECCIÓN TRUCOS Y BUSCADOR DE TRUCOS
+   SECCIÃ“N TRUCOS Y BUSCADOR DE TRUCOS
    ========================================================= */
 
 .contenedorBuscadorTrucos {
@@ -5982,7 +5986,7 @@ body.modo-dia .btnCategoriaDesplegable .badgeConteoPacks {
     opacity: 1;
 }
 
-/* Desplegable de resultados de búsqueda de trucos */
+/* Desplegable de resultados de bÃºsqueda de trucos */
 .desplegableResultadosTrucos {
     position: absolute;
     top: 100%;
@@ -6096,7 +6100,7 @@ body.modo-dia .codigoResultadoTruco {
     opacity: 1;
 }
 
-/* ── Estilos de Trucos Copiables ── */
+/* â”€â”€ Estilos de Trucos Copiables â”€â”€ */
 .truco-copiable {
     font-family: 'Courier New', Courier, monospace;
     font-weight: bold;
@@ -6123,7 +6127,7 @@ body.modo-dia .codigoResultadoTruco {
     transform: translateY(0);
 }
 
-/* ── Animación de Resaltado al Redirigir a un Truco ── */
+/* â”€â”€ AnimaciÃ³n de Resaltado al Redirigir a un Truco â”€â”€ */
 @keyframes efectoFlashTruco {
     0% {
         box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.8);
@@ -6149,7 +6153,7 @@ body.modo-dia .codigoResultadoTruco {
 }
 
 /* ==========================================================
-   VENTANA RETOS OPCIONES - Rediseño estilo Ruleta de Desastres
+   VENTANA RETOS OPCIONES - RediseÃ±o estilo Ruleta de Desastres
    ========================================================== */
 
 #ventanaRetosOpciones .subtituloVentana {
@@ -6158,7 +6162,7 @@ body.modo-dia .codigoResultadoTruco {
     max-width: 680px;
 }
 
-/* Grid de opciones rediseñado */
+/* Grid de opciones rediseÃ±ado */
 .gridOpcionesReto {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -6170,7 +6174,7 @@ body.modo-dia .codigoResultadoTruco {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
 }
 
-/* El contenedor flotante (Colores, Límite de Packs, Tamaño Solar)
+/* El contenedor flotante (Colores, LÃ­mite de Packs, TamaÃ±o Solar)
    debe ocupar exactamente 1 celda del grid como el resto de botones */
 .gridOpcionesReto .contenedorOpcionFlotante {
     display: flex;
@@ -6180,7 +6184,7 @@ body.modo-dia .codigoResultadoTruco {
     height: 100%;
 }
 
-/* El botón dentro del contenedor flotante ocupa 100% del alto y ancho de la celda */
+/* El botÃ³n dentro del contenedor flotante ocupa 100% del alto y ancho de la celda */
 .gridOpcionesReto .contenedorOpcionFlotante > .opcionFiltroReto {
     width: 100%;
     height: 100%;
@@ -6270,7 +6274,7 @@ body.modo-dia .contadorDificultadUI {
     background: rgba(255, 255, 255, 0.4);
 }
 
-/* Submenús inline dentro de las secciones */
+/* SubmenÃºs inline dentro de las secciones */
 .submenuLimitanteInline {
     margin-top: 16px;
     text-align: center;
@@ -6331,7 +6335,7 @@ body.modo-dia .seccionConfigDesastres {
     margin-bottom: 16px;
 }
 
-/* Botones Toggle de Categorías (Sin checkboxes ticks) */
+/* Botones Toggle de CategorÃ­as (Sin checkboxes ticks) */
 .gridCheckboxesDesastres {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -6344,7 +6348,7 @@ body.modo-dia .seccionConfigDesastres {
     gap: 10px;
     background: rgba(0, 0, 0, 0.25);
     border: 1.5px solid var(--borde);
-    border-radius: var(--radio-pequeño);
+    border-radius: var(--radio-pequeÃ±o);
     padding: 12px 16px;
     cursor: pointer;
     color: inherit;
@@ -6410,7 +6414,7 @@ body.modo-dia .botonDesastreToggle.activo {
 .formCampo input {
     background: rgba(0, 0, 0, 0.3);
     border: 1px solid var(--borde);
-    border-radius: var(--radio-pequeño);
+    border-radius: var(--radio-pequeÃ±o);
     color: inherit;
     padding: 6px 10px;
     font-size: 0.9rem;
@@ -6521,20 +6525,19 @@ body.modo-dia .timerDigits {
 }
 
 .tarjetaResultadoDesastre {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
+    background: rgba(30, 38, 55, 0.92);
     border: 2px solid rgba(46, 204, 113, 0.5);
     border-radius: var(--radio-grande);
     padding: 30px 40px;
     text-align: center;
     max-width: 550px;
     width: 100%;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 body.modo-dia .tarjetaResultadoDesastre {
-    background: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.97);
     border-color: rgba(39, 174, 96, 0.5);
 }
 
@@ -6633,7 +6636,7 @@ body.modo-dia .botonSecundario:hover {
     align-items: center;
     gap: 12px;
     background: rgba(0, 0, 0, 0.2);
-    border-radius: var(--radio-pequeño);
+    border-radius: var(--radio-pequeÃ±o);
     padding: 10px 15px;
     font-size: 0.95rem;
 }
@@ -6741,7 +6744,7 @@ body.modo-dia .controlMinutosWrapper {
     -moz-appearance: textfield;
 }
 
-/* Display digital de cuenta atrás */
+/* Display digital de cuenta atrÃ¡s */
 .displayTemporizadorDigital {
     display: flex;
     align-items: center;
@@ -6779,7 +6782,7 @@ body.modo-dia .displayTemporizadorDigital {
     font-size: 2.2rem;
 }
 
-/* Botones de acción en curso (Pausar y Detener) */
+/* Botones de acciÃ³n en curso (Pausar y Detener) */
 .accionesTemporizadorGrid {
     display: flex;
     justify-content: center;
@@ -6803,7 +6806,7 @@ body.modo-dia .displayTemporizadorDigital {
     min-width: 135px;
 }
 
-/* Botón Pausar / Reanudar */
+/* BotÃ³n Pausar / Reanudar */
 .btnTimerPause {
     background: rgba(46, 204, 113, 0.15);
     border-color: #2ecc71;
@@ -6829,7 +6832,7 @@ body.modo-dia .displayTemporizadorDigital {
     box-shadow: 0 6px 18px rgba(243, 156, 18, 0.35);
 }
 
-/* Botón Detener */
+/* BotÃ³n Detener */
 .btnTimerStop {
     background: rgba(231, 76, 60, 0.15);
     border-color: #e74c3c;
@@ -7000,7 +7003,7 @@ body.modo-dia .displayTemporizadorDigital {
     text-decoration: underline;
 }
 
-/* ÁREA DE ANIMACIÓN DE RULETA */
+/* ÃREA DE ANIMACIÃ“N DE RULETA */
 .habResultadoWrap {
     margin-top: 20px;
 }
@@ -7213,12 +7216,13 @@ body.modo-dia .habAnimacion::after {
 
 
 /* ==========================================================
-   ESTILOS VENTANA 404 (PÁGINA NO ENCONTRADA)
+   ESTILOS VENTANA 404 (PÃGINA NO ENCONTRADA)
    ========================================================== */
 
 #ventana404 {
     text-align: center;
     padding: 40px 24px;
+    margin-top: 35px;
 }
 
 .contenido404 {
@@ -7279,7 +7283,7 @@ body.modo-dia .habAnimacion::after {
     padding: 12px 24px;
     font-size: 0.95rem;
     font-weight: 700;
-    border-radius: var(--radio-pequeño, 10px);
+    border-radius: var(--radio-pequeÃ±o, 10px);
     cursor: pointer;
     transition: all var(--transicion);
     border: none;
@@ -7344,7 +7348,11 @@ body.modo-dia .habAnimacion::after {
     border-radius: var(--radio-normal, 12px);
     box-shadow: 0 4px 16px rgba(243, 156, 18, 0.2);
     box-sizing: border-box;
-    transition: all 0.3s ease;
+    /* Solo animar fondo y borde, NO usar 'all' para evitar repaints cruzados en modo paralelo */
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    /* Aislar los repaints de esta caja al propio elemento */
+    contain: layout style;
+    will-change: background, border-color;
 }
 
 .displayTemporizadorDigital .digitosTiempo,
@@ -7394,7 +7402,7 @@ body.modo-dia .habAnimacion::after {
     text-overflow: clip;
 }
 
-/* Texto de tiempo agotado adaptable en una sola línea SIN TRES PUNTOS */
+/* Texto de tiempo agotado adaptable en una sola lÃ­nea SIN TRES PUNTOS */
 .tiempoAgotadoTexto {
     font-family: inherit !important;
     font-size: clamp(0.7rem, 6.5cqi, 1.8rem) !important;
@@ -7411,6 +7419,288 @@ body.modo-dia .habAnimacion::after {
     box-sizing: border-box;
     letter-spacing: -0.3px;
     display: block;
+}
+
+
+/* ==========================================================
+   ESTILOS BOTÓN OBS Y MODAL OBS OVERLAY
+   ========================================================== */
+
+.botonOBSBtn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 14px !important;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1.5px solid var(--borde);
+    border-radius: var(--radio-pequeño, 10px);
+    color: var(--color-texto);
+    transition: all var(--transicion);
+}
+
+.botonOBSBtn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.modalOBSCard {
+    max-width: 650px !important;
+    width: 92% !important;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.cuerpoModalOBS {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 0;
+}
+
+.obsGuiaTexto {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+    opacity: 0.9;
+}
+
+.obsPasosBox {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    padding: 12px 18px;
+}
+
+.obsPasosBox ol {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.obsPasosBox code {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.obsSeccionOpciones {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.obsSeccionOpciones h4 {
+    margin: 0 0 6px 0;
+    font-size: 1.05rem;
+}
+
+.obsOpcionGrupo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.obsOpcionGrupo label {
+    font-size: 0.88rem;
+    font-weight: 700;
+    opacity: 0.9;
+}
+
+.obsBtnGroup {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.obsBtnOption {
+    flex: 1;
+    min-width: 110px;
+    padding: 9px 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-radius: 8px;
+    border: 1.5px solid var(--borde);
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-texto);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.obsBtnOption:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.obsBtnOption.activo {
+    background: var(--color-resaltado, #2ECC71) !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+    box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+}
+
+.obsEnlaceBox {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.obsEnlaceBox label {
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+.obsInputGroup {
+    display: flex;
+    gap: 8px;
+}
+
+.inputUrlOBS {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    border-radius: 8px;
+    border: 1px solid var(--borde);
+    background: rgba(0, 0, 0, 0.3);
+    color: #33ff88;
+    font-family: monospace;
+    box-sizing: border-box;
+}
+
+.obsAccionesFooter {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+}
+
+.obsBtnCopiar, .obsBtnProbar {
+    flex: 1;
+    min-width: 180px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.obsBtnCopiar.copiado {
+    background: #2ECC71 !important;
+    color: #fff !important;
+}
+
+.obsNotaRealtime {
+    font-size: 0.8rem;
+    opacity: 0.75;
+    margin: 4px 0 0 0;
+    text-align: center;
+}
+
+
+/* ==========================================================
+   ESTILOS EN MODO OBS OVERLAY (MODO-OBS EN BODY)
+   ========================================================== */
+
+body.modo-obs {
+    background: transparent !important;
+    background-image: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    width: 100vw !important;
+    height: 100vh !important;
+}
+
+body.modo-obs header,
+body.modo-obs #menuPrincipal,
+body.modo-obs footer,
+body.modo-obs #pantallaCarga,
+body.modo-obs #placeholderMenuPrincipal {
+    display: none !important;
+}
+
+body.modo-obs section#app {
+    width: 100vw !important;
+    height: 100vh !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    box-sizing: border-box !important;
+}
+
+/* Alineación de ventanas en OBS */
+body.modo-obs.obs-pos-left section#app {
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+    padding: 24px !important;
+}
+
+body.modo-obs.obs-pos-right section#app {
+    justify-content: flex-end !important;
+    align-items: flex-start !important;
+    padding: 24px !important;
+}
+
+body.modo-obs.obs-pos-center section#app {
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 24px !important;
+}
+
+/* Las ventanas activas ocupan su espacio limpio sin márgenes excesivos */
+body.modo-obs .ventana {
+    margin: 0 !important;
+    max-width: 680px !important;
+    width: 100% !important;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Fondo de ventanas según la configuración escogida */
+body.modo-obs.obs-bg-transparent .ventana {
+    background: rgba(20, 25, 35, 0.88) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+}
+
+body.modo-obs.obs-bg-dark .ventana {
+    background: #121824 !important;
+}
+
+/* Sobrescribir tema Día / Noche independientemente de la web */
+body.modo-obs.modo-obs-dia {
+    --color-fondo: #F3EEE3;
+    --color-tarjeta: rgba(255, 255, 255, 0.95);
+    --color-texto: #2B2B2B;
+    --color-texto-secundario: #444444;
+    --borde: rgba(0, 0, 0, 0.22);
+}
+
+body.modo-obs.modo-obs-dia .ventana {
+    background: rgba(255, 255, 255, 0.92) !important;
+    color: #2b2b2b !important;
+}
+
+body.modo-obs.modo-obs-noche {
+    --color-fondo: #0D3B66;
+    --color-tarjeta: rgba(20, 25, 35, 0.9);
+    --color-texto: #ffffff;
+    --color-texto-secundario: #cccccc;
+    --borde: rgba(255, 255, 255, 0.35);
+}
+
+/* Garantizar que los modales flotantes se muestren por encima de las ventanas en OBS */
+body.modo-obs .cardPacksFlotante,
+body.modo-obs .tooltip,
+body.modo-obs .fichaSolarModal {
+    z-index: 999999 !important;
 }
 
 

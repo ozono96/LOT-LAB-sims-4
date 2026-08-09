@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página no encontrada - LOT-LAB Sims 4</title>
+    <script>
+        (function() {
+            var fullPath = window.location.pathname;
+            var pathSegments = fullPath.split('/').filter(Boolean);
+            
+            var lastSegment = pathSegments.length > 0 ? pathSegments[pathSegments.length - 1] : '';
+
+            // Detectar si estamos en GitHub Pages con subcarpeta de repositorio (ej: /Buscador-Solares-Sims4/)
+            var base = window.location.origin;
+            if (pathSegments.length > 1) {
+                base += '/' + pathSegments[0] + '/';
+            } else {
+                base += '/';
+            }
+
+            var targetUrl = base + (lastSegment ? '#' + lastSegment : '#404');
+            window.location.replace(targetUrl);
+        })();
+    </script>
+</head>
+<body>
+</body>
+</html>

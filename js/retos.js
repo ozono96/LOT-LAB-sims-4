@@ -144,8 +144,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 tooltip.style.display = "block";
             });
             boton.addEventListener("mousemove", function (e) {
-                tooltip.style.left = e.pageX + "px";
-                tooltip.style.top = (e.pageY - 10) + "px";
+                tooltip.style.left = e.clientX + "px";
+                tooltip.style.top = (e.clientY - 10) + "px";
             });
             boton.addEventListener("mouseleave", function () {
                 tooltip.style.display = "none";
@@ -316,12 +316,18 @@ function abrirModalPacksFlotante(titulo, packsList) {
     actualizarEstadoToggleModal(packsList, cuerpo);
 
     modal.classList.add("activo");
+    if (typeof window.emitirEventoOBS === "function") {
+        window.emitirEventoOBS("SYNC_MODAL_PACKS", { visible: true, titulo, packs: packsList });
+    }
 }
 
 function cerrarModalPacksFlotante() {
     const modal = document.getElementById("modalPacksCategoria");
     if (modal) modal.classList.remove("activo");
     renderizarPacksRetos();
+    if (typeof window.emitirEventoOBS === "function") {
+        window.emitirEventoOBS("SYNC_MODAL_PACKS", { visible: false });
+    }
 }
 
 function renderizarPacksRetos() {

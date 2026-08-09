@@ -2785,6 +2785,29 @@
             </div>
             <!-- ==================== FIN VENTANA HABILIDADES GENERADOR ==================== -->
 
+            <!-- ==================== VENTANA 404: PÁGINA NO ENCONTRADA ==================== -->
+            <div id="ventana404" class="ventana" style="display:none;">
+                <div class="cabeceraVentana">
+                    <button class="cerrar" title="Cerrar">✕</button>
+                </div>
+                <div class="contenido404">
+                    <div class="icono404">👽</div>
+                    <h2 class="titulo404">Página no encontrada</h2>
+                    <p class="descripcion404">
+                        La dirección web o sección <strong id="rutaInvalida404">#ejemplo</strong> no existe o ha sido movida.
+                    </p>
+                    <div class="acciones404">
+                        <button id="btnVolverInicio404" class="botonPrincipal404">
+                            🏠 Volver al Inicio
+                        </button>
+                        <button id="btnIrBuscador404" class="botonSecundario404">
+                            🔍 Ir al Filtrador
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- ==================== FIN VENTANA 404 ==================== -->
+
         </section>
 
     </main>
@@ -2846,6 +2869,10 @@
                             d="M9.37 5.51A7.35 7.35 0 0 0 9.1 7.5c0 4.08 3.32 7.4 7.4 7.4.68 0 1.35-.09 1.99-.27C17.45 17.19 14.93 19 12 19c-3.86 0-7-3.14-7-7 0-2.93 1.81-5.45 4.37-6.49z" />
                     </svg>
 
+                </button>
+
+                <button id="botonOBS" class="toggleModo botonOBSBtn" title="Configurar OBS Overlay" onclick="abrirModalOBS()">
+                    📹 OBS
                 </button>
 
                 <div class="selectorIdioma">
@@ -2950,9 +2977,85 @@
                     ✅ Listo
                 </button>
             </div>
+
+    <!-- MODAL OBS OVERLAY / FUENTE DE NAVEGADOR -->
+    <div id="modalOBS" class="modalPacksFlotante" style="display:none;">
+        <div id="overlayOBS" class="overlayPacksFlotante" onclick="cerrarModalOBS()"></div>
+        <div class="cardPacksFlotante modalOBSCard">
+            <div class="headerPacksFlotante">
+                <h3>📹 Integración OBS (Fuente de Navegador)</h3>
+                <button type="button" id="cerrarModalOBSBtn" class="cerrar" onclick="cerrarModalOBS()">✕</button>
+            </div>
+
+            <div class="cuerpoModalOBS">
+                <p class="obsGuiaTexto">
+                    Transmite las ventanas de retos, ruletas, temporizador o solares en tu directo de OBS Studio sin mostrar el resto de la web.
+                </p>
+
+                <div class="obsPasosBox">
+                    <ol>
+                        <li>Copia el enlace generado a continuación.</li>
+                        <li>En OBS Studio, añade una nueva <strong>Fuente de Navegador (Browser Source)</strong>.</li>
+                        <li>Pega el enlace y ajusta el tamaño a la resolución de tu transmisión (ej: <code>1920 x 1080</code>).</li>
+                    </ol>
+                </div>
+
+                <!-- OPCIONES DE CONFIGURACIÓN OBS -->
+                <div class="obsSeccionOpciones">
+                    <h4>⚙️ Ajustes de la Transmisión</h4>
+
+                    <div class="obsOpcionGrupo">
+                        <label>📐 Posición en Pantalla:</label>
+                        <div class="obsBtnGroup">
+                            <button type="button" class="obsBtnOption obsBtnPos" data-val="left">⬅️ Izquierda</button>
+                            <button type="button" class="obsBtnOption obsBtnPos" data-val="center">↔️ Centro</button>
+                            <button type="button" class="obsBtnOption obsBtnPos activo" data-val="right">➡️ Derecha</button>
+                        </div>
+                    </div>
+
+                    <div class="obsOpcionGrupo">
+                        <label>🎨 Tema Visual (Día / Noche):</label>
+                        <div class="obsBtnGroup">
+                            <button type="button" class="obsBtnOption obsBtnTheme" data-val="dia">☀️ Modo Día</button>
+                            <button type="button" class="obsBtnOption obsBtnTheme activo" data-val="noche">🌙 Modo Noche</button>
+                            <button type="button" class="obsBtnOption obsBtnTheme" data-val="auto">🔄 Mismo que la Web</button>
+                        </div>
+                    </div>
+
+                    <div class="obsOpcionGrupo">
+                        <label>🫥 Estilo de Fondo:</label>
+                        <div class="obsBtnGroup">
+                            <button type="button" class="obsBtnOption obsBtnBg activo" data-val="transparent">🫥 Transparente</button>
+                            <button type="button" class="obsBtnOption obsBtnBg" data-val="dark">🌙 Oscuro Glass</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ENLACE PARA COPIAR -->
+                <div class="obsEnlaceBox">
+                    <label for="inputUrlOBS">🔗 Enlace para la Fuente de Navegador de OBS:</label>
+                    <div class="obsInputGroup">
+                        <input type="text" id="inputUrlOBS" readonly class="inputUrlOBS" value="">
+                    </div>
+                </div>
+
+                <div class="obsAccionesFooter">
+                    <button type="button" id="btnCopiarUrlOBS" class="botonReto obsBtnCopiar">
+                        📋 Copiar Enlace OBS
+                    </button>
+                    <a id="btnProbarOBS" target="_blank" class="botonReto obsBtnProbar">
+                        👁️ Vista Previa en Pestaña
+                    </a>
+                </div>
+
+                <p class="obsNotaRealtime">
+                    ✨ <em>Los cambios que realices aquí se aplicarán automáticamente en OBS en tiempo real sin necesidad de volver a copiar el enlace.</em>
+                </p>
+            </div>
         </div>
     </div>
 
+    <script src="js/obs.js"></script>
 </body>
 
 

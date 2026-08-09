@@ -200,8 +200,8 @@ function renderizarResultadoReto(reto) {
                 tooltip.style.display = "block";
             });
             boton.addEventListener("mousemove", function (e) {
-                tooltip.style.left = e.pageX + "px";
-                tooltip.style.top = (e.pageY - 10) + "px";
+                tooltip.style.left = e.clientX + "px";
+                tooltip.style.top = (e.clientY - 10) + "px";
             });
             boton.addEventListener("mouseleave", function () {
                 tooltip.style.display = "none";
@@ -211,8 +211,8 @@ function renderizarResultadoReto(reto) {
             boton.addEventListener("touchstart", function (e) {
                 tooltip.textContent = this.getAttribute("data-tooltip");
                 const touch = e.touches[0];
-                tooltip.style.left = touch.pageX + "px";
-                tooltip.style.top = (touch.pageY - 10) + "px";
+                tooltip.style.left = touch.clientX + "px";
+                tooltip.style.top = (touch.clientY - 10) + "px";
                 tooltip.style.display = "block";
             }, { passive: true });
             boton.addEventListener("touchend", function () {

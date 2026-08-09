@@ -143,31 +143,13 @@ function procesarRutaURL() {
 }
 
 function mostrarError404(slugInvalido) {
-    window.ventanaActual = "ventana404";
-
-    if (typeof cerrarTemporizadorAcoplado === "function") {
-        cerrarTemporizadorAcoplado();
-    }
-
-    document.querySelectorAll(".ventana").forEach(ventana => {
-        ventana.style.display = "none";
-    });
-
-    const ventana404El = document.getElementById("ventana404");
     const spanRuta = document.getElementById("rutaInvalida404");
 
     if (spanRuta) {
-        spanRuta.textContent = slugInvalido ? "#" + slugInvalido : "dirección web";
+        spanRuta.textContent = (slugInvalido && slugInvalido !== "404") ? "#" + slugInvalido : "dirección web";
     }
 
-    if (ventana404El) {
-        ventana404El.style.display = "block";
-    }
-
-    const headerEl = document.querySelector("header");
-    const menuEl = document.getElementById("menuPrincipal");
-    if (headerEl && cargaInicialCompleta) headerEl.classList.add("headerCompacto");
-    if (menuEl && cargaInicialCompleta) menuEl.classList.add("menuFlotante");
+    abrirVentana("ventana404", false);
 }
 
 function abrirVentana(id, esClickUsuario = false) {
@@ -194,6 +176,10 @@ function abrirVentana(id, esClickUsuario = false) {
     if (ventanaEl) {
         const VENTANAS_FLEX = ["ventanaTemporizador", "ventanaTiempoAgotado"];
         ventanaEl.style.display = VENTANAS_FLEX.includes(id) ? "flex" : "block";
+    }
+
+    if (typeof window.emitirEventoOBS === "function") {
+        window.emitirEventoOBS("SYNC_ABRIR_VENTANA", { idVentana: id });
     }
 
     // 2. Sincronizar URL hash de forma segura
@@ -293,6 +279,9 @@ function cerrarVentana(id) {
             ventana.style.display = "none";
         }
         comprobarVentanaVisible();
+        if (typeof window.emitirEventoOBS === "function") {
+            window.emitirEventoOBS("SYNC_CERRAR_VENTANA", { idVentana: id });
+        }
     }
 }
 
@@ -400,8 +389,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (text) {
                     tooltipGlobal.textContent = text;
                     tooltipGlobal.style.display = "block";
-                    tooltipGlobal.style.left = e.pageX + "px";
-                    tooltipGlobal.style.top = (e.pageY - 10) + "px";
+                    // position:fixed usa coordenadas del viewport (clientX/clientY), NO pageX/pageY
+                    tooltipGlobal.style.left = e.clientX + "px";
+                    tooltipGlobal.style.top = (e.clientY - 10) + "px";
                 } else {
                     tooltipGlobal.style.display = "none";
                 }
@@ -422,8 +412,8 @@ document.addEventListener("DOMContentLoaded", function () {
             if (el) {
                 const touch = e.touches[0];
                 tooltipGlobal.textContent = el.getAttribute("data-tooltip");
-                tooltipGlobal.style.left = touch.pageX + "px";
-                tooltipGlobal.style.top = (touch.pageY - 10) + "px";
+                tooltipGlobal.style.left = touch.clientX + "px";
+                tooltipGlobal.style.top = (touch.clientY - 10) + "px";
                 tooltipGlobal.style.display = "block";
             }
         }, { capture: true, passive: true });

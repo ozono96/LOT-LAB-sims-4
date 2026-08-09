@@ -1,0 +1,2960 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>LOT-LAB Sims 4</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Garantizar scroll = 0 en cada carga/recarga, antes de que cualquier otro JS se ejecute -->
+    <script>history.scrollRestoration = 'manual'; window.scrollTo(0, 0);</script>
+
+</head>
+
+<body class="modo-noche">
+
+    <div id="pantallaCarga">
+        <div id="pantallaCargaFondo"></div>
+
+        <div class="pantallaCargaCentro">
+            <div class="pantallaCargaHeader">
+                <img src="img/logo/logo1.png" alt="Logo LOT-LAB Sims 4" class="pantallaCargaLogo1">
+                <div class="pantallaCargaTexto">
+                    <h1>LOT-LAB Sims 4</h1>
+                    <p>Encuentra cualquier solar del juego fácilmente<br>y crea retos divertidos para construir &amp;
+                        more...</p>
+                </div>
+            </div>
+            <div class="pantallaCargaBy">By</div>
+            <img src="img/logo/logo2.jpg" alt="Ozono96 Logo" class="pantallaCargaLogo2">
+        </div>
+
+        <div class="pantallaCargaInferior">
+            <div class="fraseCargaContenedor">
+                <span class="fraseCarga" id="fraseCarga"></span>
+            </div>
+            <div class="barraCargaContenedor">
+                <div class="barraCargaProgreso" id="barraCargaProgreso"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <header>
+
+        <div class="header-contenido">
+
+            <a href="https://bio.site/ozono96" target="_blank" rel="noopener noreferrer" class="header-logo"
+                id="headerLogo">
+                <img src="img/logo/logo1.png" alt="Logo LOT-LAB Sims 4" class="logoImg logoImg1">
+                <img src="img/logo/logo2.jpg" alt="Logo LOT-LAB Sims 4 alternativo" class="logoImg logoImg2">
+            </a>
+
+            <div class="header-texto">
+
+                <h1>
+                    LOT-LAB Sims 4
+                </h1>
+
+                <p>
+                    Encuentra cualquier solar del juego fácilmente<br>
+                    y crea retos divertidos para construir & more...
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </header>
+
+    <main>
+
+        <div class="menu-principal" id="menuPrincipal">
+
+            <button class="flechaMenu flechaMenuIzq" id="flechaMenuIzq" title="Ver botones anteriores">‹</button>
+
+            <div class="menu-principal-track" id="menuPrincipalTrack">
+
+                <button id="botonBuscador">
+                    🔍 Filtrador de solares
+                </button>
+
+                <button id="botonListado">
+                    📋 Listado de solares
+                </button>
+
+                <button id="botonRetos">
+                    🏆 Modo retos
+                </button>
+
+                <button id="botonRuletaDesastres">
+                    🎡 Ruleta de desastres
+                </button>
+
+                <button id="botonTemporizador">
+                    ⌛ Temporizador retos
+                </button>
+
+                <button id="botonRuletaColor">
+                    🎨 Ruleta de colores
+                </button>
+
+                <button id="botonDados">
+                    🎲 Tirador de dados
+                </button>
+
+                <button id="botonHabilidades">
+                    🧠 Habilidades al azar
+                </button>
+
+                <button id="botonEstadisticas">
+                    📊 Estadísticas Sims 4
+                </button>
+
+                <button id="botonTrucos">
+                    🕹️ Trucos
+                </button>
+
+                <button id="botonModsSimfile" class="deshabilitado" data-tooltip="🏗️Próximamente">
+                    📦 Mods & Simfile
+                </button>
+
+                <button id="botonAcercaDe">
+                    👋 Acerca de...
+                </button>
+
+
+
+            </div>
+
+            <button class="flechaMenu flechaMenuDer" id="flechaMenuDer" title="Ver más botones">›</button>
+
+        </div>
+
+        <section id="app">
+
+            <div id="ventanaBuscador" class="ventana">
+
+                <div class="cabeceraVentana">
+
+                    <button class="compartir" title="Compartir">
+
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+
+                            <path
+                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+
+                        </svg>
+
+                    </button>
+
+                    <button class="cerrar">
+                        ✕
+                    </button>
+
+                </div>
+
+                <h2>
+                    🔍 Filtrador de solares
+                </h2>
+
+                <div class="buscadorNombreWrapper">
+                    <input type="text" id="inputBuscarNombreSolar" placeholder="🔎 Buscar solar por nombre..."
+                        autocomplete="off">
+                </div>
+
+                <div id="botonesFiltros">
+
+                    <button class="botonFiltro" data-filtro="tipoPack">
+                        📦 Tipo de pack
+                    </button>
+
+                    <button class="botonFiltro" data-filtro="nombrePack">
+                        🎮 Nombre del pack
+                    </button>
+
+                    <button class="botonFiltro" data-filtro="mundo">
+                        🌎 Mundo
+                    </button>
+
+                    <button class="botonFiltro" data-filtro="barrio" style="display:none;">
+                        🏘️ Barrio
+                    </button>
+
+                    <button class="botonFiltro" data-filtro="tipoLote">
+                        🏡 Tipo de lote
+                    </button>
+
+                    <button class="botonFiltro" data-filtro="tipoSolar">
+                        🏠 Tipo de solar
+                    </button>
+
+                    <button class="botonFiltro" data-filtro="tamaño">
+                        📐 Tamaño
+                    </button>
+
+                    <button class="botonFiltro" data-filtro="orientacion">
+                        🧭 Orientación
+                    </button>
+
+                    <button class="botonFiltro" data-filtro="acera">
+                        🚶 Acera
+                    </button>
+
+                </div>
+
+                <!-- Panel donde se pintan las opciones del filtro abierto -->
+                <div id="panelFiltro"></div>
+
+                <!-- Contador dinámico de solares según filtros -->
+                <div id="contadorSolaresFiltro" class="contadorSolaresFiltro"
+                    style="text-align: center; margin: 20px 0; font-size: 1.05rem;"></div>
+
+                <div class="accionesBuscador">
+
+                    <button id="buscarSolares">
+                        🔍 Buscar
+                    </button>
+
+                    <button id="borrarFiltros" style="display:none;">
+                        🧹 Borrar todos los filtros
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div id="ventanaResultados" class="ventana">
+
+                <div class="cabeceraVentana">
+
+                    <button class="compartir" title="Compartir">
+
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+
+                            <path
+                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+
+                        </svg>
+
+                    </button>
+
+                    <button class="cerrar">
+                        ✕
+                    </button>
+
+                </div>
+
+                <h2>
+                    Resultados
+                </h2>
+
+                <div id="listaResultados"></div>
+
+            </div>
+
+            <div id="ventanaFichaSolar" class="ventana">
+
+                <div class="cabeceraVentana">
+
+                    <button class="compartir" title="Compartir">
+
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+
+                            <path
+                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+
+                        </svg>
+
+                    </button>
+
+                    <button class="cerrar">
+                        ✕
+                    </button>
+
+                </div>
+
+                <h2>
+                    🏡 Ficha del solar
+                </h2>
+
+                <div id="contenidoFichaSolar"></div>
+
+            </div>
+
+            <div id="ventanaListado" class="ventana">
+
+                <div class="cabeceraVentana">
+
+                    <button class="compartir" title="Compartir">
+
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+
+                            <path
+                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+
+                        </svg>
+
+                    </button>
+
+                    <button class="cerrar">
+                        ✕
+                    </button>
+
+                </div>
+
+                <h2>
+                    📋 Listado completo
+                </h2>
+
+                <div id="listaCompletaSolares"></div>
+
+            </div>
+
+            <div id="ventanaRetos" class="ventana">
+
+                <div class="cabeceraVentana">
+
+                    <button class="compartir" title="Compartir">
+
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+
+                            <path
+                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+
+                        </svg>
+
+                    </button>
+
+                    <button class="cerrar">
+                        ✕
+                    </button>
+
+                </div>
+
+                <h2>
+                    🎮 Selector de Packs
+                </h2>
+
+                <!-- Switch Control para Modo de Vista: Ventana desplegable / Lista -->
+                <div class="selectorModoVistaPacks"
+                    style="display: flex; justify-content: center; align-items: center; gap: 14px; margin-top: 14px; margin-bottom: 20px;">
+                    <span style="font-weight: bold; font-size: 0.95rem; opacity: 0.9;">Modo de vista:</span>
+                    <label class="switchModoVista">
+                        <span id="lblModoDesplegable"
+                            style="font-size: 0.9rem; font-weight: bold; transition: all 0.25s;">🗂️ Ventana
+                            desplegable</span>
+                        <input type="checkbox" id="toggleModoVistaInput" style="display: none;">
+                        <span class="sliderSwitch">
+                            <span class="thumbSwitch"></span>
+                        </span>
+                        <span id="lblModoLista" style="font-size: 0.9rem; opacity: 0.6; transition: all 0.25s;">📜
+                            Lista</span>
+                    </label>
+                </div>
+
+                <p style="text-align: center; margin-bottom: 20px; font-size: 1.05rem;">Selecciona los packs que tienes
+                    instalados para poder usarlos en tus retos:</p>
+
+                <div id="listaPacksRetos"></div>
+
+                <div class="accionesBuscador" style="margin-top: 30px;">
+                    <button id="aceptarPacksRetos">
+                        Continuar ➡️
+                    </button>
+                </div>
+
+            </div>
+
+            <div id="ventanaRetosOpciones" class="ventana">
+
+                <div class="cabeceraVentana">
+                    <button class="compartir" title="Compartir">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                        </svg>
+                    </button>
+                    <button class="cerrar">&#x2715;</button>
+                </div>
+
+                <h2>&#x2699;&#xFE0F; Opciones del Reto</h2>
+                <p class="subtituloVentana">Personaliza tu reto: elige el tipo de construcci&#xF3;n y a&#xF1;ade
+                    opciones para aumentar el desaf&#xED;o.</p>
+
+                <!-- Seccion: Opciones extra (ancho completo) -->
+                <div class="seccionConfigDesastres">
+                    <h3>&#x2728; A&#xF1;adir Opciones al Reto</h3>
+                    <p class="descripcionConfig">Selecciona las opciones que quieres incluir en tu reto. Puedes combinar
+                        varias.</p>
+                    <div id="opcionesExtraRetos" class="gridOpcionesReto gridOpcionesRetoExtra">
+                        <button class="opcionFiltroReto opcionFiltro" data-opcion="presupuesto"
+                            data-tooltip="Establece un l&#xED;mite de Simoleones para construir.">
+                            <span class="iconoOpcionReto">&#x1F4B0;</span>
+                            <span>Presupuesto</span>
+                        </button>
+
+                        <div class="contenedorOpcionFlotante" style="position: relative;">
+                            <button class="opcionFiltroReto opcionFiltro" data-opcion="colores"
+                                data-tooltip="Te restringe a usar solo una paleta de colores espec&#xED;ficos.">
+                                <span class="iconoOpcionReto">&#x1F3A8;</span>
+                                <span>Colores</span>
+                            </button>
+                            <div id="submenuColores" class="submenuOpcion popoverFlotante" style="display: none;">
+                                <label for="sliderCantidadColores"
+                                    style="font-weight: bold; display: block; margin-bottom: 8px; text-align: center;">
+                                    Cantidad de colores m&#xE1;ximos: <span id="valCantidadColores"
+                                        style="color: var(--color-resaltado);">3</span>
+                                </label>
+                                <input type="range" id="sliderCantidadColores" min="1" max="12" value="3"
+                                    style="width: 85%; max-width: 280px; display: block; margin: 0 auto;">
+                                <div class="popoverAcciones"
+                                    style="display: flex; gap: 8px; justify-content: center; margin-top: 12px;">
+                                    <button type="button" class="btnAceptarPopover" id="btnAceptarColores">&#x2705;
+                                        Listo</button>
+                                    <button type="button" class="btnDesmarcarPopover" id="btnDesmarcarColores">&#x274C;
+                                        Desmarcar</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="contenedorOpcionFlotante" style="position: relative;">
+                            <button class="opcionFiltroReto opcionFiltro" data-opcion="habilidades"
+                                data-tooltip="Añade requisitos de habilidades al azar para los Sims de tu solar. Las habilidades se filtran según los packs que tengas instalados.">
+                                <span class="iconoOpcionReto">🧠</span>
+                                <span>Habilidades</span>
+                            </button>
+                            <div id="submenuHabilidades" class="submenuOpcion popoverFlotante" style="display: none;">
+                                <label for="sliderCantidadHabilidades"
+                                    style="font-weight: bold; display: block; margin-bottom: 8px; text-align: center;">
+                                    Número de habilidades: <span id="valCantidadHabilidades"
+                                        style="color: var(--color-resaltado);">3</span>
+                                </label>
+                                <input type="range" id="sliderCantidadHabilidades" min="1" max="10" value="3"
+                                    style="width: 85%; max-width: 280px; display: block; margin: 0 auto;">
+                                <div style="font-size: 0.8rem; margin-top: 6px; opacity: 0.8; text-align: center;">
+                                    Filtradas según tus packs instalados.</div>
+                                <div class="popoverAcciones"
+                                    style="display: flex; gap: 8px; justify-content: center; margin-top: 12px;">
+                                    <button type="button" class="btnAceptarPopover" id="btnAceptarHabilidades">&#x2705;
+                                        Listo</button>
+                                    <button type="button" class="btnDesmarcarPopover"
+                                        id="btnDesmarcarHabilidades">&#x274C;
+                                        Desmarcar</button>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <button class="opcionFiltroReto opcionFiltro" data-opcion="estilo-exterior"
+                            data-tooltip="Define un estilo arquitectónico obligatorio para la fachada.">
+                            <span class="iconoOpcionReto">&#x1F3DB;&#xFE0F;</span>
+                            <span>Estilo Exterior</span>
+                        </button>
+                        <button class="opcionFiltroReto opcionFiltro" data-opcion="estilo-interior"
+                            data-tooltip="Define un estilo decorativo obligatorio para los muebles.">
+                            <span class="iconoOpcionReto">&#x1F6CB;&#xFE0F;</span>
+                            <span>Estilo Interior</span>
+                        </button>
+                        <button class="opcionFiltroReto opcionFiltro" data-opcion="temporizador"
+                            data-tooltip="A&#xF1;ade un l&#xED;mite de tiempo para terminar la construcci&#xF3;n.">
+                            <span class="iconoOpcionReto">&#x23F1;&#xFE0F;</span>
+                            <span>Temporizador</span>
+                        </button>
+
+                        <div class="contenedorOpcionFlotante" style="position: relative;">
+                            <button class="opcionFiltroReto opcionFiltro" data-opcion="limite-packs"
+                                data-tooltip="Te limita a usar solo un n&#xFA;mero determinado de packs.">
+                                <span class="iconoOpcionReto">&#x1F4E6;</span>
+                                <span>L&#xED;mite de packs</span>
+                            </button>
+                            <div id="submenuLimitePacks" class="submenuOpcion popoverFlotante"
+                                style="display: none; width: min(340px, 92vw);">
+                                <div style="margin-bottom: 12px; text-align: center;">
+                                    <label for="inputMaxPacks" style="font-weight: bold;">N&#xFA;mero m&#xE1;ximo de
+                                        packs: </label>
+                                    <input type="number" id="inputMaxPacks" min="1" max="30" value="3"
+                                        style="padding: 6px 10px; border-radius: 8px; border: 1px solid var(--borde); width: 70px; text-align: center; font-size: 1rem;">
+                                    <p style="font-size: 0.8rem; opacity: 0.75; margin-top: 6px;">(Rueda del rat&#xF3;n
+                                        para cambiar el n&#xFA;mero)</p>
+                                </div>
+                                <div
+                                    style="font-weight: bold; margin-bottom: 6px; text-align: center; font-size: 0.9rem;">
+                                    Tipos de packs permitidos:</div>
+                                <div
+                                    style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; font-size: 0.85rem; margin-bottom: 12px;">
+                                    <label><input type="checkbox" class="checkTipoPack" value="Expansi&#xF3;n" checked>
+                                        Expansi&#xF3;n</label>
+                                    <label><input type="checkbox" class="checkTipoPack" value="Contenido" checked>
+                                        Contenido</label>
+                                    <label><input type="checkbox" class="checkTipoPack" value="Accesorios" checked>
+                                        Accesorios</label>
+                                    <label><input type="checkbox" class="checkTipoPack" value="Kits" checked>
+                                        Kits</label>
+                                    <label><input type="checkbox" class="checkTipoPack" value="Gratis" checked>
+                                        Gratis</label>
+                                    <label><input type="checkbox" id="checkJuegoBasePack" class="checkTipoPack"
+                                            value="Juego Base" checked> Juego Base</label>
+                                </div>
+                                <div class="popoverAcciones"
+                                    style="display: flex; gap: 8px; justify-content: center; margin-top: 12px;">
+                                    <button type="button" class="btnAceptarPopover" id="btnAceptarLimitePacks">&#x2705;
+                                        Listo</button>
+                                    <button type="button" class="btnDesmarcarPopover"
+                                        id="btnDesmarcarLimitePacks">&#x274C; Desmarcar</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="opcionFiltroReto opcionFiltro" data-opcion="limite-altura"
+                            data-tooltip="Restringe el n&#xFA;mero m&#xE1;ximo de pisos que puedes construir.">
+                            <span class="iconoOpcionReto">&#x1F3D7;&#xFE0F;</span>
+                            <span>L&#xED;mite de altura</span>
+                        </button>
+
+                        <div class="contenedorOpcionFlotante" style="position: relative;">
+                            <button class="opcionFiltroReto opcionFiltro" data-opcion="tamano-solar"
+                                data-tooltip="Restringe el tama&#xF1;o exacto del solar que puedes usar.">
+                                <span class="iconoOpcionReto">&#x1F4D0;</span>
+                                <span>Tama&#xF1;o de solar</span>
+                            </button>
+                            <div id="submenuTamano" class="submenuOpcion popoverFlotante" style="display: none;">
+                                <label for="sliderTamanoSolar"
+                                    style="font-weight: bold; display: block; margin-bottom: 8px; text-align: center;">
+                                    Tama&#xF1;o elegido: <span id="valTamanoSolar"
+                                        style="color: var(--color-resaltado);">-</span>
+                                </label>
+                                <input type="range" id="sliderTamanoSolar" min="0" max="0" value="0"
+                                    style="width: 85%; max-width: 280px;">
+                                <div style="font-size: 0.8rem; margin-top: 6px; opacity: 0.8; text-align: center;">Solo
+                                    se muestran tama&#xF1;os disponibles seg&#xFA;n tus packs.</div>
+                                <div class="popoverAcciones"
+                                    style="display: flex; gap: 8px; justify-content: center; margin-top: 12px;">
+                                    <button type="button" class="btnAceptarPopover" id="btnAceptarTamano">&#x2705;
+                                        Listo</button>
+                                    <button type="button" class="btnDesmarcarPopover" id="btnDesmarcarTamano">&#x274C;
+                                        Desmarcar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dos secciones pequenas en 2 columnas en pantallas anchas -->
+                <div class="seccionesRetoPequenas">
+
+                    <!-- Seccion: Tipo de Reto -->
+                    <div class="seccionConfigDesastres">
+                        <h3>&#x1F3E0; Tipo de Reto</h3>
+                        <p class="descripcionConfig">&#xBF;Tu reto incluir&#xE1; un solar espec&#xED;fico donde
+                            construir?</p>
+                        <div id="tipoRetoOpciones" class="gridOpcionesReto">
+                            <button class="opcionFiltroReto opcionFiltro seleccionada" data-tipo="con-solar"
+                                data-tooltip="Deber&#xE1;s construir en el solar espec&#xED;fico que te asigne el reto.">
+                                <span class="iconoOpcionReto">&#x1F3E1;</span>
+                                <span>Reto con solar</span>
+                            </button>
+                            <button class="opcionFiltroReto opcionFiltro" data-tipo="sin-solar"
+                                data-tooltip="El reto no te asignar&#xE1; solar, puedes construir donde prefieras.">
+                                <span class="iconoOpcionReto">&#x1F30D;</span>
+                                <span>Reto sin solar</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Seccion: Limitantes extra -->
+                    <div class="seccionConfigDesastres">
+                        <h3>&#x1F525; Limitantes Extra</h3>
+                        <p class="descripcionConfig">A&#xF1;ade restricciones aleatorias para hacer el reto mucho
+                            m&#xE1;s desafiante. &#xA1;Puede ser muy dif&#xED;cil!</p>
+                        <div id="limitantesExtraOpciones" class="gridOpcionesReto">
+                            <button class="opcionFiltroReto opcionFiltro" data-limitante="construir"
+                                data-tooltip="A&#xF1;ade restricciones aleatorias sobre C&#xD3;MO construyes. Puede llegar a ser muy dif&#xED;cil.">
+                                <span class="iconoOpcionReto">&#x1F528;</span>
+                                <span>Construir</span>
+                            </button>
+                            <button class="opcionFiltroReto opcionFiltro" data-limitante="comprar"
+                                data-tooltip="A&#xF1;ade restricciones aleatorias sobre QU&#xC9; puedes comprar/usar. Puede llegar a ser muy dif&#xED;cil.">
+                                <span class="iconoOpcionReto">&#x1F6D2;</span>
+                                <span>Comprar</span>
+                            </button>
+                        </div>
+
+                        <div id="avisoLimitantesExtra"
+                            style="display: none; text-align: center; margin-top: 12px; font-size: 0.9rem; opacity: 0.85; max-width: 520px; margin-left: auto; margin-right: auto;">
+                            &#x26A0;&#xFE0F; Estas limitantes a&#xF1;aden restricciones aleatorias extra a tu reto y
+                            pueden llegar a ser
+                            <strong>muy dif&#xED;ciles</strong>.
+                        </div>
+
+                        <!-- Submenu Limitante Construir -->
+                        <div id="submenuLimitanteConstruir" class="submenuOpcion submenuLimitanteInline"
+                            style="display: none;">
+                            <label for="sliderLimitanteConstruir"
+                                style="font-weight: bold; display: block; margin-bottom: 8px;">
+                                Cantidad de limitantes de Construir: <span id="valLimitanteConstruir">1</span>
+                            </label>
+                            <input type="range" id="sliderLimitanteConstruir" min="1" max="5" value="1"
+                                style="width: 80%; max-width: 300px;">
+                        </div>
+
+                        <!-- Submenu Limitante Comprar -->
+                        <div id="submenuLimitanteComprar" class="submenuOpcion submenuLimitanteInline"
+                            style="display: none;">
+                            <label for="sliderLimitanteComprar"
+                                style="font-weight: bold; display: block; margin-bottom: 8px;">
+                                Cantidad de limitantes de Comprar: <span id="valLimitanteComprar">1</span>
+                            </label>
+                            <input type="range" id="sliderLimitanteComprar" min="1" max="5" value="1"
+                                style="width: 80%; max-width: 300px;">
+                        </div>
+                    </div>
+
+                </div>
+                <!-- Fin seccionesRetoPequenas -->
+
+                <!-- Contador de Dificultad -->
+                <div id="contadorDificultadUI" class="contadorDificultadUI">
+                    Nivel de dificultad a&#xF1;adido: <span id="valDificultadUI">0</span>
+                </div>
+
+                <!-- Acciones principales -->
+                <div class="accionesRuletaDesastres" style="margin-top: 24px;">
+                    <button id="volverModoRetosBtn" class="botonReto">
+                        &#x2B05;&#xFE0F; Selector de Packs
+                    </button>
+                    <button id="generarRetoBtn" class="botonReto btnGirarDestacado">
+                        &#x1F3B2; Generar Reto
+                    </button>
+                    <button id="retoAleatorioBtn" class="botonReto">
+                        &#x1F500; Reto aleatorio
+                    </button>
+                </div>
+
+            </div>
+
+            <div id="ventanaRetoResultado" class="ventana">
+
+                <div class="cabeceraVentana">
+                    <button class="compartir" title="Compartir">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                        </svg>
+                    </button>
+                    <button class="cerrar">✕</button>
+                </div>
+
+                <h2>
+                    🏆 Reto Generado
+                </h2>
+
+                <div id="contenidoRetoResultado"></div>
+
+                <div class="accionesBuscador"
+                    style="margin-top: 30px; display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap;">
+                    <button id="volverOpcionesBtn" onclick="abrirVentana('ventanaRetosOpciones')">
+                        ⬅️ Volver a opciones
+                    </button>
+                    <button id="toggleTemporizadorRetoBtn" onclick="toggleTemporizadorReto()">
+                        ⏱️ Abrir temporizador
+                    </button>
+                </div>
+
+            </div>
+
+            <div id="ventanaConfirmarBorrar" class="ventana ventanaPequena">
+
+                <h3>
+                    ⚠️ Confirmar borrado
+                </h3>
+
+                <p>
+                    ¿Estas seguro que quieres borrar todos los filtros aplicados?
+                </p>
+
+                <p>
+                    Esta es una opción que no se puede deshacer.
+                </p>
+
+                <button id="confirmarBorrar">
+                    Aceptar
+                </button>
+
+                <button id="cancelarBorrar">
+                    Cancelar
+                </button>
+
+            </div>
+
+            <div id="ventanaTemporizador" class="ventana ventanaPequena">
+
+                <div class="cabeceraVentana">
+                    <button class="cerrar" data-tooltip="Cerrar temporizador">✕</button>
+                </div>
+
+                <h2>⏱️ Temporizador de Retos</h2>
+
+                <div id="configuracionTiempoContenedor" style="text-align: center; margin: 20px 0;">
+                    <label for="inputMinutosTemporizador"
+                        style="font-weight: bold; display: block; margin-bottom: 12px; font-size: 1.05rem;">Configura el
+                        tiempo (minutos):</label>
+                    <div class="habNumeroWrap">
+                        <button type="button" class="habNumeroBtn" id="btnRestarMinuto" aria-label="Menos"
+                            data-tooltip="Restar 1 minuto">−</button>
+                        <div class="habNumeroDisplay">
+                            <input type="number" id="inputMinutosTemporizador" min="1" max="60" value="15" readonly
+                                class="habCantidadInput"
+                                data-tooltip="Rueda del ratón o botones para cambiar el tiempo">
+                        </div>
+                        <button type="button" class="habNumeroBtn" id="btnSumarMinuto" aria-label="Más"
+                            data-tooltip="Sumar 1 minuto">+</button>
+                    </div>
+                    <p style="font-size: 0.85rem; opacity: 0.75; margin-top: 10px;">(Usa la rueda del ratón o los
+                        botones para cambiar el tiempo)</p>
+                </div>
+
+                <div class="accionesBuscador" style="margin-top: 10px; justify-content: center;">
+                    <button id="iniciarTemporizador" class="botonReto btnGirarDestacado"
+                        data-tooltip="Iniciar la cuenta atrás">
+                        ▶️ Iniciar Temporizador
+                    </button>
+                </div>
+
+                <div id="displayTemporizador" class="displayTemporizadorDigital" style="display: none;">
+                    <span id="textoTiempoDigital" class="digitosTiempo">00:00</span>
+                </div>
+
+                <div id="accionesTemporizadorEnCurso" class="accionesTemporizadorGrid" style="display: none;">
+                    <button type="button" id="pausarTemporizador" class="btnTimerAction btnTimerPause"
+                        data-tooltip="Pausar temporizador">
+                        <span class="iconoTimerAction">⏸️</span>
+                        <span class="textoTimerAction">Pausar</span>
+                    </button>
+                    <button type="button" id="detenerTemporizador" class="btnTimerAction btnTimerStop"
+                        data-tooltip="Detener temporizador">
+                        <span class="iconoTimerAction">⏹️</span>
+                        <span class="textoTimerAction">Detener</span>
+                    </button>
+                </div>
+
+                <div id="contenedorNuevoTemporizador" style="display: none; justify-content: center; margin-top: 18px;">
+                    <button type="button" id="btnNuevoTemporizador" class="botonReto btnGirarDestacado"
+                        data-tooltip="Configurar un nuevo temporizador">
+                        🔄 Configurar otro temporizador
+                    </button>
+                </div>
+
+            </div>
+
+            <div id="ventanaTiempoAgotado" class="ventana ventanaPequena">
+
+                <div class="cabeceraVentana">
+                    <button class="cerrar">✕</button>
+                </div>
+
+                <div class="displayTemporizadorDigital tiempoAgotado" style="margin: 20px auto;">
+                    <span class="tiempoAgotadoTexto">¡TIEMPO AGOTADO!</span>
+                </div>
+
+                <div class="accionesBuscador" style="margin-top: 25px; justify-content: center;">
+                    <button type="button" id="btnNuevoTemporizadorModal" class="botonReto btnGirarDestacado">
+                        🔄 Configurar otro temporizador
+                    </button>
+                </div>
+
+            </div>
+
+            <div id="ventanaAcercaDe" class="ventana">
+
+                <h2>👋 ¡Bienvenido a LOT-LAB Sims 4!</h2>
+
+                <div style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 20px;">
+                    <p style="margin-bottom: 12px;">Esta página web ha sido creada para ayudarte a encontrar cualquier
+                        solar de <strong>Los Sims 4</strong> de una forma rápida, cómoda e intuitiva.</p>
+
+                    <p style="margin-bottom: 12px;">Podrás buscar solares utilizando múltiples filtros, descubrir
+                        construcciones al azar, consultar el listado completo de solares del juego y disfrutar de un
+                        completo <strong>Modo Retos</strong>, pensado para poner a prueba tu creatividad como
+                        constructor.</p>
+
+                    <p style="margin-bottom: 20px;">Toda la información se mantiene actualizada mediante una base de
+                        datos centralizada, permitiendo incorporar nuevos contenidos y packs de forma sencilla conforme
+                        el juego siga creciendo.</p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 20px 0;">
+
+                    <h3 style="font-size: 1.4rem; margin-bottom: 12px;">🎮 Sobre mí</h3>
+
+                    <p style="margin-bottom: 12px;">¡Hola! Soy <strong>Ozono96</strong>, creador de contenido
+                        especializado en <strong>Los Sims 4</strong> y un apasionado de la construcción.</p>
+
+                    <p style="margin-bottom: 12px;">En mi canal comparto tutoriales, retos, curiosidades, consejos y
+                        proyectos relacionados con el juego, además de herramientas como esta, creadas para ayudar a
+                        toda la comunidad.</p>
+
+                    <p style="margin-bottom: 20px;">Si te gusta construir o simplemente quieres descubrir nuevas ideas
+                        para tus partidas, estaré encantado de que te unas a la comunidad.</p>
+
+                    <p style="margin-bottom: 20px;">🎥 <strong>Puedes visitar mi canal de YouTube desde cualquiera de
+                            estos videos y también al final de la página encontrarás enlaces a otras redes
+                            sociales.</strong></p>
+                </div>
+
+                <div class="carrusel-videos-wrapper">
+                    <div id="carruselVideos" class="carrusel-videos-track">
+                        <!-- Las miniaturas de los vídeos se añadirán aquí con JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="ventanaAvisoFiltros" class="ventana ventanaPequena">
+
+                <h3>
+                    ⚠️ No hay filtros aplicados
+                </h3>
+
+                <p>
+                    Para buscar solares con filtros necesitas aplicar al menos un filtro de los que tienes arriba.
+                </p>
+
+                <p>
+                    En caso que quieras una lista completa puedes ir al listado completo de solares.
+                </p>
+
+                <button id="cerrarAvisoFiltros">
+                    Aceptar
+                </button>
+
+            </div>
+
+            <!-- Tooltip de información de filtros -->
+
+            <div id="tooltipFiltro" class="tooltipFiltro"></div>
+
+            <div id="tooltipSolar"></div>
+
+            <button id="bajarResultados" title="Ir abajo">
+                ⬇
+            </button>
+
+            <button id="subirResultados" title="Volver arriba">
+                ⬆
+            </button>
+
+            <div id="ventanaRuletaColor" class="ventana ventanaEstrecha">
+
+                <div class="cabeceraVentana">
+
+                    <button class="compartir" title="Compartir">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                        </svg>
+                    </button>
+
+                    <button class="cerrar">✕</button>
+
+                </div>
+
+                <h2>🎨 Ruleta de colores</h2>
+
+                <div class="ruletaColorControles">
+                    <label for="inputTiradasRuleta">Nº de tiradas:</label>
+                    <input type="number" id="inputTiradasRuleta" min="1" max="10" value="1">
+                    <p class="ruletaColorAyuda">(Usa la rueda del ratón dentro del cuadro para subir o bajar el tiempo)
+                    </p>
+                </div>
+
+                <div class="ruletaColorWheelWrapper"
+                    style="position:relative; width:260px; height:260px; margin:10px auto 25px auto;">
+                    <div class="ruletaColorPuntero"></div>
+                    <div id="ruletaColorWheel" class="ruletaColorWheel" style="width:100%; height:100%;"></div>
+                    <button id="botonGirarRuleta" class="btnGirarRuleta">Girar</button>
+                </div>
+
+                <p id="mensajeRuletaColor" class="ruletaColorMensaje"></p>
+
+                <div id="resultadoRuletaColor" class="ruletaColorResultados"></div>
+
+            </div>
+            <!-- ↑ ESTE cierre es el de ventanaRuletaColor -->
+
+            <div id="ventanaDados" class="ventana ventanaEstrecha">
+
+                <div class="cabeceraVentana">
+
+                    <button class="compartir" title="Compartir">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                        </svg>
+                    </button>
+
+                    <button class="cerrar">✕</button>
+
+                </div>
+
+                <h2>🎲 Tirador de dados</h2>
+
+                <h3 style="text-align: center; margin-bottom: 15px;">Cantidad de dados</h3>
+                <div id="cantidadDadosOpciones" class="listaOpciones"
+                    style="justify-content: center; margin-bottom: 25px;">
+                    <button class="opcionFiltro seleccionada" data-dados="1">🎲 1 dado</button>
+                    <button class="opcionFiltro" data-dados="2">🎲🎲 2 dados</button>
+                </div>
+
+                <div class="ruletaColorControles">
+                    <label for="inputTiradasDados">Nº de tiradas:</label>
+                    <input type="number" id="inputTiradasDados" min="1" max="10" value="1">
+                    <p class="ruletaColorAyuda">(Usa la rueda del ratón dentro del cuadro para subir o bajar el número)
+                    </p>
+                </div>
+
+                <div class="accionesBuscador" style="justify-content: center; margin-top: 10px;">
+                    <button id="botonTirarDados" class="habBtnTirar">
+                        <span class="habBtnIcono">🎲</span>
+                        <span>¡Tirar!</span>
+                    </button>
+                </div>
+
+                <p id="mensajeDados" class="ruletaColorMensaje"></p>
+
+                <div id="resultadoDados" class="resultadoDadosContenedor"></div>
+
+            </div>
+
+            <div id="ventanaTrucos" class="ventana">
+
+                <div class="cabeceraVentana">
+                    <button class="compartir" title="Compartir">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                        </svg>
+                    </button>
+                    <button class="cerrar">✕</button>
+                </div>
+
+                <h2>🕹️ Trucos de Los Sims 4</h2>
+
+                <!-- BUSCADOR PRINCIPAL DE TRUCOS -->
+                <div class="contenedorBuscadorTrucos">
+                    <div class="cajaEntradaBuscadorTrucos">
+                        <span class="iconoLupaBuscadorTrucos">🔍</span>
+                        <input type="text" id="inputBuscadorTrucos" class="inputBuscadorTrucos"
+                            placeholder="Buscar truco por nombre o código (ej: moveobjects, motherlode, dinero, cas...)"
+                            autocomplete="off">
+                        <button type="button" id="btnLimpiarBuscadorTrucos"
+                            class="btnLimpiarBuscador btnLimpiarBuscadorTrucos" style="display:none;"
+                            data-tooltip="Limpiar búsqueda">✕</button>
+                    </div>
+                    <div id="desplegableResultadosTrucos" class="desplegableResultadosTrucos" style="display:none;">
+                    </div>
+                </div>
+
+                <div class="contenidoTrucos">
+
+                    <h3>Cómo activar los trucos en Los Sims 4</h3>
+                    <p>Antes de introducir cualquier código es necesario abrir la consola de comandos del juego. El
+                        procedimiento cambia ligeramente dependiendo de la plataforma en la que juegues.</p>
+
+                    <h4>En PC</h4>
+                    <p>Pulsa al mismo tiempo:</p>
+                    <p><strong>Ctrl + Shift + C</strong></p>
+                    <p>Aparecerá una barra blanca en la parte superior izquierda de la pantalla donde podrás escribir
+                        cualquier truco.</p>
+
+                    <h4>En Mac</h4>
+                    <p>Pulsa:</p>
+                    <p><strong>Command + Shift + C</strong></p>
+
+                    <h4>En PlayStation 4 y PlayStation 5</h4>
+                    <p>Mantén pulsados simultáneamente:</p>
+                    <p><strong>L1 + L2 + R1 + R2</strong></p>
+
+                    <h4>En Xbox One y Xbox Series X|S</h4>
+                    <p>Mantén pulsados:</p>
+                    <p><strong>LB + LT + RB + RT</strong></p>
+
+                    <p>Cuando aparezca la consola, simplemente escribe el truco que quieras utilizar y pulsa Enter (o el
+                        botón correspondiente en consola).</p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h3>El truco más importante: testingcheats true</h3>
+
+                    <p>Antes de hablar del resto de comandos es necesario explicar el código más importante de todo el
+                        juego.</p>
+
+                    <p style="text-align: center; font-size: 1.2rem; margin: 18px 0;">
+                        <span class="truco-copiable" data-tooltip="Pulsa para copiar">testingcheats true</span>
+                    </p>
+
+                    <p>Este comando activa el modo de trucos avanzado de Los Sims 4.</p>
+                    <p>Muchos jugadores creen que únicamente sirve para habilitar otros códigos, pero en realidad hace
+                        bastante más que eso.</p>
+                    <p>Al activarlo, el juego desbloquea numerosas funciones ocultas utilizadas por los propios
+                        desarrolladores para realizar pruebas internas. Gracias a ello es posible modificar necesidades,
+                        editar Sims ya creados, cambiar relaciones, completar aspiraciones, alterar estados de ánimo y
+                        utilizar una enorme cantidad de comandos que de otra forma permanecerían deshabilitados.</p>
+                    <p>Por este motivo, a lo largo de toda esta guía indicaremos siempre cuándo un truco depende de
+                        testingcheats true.</p>
+
+                    <p><strong>¿Cómo se activa?</strong></p>
+                    <p>Simplemente abre la consola de comandos y escribe:</p>
+                    <p><strong>testingcheats true</strong></p>
+                    <p>Si deseas volver al funcionamiento normal del juego puedes escribir:</p>
+                    <p><strong>testingcheats false</strong></p>
+                    <p>Aunque normalmente no es necesario desactivarlo.</p>
+
+                    <h4>Funciones adicionales de testingcheats true</h4>
+                    <p>Además de permitir utilizar otros códigos, también desbloquea varias acciones ocultas mediante
+                        Shift + clic sobre distintos elementos del juego.</p>
+                    <p>Por ejemplo podrás:</p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Editar Sims directamente desde el modo Vivir.</li>
+                        <li>Teletransportar Sims a cualquier lugar del solar.</li>
+                        <li>Modificar las necesidades al instante.</li>
+                        <li>Ensuciar o limpiar objetos automáticamente.</li>
+                        <li>Reiniciar Sims bloqueados.</li>
+                        <li>Añadir un Sim a la familia.</li>
+                        <li>Cambiar determinados estados del mundo.</li>
+                    </ul>
+                    <p>Estas funciones convierten a testingcheats true en el primer comando que deberías activar siempre
+                        que vayas a utilizar trucos.</p>
+
+                    <p><strong>¿Es necesario escribir testingcheats true cada vez?</strong></p>
+                    <p>Depende.</p>
+                    <p>Mientras permanezcas en la misma partida normalmente seguirá activo.</p>
+                    <p>Sin embargo, al cerrar el juego o cargar otra partida es recomendable volver a introducirlo antes
+                        de utilizar cualquier otro truco avanzado.</p>
+                    <p>De esta forma evitarás que algunos comandos no funcionen correctamente.</p>
+
+                </div>
+
+                <div class="accionesBuscador" style="margin-top: 35px; flex-wrap: wrap; gap: 15px;">
+                    <button id="botonTrucosConstruir">🏗️ Trucos de Construir</button>
+                    <button id="botonTrucosCAS">💇 Trucos del CAS</button>
+                    <button id="botonTrucosVivir">🏠 Trucos del Modo Vivir</button>
+                    <button id="botonTrucosPacks">📦 Trucos de Packs</button>
+                </div>
+
+            </div>
+
+            <div id="ventanaTrucosConstruir" class="ventana">
+
+                <div class="cabeceraVentana">
+                    <button class="compartir" title="Compartir">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                        </svg>
+                    </button>
+                    <button class="cerrar">✕</button>
+                </div>
+
+                <h2>🏗️ Trucos de Construir</h2>
+
+                <!-- BUSCADOR DE TRUCOS -->
+                <div class="contenedorBuscadorTrucos">
+                    <div class="cajaEntradaBuscadorTrucos">
+                        <span class="iconoLupaBuscadorTrucos">🔍</span>
+                        <input type="text" class="inputBuscadorTrucos"
+                            placeholder="Buscar truco por nombre o código (ej: moveobjects, motherlode, dinero, cas...)"
+                            autocomplete="off">
+                        <button type="button" class="btnLimpiarBuscadorTrucos btnLimpiarBuscador" style="display:none;"
+                            data-tooltip="Limpiar búsqueda">✕</button>
+                    </div>
+                    <div class="desplegableResultadosTrucos" style="display:none;"></div>
+                </div>
+
+                <div class="contenidoTrucos">
+
+                    <h3>Trucos para Construir</h3>
+                    <p>Uno de los apartados donde más partido se le puede sacar a los trucos es el modo Construir.
+                        Gracias a ellos podrás colocar muebles sin restricciones, acceder a objetos ocultos, modificar
+                        solares especiales o desbloquear muebles reservados para determinadas profesiones.</p>
+                    <p>Si te gusta crear casas espectaculares o recrear edificios reales, estos códigos son
+                        prácticamente imprescindibles.</p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">bb.moveobjects on</span></h4>
+                    <p>Sin duda, el truco más utilizado por la comunidad.</p>
+                    <p>Permite colocar objetos ignorando las restricciones normales del juego, lo que significa que
+                        podrás superponer muebles, acercarlos mucho más entre sí o situarlos en posiciones donde
+                        normalmente aparecería el mensaje de error indicando que no hay espacio suficiente.</p>
+                    <p>Gracias a este comando es posible crear habitaciones mucho más realistas y decoraciones
+                        extremadamente detalladas.</p>
+                    <p>Es especialmente útil para:</p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Cocinas personalizadas.</li>
+                        <li>Dormitorios pequeños.</li>
+                        <li>Jardines decorativos.</li>
+                        <li>Piscinas complejas.</li>
+                        <li>Terrazas.</li>
+                        <li>Casas modernas.</li>
+                        <li>Cafeterías.</li>
+                        <li>Restaurantes.</li>
+                    </ul>
+                    <p>La mayoría de construcciones que puedes encontrar en la Galería utilizan este truco.</p>
+                    <p><strong>¿Depende de otro truco?</strong></p>
+                    <p>No.</p>
+
+                    <h4>Consejos para utilizar bb.moveobjects</h4>
+                    <p>Aunque el truco elimina muchas limitaciones, existen varios atajos que permiten aprovecharlo
+                        todavía mejor.</p>
+                    <p>Por ejemplo, combinándolo con las teclas Alt podrás colocar los objetos con total libertad, sin
+                        ajustarse automáticamente a la cuadrícula del juego.</p>
+                    <p>Del mismo modo, utilizando las teclas 0 y 9 podrás bajar o subir objetos para crear decoraciones
+                        flotantes o colocar elementos encima de muebles donde normalmente sería imposible.</p>
+                    <p>La combinación de estos tres métodos es la base de prácticamente todas las construcciones
+                        avanzadas de Los Sims 4.</p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">bb.showhiddenobjects</span></h4>
+                    <p>Este truco desbloquea el llamado catálogo de objetos ocultos o Debug. Se trata de cientos de
+                        objetos que existen dentro del juego pero que normalmente no aparecen disponibles en el modo
+                        Construir/Comprar.</p>
+                    <p>Entre ellos encontrarás:</p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Plantas decorativas.</li>
+                        <li>Rocas y minerales.</li>
+                        <li>Objetos coleccionables.</li>
+                        <li>Frutas y verduras.</li>
+                        <li>Peces.</li>
+                        <li>Cristales.</li>
+                        <li>Objetos de profesiones.</li>
+                        <li>Elementos utilizados en misiones.</li>
+                        <li>Decoración ambiental.</li>
+                        <li>Objetos especiales de eventos.</li>
+                    </ul>
+                    <p>Una vez activado el truco, abre el catálogo de Construcción y escribe "debug" o "depuración"
+                        (dependiendo del idioma del juego) en el buscador para localizar estos objetos.</p>
+                    <p>También puedes dejar el buscador vacío y desplazarte hasta el final del catálogo para
+                        encontrarlos.</p>
+                    <p><strong>¿Depende de otro truco?</strong></p>
+                    <p>No.</p>
+                    <p><strong>¿Cuándo merece la pena utilizarlo?</strong></p>
+                    <p>Es especialmente útil para jugadores que disfrutan creando escenarios muy detallados, parques,
+                        restaurantes, jardines, museos o solares personalizados, ya que muchos de estos objetos no
+                        pueden conseguirse jugando normalmente.</p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">bb.showliveeditobjects</span></h4>
+                    <p>Este comando desbloquea miles de objetos decorativos utilizados por los propios desarrolladores
+                        para ambientar los barrios del juego.</p>
+                    <p>Muchos jugadores lo confunden con bb.showhiddenobjects, pero no hacen exactamente lo mismo.</p>
+                    <p>Mientras que el anterior muestra el catálogo Debug, este permite acceder a elementos del mundo
+                        que normalmente forman parte del escenario.</p>
+                    <p>Entre ellos encontramos:</p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Árboles gigantes.</li>
+                        <li>Rocas.</li>
+                        <li>Montañas.</li>
+                        <li>Carteles.</li>
+                        <li>Farolas.</li>
+                        <li>Edificios decorativos.</li>
+                        <li>Carreteras.</li>
+                        <li>Muelles.</li>
+                        <li>Vallas.</li>
+                        <li>Vegetación.</li>
+                        <li>Decoración urbana.</li>
+                    </ul>
+                    <p>Gracias a este truco es posible construir barrios mucho más realistas sin necesidad de utilizar
+                        contenido personalizado (CC).</p>
+                    <p><strong>¿Depende de otro truco?</strong></p>
+                    <p>No, aunque se recomienda activarlo después de:</p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li><span class="truco-copiable" data-tooltip="Pulsa para copiar">bb.showhiddenobjects</span>
+                        </li>
+                    </ul>
+                    <p>De esta forma el catálogo será mucho más completo.</p>
+                    <p><strong>Consejo</strong></p>
+                    <p>Si utilizas ambos comandos al mismo tiempo tendrás acceso a varios miles de objetos adicionales.
+                        Es uno de los secretos mejor guardados por los constructores más experimentados.</p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">bb.enablefreebuild</span></h4>
+                    <p>Permite construir y modificar solares que normalmente están bloqueados.</p>
+                    <p>Por ejemplo:</p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Hospital.</li>
+                        <li>Comisaría.</li>
+                        <li>Laboratorio científico.</li>
+                        <li>Residencias universitarias.</li>
+                        <li>Algunos solares especiales de eventos.</li>
+                    </ul>
+                    <p>Sin este comando, el juego impide realizar modificaciones sobre estos lugares.</p>
+                    <p>Gracias a bb.enablefreebuild podrás remodelarlos completamente.</p>
+                    <p><strong>¿Depende de otro truco?</strong></p>
+                    <p>No.</p>
+                    <p><strong>¿Cuándo utilizarlo?</strong></p>
+                    <p>Es muy útil para mejorar edificios que visualmente se han quedado anticuados o simplemente
+                        adaptar determinados solares a tu estilo de juego. Muchos jugadores aprovechan este truco para
+                        renovar el hospital y hacerlo mucho más moderno.</p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h4><span class="truco-copiable"
+                            data-tooltip="Pulsa para copiar">bb.ignoregameplayunlocksentitlement</span></h4>
+                    <p>Este comando desbloquea todos los objetos del modo Construir y Comprar que normalmente requieren
+                        alcanzar determinados niveles en las profesiones.</p>
+                    <p>Por ejemplo, muchos muebles solo aparecen cuando un Sim progresa en carreras como:</p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Científico.</li>
+                        <li>Detective.</li>
+                        <li>Médico.</li>
+                        <li>Pintor.</li>
+                        <li>Escritor.</li>
+                        <li>Chef.</li>
+                    </ul>
+                    <p>Con este truco podrás utilizarlos desde el primer momento.</p>
+                    <p><strong>¿Depende de otro truco?</strong></p>
+                    <p>No.</p>
+                    <p><strong>Importante</strong></p>
+                    <p>Este comando no desbloquea ropa ni peinados del CAS. Su función únicamente afecta a los objetos
+                        del modo Construir y Comprar. Es una confusión bastante habitual entre los jugadores.</p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">bb.moveobjects off</span></h4>
+                    <p>Aunque la mayoría utiliza únicamente la versión on, también existe la posibilidad de desactivar
+                        el truco escribiendo:</p>
+                    <p><strong>bb.moveobjects off</strong></p>
+                    <p>Esto devuelve el comportamiento habitual del modo Construcción.</p>
+                    <p>Puede resultar útil si empiezas a colocar objetos accidentalmente unos encima de otros.</p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h3>Trucos avanzados para construir mejor</h3>
+                    <p>Los códigos anteriores son solo una parte del potencial del modo Construcción.</p>
+                    <p>Existen además varios atajos de teclado que, combinados con los trucos, permiten crear casas
+                        prácticamente profesionales.</p>
+
+                    <h4>Colocar objetos libremente</h4>
+                    <p>Mientras tienes un objeto seleccionado, mantén pulsada la tecla Alt.</p>
+                    <p>Esto desactiva el ajuste automático a la cuadrícula y permite colocarlo exactamente donde
+                        quieras.</p>
+                    <p>Es una de las funciones más utilizadas por los constructores expertos.</p>
+
+                    <h4>Girar objetos con mayor precisión</h4>
+                    <p>Normalmente los objetos giran en incrementos bastante grandes.</p>
+                    <p>Sin embargo, si mantienes pulsada la tecla Alt mientras utilizas el ratón, podrás rotarlos de
+                        forma completamente libre.</p>
+                    <p>Esto permite orientar sofás, mesas o plantas con mucha más naturalidad.</p>
+
+                    <h4>Subir y bajar objetos</h4>
+                    <p>Selecciona un objeto y utiliza:</p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>9 para subirlo.</li>
+                        <li>0 para bajarlo.</li>
+                    </ul>
+                    <p>Este truco es perfecto para:</p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Decorar estanterías.</li>
+                        <li>Crear muebles personalizados.</li>
+                        <li>Colocar cuadros.</li>
+                        <li>Construir literas decorativas.</li>
+                        <li>Crear techos falsos.</li>
+                        <li>Diseñar escaparates.</li>
+                    </ul>
+                    <p>La mayoría de construcciones espectaculares de la Galería utilizan esta técnica.</p>
+
+                    <h4>Ampliar y reducir objetos</h4>
+                    <p>Puedes cambiar el tamaño de casi cualquier objeto.</p>
+                    <p>Utiliza:</p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Shift + ] para agrandarlo.</li>
+                        <li>Shift + [ para reducirlo.</li>
+                    </ul>
+                    <p>Con ello puedes crear:</p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Árboles gigantes.</li>
+                        <li>Rocas enormes.</li>
+                        <li>Juguetes pequeños.</li>
+                        <li>Decoración personalizada.</li>
+                    </ul>
+                    <p>Muchos constructores combinan esta función con bb.moveobjects para crear objetos totalmente
+                        nuevos a partir de otros existentes.</p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h3>Errores habituales al usar los trucos de Construcción</h3>
+                    <p>Aunque los comandos son muy sencillos de utilizar, existen algunos errores bastante comunes.</p>
+
+                    <h4>Los objetos desaparecen</h4>
+                    <p>Esto suele ocurrir cuando se elimina un objeto que estaba sosteniendo otro colocado mediante
+                        bb.moveobjects.</p>
+                    <p>Antes de borrar muebles, revisa si hay decoración situada encima.</p>
+
+                    <h4>No puedo seleccionar algunos objetos</h4>
+                    <p>Los objetos del catálogo Debug tienen un comportamiento diferente al resto.</p>
+                    <p>En ocasiones es necesario utilizar la herramienta de mover varias veces para seleccionarlos
+                        correctamente.</p>
+
+                    <h4>Los Sims no pueden utilizar un objeto</h4>
+                    <p>Este es probablemente el problema más frecuente.</p>
+                    <p>Aunque bb.moveobjects permite colocar cualquier elemento en cualquier sitio, los Sims siguen
+                        necesitando espacio suficiente para interactuar con él.</p>
+                    <p>Antes de dar por terminada una construcción conviene comprobar que:</p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Hay espacio para caminar.</li>
+                        <li>Las puertas se abren correctamente.</li>
+                        <li>Las sillas pueden utilizarse.</li>
+                        <li>Los electrodomésticos tienen acceso libre.</li>
+                    </ul>
+                    <p>Así evitarás que aparezca el típico aviso indicando que el Sim no puede llegar al objeto.</p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h3>¿Es seguro utilizar los trucos de Construcción?</h3>
+                    <p>Sí.</p>
+                    <p>Todos los comandos incluidos en este apartado forman parte del propio juego y han sido
+                        desarrollados por Maxis.</p>
+                    <p>No requieren instalar mods ni modificar archivos.</p>
+                    <p>La única precaución recomendable consiste en guardar la partida antes de realizar grandes
+                        modificaciones, especialmente cuando vas a remodelar solares especiales como hospitales o
+                        laboratorios.</p>
+
+
+                </div>
+
+                <div class="accionesBuscador" style="margin-top: 25px; justify-content: center;">
+                    <button class="botonVolverTrucos">⬅️ Volver a Trucos</button>
+                </div>
+
+            </div>
+
+            <div id="ventanaTrucosCAS" class="ventana">
+
+                <div class="cabeceraVentana">
+                    <button class="compartir" title="Compartir">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                        </svg>
+                    </button>
+                    <button class="cerrar">✕</button>
+                </div>
+
+                <h2>💇 Trucos del CAS</h2>
+
+                <!-- BUSCADOR DE TRUCOS -->
+                <div class="contenedorBuscadorTrucos">
+                    <div class="cajaEntradaBuscadorTrucos">
+                        <span class="iconoLupaBuscadorTrucos">🔍</span>
+                        <input type="text" class="inputBuscadorTrucos"
+                            placeholder="Buscar truco por nombre o código (ej: moveobjects, motherlode, dinero, cas...)"
+                            autocomplete="off">
+                        <button type="button" class="btnLimpiarBuscadorTrucos btnLimpiarBuscador" style="display:none;"
+                            data-tooltip="Limpiar búsqueda">✕</button>
+                    </div>
+                    <div class="desplegableResultadosTrucos" style="display:none;"></div>
+                </div>
+
+                <div class="contenidoTrucos">
+
+                    <h3>Trucos para Crear un Sim (CAS)</h3>
+                    <p>Uno de los mayores atractivos de Los Sims 4 es la enorme libertad que ofrece el editor Crear un
+                        Sim, conocido por la comunidad como CAS (Create A Sim). Gracias a él puedes personalizar
+                        prácticamente cualquier aspecto de tus personajes, desde el color de los ojos hasta la forma del
+                        rostro, la complexión física, la voz o el estilo de vestir.</p>
+                    <p>Sin embargo, cuando un Sim ya forma parte de una partida, el juego limita muchas de estas
+                        opciones para evitar cambios que puedan afectar al desarrollo normal de la familia. Por ejemplo,
+                        no es posible modificar su edad, cambiar determinados rasgos o rehacer completamente su aspecto
+                        sin recurrir a los trucos.</p>
+                    <p>Afortunadamente, existen varios comandos que eliminan estas restricciones y permiten acceder a
+                        funciones avanzadas del editor. Si te gusta crear historias, rediseñar personajes o corregir
+                        errores después de empezar una partida, estos son los códigos que debes conocer.</p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">cas.fulleditmode</span></h4>
+                    <p>Este es, sin duda, el truco más importante relacionado con Crear un Sim.</p>
+                    <p>Al activarlo, el editor deja de estar limitado y permite modificar prácticamente cualquier
+                        aspecto de un Sim que ya exista en la partida.</p>
+                    <p>Sin este comando, cuando utilizas un espejo o una cómoda únicamente puedes cambiar elementos
+                        estéticos como el peinado, el maquillaje o la ropa. En cambio, con cas.fulleditmode podrás
+                        acceder al editor completo, igual que si estuvieras creando un Sim desde cero.</p>
+
+                    <p><strong>¿Qué permite modificar?</strong></p>
+                    <p>Con este truco podrás cambiar:</p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Nombre.</li>
+                        <li>Apellidos.</li>
+                        <li>Edad.</li>
+                        <li>Sexo.</li>
+                        <li>Complexión física.</li>
+                        <li>Peso.</li>
+                        <li>Musculatura.</li>
+                        <li>Forma del rostro.</li>
+                        <li>Ojos.</li>
+                        <li>Nariz.</li>
+                        <li>Boca.</li>
+                        <li>Orejas.</li>
+                        <li>Color de piel.</li>
+                        <li>Rasgos de personalidad.</li>
+                        <li>Aspiración.</li>
+                        <li>Voz.</li>
+                        <li>Forma de caminar.</li>
+                        <li>Ropa.</li>
+                        <li>Accesorios.</li>
+                        <li>Tatuajes.</li>
+                        <li>Cicatrices.</li>
+                        <li>Detalles faciales.</li>
+                    </ul>
+                    <p>En definitiva, podrás reconstruir completamente cualquier Sim.</p>
+
+                    <p><strong>¿Cómo se utiliza?</strong></p>
+                    <p>Primero activa:</p>
+                    <p style="text-align: center; font-size: 1.2rem; margin: 18px 0;">
+                        <span class="truco-copiable" data-tooltip="Pulsa para copiar">testingcheats true</span>
+                    </p>
+                    <p>Después escribe:</p>
+                    <p style="text-align: center; font-size: 1.2rem; margin: 18px 0;">
+                        <span class="truco-copiable" data-tooltip="Pulsa para copiar">cas.fulleditmode</span>
+                    </p>
+                    <p>Ahora mantén pulsada la tecla Shift y haz clic sobre el Sim que quieras modificar.</p>
+                    <p>Selecciona la opción Modificar en Crear un Sim.</p>
+                    <p>Se abrirá el editor completo con todas las opciones desbloqueadas.</p>
+
+                    <p><strong>¿Depende de otro truco?</strong></p>
+                    <p>Sí.</p>
+                    <p>Debes activar previamente:</p>
+                    <p style="text-align: center; font-size: 1.2rem; margin: 18px 0;">
+                        <span class="truco-copiable" data-tooltip="Pulsa para copiar">testingcheats true</span>
+                    </p>
+
+                    <p><strong>¿Cuándo utilizarlo?</strong></p>
+                    <p>Es perfecto para:</p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Corregir un Sim creado con prisas.</li>
+                        <li>Cambiar completamente el aspecto de un personaje.</li>
+                        <li>Envejecer o rejuvenecer Sims.</li>
+                        <li>Adaptar un Sim descargado de la Galería.</li>
+                        <li>Modificar familias NPC.</li>
+                        <li>Crear historias con cambios físicos importantes.</li>
+                    </ul>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">cas.unlockbytag</span></h4>
+                    <p>Durante muchos años algunos peinados, accesorios y prendas permanecieron ocultos para los
+                        jugadores porque estaban ligados a determinados packs o eventos internos del juego.</p>
+                    <p>Con la llegada de nuevos contenidos, Maxis añadió el comando cas.unlockbytag, que permite
+                        desbloquear parte de estos objetos utilizando las etiquetas internas de cada expansión.</p>
+
+                    <p><strong>¿Qué desbloquea?</strong></p>
+                    <p>Dependiendo del contenido instalado, este truco puede hacer visibles:</p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Peinados ocultos.</li>
+                        <li>Accesorios.</li>
+                        <li>Maquillaje.</li>
+                        <li>Sombreros.</li>
+                        <li>Atuendos especiales.</li>
+                        <li>Zapatos.</li>
+                        <li>Prendas exclusivas de determinados packs.</li>
+                    </ul>
+
+                    <p><strong>¿Cómo funciona?</strong></p>
+                    <p>Puedes utilizar el comando indicando el identificador del contenido.</p>
+                    <p>Por ejemplo:</p>
+                    <p style="text-align: center; font-size: 1.2rem; margin: 18px 0;">
+                        <span class="truco-copiable" data-tooltip="Pulsa para copiar">cas.unlockbytag EP01</span>
+                    </p>
+                    <p>o bien</p>
+                    <p style="text-align: center; font-size: 1.2rem; margin: 18px 0;">
+                        <span class="truco-copiable" data-tooltip="Pulsa para copiar">cas.unlockbytag GP05</span>
+                    </p>
+                    <p>También funciona con packs de accesorios:</p>
+                    <p style="text-align: center; font-size: 1.2rem; margin: 18px 0;">
+                        <span class="truco-copiable" data-tooltip="Pulsa para copiar">cas.unlockbytag SP17</span>
+                    </p>
+
+                    <p><strong>¿Qué significan EP, GP y SP?</strong></p>
+                    <p>Los identificadores utilizados por el juego siguen una nomenclatura bastante sencilla.</p>
+                    <p>EP corresponde a una expansión (Expansion Pack).</p>
+                    <p>GP hace referencia a un pack de contenido (Game Pack).</p>
+                    <p>SP identifica un pack de accesorios (Stuff Pack).</p>
+                    <p>Cada uno va acompañado de un número que identifica el contenido concreto.</p>
+
+                    <p><strong>¿Depende de otro truco?</strong></p>
+                    <p>Sí.</p>
+                    <p>Necesita activar previamente:</p>
+                    <p style="text-align: center; font-size: 1.2rem; margin: 18px 0;">
+                        <span class="truco-copiable" data-tooltip="Pulsa para copiar">testingcheats true</span>
+                    </p>
+
+                    <p><strong>Importante</strong></p>
+                    <p>Este comando no desbloquea absolutamente toda la ropa del juego.</p>
+                    <p>Solo funciona con el contenido que utiliza el sistema moderno de etiquetas implementado por
+                        Maxis.</p>
+                    <p>Por ello algunos atuendos antiguos continúan bloqueados y únicamente pueden obtenerse progresando
+                        en determinadas profesiones o mediante contenido personalizado.</p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h4><span class="truco-copiable"
+                            data-tooltip="Pulsa para copiar">sims.modify_career_outfit_in_cas</span></h4>
+                    <p>Este truco permite editar el uniforme de trabajo del Sim activo directamente desde Crear un Sim.
+                    </p>
+                    <p>Es especialmente útil para quienes desean que sus personajes mantengan un estilo determinado
+                        incluso durante su jornada laboral.</p>
+
+                    <p><strong>¿Qué puede modificarse?</strong></p>
+                    <p>Podrás cambiar:</p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Parte superior.</li>
+                        <li>Parte inferior.</li>
+                        <li>Calzado.</li>
+                        <li>Peinado.</li>
+                        <li>Maquillaje.</li>
+                        <li>Accesorios.</li>
+                        <li>Gafas.</li>
+                        <li>Guantes.</li>
+                        <li>Joyas.</li>
+                    </ul>
+                    <p>Siempre respetando las limitaciones propias de cada uniforme.</p>
+
+                    <p><strong>¿Cómo utilizarlo?</strong></p>
+                    <p>Activa:</p>
+                    <p style="text-align: center; font-size: 1.2rem; margin: 18px 0;">
+                        <span class="truco-copiable" data-tooltip="Pulsa para copiar">testingcheats true</span>
+                    </p>
+                    <p>Escribe:</p>
+                    <p style="text-align: center; font-size: 1.2rem; margin: 18px 0;">
+                        <span class="truco-copiable"
+                            data-tooltip="Pulsa para copiar">sims.modify_career_outfit_in_cas</span>
+                    </p>
+                    <p>El juego abrirá automáticamente el editor correspondiente al uniforme profesional.</p>
+
+                    <p><strong>¿Depende de otro truco?</strong></p>
+                    <p>Sí.</p>
+                    <p style="text-align: center; font-size: 1.2rem; margin: 18px 0;">
+                        <span class="truco-copiable" data-tooltip="Pulsa para copiar">testingcheats true</span>
+                    </p>
+
+                    <p><strong>¿En qué profesiones resulta más útil?</strong></p>
+                    <p>Muchos jugadores lo utilizan con carreras como:</p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Médico.</li>
+                        <li>Detective.</li>
+                        <li>Científico.</li>
+                        <li>Chef.</li>
+                        <li>Militar.</li>
+                        <li>Actor.</li>
+                        <li>Astronauta.</li>
+                    </ul>
+                    <p>Así es posible dar un toque más personal a personajes que pasan buena parte del tiempo vistiendo
+                        ropa de trabajo.</p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h3>Preguntas frecuentes sobre los trucos de CAS</h3>
+
+                    <p><strong>¿Puedo modificar un Sim descargado de la Galería?</strong></p>
+                    <p>Sí.</p>
+                    <p>Una vez añadido a tu partida puedes utilizar cas.fulleditmode para cambiar cualquier aspecto de
+                        ese personaje.</p>
+
+                    <p><strong>¿Se pierden las relaciones familiares?</strong></p>
+                    <p>No.</p>
+                    <p>Modificar el aspecto físico o la personalidad de un Sim no elimina automáticamente sus relaciones
+                        familiares ni sus amistades.</p>
+
+                    <p><strong>¿Puedo cambiar la edad?</strong></p>
+                    <p>Sí.</p>
+                    <p>Es una de las funciones más utilizadas de cas.fulleditmode.</p>
+                    <p>Podrás convertir un anciano en adulto, un adulto en adolescente o modificar cualquier etapa de la
+                        vida.</p>
+
+                    <p><strong>¿Existe un truco para desbloquear toda la ropa del juego?</strong></p>
+                    <p>No exactamente.</p>
+                    <p>Muchos jugadores creen que existe un código universal para desbloquear todos los atuendos, pero
+                        actualmente no hay un comando oficial que haga esto con todas las prendas de todas las
+                        expansiones.</p>
+                    <p>Algunos objetos pueden desbloquearse mediante cas.unlockbytag, mientras que otros siguen estando
+                        asociados a profesiones concretas o a recompensas específicas del juego.</p>
+
+                    <p><strong>¿Puedo cambiar los rasgos de personalidad?</strong></p>
+                    <p>Sí.</p>
+                    <p>Siempre que hayas activado cas.fulleditmode, podrás modificar los rasgos, la aspiración principal
+                        y otros aspectos de la personalidad del Sim.</p>
+                    <p>Esto resulta muy útil cuando una historia evoluciona y quieres adaptar el carácter del personaje
+                        sin tener que crear uno nuevo.</p>
+
+                    <p>Con estos trucos de Crear un Sim podrás personalizar tus personajes con mucha más libertad y
+                        corregir prácticamente cualquier detalle de una partida ya iniciada.</p>
+
+                </div>
+
+                <div class="accionesBuscador" style="margin-top: 25px; justify-content: center;">
+                    <button class="botonVolverTrucos">⬅️ Volver a Trucos</button>
+                </div>
+
+            </div>
+
+            <div id="ventanaTrucosVivir" class="ventana">
+
+                <div class="cabeceraVentana">
+                    <button class="compartir" title="Compartir">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                        </svg>
+                    </button>
+                    <button class="cerrar">✕</button>
+                </div>
+
+                <h2>🏠 Trucos del Modo Vivir</h2>
+
+                <!-- BUSCADOR DE TRUCOS -->
+                <div class="contenedorBuscadorTrucos">
+                    <div class="cajaEntradaBuscadorTrucos">
+                        <span class="iconoLupaBuscadorTrucos">🔍</span>
+                        <input type="text" class="inputBuscadorTrucos"
+                            placeholder="Buscar truco por nombre o código (ej: moveobjects, motherlode, dinero, cas...)"
+                            autocomplete="off">
+                        <button type="button" class="btnLimpiarBuscadorTrucos btnLimpiarBuscador" style="display:none;"
+                            data-tooltip="Limpiar búsqueda">✕</button>
+                    </div>
+                    <div class="desplegableResultadosTrucos" style="display:none;"></div>
+                </div>
+
+                <div class="contenidoTrucos">
+
+                    <p>El Modo Vivir es donde transcurre la mayor parte de la partida. Es el momento en el que tus Sims
+                        trabajan, forman relaciones, desarrollan habilidades, cumplen aspiraciones y construyen su
+                        historia.</p>
+                    <p>Precisamente por eso, también es el apartado que reúne el mayor número de trucos. Desde conseguir
+                        dinero ilimitado hasta rellenar todas las necesidades de la unidad doméstica, modificar
+                        profesiones o eliminar estados de ánimo negativos, existen decenas de comandos que facilitan
+                        enormemente la experiencia de juego.</p>
+                    <p>En esta primera parte del Modo Vivir veremos los trucos más utilizados relacionados con el
+                        dinero, las facturas, las necesidades y algunos comandos generales que conviene conocer.</p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h3>Trucos para conseguir dinero</h3>
+                    <p>El dinero (simoleones) es uno de los recursos más importantes de Los Sims 4. Aunque puedes
+                        ganarlo trabajando o desarrollando habilidades, muchos jugadores prefieren utilizar los
+                        siguientes códigos para empezar una partida sin limitaciones económicas.</p>
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">motherlode</span></h4>
+                    <p>Es el truco más famoso de toda la saga.</p>
+                    <p>Cada vez que lo escribes, tu unidad doméstica recibe 50.000 simoleones al instante.</p>
+                    <p><strong>¿Depende de otro truco?</strong><br>No.</p>
+                    <p><strong>¿Cuándo utilizarlo?</strong><br>Es perfecto para:</p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Construir una casa desde cero.</li>
+                        <li>Comprar un solar más grande.</li>
+                        <li>Decorar sin preocuparte del presupuesto.</li>
+                        <li>Crear historias donde el dinero no sea un problema.</li>
+                    </ul>
+                    <p><strong>Consejo:</strong> Puedes escribirlo tantas veces como quieras. Por ejemplo, si introduces
+                        el comando diez veces conseguirás medio millón de simoleones.</p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">kaching</span></h4>
+                    <p>Añade 1.000 simoleones a la familia activa.</p>
+                    <p>Es ideal cuando solo necesitas una pequeña cantidad para comprar un objeto concreto.</p>
+                    <p><strong>¿Depende de otro truco?</strong><br>No.</p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">rosebud</span></h4>
+                    <p>Tiene exactamente el mismo efecto que kaching.</p>
+                    <p>También añade 1.000 simoleones.</p>
+                    <p>Muchos jugadores veteranos siguen utilizándolo porque era uno de los trucos clásicos de las
+                        primeras entregas de Los Sims.</p>
+                    <p><strong>¿Depende de otro truco?</strong><br>No.</p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">money X</span></h4>
+                    <p>Este comando permite establecer exactamente la cantidad de dinero que tendrá la unidad doméstica.
+                    </p>
+                    <p>Solo tienes que sustituir la letra X por la cifra deseada.</p>
+                    <p><strong>Ejemplos:</strong></p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li><span class="truco-copiable" data-tooltip="Pulsa para copiar">money 20000</span></li>
+                        <li><span class="truco-copiable" data-tooltip="Pulsa para copiar">money 500000</span></li>
+                        <li><span class="truco-copiable" data-tooltip="Pulsa para copiar">money 1000000</span></li>
+                    </ul>
+                    <p>A diferencia de motherlode, este truco no suma dinero. Lo reemplaza por la cantidad indicada.</p>
+                    <p><strong>¿Depende de otro truco?</strong><br>No.</p>
+                    <p><strong>¿Cuándo merece la pena utilizarlo?</strong><br>Es una excelente opción para quienes
+                        quieren empezar un reto con un presupuesto concreto sin tener que calcular cuántas veces
+                        escribir motherlode.</p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">freerealestate on</span></h4>
+                    <p>Permite comprar cualquier vivienda del juego completamente gratis.</p>
+                    <p>No importa si cuesta 20.000 o 300.000 simoleones.</p>
+                    <p>Mientras el truco permanezca activo, todas las casas aparecerán con un coste de 0 simoleones al
+                        mudarte desde el mapa del mundo.</p>
+                    <p><strong>¿Depende de otro truco?</strong><br>No.</p>
+                    <p><strong>Importante:</strong> Debe utilizarse desde la pantalla del mundo o durante el proceso de
+                        mudanza para que tenga efecto.</p>
+                    <p>Para desactivarlo, escribe: <span class="truco-copiable"
+                            data-tooltip="Pulsa para copiar">freerealestate off</span></p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">household.autopay_bills
+                            true</span></h4>
+                    <p>Las facturas forman parte de la gestión habitual de cualquier unidad doméstica.</p>
+                    <p>Con este comando el juego las pagará automáticamente cuando llegue el momento, evitando cortes de
+                        luz o de agua por olvido.</p>
+                    <p><strong>¿Depende de otro truco?</strong><br>Sí. Primero activa: <span class="truco-copiable"
+                            data-tooltip="Pulsa para copiar">testingcheats true</span></p>
+                    <p>Para volver al funcionamiento normal, utiliza: <span class="truco-copiable"
+                            data-tooltip="Pulsa para copiar">household.autopay_bills false</span></p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h3>Trucos para las necesidades</h3>
+                    <p>Gestionar el hambre, la energía o la higiene forma parte de la esencia de Los Sims 4. Sin
+                        embargo, cuando quieres construir, grabar vídeos o simplemente experimentar con el juego, puede
+                        resultar mucho más cómodo mantener todas las necesidades al máximo.</p>
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">sims.fill_all_commodities</span>
+                    </h4>
+                    <p>Rellena automáticamente todas las necesidades del Sim activo (Hambre, Energía, Diversión,
+                        Higiene, Vejiga, Social).</p>
+                    <p><strong>¿Depende de otro truco?</strong><br>Sí. Necesita: <span class="truco-copiable"
+                            data-tooltip="Pulsa para copiar">testingcheats true</span></p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h4><span class="truco-copiable"
+                            data-tooltip="Pulsa para copiar">stats.fill_all_commodities_household</span></h4>
+                    <p>Hace exactamente lo mismo que el comando anterior, pero afecta a todos los Sims de la unidad
+                        doméstica.</p>
+                    <p><strong>¿Depende de otro truco?</strong><br>Sí. Necesita: <span class="truco-copiable"
+                            data-tooltip="Pulsa para copiar">testingcheats true</span></p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">sims.remove_all_buffs</span></h4>
+                    <p>Elimina todos los modificadores de estado de ánimo (Moodlets) que tenga el Sim activo (Tristeza,
+                        Vergüenza, Tensión, Incomodidad, Enfado). El Sim volverá a un estado emocional neutral.</p>
+                    <p><strong>¿Depende de otro truco?</strong><br>Sí. Necesita: <span class="truco-copiable"
+                            data-tooltip="Pulsa para copiar">testingcheats true</span></p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">sims.give_satisfaction_points
+                            X</span></h4>
+                    <p>Añade puntos de satisfacción al Sim activo. Solo debes sustituir la X por la cantidad deseada
+                        (ej. 1000, 5000, 50000).</p>
+                    <p>Estos puntos sirven para comprar recompensas permanentes (Nunca hambriento, Nunca cansado,
+                        Aprendiz veloz, Empresario, Poción de juventud, Siempre bienvenido).</p>
+                    <p><strong>¿Depende de otro truco?</strong><br>Sí. Necesita: <span class="truco-copiable"
+                            data-tooltip="Pulsa para copiar">testingcheats true</span></p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h3>Trucos generales del Modo Vivir</h3>
+                    <p>Además del dinero y las necesidades, existen varios comandos que solucionan problemas habituales
+                        durante una partida.</p>
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">resetsim Nombre Apellido</span>
+                    </h4>
+                    <p>A veces un Sim puede quedarse completamente bloqueado (no responde a órdenes, se queda inmóvil,
+                        no termina una acción, no puede moverse). Con este truco el personaje se reinicia sin perder su
+                        progreso (ejemplo: <span class="truco-copiable" data-tooltip="Pulsa para copiar">resetsim Laura
+                            García</span>).</p>
+                    <p><strong>¿Depende de otro truco?</strong><br>No.</p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">death.toggle false</span></h4>
+                    <p>Impide que los Sims mueran mientras permanezca activado.</p>
+                    <p><strong>¿Depende de otro truco?</strong><br>Sí. Primero debes escribir: <span
+                            class="truco-copiable" data-tooltip="Pulsa para copiar">testingcheats true</span></p>
+                    <p>Para volver a activar las muertes, utiliza: <span class="truco-copiable"
+                            data-tooltip="Pulsa para copiar">death.toggle true</span></p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h3>Trucos de habilidades</h3>
+                    <p>Las habilidades son uno de los pilares de Los Sims 4. Determinan el rendimiento en profesiones,
+                        desbloquean interacciones y permiten acceder a objetos, recetas y actividades exclusivas.</p>
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">stats.set_skill_level [Habilidad]
+                            [Nivel]</span></h4>
+                    <p>Permite asignar el nivel que quieras a una habilidad concreta. Solo debes sustituir el nombre
+                        interno de la habilidad y el nivel deseado.</p>
+                    <p><strong>¿Depende de otro truco?</strong><br>No.</p>
+
+                    <p><strong>Ejemplos de habilidades:</strong></p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Carisma: <span class="truco-copiable" data-tooltip="Pulsa para copiar">stats.set_skill_level
+                                Major_Charisma 10</span></li>
+                        <li>Cocina: <span class="truco-copiable" data-tooltip="Pulsa para copiar">stats.set_skill_level
+                                Major_HomestyleCooking 10</span></li>
+                        <li>Cocina Gourmet: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level Major_GourmetCooking 10</span>
+                        </li>
+                        <li>Coctelería: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level Major_Bartending 10</span></li>
+                        <li>Jardinería: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level Major_Gardening 10</span></li>
+                        <li>Pintura: <span class="truco-copiable" data-tooltip="Pulsa para copiar">stats.set_skill_level
+                                Major_Painting 10</span></li>
+                        <li>Escritura: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level Major_Writing 10</span></li>
+                        <li>Programación: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level Major_Programming 10</span></li>
+                        <li>Videojuegos: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level Major_VideoGaming 10</span></li>
+                        <li>Violín: <span class="truco-copiable" data-tooltip="Pulsa para copiar">stats.set_skill_level
+                                Major_Violin 10</span></li>
+                        <li>Piano: <span class="truco-copiable" data-tooltip="Pulsa para copiar">stats.set_skill_level
+                                Major_Piano 10</span></li>
+                        <li>Guitarra: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level Major_Guitar 10</span></li>
+                        <li>Lógica: <span class="truco-copiable" data-tooltip="Pulsa para copiar">stats.set_skill_level
+                                Major_Logic 10</span></li>
+                        <li>Fitness: <span class="truco-copiable" data-tooltip="Pulsa para copiar">stats.set_skill_level
+                                Skill_Fitness 10</span></li>
+                        <li>Mecánica: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level Major_Handiness 10</span></li>
+                        <li>Pesca: <span class="truco-copiable" data-tooltip="Pulsa para copiar">stats.set_skill_level
+                                Major_Fishing 10</span></li>
+                        <li>Fotografía: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level Major_Photography 5</span></li>
+                    </ul>
+                    <p><strong>Consejo:</strong> El nivel máximo de la mayoría de habilidades principales es 10, aunque
+                        algunas específicas tienen límites diferentes.</p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h3>Trucos de profesiones</h3>
+                    <p>Las carreras profesionales son una de las principales formas de ganar dinero. Con estos comandos
+                        podrás ascender, descender o añadir una profesión.</p>
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">careers.promote [Profesión]</span>
+                    </h4>
+                    <p>Asciende automáticamente un nivel en la profesión indicada.</p>
+                    <p><strong>¿Depende de otro truco?</strong><br>No.</p>
+                    <p><strong>Ejemplos:</strong></p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Escritor: <span class="truco-copiable" data-tooltip="Pulsa para copiar">careers.promote
+                                Writer</span></li>
+                        <li>Pintor: <span class="truco-copiable" data-tooltip="Pulsa para copiar">careers.promote
+                                Painter</span></li>
+                        <li>Astronauta: <span class="truco-copiable" data-tooltip="Pulsa para copiar">careers.promote
+                                Astronaut</span></li>
+                        <li>Científico: <span class="truco-copiable" data-tooltip="Pulsa para copiar">careers.promote
+                                Scientist</span></li>
+                        <li>Médico: <span class="truco-copiable" data-tooltip="Pulsa para copiar">careers.promote
+                                Doctor</span></li>
+                        <li>Detective: <span class="truco-copiable" data-tooltip="Pulsa para copiar">careers.promote
+                                Detective</span></li>
+                    </ul>
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">careers.demote [Profesión]</span>
+                    </h4>
+                    <p>Reduce un nivel en la profesión indicada.</p>
+                    <p><strong>¿Depende de otro truco?</strong><br>No.</p>
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">careers.add_career
+                            [Profesión]</span></h4>
+                    <p>Añade una profesión al Sim activo (Astronaut, Business, Culinary, Writer, Painter, SecretAgent,
+                        TechGuru, Criminal, Entertainer).</p>
+                    <p><strong>¿Depende de otro truco?</strong><br>No.</p>
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">careers.remove_career
+                            [Profesión]</span></h4>
+                    <p>Elimina la profesión actual del Sim.</p>
+                    <p><strong>¿Depende de otro truco?</strong><br>No.</p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h3>Trucos de aspiraciones</h3>
+                    <h4><span class="truco-copiable"
+                            data-tooltip="Pulsa para copiar">aspirations.complete_current_milestone</span></h4>
+                    <p>Completa automáticamente el objetivo actual de la aspiración activa.</p>
+                    <p><strong>¿Depende de otro truco?</strong><br>Sí. Primero debes activar: <span
+                            class="truco-copiable" data-tooltip="Pulsa para copiar">testingcheats true</span></p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h3>Trucos de relaciones</h3>
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">modifyrelationship Nombre Apellido
+                            Nombre Apellido X LTR_Friendship_Main</span></h4>
+                    <p>Aumenta o reduce el nivel de amistad entre dos Sims (ejemplo: <span class="truco-copiable"
+                            data-tooltip="Pulsa para copiar">modifyrelationship Laura García Pedro López 100
+                            LTR_Friendship_Main</span>).</p>
+                    <p><strong>¿Depende de otro truco?</strong><br>Sí. Necesita: <span class="truco-copiable"
+                            data-tooltip="Pulsa para copiar">testingcheats true</span></p>
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">modifyrelationship Nombre Apellido
+                            Nombre Apellido X LTR_Romance_Main</span></h4>
+                    <p>Modifica el nivel de relación romántica entre dos Sims (ejemplo: <span class="truco-copiable"
+                            data-tooltip="Pulsa para copiar">modifyrelationship Laura García Pedro López 100
+                            LTR_Romance_Main</span>).</p>
+                    <p><strong>¿Depende de otro truco?</strong><br>Sí. Necesita: <span class="truco-copiable"
+                            data-tooltip="Pulsa para copiar">testingcheats true</span></p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h3>Trucos de emociones</h3>
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">sims.remove_all_buffs</span></h4>
+                    <p>Elimina todos los modificadores de estado de ánimo. Requiere <span class="truco-copiable"
+                            data-tooltip="Pulsa para copiar">testingcheats true</span>.</p>
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">headlineeffects off</span></h4>
+                    <p>Oculta todos los elementos visuales situados encima de los Sims (bocadillos, cristales,
+                        pensamiento, burbujas). Para volver a mostrarlos: <span class="truco-copiable"
+                            data-tooltip="Pulsa para copiar">headlineeffects on</span>.</p>
+                    <p><strong>¿Depende de otro truco?</strong><br>No.</p>
+
+                    <hr style="border: 0; height: 1px; background: var(--borde); margin: 25px 0;">
+
+                    <h3>Trucos útiles poco conocidos</h3>
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">fullscreenToggle</span></h4>
+                    <p>Activa o desactiva el modo de pantalla completa sin necesidad de entrar en las opciones.</p>
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">fps on</span></h4>
+                    <p>Muestra el contador de imágenes por segundo (FPS). Para ocultarlo: <span class="truco-copiable"
+                            data-tooltip="Pulsa para copiar">fps off</span>.</p>
+
+                    <h4><span class="truco-copiable" data-tooltip="Pulsa para copiar">help</span></h4>
+                    <p>Muestra una lista con muchos de los comandos disponibles en el juego.</p>
+
+                </div>
+
+                <div class="accionesBuscador" style="margin-top: 25px; justify-content: center;">
+                    <button class="botonVolverTrucos">⬅️ Volver a Trucos</button>
+                </div>
+
+            </div>
+
+            <div id="ventanaTrucosPacks" class="ventana">
+
+                <div class="cabeceraVentana">
+                    <button class="compartir" title="Compartir">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                        </svg>
+                    </button>
+                    <button class="cerrar">✕</button>
+                </div>
+
+                <h2>📦 Trucos de Packs</h2>
+
+                <!-- BUSCADOR DE TRUCOS -->
+                <div class="contenedorBuscadorTrucos">
+                    <div class="cajaEntradaBuscadorTrucos">
+                        <span class="iconoLupaBuscadorTrucos">🔍</span>
+                        <input type="text" class="inputBuscadorTrucos"
+                            placeholder="Buscar truco por nombre o código (ej: moveobjects, motherlode, dinero, cas...)"
+                            autocomplete="off">
+                        <button type="button" class="btnLimpiarBuscadorTrucos btnLimpiarBuscador" style="display:none;"
+                            data-tooltip="Limpiar búsqueda">✕</button>
+                    </div>
+                    <div class="desplegableResultadosTrucos" style="display:none;"></div>
+                </div>
+
+                <div class="contenidoTrucos">
+
+                    <h3>Trucos de Vampiros</h3>
+                    <p>Requiere el pack Vampiros.</p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Convertir en vampiro: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">traits.equip_trait trait_OccultVampire</span> (requiere
+                            <span class="truco-copiable" data-tooltip="Pulsa para copiar">testingcheats true</span>)
+                        </li>
+                        <li>Eliminar vampiro: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">traits.remove_trait trait_OccultVampire</span>
+                            (requiere <span class="truco-copiable" data-tooltip="Pulsa para copiar">testingcheats
+                                true</span>)</li>
+                        <li>Conocimiento Vampírico máx (15): <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level VampireLore 15</span></li>
+                        <li>Habilidad Órgano máx (10): <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level Major_PipeOrgan 10</span></li>
+                    </ul>
+
+                    <h3>Trucos de Reino de la Magia</h3>
+                    <p>Requiere el pack Reino de la Magia.</p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Convertir en hechicero: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">traits.equip_trait trait_Occult_WitchOccult</span>
+                            (requiere <span class="truco-copiable" data-tooltip="Pulsa para copiar">testingcheats
+                                true</span>)</li>
+                        <li>Eliminar hechicero: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">traits.remove_trait trait_Occult_WitchOccult</span>
+                        </li>
+                    </ul>
+
+                    <h3>Trucos de Licántropos</h3>
+                    <p>Requiere el pack Licántropos.</p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Transformar en hombre lobo: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">traits.equip_trait trait_OccultWerewolf</span>
+                            (requiere <span class="truco-copiable" data-tooltip="Pulsa para copiar">testingcheats
+                                true</span>)</li>
+                        <li>Eliminar hombre lobo: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">traits.remove_trait trait_OccultWerewolf</span></li>
+                    </ul>
+
+                    <h3>Trucos de Vida Isleña</h3>
+                    <p>Requiere la expansión Vida Isleña.</p>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Convertir en sirena: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">traits.equip_trait trait_OccultMermaid</span> (requiere
+                            <span class="truco-copiable" data-tooltip="Pulsa para copiar">testingcheats true</span>)
+                        </li>
+                        <li>Eliminar sirena: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">traits.remove_trait trait_OccultMermaid</span></li>
+                    </ul>
+
+                    <h3>Trucos de ¡A Trabajar!</h3>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Ascender Médico: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">careers.promote Doctor</span></li>
+                        <li>Ascender Científico: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">careers.promote Scientist</span></li>
+                        <li>Ascender Detective: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">careers.promote Detective</span></li>
+                        <li>Descender Médico: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">careers.demote Doctor</span></li>
+                        <li>Descender Científico: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">careers.demote Scientist</span></li>
+                        <li>Descender Detective: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">careers.demote Detective</span></li>
+                    </ul>
+
+                    <h3>Trucos de Universitarios</h3>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Investigación y Debate máx: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level Major_ResearchDebate 10</span>
+                        </li>
+                        <li>Robótica máx: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level Major_Robotics 10</span></li>
+                    </ul>
+
+                    <h3>Trucos de Rancho de Caballos</h3>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Equitación máx: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level AdultMajor_EquestrianSkill
+                                10</span></li>
+                        <li>Elaboración de Néctar máx: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level AdultMinor_RanchNectar 5</span>
+                        </li>
+                    </ul>
+
+                    <h3>Trucos de Spa Day</h3>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Bienestar máx: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level Major_Wellness 10</span></li>
+                    </ul>
+
+                    <h3>Trucos de Aventura en la Selva</h3>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Arqueología máx: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level Major_Archaeology 10</span></li>
+                        <li>Cultura Selvadoradeña máx: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level AdultMinor_LocalCulture 5</span>
+                        </li>
+                    </ul>
+
+                    <h3>Trucos de Escapada al Aire Libre</h3>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Herboristería máx: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level Major_Herbalism 10</span></li>
+                    </ul>
+
+                    <h3>Trucos de Papás y Mamás</h3>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Crianza máx: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level Major_Parenting 10</span></li>
+                    </ul>
+
+                    <h3>Trucos de Años High School</h3>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Emprendimiento máx: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level AdultMinor_Entrepreneur 5</span>
+                        </li>
+                    </ul>
+
+                    <h3>Trucos de Lovestruck (Enamorados)</h3>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Romance máx: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level Major_Romance 10</span></li>
+                    </ul>
+
+                    <h3>Trucos de Vida y Más Allá</h3>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Viaje del Alma: <span class="truco-copiable" data-tooltip="Pulsa para copiar">stats.set_stat
+                                rankedStatistic_MovingOn_SoulsJourney 30</span> (requiere <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">testingcheats true</span>)</li>
+                        <li>Experiencia Fantasmas: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_stat rankedStatistic_GhostPowers_GhostXP
+                                3000</span> (requiere <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">testingcheats true</span>)</li>
+                        <li>Poderes Benévolos: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_stat statistic_GhostPowers_Good 100</span>
+                            (requiere <span class="truco-copiable" data-tooltip="Pulsa para copiar">testingcheats
+                                true</span>)</li>
+                        <li>Poderes Malignos: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_stat statistic_GhostPowers_Evil 100</span>
+                            (requiere <span class="truco-copiable" data-tooltip="Pulsa para copiar">testingcheats
+                                true</span>)</li>
+                    </ul>
+
+                    <h3>Trucos de Ocio y Negocio</h3>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Cerámica máx: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level Major_Pottery 10</span></li>
+                        <li>Tatuaje máx: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level Major_Tattooing 10</span></li>
+                        <li>Añadir Negocio: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">careers.add_career SmallBusinessOwner</span></li>
+                        <li>Ascender Negocio: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">careers.promote SmallBusinessOwner</span></li>
+                        <li>Añadir rasgo Idealista: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">traits.equip_trait trait_idealist</span> (requiere
+                            <span class="truco-copiable" data-tooltip="Pulsa para copiar">testingcheats true</span>)
+                        </li>
+                        <li>Añadir rasgo Turbio: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">traits.equip_trait trait_shady</span> (requiere <span
+                                class="truco-copiable" data-tooltip="Pulsa para copiar">testingcheats true</span>)</li>
+                        <li>Quitar rasgo Idealista: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">traits.remove_trait trait_idealist</span></li>
+                        <li>Quitar rasgo Turbio: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">traits.remove_trait trait_shady</span></li>
+                    </ul>
+
+                    <h3>Trucos de Naturaleza Encantada</h3>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Boticario máx: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level Major_Apothecary 10</span></li>
+                        <li>Vida Natural máx: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level Major_NaturalLiving 10</span>
+                        </li>
+                        <li>Ascender Naturópata: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">careers.promote Naturopath</span></li>
+                        <li>Añadir carrera Naturópata: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">careers.add_career Naturopath</span></li>
+                    </ul>
+
+                    <h3>Trucos de ¡A la Aventura!</h3>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Tiro con Arco máx: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level Major_Archery 10</span></li>
+                        <li>Ascender Guía de Aventura: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">careers.promote AdventureGuide</span></li>
+                    </ul>
+
+                    <h3>Trucos de Dinastías y Linajes</h3>
+                    <ul style="margin: 10px 0 15px 25px; line-height: 1.8;">
+                        <li>Esgrima máx: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">stats.set_skill_level Major_Swordsmanship 10</span>
+                        </li>
+                        <li>Ascender Noble: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">careers.promote Noble</span></li>
+                        <li>Añadir rasgo Noble: <span class="truco-copiable"
+                                data-tooltip="Pulsa para copiar">traits.equip_trait Noble</span> (requiere <span
+                                class="truco-copiable" data-tooltip="Pulsa para copiar">testingcheats true</span>)</li>
+                    </ul>
+                </div>
+
+                <div class="accionesBuscador" style="margin-top: 25px; justify-content: center;">
+                    <button class="botonVolverTrucos">⬅️ Volver a Trucos</button>
+                </div>
+
+            </div>
+
+
+            <!-- ==================== VENTANA ESTADÍSTICAS SIMS 4 ==================== -->
+            <div id="ventanaEstadisticas" class="ventana">
+
+                <div class="cabeceraVentana">
+                    <button class="compartir" data-tooltip="Compartir">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                        </svg>
+                    </button>
+                    <button class="cerrar">✕</button>
+                </div>
+
+                <!-- BLOQUE RESUMEN (cards + panel tiempo) estilo ventana -->
+                <div id="estatBloqueResumen" class="estatBloqueVentana">
+                    <div class="estatSeccionCabecera">
+                        <h2>📊 Estadísticas Sims 4</h2>
+                        <button class="compartirSeccion" id="btnCompartirResumen" data-captura="estatBloqueResumen"
+                            data-tooltip="Compartir datos de resumen">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path
+                                    d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- RESUMEN GLOBAL -->
+                    <div id="estadisticasResumen" class="estadisticasResumen">
+                        <div class="estadResumenCard" id="estatCardTotal"
+                            data-tooltip="Suma total del precio estimado (€) de los packs de la selección actual">
+                            <span class="estatResumenIcono">💰</span>
+                            <span class="estatResumenValor" id="estatTotalPrecio">—</span>
+                            <span class="estatResumenLabel">Precio total</span>
+                        </div>
+                        <div class="estadResumenCard" id="estatCardPacks"
+                            data-tooltip="Número total de expansiones, packs de contenido, accesorios y kits seleccionados (incluidos los packs gratuitos y el juego base)">
+                            <span class="estatResumenIcono">🎮</span>
+                            <span class="estatResumenValor" id="estatTotalPacks">—</span>
+                            <span class="estatResumenLabel">Packs</span>
+                        </div>
+                        <div class="estadResumenCard" id="estatCardObjetos"
+                            data-tooltip="Suma total de objetos nuevos de construcción y compra añadidos por los packs filtrados">
+                            <span class="estatResumenIcono">🏠</span>
+                            <span class="estatResumenValor" id="estatTotalObjetos">—</span>
+                            <span class="estatResumenLabel">Objetos nuevos</span>
+                        </div>
+                        <div class="estadResumenCard" id="estatCardMasObjetos"
+                            data-tooltip="Pack de la selección actual que incluye la mayor cantidad individual de objetos nuevos">
+                            <span class="estatResumenIcono">📦</span>
+                            <span class="estatResumenValor" id="estatMasObjetos">—</span>
+                            <span class="estatResumenLabel">Pack con + objetos</span>
+                        </div>
+                        <div class="estadResumenCard" id="estatCardMundos"
+                            data-tooltip="Cantidad total de mundos residenciales y vacacionales incluidos en los packs de la selección">
+                            <span class="estatResumenIcono">🌍</span>
+                            <span class="estatResumenValor" id="estatTotalMundos">—</span>
+                            <span class="estatResumenLabel">Mundos</span>
+                        </div>
+                        <div class="estadResumenCard" id="estatCardBarrios"
+                            data-tooltip="Número total de vecindarios y distritos repartidos entre los mundos filtrados">
+                            <span class="estatResumenIcono">🏘️</span>
+                            <span class="estatResumenValor" id="estatTotalBarrios">—</span>
+                            <span class="estatResumenLabel">Barrios</span>
+                        </div>
+                        <div class="estadResumenCard" id="estatCardSolares"
+                            data-tooltip="Total de parcelas y solares edificables disponibles en los mundos de los packs seleccionados">
+                            <span class="estatResumenIcono">🏡</span>
+                            <span class="estatResumenValor" id="estatTotalSolares">—</span>
+                            <span class="estatResumenLabel">Solares</span>
+                        </div>
+                        <div class="estadResumenCard estatCardTiempoClickable" id="estatCardTiempo"
+                            data-tooltip="Tiempo transcurrido desde la salida oficial de Los Sims 4 (02/09/2014). ¡Haz clic para consultar el tiempo de cualquier pack!"
+                            role="button" tabindex="0">
+                            <span class="estatResumenIcono">🕐</span>
+                            <span class="estatResumenValor" id="estatTiempoValor">—</span>
+                            <span class="estatResumenLabel">Desde la salida de Los Sims 4</span>
+                            <span class="estatCardTiempoHint">👆 Pulsa para elegir pack</span>
+                        </div>
+                    </div>
+
+                    <!-- PANEL TIEMPO POR PACK -->
+                    <div id="estatTiempoPanel" class="estatTiempoPanel" style="display:none;">
+                        <div class="estatTiempoPanelCabecera">
+                            <span class="estatTiempoPanelTitulo">⏱️ Tiempo desde el lanzamiento de un pack</span>
+                            <button type="button" id="btnCerrarTiempoPanel" class="estatTiempoPanelCerrar"
+                                data-tooltip="Cerrar">✕</button>
+                        </div>
+                        <div class="estatTiempoPanelCuerpo">
+                            <div id="estatTiempoPorTipo" class="estatTiempoPorTipo"></div>
+                            <div id="estatTiempoResultado" class="estatTiempoResultado" style="display:none;">
+                                <div class="estatTiempoPackCabecera">
+                                    <img id="estatTiempoPackImg" class="estatTiempoPackImg" src="" alt=""
+                                        style="display:none;">
+                                    <div class="estatTiempoPackTexto">
+                                        <div class="estatTiempoPackNombre" id="estatTiempoPackNombre"></div>
+                                        <div class="estatTiempoFechaLanzamiento" id="estatTiempoFechaLanz"></div>
+                                    </div>
+                                </div>
+                                <div class="estatTiempoContadores">
+                                    <div class="estatTiempoContadorItem">
+                                        <span class="estatTiempoNum" id="estatTiempoAnos">—</span>
+                                        <span class="estatTiempoUni">años</span>
+                                    </div>
+                                    <div class="estatTiempoContadorSep">·</div>
+                                    <div class="estatTiempoContadorItem">
+                                        <span class="estatTiempoNum" id="estatTiempoMeses">—</span>
+                                        <span class="estatTiempoUni">meses</span>
+                                    </div>
+                                    <div class="estatTiempoContadorSep">·</div>
+                                    <div class="estatTiempoContadorItem">
+                                        <span class="estatTiempoNum" id="estatTiempoDias">—</span>
+                                        <span class="estatTiempoUni">días</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> <!-- /#estatTiempoPanel -->
+
+                </div> <!-- /#estatBloqueResumen -->
+
+                <h3 class="estatSubtitulo">🔍 Filtrador de packs</h3>
+
+                <!-- CONTROLES DE FILTRO -->
+                <div class="estadisticasControles">
+
+                    <div class="estatControlBusqueda">
+                        <span class="estatBusquedaIcono">🔍</span>
+                        <input type="text" id="estatBuscarTexto" placeholder="Buscar por nombre, tipo..."
+                            autocomplete="off">
+                    </div>
+
+                    <!-- SELECTOR DE FECHA CUSTOM: DESDE -->
+                    <div class="estatControlGrupo">
+                        <label class="estatLabel">📅 Desde</label>
+                        <button type="button" id="estatFechaDesdeBtn" class="estatCustomTriggerBtn">
+                            <span id="estatFechaDesdeVal">Seleccionar</span>
+                            <span class="estatTriggerArrow">▼</span>
+                        </button>
+                        <input type="hidden" id="estatFechaDesde" value="">
+                    </div>
+
+                    <!-- SELECTOR DE FECHA CUSTOM: HASTA -->
+                    <div class="estatControlGrupo">
+                        <label class="estatLabel">📅 Hasta</label>
+                        <button type="button" id="estatFechaHastaBtn" class="estatCustomTriggerBtn">
+                            <span id="estatFechaHastaVal">Seleccionar</span>
+                            <span class="estatTriggerArrow">▼</span>
+                        </button>
+                        <input type="hidden" id="estatFechaHasta" value="">
+                    </div>
+
+                    <!-- RANGO DE PRECIO -->
+                    <div class="estatControlGrupo">
+                        <label class="estatLabel">💰 Precio (€)</label>
+                        <div class="estatInputsPrecioRow">
+                            <input type="number" id="estatPrecioMin" class="estatInputPrecio" placeholder="Mín" min="0"
+                                step="0.01">
+                            <span class="estatSeparador">–</span>
+                            <input type="number" id="estatPrecioMax" class="estatInputPrecio" placeholder="Máx" min="0"
+                                step="0.01">
+                        </div>
+                    </div>
+
+                    <!-- TIPO DE PACK CUSTOM SELECT -->
+                    <div class="estatControlGrupo" style="position:relative;">
+                        <label class="estatLabel">🏷️ Tipo de pack</label>
+                        <button type="button" id="estatTipoPackBtn" class="estatCustomTriggerBtn">
+                            <span id="estatTipoPackVal">🏷️ Todos los tipos</span>
+                            <span class="estatTriggerArrow">▼</span>
+                        </button>
+                        <input type="hidden" id="estatTipoPack" value="">
+
+                        <!-- Menú desplegable personalizado -->
+                        <div id="estatTipoPackDropdown" class="estatCustomDropdown" style="display:none;">
+                            <div class="estatDropdownItem activa" data-value="">🏷️ Todos los tipos</div>
+                            <div class="estatDropdownItem" data-value="Expansión">📦 Expansión</div>
+                            <div class="estatDropdownItem" data-value="Contenido">🎭 Pack de contenido</div>
+                            <div class="estatDropdownItem" data-value="Accesorios">👗 Accesorios</div>
+                            <div class="estatDropdownItem" data-value="Kits">🎁 Kits</div>
+                            <div class="estatDropdownItem" data-value="Packs gratuitos">🆓 Packs gratuitos</div>
+                            <div class="estatDropdownItem" data-value="Juego Base">🎮 Juego Base</div>
+                        </div>
+                    </div>
+
+                    <button id="estatBorrarFiltros" class="estatBtnBorrar" title="Borrar filtros">🧹 Limpiar</button>
+
+                </div>
+
+                <!-- MODAL DE SELECTOR DE FECHA PASO A PASO (AÑO -> MES -> DÍA) -->
+                <div id="estatDatePickerModal" class="estatDatePickerModal" style="display:none;">
+                    <div class="estatDatePickerOverlay" id="estatDatePickerOverlay"></div>
+                    <div class="estatDatePickerCard">
+                        <div class="estatDatePickerHeader">
+                            <span id="estatDatePickerTitle" class="estatDatePickerTitle">📅 Seleccionar Año</span>
+                            <button type="button" id="estatDatePickerClose"
+                                class="estatDatePickerClose">&times;</button>
+                        </div>
+
+                        <!-- MIGAS DE PAN DE NAVEGACIÓN -->
+                        <div class="estatDatePickerBreadcrumbs">
+                            <span id="estatStepYear" class="estatStepItem activa">1. Año</span>
+                            <span class="estatStepSep">›</span>
+                            <span id="estatStepMonth" class="estatStepItem">2. Mes</span>
+                            <span class="estatStepSep">›</span>
+                            <span id="estatStepDay" class="estatStepItem">3. Día</span>
+                        </div>
+
+                        <!-- CONTENIDO DEL PASO ACTUAL -->
+                        <div id="estatDatePickerBody" class="estatDatePickerBody"></div>
+
+                        <div class="estatDatePickerFooter">
+                            <button type="button" id="estatDatePickerClear" class="estatBtnSecundario">🧹 Limpiar
+                                fecha</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONTADOR RESULTADOS -->
+                <div id="estatContador" class="estatContador"></div>
+
+                <!-- BLOQUE VISTAS (lista + gráficos) estilo ventana -->
+                <div id="estatBloqueVistas" class="estatBloqueVentana">
+                    <div class="estatToggleVistaWrap">
+                        <div class="estatToggleVista">
+                            <button id="estatBtnLista" class="estatBtnVista activa">📋 Lista</button>
+                            <button id="estatBtnGraficos" class="estatBtnVista">📊 Gráficos</button>
+                        </div>
+                        <button class="compartirSeccion" id="btnCompartirVistas" data-captura="estatBloqueVistas"
+                            data-tooltip="Compartir lista / gráficos">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path
+                                    d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- VISTA LISTA -->
+                    <div id="estatVistaLista" class="estatVistaLista">
+                        <div id="estatListaPacks"></div>
+                    </div>
+
+                    <!-- VISTA GRÁFICOS -->
+                    <div id="estatVistaGraficos" class="estatVistaGraficos" style="display:none;">
+                        <div class="estatInstruccionesGraficos">
+                            💡 <strong>Tip de navegación:</strong> Usa la rueda del ratón para desplazarte de izquierda
+                            a
+                            derecha en los gráficos. Mantén presionado <kbd>Ctrl</kbd> + rueda del ratón sobre un
+                            gráfico
+                            para hacer <strong>Zoom</strong>.
+                        </div>
+
+                        <div class="graficosGrid">
+                            <!-- Gráfico 1: Lanzamientos por fecha y precio -->
+                            <div class="graficoBloque graficoBloqueAncho">
+                                <div class="graficoCabecera">
+                                    <h3 class="graficoTitulo">📊 Lanzamientos ordenados por fecha y precio</h3>
+                                    <button type="button" class="graficoBtnCompartir" data-canvas="graficoPorTipo"
+                                        title="Descargar captura del gráfico">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path
+                                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="graficoScrollHoriz" data-chart="porTipo">
+                                    <canvas id="graficoPorTipo" class="graficoCanvas"></canvas>
+                                </div>
+                                <div id="estatPrecioTotalBanner" class="estatPrecioTotalBanner">
+                                    💰 Precio total de estos packs: <strong id="estatPrecioTotalBannerVal">0,00
+                                        €</strong>
+                                </div>
+                            </div>
+
+                            <!-- Gráfico 2: Lanzamientos por mes en el intervalo -->
+                            <div class="graficoBloque graficoBloqueAncho">
+                                <div class="graficoCabecera">
+                                    <h3 class="graficoTitulo">🗓️ Packs y precio total por mes en el intervalo
+                                        seleccionado
+                                    </h3>
+                                    <button type="button" class="graficoBtnCompartir" data-canvas="graficoPorMeses"
+                                        title="Descargar captura del gráfico">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path
+                                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="graficoScrollHoriz" data-chart="porMeses">
+                                    <canvas id="graficoPorMeses" class="graficoCanvas"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Gráfico 3: Multilínea temporal con filtros de líneas -->
+                            <div class="graficoBloque graficoBloqueAncho">
+                                <div class="graficoCabeceraConControles">
+                                    <div class="graficoCabecera" style="width:100%;">
+                                        <h3 class="graficoTitulo">📈 Lanzamientos a lo largo del tiempo por tipo</h3>
+                                        <button type="button" class="graficoBtnCompartir" data-canvas="graficoTemporal"
+                                            title="Descargar captura del gráfico">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                <path
+                                                    d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div id="estatControlesLineasTemporal" class="estatControlesLineas"></div>
+                                </div>
+                                <div class="graficoScrollHoriz" data-chart="temporal">
+                                    <canvas id="graficoTemporal" class="graficoCanvas"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Gráfico 4: Donut por categoría -->
+                            <div class="graficoBloque">
+                                <div class="graficoCabecera">
+                                    <h3 class="graficoTitulo">🥧 Distribución por categoría</h3>
+                                    <button type="button" class="graficoBtnCompartir" data-canvas="graficoPastel"
+                                        title="Descargar captura del gráfico">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path
+                                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="graficoContainerNoScroll">
+                                    <canvas id="graficoPastel" class="graficoCanvas"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Gráfico 5: Solares por pack con mundo -->
+                            <div class="graficoBloque graficoBloqueAncho">
+                                <div class="graficoCabecera">
+                                    <h3 class="graficoTitulo">🏡 Solares por pack con mundo</h3>
+                                    <button type="button" class="graficoBtnCompartir" data-canvas="graficoSolaresMundos"
+                                        title="Descargar captura del gráfico">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path
+                                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="graficoScrollHoriz" data-chart="solares">
+                                    <canvas id="graficoSolaresMundos" class="graficoCanvas"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Gráfico 5: Objetos nuevos por pack -->
+                            <div class="graficoBloque graficoBloqueAncho">
+                                <div class="graficoCabecera">
+                                    <h3 class="graficoTitulo">🏠 Objetos nuevos por pack</h3>
+                                    <button type="button" class="graficoBtnCompartir" data-canvas="graficoObjetos"
+                                        title="Descargar captura del gráfico">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path
+                                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="graficoScrollHoriz" data-chart="objetos">
+                                    <canvas id="graficoObjetos" class="graficoCanvas"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div> <!-- /#estatVistaGraficos -->
+
+                </div> <!-- /#estatBloqueVistas -->
+
+            </div>
+            <!-- ==================== FIN VENTANA ESTADÍSTICAS ==================== -->
+
+
+            <!-- ==================== VENTANA RULETA DE DESASTRES ==================== -->
+            <div id="ventanaRuletaDesastres" class="ventana">
+                <div class="cabeceraVentana">
+                    <button class="compartir" title="Compartir" data-tooltip="Compartir">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                        </svg>
+                    </button>
+                    <button class="cerrar">✕</button>
+                </div>
+                <h2>🎡 Ruleta de Desastres</h2>
+                <p class="subtituloVentana">¡Añade eventos imprevistos a tu partida para hacer tus construcciones más
+                    divertidas y desafiantes!</p>
+
+                <!-- PANTALLA 1: CONFIGURACIÓN -->
+                <div id="pantallaConfigRuletaDesastres">
+                    <div class="seccionConfigDesastres">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+                            <h3 style="margin: 0;">⚙️ Configuración de Desastres</h3>
+                            <button type="button" id="btnToggleTodosDesastres" class="botonSecundario">
+                                ☑️ Marcar / desmarcar todos
+                            </button>
+                        </div>
+                        <p class="descripcionConfig">Selecciona los tipos de eventos que deseas incluir en la ruleta:
+                        </p>
+
+                        <div id="contenedorCheckboxesDesastres" class="gridCheckboxesDesastres">
+                            <!-- Se rellena dinámicamente -->
+                        </div>
+                    </div>
+
+                    <!-- Configuración de Dinero -->
+                    <div id="seccionDineroDesastres" class="seccionConfigDesastres">
+                        <h3>💰 Rango para Desastres Financieros</h3>
+                        <div class="formRowDinero">
+                            <div class="formCampo">
+                                <label for="inputDesastreDineroMin">Mínimo (§):</label>
+                                <input type="number" id="inputDesastreDineroMin" value="5000" min="100" max="1000000"
+                                    step="1000">
+                            </div>
+                            <div class="formCampo">
+                                <label for="inputDesastreDineroMax">Máximo (§):</label>
+                                <input type="number" id="inputDesastreDineroMax" value="25000" min="100" max="1000000"
+                                    step="1000">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Configuración de Modo -->
+                    <div class="seccionConfigDesastres">
+                        <h3>🔄 Modo de Funcionamiento</h3>
+                        <div class="selectorModoRuleta">
+                            <label class="radioModoItem">
+                                <input type="radio" name="modoRuletaDesastres" id="modoManualRuletaDesastres"
+                                    value="manual" checked>
+                                <span><strong>🖐️ Modo Manual:</strong> Gira la ruleta cuando quieras pulsando un
+                                    botón.</span>
+                            </label>
+                            <label class="radioModoItem">
+                                <input type="radio" name="modoRuletaDesastres" id="modoAutoRuletaDesastres"
+                                    value="auto">
+                                <span><strong>⏱️ Modo Automático:</strong> Gira automáticamente cada N minutos.</span>
+                            </label>
+                        </div>
+
+                        <div id="opcionesModoAutoDesastres" class="formRowIntervalo"
+                            style="margin-top: 15px; display: none;">
+                            <div class="formCampo">
+                                <label for="inputDesastreIntervalo">Intervalo (minutos):</label>
+                                <input type="number" id="inputDesastreIntervalo" value="5" min="1" max="120">
+                            </div>
+                            <div class="formCampo">
+                                <label for="inputDesastrePausa">Tiempo de pausa (minutos):</label>
+                                <input type="number" id="inputDesastrePausa" value="1" min="1" max="5">
+                            </div>
+                            <div class="formCampo">
+                                <label for="inputDesastreTiradasAuto">Número de tiradas (0 = Ilimitadas):</label>
+                                <input type="number" id="inputDesastreTiradasAuto" value="0" min="0" max="100">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accionesRuletaDesastres">
+                        <button type="button" id="btnVolverPacksDesdeRuletaConfig" class="botonReto"
+                            style="margin-right: 10px;">
+                            📦 Selector de Packs
+                        </button>
+                        <button type="button" id="btnComenzarRuletaDesastres" class="botonReto btnGirarDestacado">
+                            🚀 Comenzar Ruleta
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PANTALLA 2: JUEGO / RESULTADOS -->
+                <div id="pantallaJuegoRuletaDesastres" style="display: none;">
+                    <div class="cabeceraJuegoDesastres">
+                        <button type="button" id="btnVolverPacksDesdeRuletaJuego" class="botonReto">
+                            📦 Selector de Packs
+                        </button>
+                        <button type="button" id="btnConfigRuletaDesastres" class="botonReto">
+                            ⚙️ Cambiar Configuración
+                        </button>
+                        <button type="button" id="toggleTemporizadorRuletaBtn" class="botonReto">
+                            ⏱️ Abrir temporizador
+                        </button>
+                        <button type="button" id="btnPausarReanudarRuleta" class="botonReto" style="display: none;">
+                            ⏸️ Pausar
+                        </button>
+                        <div id="divCuentaAtrasRuletaDesastres" class="cuentaAtrasContenedor" style="display: none;">
+                            <span class="iconoReloj">⏱️</span>
+                            <span id="labelEstadoCuentaAtrasDesastres">Siguiente desastre en:</span>
+                            <span id="displayCuentaAtrasDesastres" class="timerDigits">05:00</span>
+                        </div>
+                    </div>
+
+                    <div class="tarjetaDesastreContenedor">
+                        <div id="tarjetaResultadoDesastre" class="tarjetaResultadoDesastre">
+                            <div id="iconoResultadoDesastre" class="iconoTarjeta">🎡</div>
+                            <h3 id="tituloResultadoDesastre">¡Listos para girar!</h3>
+                            <p id="descResultadoDesastre">Pulsa el botón de abajo para generar tu primer desastre.</p>
+                            <div id="detalleResultadoDesastre" class="detalleTarjeta"></div>
+                        </div>
+                    </div>
+
+                    <div class="accionesJuegoDesastres">
+                        <button type="button" id="btnGirarRuletaDesastres" class="botonReto btnGirarDestacado">
+                            🎡 Girar Ruleta
+                        </button>
+                    </div>
+
+                    <!-- HISTORIAL DE DESASTRES -->
+                    <div class="seccionHistorialDesastres">
+                        <div class="cabeceraHistorial">
+                            <h3>📜 Historial de Desastres de la Sesión</h3>
+                            <button type="button" id="btnLimpiarHistorialDesastres" class="botonSecundario">
+                                🗑️ Limpiar
+                            </button>
+                        </div>
+                        <div id="listaHistorialDesastres" class="listaHistorialDesastres">
+                            <div class="historialVacio">Aún no ha ocurrido ningún desastre. ¡Gira la ruleta!</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- ==================== FIN VENTANA RULETA DE DESASTRES ==================== -->
+
+            <!-- ==================== VENTANA HABILIDADES: SELECTOR DE PACKS ==================== -->
+            <div id="ventanaHabilidadesPacks" class="ventana">
+                <div class="cabeceraVentana">
+                    <button class="compartir" title="Compartir">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                        </svg>
+                    </button>
+                    <button class="cerrar">✕</button>
+                </div>
+
+                <h2>🧠 Habilidades al azar</h2>
+                <p class="subtituloVentana">Selecciona los packs que tienes instalados para filtrar las habilidades
+                    disponibles:</p>
+
+                <div id="listaPacksHabilidades"></div>
+
+                <div class="accionesBuscador" style="margin-top: 30px;">
+                    <button id="aceptarPacksHabilidades">
+                        Continuar ➡️
+                    </button>
+                </div>
+            </div>
+            <!-- ==================== FIN VENTANA HABILIDADES PACKS ==================== -->
+
+            <!-- ==================== VENTANA HABILIDADES: GENERADOR ==================== -->
+            <div id="ventanaHabilidadesGenerador" class="ventana">
+                <div class="cabeceraVentana">
+                    <button class="compartir" title="Compartir">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                        </svg>
+                    </button>
+                    <button class="cerrar">✕</button>
+                </div>
+
+                <h2>🧠 Habilidades al azar</h2>
+                <p class="subtituloVentana" style="text-align: center;">Selecciona el número de habilidades que quieres
+                    que salgan en esta tirada</p>
+
+                <!-- SELECTOR NUMÉRICO CON SCROLL -->
+                <div class="habNumeroWrap">
+                    <button type="button" class="habNumeroBtn" id="habNumeroMenos" aria-label="Menos">−</button>
+                    <div class="habNumeroDisplay">
+                        <input type="number" id="habCantidad" min="1" max="10" value="1" readonly
+                            class="habCantidadInput">
+                    </div>
+                    <button type="button" class="habNumeroBtn" id="habNumeroMas" aria-label="Más">+</button>
+                </div>
+                <p style="font-size: 0.8rem; opacity: 0.75; text-align: center; margin-top: 10px; margin-bottom: 20px;">
+                    (Usa la rueda del ratón o los botones para cambiar el número)</p>
+
+                <!-- BOTÓN TIRAR Y VOLVER -->
+                <div class="habAcciones">
+                    <button id="habBtnTirar" class="habBtnTirar">
+                        <span class="habBtnIcono">🎲</span>
+                        <span>¡Tirar!</span>
+                    </button>
+                    <button type="button" id="habBtnVolver" class="botonReto">
+                        📦 Selector de Packs
+                    </button>
+                </div>
+
+                <!-- ÁREA DE ANIMACIÓN / RESULTADO -->
+                <div id="habResultadoWrap" class="habResultadoWrap" style="display:none;">
+                    <!-- Animación de ruleta -->
+                    <div id="habAnimacion" class="habAnimacion">
+                        <div id="habAnimacionPista" class="habAnimacionPista"></div>
+                    </div>
+                    <!-- Resultado final -->
+                    <div id="habResultadoFinal" class="habResultadoFinal" style="display:none;">
+                        <h3 class="habResultadoTitulo">✨ Tus habilidades generadas:</h3>
+                        <div id="habResultadoGrid" class="habResultadoGrid"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- ==================== FIN VENTANA HABILIDADES GENERADOR ==================== -->
+
+        </section>
+
+    </main>
+
+    <script src="js/loading.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/sheets.js"></script>
+    <script src="js/render.js"></script>
+    <script src="js/solarFicha.js"></script>
+    <script src="js/ruleta-colores.js"></script>
+    <script src="js/dados.js"></script>
+    <script src="js/trucos.js"></script>
+    <script src="js/solarGaleria.js"></script>
+    <script src="js/filterInfo.js"></script>
+    <script src="js/filterLogic.js"></script>
+    <script src="js/filterUI.js"></script>
+    <script src="js/filterCore.js"></script>
+    <script src="js/buscadorNombre.js"></script>
+    <script src="js/filters.js"></script>
+    <script src="js/ruleta-desastres.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/retos.js"></script>
+    <script src="js/reto-modulos.js"></script>
+    <script src="js/reto-solar.js"></script>
+    <script src="js/reto-etapas.js"></script>
+    <script src="js/reto-limitantes.js"></script>
+    <script src="js/reto-submenus.js"></script>
+    <script src="js/reto-generador.js"></script>
+    <script src="js/reto-resultado-ui.js"></script>
+    <script src="js/temporizador.js"></script>
+    <script src="js/acercade.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="js/compartir.js"></script>
+    <script src="js/estadisticas.js"></script>
+    <script src="js/habilidades.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/menu-flotante.js"></script>
+    <div id="google_translate_element" style="display:none;"></div>
+    <script src="js/idioma.js"></script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <footer class="footer">
+
+        <div class="footer-contenido">
+
+            <div class="footer-controles">
+
+                <button id="botonModo" class="toggleModo" title="Cambiar modo día/noche">
+
+                    <svg class="icono-sol" viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                            d="M6.76 4.84 4.96 3.05 3.55 4.46l1.79 1.8 1.42-1.42zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7 1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91 1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z" />
+                    </svg>
+
+                    <svg class="icono-luna" viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                            d="M9.37 5.51A7.35 7.35 0 0 0 9.1 7.5c0 4.08 3.32 7.4 7.4 7.4.68 0 1.35-.09 1.99-.27C17.45 17.19 14.93 19 12 19c-3.86 0-7-3.14-7-7 0-2.93 1.81-5.45 4.37-6.49z" />
+                    </svg>
+
+                </button>
+
+                <div class="selectorIdioma">
+
+                    <button id="botonIdioma" class="toggleModo botonIdiomaBtn" title="Cambiar idioma">
+                        <img id="banderaActual" src="https://flagcdn.com/24x18/es.png" alt="Idioma actual"
+                            class="banderaImg">
+                    </button>
+
+                    <div id="listaIdiomas" class="listaIdiomas">
+                        <button class="opcionIdioma" data-lang="es" title="Español">
+                            <img src="https://flagcdn.com/24x18/es.png" alt="Español" class="banderaImg">
+                        </button>
+                        <button class="opcionIdioma" data-lang="en" title="English">
+                            <img src="https://flagcdn.com/24x18/gb.png" alt="English" class="banderaImg">
+                        </button>
+                        <button class="opcionIdioma" data-lang="fr" title="Français">
+                            <img src="https://flagcdn.com/24x18/fr.png" alt="Français" class="banderaImg">
+                        </button>
+                        <button class="opcionIdioma" data-lang="de" title="Deutsch">
+                            <img src="https://flagcdn.com/24x18/de.png" alt="Deutsch" class="banderaImg">
+                        </button>
+                        <button class="opcionIdioma" data-lang="it" title="Italiano">
+                            <img src="https://flagcdn.com/24x18/it.png" alt="Italiano" class="banderaImg">
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <p>
+                El unico buscador de Solares y generador de retos para construir en Los Sims 4 - Versión 1.1.8
+
+
+            </p>
+
+            <p>
+                Creado por Ozono96
+            </p>
+
+            <p>
+                Si quieres apoyar mi trabajo puedes seguirme en mis redes sociales:
+            </p>
+
+            <div class="redes">
+
+                <a href="https://x.com/Ozono96" target="_blank" class="icono-red x" aria-label="X">
+
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231z" />
+                    </svg>
+
+                </a>
+
+                <a href="https://www.youtube.com/@Ozono96" target="_blank" class="icono-red youtube"
+                    aria-label="YouTube">
+
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M23.498 6.186a3.02 3.02 0 0 0-2.122-2.137C19.505 3.5 12 3.5 12 3.5s-7.505 0-9.376.549A3.02 3.02 0 0 0 .502 6.186C0 8.072 0 12 0 12s0 3.928.502 5.814a3.02 3.02 0 0 0 2.122 2.137C4.495 20.5 12 20.5 12 20.5s7.505 0 9.376-.549a3.02 3.02 0 0 0 2.122-2.137C24 15.928 24 12 24 12s0-3.928-.502-5.814zM9.75 15.568V8.432L15.818 12 9.75 15.568z" />
+                    </svg>
+
+                </a>
+
+                <a href="https://www.twitch.tv/ozono96" target="_blank" class="icono-red twitch" aria-label="Twitch">
+
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M4.265 2 2 6.267V20h6v3h3l3-3h4l4-4V2H4.265zm15.235 13-3 3h-5l-3 3v-3H4V4h15.5v11zM16 7h-2v6h2V7zm-5 0H9v6h2V7z" />
+                    </svg>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+    <!-- Tooltip para opciones del reto -->
+    <div id="tooltipOpciones" class="tooltip"></div>
+
+    <!-- MODAL FLOTANTE DE SELECCIÓN DE PACKS POR CATEGORÍA (MODO DESPLEGABLE) -->
+    <div id="modalPacksCategoria" class="modalPacksFlotante">
+        <div id="overlayPacksCategoria" class="overlayPacksFlotante"></div>
+        <div class="cardPacksFlotante">
+            <div class="headerPacksFlotante">
+                <h3 id="tituloModalPacks">📦 Categoría</h3>
+                <button type="button" id="cerrarModalPacksBtn" class="cerrar">✕</button>
+            </div>
+            <div class="accionesPacksFlotante">
+                <button type="button" class="botonReto" id="toggleTodosModalBtn" data-estado="marcado">❌ Desmarcar
+                    todos</button>
+            </div>
+            <div id="cuerpoModalPacks">
+                <!-- Packs dinámicos -->
+            </div>
+            <div class="footerPacksFlotante">
+                <button type="button" id="listoModalPacksBtn" class="botonReto">
+                    ✅ Listo
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+
+
+</html>

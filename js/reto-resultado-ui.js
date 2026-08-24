@@ -191,6 +191,22 @@ function renderizarResultadoReto(reto) {
 
     contenedor.innerHTML = html;
 
+    // Preservar texto del botón si el temporizador está acoplado
+    const btnToggle = document.getElementById("toggleTemporizadorRetoBtn");
+    if (btnToggle && document.getElementById("app")?.classList.contains("modo-paralelo")) {
+        btnToggle.innerHTML = "⏱️ Cerrar temporizador";
+    }
+
+    // Ajustar escalado en OBS después de que el DOM se haya pintado (doble rAF
+    // para que los iconos de pack e imágenes no distorsionen la medición)
+    if (document.body.classList.contains("modo-obs")) {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                if (typeof ajustarEscalaRetoOBS === "function") ajustarEscalaRetoOBS();
+            });
+        });
+    }
+
     // ── Tooltip de los botones de reroll ──
     const tooltip = document.getElementById("tooltipOpciones");
     if (tooltip) {
@@ -224,3 +240,89 @@ function renderizarResultadoReto(reto) {
         });
     }
 }
+
+// ─── Escalado proporcional de ventanaRetoResultado en modo OBS ─────────────
+// Escala fija almacenada. Se calcula una sola vez al generar el reto o al redimensionar viewport.
+let escalaFijaOBS = 1;
+
+function calcularEscalaRetoOBS() {
+    if (!document.body.classList.contains("modo-obs")) return;
+
+    const ventana = document.getElementById("ventanaRetoResultado");
+    if (!ventana) return;
+
+    const estaVisible = ventana.style.display !== "none" && getComputedStyle(ventana).display !== "none";
+    if (!estaVisible) {
+        requestAnimationFrame(() => {
+            if (ventana.style.display !== "none" && getComputedStyle(ventana).display !== "none") {
+                calcularEscalaRetoOBS();
+            }
+        });
+        return;
+    }
+
+    // scrollHeight y scrollWidth devuelven las dimensiones naturales del layout sin transformar
+    const alturaContenido = ventana.scrollHeight || ventana.offsetHeight || 700;
+    const anchuraContenido = ventana.scrollWidth || ventana.offsetWidth || 680;
+    const alturaViewport = window.innerHeight;
+    const anchuraViewport = window.innerWidth;
+
+    if (alturaContenido <= 0 || anchuraContenido <= 0) return;
+
+    // Margen de seguridad en píxeles (arriba/abajo y lados)
+    const margenV = 24;
+    const margenH = 24;
+
+    const escalaAltura = (alturaViewport - margenV * 2) / alturaContenido;
+    const escalaAnchura = (anchuraViewport - margenH * 2) / anchuraContenido;
+
+    // Escalar solo hacia abajo si el contenido supera el espacio disponible (nunca agrandar por encima de 1)
+    escalaFijaOBS = Math.min(escalaAltura, escalaAnchura, 1);
+    if (escalaFijaOBS <= 0 || isNaN(escalaFijaOBS)) escalaFijaOBS = 1;
+
+    aplicarEscalaOBS();
+}
+
+function aplicarEscalaOBS() {
+    if (!document.body.classList.contains("modo-obs")) return;
+
+    const ventana = document.getElementById("ventanaRetoResultado");
+    const ventanaTemp = document.getElementById("ventanaTemporizador");
+    const composicion = document.getElementById("composicionRetoTemporizador");
+
+    // 1. Establecer la variable CSS en body y composicion para que las reglas de wrapper y margin-left se calculen de forma nativa en CSS
+    document.body.style.setProperty("--escala-obs", escalaFijaOBS);
+    if (composicion) {
+        composicion.style.setProperty("--escala-obs", escalaFijaOBS);
+        composicion.style.gap = "0px";
+        composicion.style.transform = "";
+    }
+
+    // 2. El Reto Generado recibe SIEMPRE su escala fija almacenada
+    if (ventana) {
+        ventana.style.transform = `scale(${escalaFijaOBS})`;
+        ventana.style.transformOrigin = "top left";
+    }
+
+    // 3. El Temporizador acoplado recibe exactamente la MISMA escala fija
+    if (ventanaTemp) {
+        ventanaTemp.style.transform = `scale(${escalaFijaOBS})`;
+        ventanaTemp.style.transformOrigin = "top left";
+    }
+}
+
+function ajustarEscalaRetoOBS() {
+    calcularEscalaRetoOBS();
+}
+
+// Exponer en el objeto global para ser invocado desde obs.js u otros módulos
+window.escalaFijaOBS = escalaFijaOBS;
+window.calcularEscalaRetoOBS = calcularEscalaRetoOBS;
+window.aplicarEscalaOBS = aplicarEscalaOBS;
+window.ajustarEscalaRetoOBS = ajustarEscalaRetoOBS;
+
+// Recalcular automáticamente si cambia el tamaño del viewport (browser source de OBS)
+window.addEventListener("resize", () => {
+    if (!document.body.classList.contains("modo-obs")) return;
+    calcularEscalaRetoOBS();
+});

@@ -371,8 +371,8 @@ function inicializarUIRuletaDesastres() {
     // Manejo de cambio de modo (Manual / Auto)
     const radioManual = document.getElementById("modoManualRuletaDesastres");
     const radioAuto = document.getElementById("modoAutoRuletaDesastres");
-    if (radioManual) radioManual.addEventListener("change", actualizarVisibilidadModoAuto);
-    if (radioAuto) radioAuto.addEventListener("change", actualizarVisibilidadModoAuto);
+    if (radioManual) radioManual.addEventListener("change", () => { actualizarVisibilidadModoAuto(); sincronizarConfigRuletaDesastresOBS(); });
+    if (radioAuto) radioAuto.addEventListener("change", () => { actualizarVisibilidadModoAuto(); sincronizarConfigRuletaDesastresOBS(); });
 
     // Inputs min/max dinero e intervalo con la rueda del ratón
     ["inputDesastreDineroMin", "inputDesastreDineroMax", "inputDesastreIntervalo", "inputDesastrePausa", "inputDesastreTiradasAuto"].forEach(id => {
@@ -388,7 +388,9 @@ function inicializarUIRuletaDesastres() {
                 if (val < min) val = min;
                 if (val > max) val = max;
                 input.value = val;
+                sincronizarConfigRuletaDesastresOBS();
             });
+            input.addEventListener("change", () => sincronizarConfigRuletaDesastresOBS());
         }
     });
 
@@ -396,6 +398,59 @@ function inicializarUIRuletaDesastres() {
     actualizarVisibilidadModoAuto();
     actualizarVisibilidadSeccionDinero();
 }
+
+function leerConfigRuletaDesastresDeDOM() {
+    const radioAuto = document.getElementById("modoAutoRuletaDesastres");
+    return {
+        modo: (radioAuto && radioAuto.checked) ? "auto" : "manual",
+        dineroMin: parseInt(document.getElementById("inputDesastreDineroMin")?.value, 10) || 5000,
+        dineroMax: parseInt(document.getElementById("inputDesastreDineroMax")?.value, 10) || 25000,
+        intervaloMinutos: parseInt(document.getElementById("inputDesastreIntervalo")?.value, 10) || 5,
+        pausaMinutos: parseInt(document.getElementById("inputDesastrePausa")?.value, 10) || 1,
+        tiradasAutoMax: parseInt(document.getElementById("inputDesastreTiradasAuto")?.value, 10) || 0,
+        categoriasActivas: Object.assign({}, EstadoRuletaDesastres.categoriasActivas)
+    };
+}
+
+function sincronizarConfigRuletaDesastresOBS() {
+    if (window.esSincronizacionOBS) return;
+    const payload = leerConfigRuletaDesastresDeDOM();
+    if (typeof window.emitirEventoOBS === "function") {
+        window.emitirEventoOBS("SYNC_ACCION", {
+            accion: "RULETA_DESASTRES_CONFIG_STATE",
+            payload
+        });
+    }
+}
+window.sincronizarConfigRuletaDesastresOBS = sincronizarConfigRuletaDesastresOBS;
+
+window.aplicarConfigRuletaDesastresObs = function(payload) {
+    if (!payload) return;
+    // Categorías activas
+    if (payload.categoriasActivas) {
+        Object.keys(payload.categoriasActivas).forEach(catId => {
+            EstadoRuletaDesastres.categoriasActivas[catId] = payload.categoriasActivas[catId];
+        });
+        renderizarBotonesCategorias();
+    }
+    // Modo
+    const radioManual = document.getElementById("modoManualRuletaDesastres");
+    const radioAuto = document.getElementById("modoAutoRuletaDesastres");
+    if (payload.modo === "auto") {
+        if (radioAuto) radioAuto.checked = true;
+    } else {
+        if (radioManual) radioManual.checked = true;
+    }
+    actualizarVisibilidadModoAuto();
+    // Valores numéricos
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = val; };
+    setVal("inputDesastreDineroMin", payload.dineroMin);
+    setVal("inputDesastreDineroMax", payload.dineroMax);
+    setVal("inputDesastreIntervalo", payload.intervaloMinutos);
+    setVal("inputDesastrePausa", payload.pausaMinutos);
+    setVal("inputDesastreTiradasAuto", payload.tiradasAutoMax);
+    actualizarVisibilidadSeccionDinero();
+};
 
 function alternarTodasCategoriasDesastres() {
     const keys = Object.keys(ModulosDesastres);
@@ -407,6 +462,7 @@ function alternarTodasCategoriasDesastres() {
     });
 
     renderizarBotonesCategorias();
+    sincronizarConfigRuletaDesastresOBS();
 }
 
 // Muestra u oculta las opciones del modo automático (intervalo, pausa y tiradas)
@@ -445,7 +501,7 @@ function renderizarBotonesCategorias() {
         const btnToggle = document.createElement("button");
         btnToggle.type = "button";
         const estaActivo = EstadoRuletaDesastres.categoriasActivas[mod.id] !== false;
-        
+
         btnToggle.className = `botonDesastreToggle ${estaActivo ? "activo" : ""}`;
         btnToggle.dataset.catId = mod.id;
 
@@ -463,6 +519,7 @@ function renderizarBotonesCategorias() {
                 btnToggle.classList.remove("activo");
             }
             actualizarVisibilidadSeccionDinero();
+            sincronizarConfigRuletaDesastresOBS();
         });
 
         contenedor.appendChild(btnToggle);
@@ -499,6 +556,10 @@ function comenzarRuletaDesastres() {
     if (pantallaConfig) pantallaConfig.style.display = "none";
     if (pantallaJuego) pantallaJuego.style.display = "block";
 
+    if (typeof window.emitirEventoOBS === "function" && !window.esSincronizacionOBS) {
+        window.emitirEventoOBS("SYNC_ACCION", { accion: "RULETA_DESASTRES_SUBPANTALLA", payload: { subpantalla: "juego" } });
+    }
+
     if (ruletaDesastresInterval) clearInterval(ruletaDesastresInterval);
 
     const divCuentaAtras = document.getElementById("divCuentaAtrasRuletaDesastres");
@@ -524,6 +585,10 @@ function mostrarPantallaConfiguracionDesastres() {
     if (pantallaConfig) pantallaConfig.style.display = "block";
     if (pantallaJuego) pantallaJuego.style.display = "none";
     if (btnPausarReanudar) btnPausarReanudar.style.display = "none";
+
+    if (typeof window.emitirEventoOBS === "function" && !window.esSincronizacionOBS) {
+        window.emitirEventoOBS("SYNC_ACCION", { accion: "RULETA_DESASTRES_SUBPANTALLA", payload: { subpantalla: "config" } });
+    }
 }
 
 function togglePausaReanudarRuletaDesastres() {
@@ -691,6 +756,11 @@ function ejecutarGiroDesastre(esManual) {
     if (!modulo) return;
 
     const resultado = modulo.generar(EstadoRuletaDesastres);
+    
+    // Emitir a OBS (Master)
+    if (typeof window.emitirEventoOBS === "function" && !window.esSincronizacionOBS) {
+        window.emitirEventoOBS("SYNC_ACCION", { accion: "GIRAR_RULETA_DESASTRES", payload: { modId, resultado } });
+    }
 
     // Animación visual de tarjeta
     const cardRes = document.getElementById("tarjetaResultadoDesastre");
@@ -748,3 +818,62 @@ function limpiarHistorialDesastres() {
     ruletaDesastresHistorial = [];
     renderizarHistorialDesastres();
 }
+
+// Función ejecutada remotamente por OBS Viewer
+window.ejecutarGiroRuletaDesastresObs = function(payload) {
+    if (!payload || !payload.resultado || !payload.modId) return;
+    
+    const modulo = ModulosDesastres[payload.modId];
+    if (!modulo) return;
+    
+    const resultado = payload.resultado;
+    
+    // Animación visual de tarjeta
+    const cardRes = document.getElementById("tarjetaResultadoDesastre");
+    if (cardRes) {
+        cardRes.classList.add("animarGiroDesastre");
+        setTimeout(() => {
+            const containerIcono = document.getElementById("iconoResultadoDesastre");
+            if (containerIcono) {
+                if (resultado.iconoHTML) {
+                    containerIcono.innerHTML = resultado.iconoHTML;
+                } else {
+                    containerIcono.textContent = modulo.icono;
+                }
+            }
+            document.getElementById("tituloResultadoDesastre").textContent = resultado.titulo;
+            document.getElementById("descResultadoDesastre").innerHTML = resultado.descripcion;
+            document.getElementById("detalleResultadoDesastre").textContent = resultado.detalle || "";
+            cardRes.classList.remove("animarGiroDesastre");
+        }, 200);
+    }
+    
+    // Registrar en historial
+    const ahora = new Date();
+    const horaFmt = ahora.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+    
+    ruletaDesastresHistorial.unshift({
+        hora: horaFmt,
+        icono: modulo.icono,
+        iconoHTML: resultado.iconoHTML || null,
+        descripcion: resultado.descripcion
+    });
+
+    renderizarHistorialDesastres();
+};
+
+window.ejecutarSubpantallaRuletaDesastresObs = function(payload) {
+    if (!payload || !payload.subpantalla) return;
+    const pantallaConfig = document.getElementById("pantallaConfigRuletaDesastres");
+    const pantallaJuego = document.getElementById("pantallaJuegoRuletaDesastres");
+    const btnPausarReanudar = document.getElementById("btnPausarReanudarRuleta");
+
+    if (payload.subpantalla === "juego") {
+        if (pantallaConfig) pantallaConfig.style.display = "none";
+        if (pantallaJuego) pantallaJuego.style.display = "block";
+    } else {
+        if (pantallaConfig) pantallaConfig.style.display = "block";
+        if (pantallaJuego) pantallaJuego.style.display = "none";
+        if (btnPausarReanudar) btnPausarReanudar.style.display = "none";
+    }
+};

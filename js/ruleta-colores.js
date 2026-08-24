@@ -33,21 +33,23 @@ function inicializarRuletaColor() {
             event.stopPropagation();
             const delta = event.deltaY > 0 ? -1 : 1;
             const valorActual = clampTiradas(parseInt(inputTiradas.value, 10) || 1);
-            inputTiradas.value = String(clampTiradas(valorActual + delta));
+            actualizarTiradasRuletaColor(valorActual + delta, true);
         }, { passive: false });
+
+        inputTiradas.addEventListener("input", () => {
+            const raw = inputTiradas.value;
+            if (raw === "") return; // Permite borrar el campo para escribir un número nuevo
+            const val = parseInt(raw, 10);
+            if (isNaN(val)) return;
+            actualizarTiradasRuletaColor(val, true);
+        });
+
+        inputTiradas.addEventListener("change", () => {
+            actualizarTiradasRuletaColor(inputTiradas.value, true);
+        });
+
         inputTiradas.dataset.ruletaWheelBound = "true";
     }
-
-    inputTiradas.addEventListener("input", () => {
-        const raw = inputTiradas.value;
-        if (raw === "") return; // Permite borrar el campo para escribir un número nuevo
-        const val = parseInt(raw, 10);
-        if (isNaN(val)) return;
-        if (val > 10) inputTiradas.value = "10";
-    });
-    inputTiradas.addEventListener("change", () => {
-        inputTiradas.value = String(clampTiradas(parseInt(inputTiradas.value, 10) || 1));
-    });
 
     if (colores.length === 0) {
         wheel.innerHTML = '<svg viewBox="0 0 200 200" width="100%" height="100%"><circle cx="100" cy="100" r="90" fill="#7f8c8d" stroke="rgba(255,255,255,0.8)" stroke-width="3"/></svg>';
@@ -79,7 +81,21 @@ function girarRuletaColor(colores, inputTiradas, mensaje, resultados, botonGirar
         tiradas.push({ resultado, wheelColors });
         pool = wheelColors.filter((_, index) => index !== indiceAleatorio);
     }
+    
+    // Emitir a OBS (Master)
+    if (typeof window.emitirEventoOBS === "function" && !window.esSincronizacionOBS) {
+        window.emitirEventoOBS("SYNC_ACCION", { 
+            accion: "GIRAR_RULETA_COLOR", 
+            payload: { tiradas, cantidad } 
+        });
+    }
 
+    animarRuletaColor(tiradas, cantidad, mensaje, resultados, botonGirar, wheel);
+}
+
+function animarRuletaColor(tiradas, cantidad, mensaje, resultados, botonGirar, wheel) {
+    if (!mensaje || !resultados || !botonGirar || !wheel) return;
+    
     mensaje.textContent = "Girando...";
     resultados.innerHTML = "";
     botonGirar.disabled = true;
@@ -223,3 +239,34 @@ function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
 function clampTiradas(valor) {
     return Math.min(10, Math.max(1, Number.isFinite(valor) ? valor : 1));
 }
+
+function actualizarTiradasRuletaColor(nuevoValor, emitir = true) {
+    const inputTiradas = document.getElementById("inputTiradasRuleta");
+    if (!inputTiradas) return;
+    const valorClampeado = clampTiradas(parseInt(nuevoValor, 10) || 1);
+    inputTiradas.value = String(valorClampeado);
+
+    if (emitir && typeof window.emitirEventoOBS === "function" && !window.esSincronizacionOBS) {
+        window.emitirEventoOBS("SYNC_ACCION", {
+            accion: "RULETA_COLOR_TIRADAS_STATE",
+            payload: { cantidad: valorClampeado }
+        });
+    }
+}
+
+// Función ejecutada remotamente por OBS Viewer para sincronizar el valor del selector
+window.actualizarTiradasRuletaColorObs = function(payload) {
+    if (!payload || payload.cantidad === undefined) return;
+    actualizarTiradasRuletaColor(payload.cantidad, false);
+};
+
+// Función ejecutada remotamente por OBS Viewer para animar el giro
+window.ejecutarGiroRuletaColorObs = function(payload) {
+    if (!payload || !payload.tiradas) return;
+    const wheel = document.getElementById("ruletaColorWheel");
+    const mensaje = document.getElementById("mensajeRuletaColor");
+    const resultados = document.getElementById("resultadoRuletaColor");
+    const botonGirar = document.getElementById("botonGirarRuleta");
+    
+    animarRuletaColor(payload.tiradas, payload.cantidad, mensaje, resultados, botonGirar, wheel);
+};

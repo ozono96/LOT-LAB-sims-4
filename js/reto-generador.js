@@ -244,7 +244,42 @@ function generarReto(esAleatorio = false) {
     if (typeof abrirVentana === "function") {
         abrirVentana("ventanaRetoResultado");
     }
+
+    // Emitir el evento completo a OBS (serializado sin funciones)
+    if (typeof window.emitirEventoOBS === 'function') {
+        window.emitirEventoOBS("RETO_GENERADO", {
+            reto: serializarRetoParaOBS(retoActual)
+        });
+    }
 }
+
+// Limpia el objeto retoActual de propiedades no serializables (funciones)
+// para poder transmitirlo por WebRTC. Solo conserva datos puros.
+function serializarRetoParaOBS(reto) {
+    if (!reto) return null;
+    const copia = {
+        tipo: reto.tipo,
+        solar: reto.solar,
+        rerollsSolar: reto.rerollsSolar,
+        dificultad: reto.dificultad,
+        dificultadExtra: reto.dificultadExtra,
+        categorias: {}
+    };
+    if (reto.categorias) {
+        Object.keys(reto.categorias).forEach(catId => {
+            const cat = reto.categorias[catId];
+            const tituloModulo = cat.modulo ? cat.modulo.titulo : (RetoModulos[catId] ? RetoModulos[catId].titulo : "");
+            copia.categorias[catId] = {
+                resultado: cat.resultado,
+                rerollsRestantes: cat.rerollsRestantes,
+                moduloId: cat.modulo ? cat.modulo.id : catId,
+                modulo: { id: cat.modulo ? cat.modulo.id : catId, titulo: tituloModulo || "" }
+            };
+        });
+    }
+    return copia;
+}
+window.serializarRetoParaOBS = serializarRetoParaOBS;
 
 function sincronizarTemporizadorConReto() {
     if (!retoActual || !retoActual.categorias || !retoActual.categorias["temporizador"]) return;
@@ -303,7 +338,14 @@ function rerollCategoria(categoriaId) {
     if (typeof renderizarResultadoReto === "function") {
         renderizarResultadoReto(retoActual);
     }
+
+    if (typeof window.emitirEventoOBS === 'function' && !window.esSincronizacionOBS) {
+        window.emitirEventoOBS("RETO_GENERADO", {
+            reto: serializarRetoParaOBS(retoActual)
+        });
+    }
 }
+window.rerollCategoria = rerollCategoria;
 
 // Reroll exclusivo del solar seleccionado (independiente de los rerolls de categorías)
 function rerollSolar() {
@@ -321,6 +363,12 @@ function rerollSolar() {
 
     if (typeof renderizarResultadoReto === "function") {
         renderizarResultadoReto(retoActual);
+    }
+
+    if (typeof window.emitirEventoOBS === 'function' && !window.esSincronizacionOBS) {
+        window.emitirEventoOBS("RETO_GENERADO", {
+            reto: serializarRetoParaOBS(retoActual)
+        });
     }
 }
 window.rerollSolar = rerollSolar;

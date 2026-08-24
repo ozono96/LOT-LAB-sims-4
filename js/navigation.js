@@ -43,9 +43,9 @@ const MAPA_RUTAS = {
     "timer": "ventanaTemporizador",
     "tiempo": "ventanaTemporizador",
 
-    "habilidades": "ventanaHabilidadesPacks",
-    "habilidad": "ventanaHabilidadesPacks",
-    "habilidades-packs": "ventanaHabilidadesPacks",
+    "habilidades": "ventanaRetos",
+    "habilidad": "ventanaRetos",
+    "habilidades-packs": "ventanaRetos",
     "habilidades-generador": "ventanaHabilidadesGenerador",
 
     "trucos": "ventanaTrucos",
@@ -74,7 +74,6 @@ const VENTANA_A_SLUG = {
     "ventanaRuletaDesastres": "ruleta-desastres",
     "ventanaRuletaColor": "ruleta-color",
     "ventanaTemporizador": "temporizador",
-    "ventanaHabilidadesPacks": "habilidades",
     "ventanaHabilidadesGenerador": "habilidades-generador",
     "ventanaTrucos": "trucos",
     "ventanaTrucosConstruir": "trucos-construir",
@@ -124,7 +123,23 @@ function procesarRutaURL() {
     let slug = rawHash.replace(/^[#/]+/, "").trim().toLowerCase();
 
     if (!slug) {
-        abrirVentana("ventanaAcercaDe", false);
+        let isObs = window.location.search.includes('obs=1') || window.location.hash.includes('obs=1');
+        let initialWindow = "ventanaAcercaDe";
+        
+        if (isObs) {
+            let urlParams = new URLSearchParams(window.location.search);
+            let urlWindow = urlParams.get('window');
+            if (urlWindow) {
+                initialWindow = urlWindow;
+            } else {
+                try {
+                    let saved = localStorage.getItem("lotlab_current_window");
+                    if (saved) initialWindow = saved;
+                } catch(e) {}
+            }
+        }
+        
+        abrirVentana(initialWindow, false);
         return;
     }
 
@@ -158,6 +173,9 @@ function abrirVentana(id, esClickUsuario = false) {
     if (window.ventanaActual !== id) {
         window.ventanaAnterior = window.ventanaActual;
         window.ventanaActual = id;
+        try {
+            localStorage.setItem("lotlab_current_window", id);
+        } catch (e) {}
     }
 
     if (id !== "ventanaRetoResultado" && id !== "ventanaRuletaDesastres" && id !== "ventanaTemporizador") {
@@ -168,7 +186,10 @@ function abrirVentana(id, esClickUsuario = false) {
 
     // 1. Mostrar ventana objetivo en el DOM (PRIMERO Y SIEMPRE)
     document.querySelectorAll(".ventana").forEach(ventana => {
-        if (!(id === "ventanaTemporizador" && (ventana.id === "ventanaRetoResultado" || ventana.id === "ventanaRuletaDesastres") && document.getElementById("app")?.classList.contains("modo-paralelo"))) {
+        const esTemporizadorAcoplado = ventana.id === "ventanaTemporizador" && document.getElementById("app")?.classList.contains("modo-paralelo") && (id === "ventanaRetoResultado" || id === "ventanaRuletaDesastres" || id === "ventanaTemporizador");
+        const esVentanaAcopladaAlTemp = (ventana.id === "ventanaRetoResultado" || ventana.id === "ventanaRuletaDesastres") && document.getElementById("app")?.classList.contains("modo-paralelo") && id === "ventanaTemporizador";
+
+        if (!esTemporizadorAcoplado && !esVentanaAcopladaAlTemp) {
             ventana.style.display = "none";
         }
     });
@@ -180,6 +201,18 @@ function abrirVentana(id, esClickUsuario = false) {
 
     if (typeof window.emitirEventoOBS === "function") {
         window.emitirEventoOBS("SYNC_ABRIR_VENTANA", { idVentana: id });
+    }
+
+    if (id === "ventanaAcercaDe" && typeof window.inicializarCarruselAcercaDe === "function") {
+        window.inicializarCarruselAcercaDe();
+    }
+
+    if (id === "ventanaListado" && typeof window.mostrarListadoCompleto === "function") {
+        window.mostrarListadoCompleto();
+    }
+
+    if (id === "ventanaAleatorio" && typeof window.mostrarAleatorio === "function") {
+        window.mostrarAleatorio();
     }
 
     // 2. Sincronizar URL hash de forma segura
@@ -252,6 +285,13 @@ function toggleTemporizadorReto() {
         if (app) app.classList.add("modo-paralelo");
         if (btnToggleReto) btnToggleReto.innerHTML = "⏱️ Cerrar temporizador";
         if (btnToggleRuleta) btnToggleRuleta.innerHTML = "⏱️ Cerrar temporizador";
+
+        if (!window.esSincronizacionOBS && typeof window.emitirEventoOBS === "function") {
+            window.emitirEventoOBS("SYNC_ACCION", {
+                accion: "TEMPORIZADOR_ACOPLADO_STATE",
+                payload: { acopladoAbierto: true }
+            });
+        }
     } else {
         cerrarTemporizadorAcoplado();
     }
@@ -267,6 +307,13 @@ function cerrarTemporizadorAcoplado() {
     if (app) app.classList.remove("modo-paralelo");
     if (btnToggleReto) btnToggleReto.innerHTML = "⏱️ Abrir temporizador";
     if (btnToggleRuleta) btnToggleRuleta.innerHTML = "⏱️ Abrir temporizador";
+
+    if (!window.esSincronizacionOBS && typeof window.emitirEventoOBS === "function") {
+        window.emitirEventoOBS("SYNC_ACCION", {
+            accion: "TEMPORIZADOR_ACOPLADO_STATE",
+            payload: { acopladoAbierto: false }
+        });
+    }
 }
 
 function cerrarVentana(id) {
@@ -287,11 +334,10 @@ function cerrarVentana(id) {
 
 function comprobarVentanaVisible() {
     const hayAlgunaVisible = Array.from(document.querySelectorAll(".ventana"))
-        .some(v => v.style.display === "block");
+        .some(v => (v.style.display === "block" || v.style.display === "flex") && v.id !== "ventanaAcercaDe");
 
     if (!hayAlgunaVisible) {
-        const acerca = document.getElementById("ventanaAcercaDe");
-        if (acerca) acerca.style.display = "block";
+        abrirVentana("ventanaAcercaDe", true);
     }
 }
 
@@ -352,7 +398,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         return;
                     }
                     if (ventana.id === "ventanaHabilidadesGenerador") {
-                        abrirVentana("ventanaHabilidadesPacks", true);
+                        window.proximaVentanaTrasPacks = "ventanaHabilidadesGenerador";
+                        abrirVentana("ventanaRetos", true);
                         return;
                     }
                     if (ventana.id === "ventanaRetoResultado") {
@@ -365,9 +412,17 @@ document.addEventListener("DOMContentLoaded", function () {
                         abrirVentana("ventanaRetos", true);
                         return;
                     }
+                    if (ventana.id === "ventanaFichaSolar") {
+                        const destino = window.ventanaOrigenFicha || window.ventanaAnterior || "ventanaBuscador";
+                        cerrarVentana("ventanaFichaSolar");
+                        abrirVentana(destino, true);
+                        if (typeof window.emitirEventoOBS === "function" && !window.esSincronizacionOBS) {
+                            window.emitirEventoOBS("SYNC_CERRAR_FICHA_SOLAR", { ventanaDestino: destino });
+                        }
+                        return;
+                    }
 
-                    ventana.style.display = "none";
-                    comprobarVentanaVisible();
+                    cerrarVentana(ventana.id);
                 }
             });
         });
@@ -446,7 +501,25 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("btnIrBuscador404")?.addEventListener("click", function () {
         abrirVentana("ventanaBuscador", true);
     });
-
-    // Procesar la ruta inicial al cargar la web
-    procesarRutaURL();
 });
+
+// Procesar la ruta inicial al cargar la web - fuera del DOMContentLoaded para
+// garantizar que todos los scripts IIFE (como acercade.js) ya han definido sus
+// funciones globales antes de que intentemos abrir la primera ventana.
+function initNavigation() {
+    if (window._navigationInitialized) return;
+    window._navigationInitialized = true;
+    // Dar un pequeño respiro extra (10ms) para asegurar que acercade.js
+    // asignó la función window.inicializarCarruselAcercaDe
+    setTimeout(() => {
+        procesarRutaURL();
+    }, 10);
+}
+
+if (document.readyState === "complete") {
+    initNavigation();
+} else {
+    window.addEventListener("load", initNavigation);
+    // Fallback por si acaso
+    setTimeout(initNavigation, 1000);
+}

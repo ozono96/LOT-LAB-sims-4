@@ -1,10 +1,12 @@
 function abrirFichaSolar(idSolar){
-
+    if (!database || !database.solares || database.solares.length === 0) {
+        document.addEventListener("datosCargados", () => abrirFichaSolar(idSolar), { once: true });
+        return;
+    }
 
     const solar = database.solares.find(
         solar => solar.id == idSolar
     );
-
 
     if(!solar){
         return;
@@ -91,9 +93,21 @@ function abrirFichaSolar(idSolar){
     `;
 
 
+    // Guardar la ventana de origen ANTES de que abrirVentana la sobreescriba en ventanaAnterior
+    const ventanaOrigen = window.ventanaActual || null;
+    window.ventanaOrigenFicha = ventanaOrigen;
+
     abrirVentana(
         "ventanaFichaSolar"
     );
+
+    if (typeof window.emitirEventoOBS === 'function' && !window.esSincronizacionOBS) {
+        window.emitirEventoOBS("SYNC_FICHA_SOLAR", {
+            abierta: true,
+            idSolar: idSolar,
+            ventanaOrigen: ventanaOrigen
+        });
+    }
 
     if (typeof cargarGaleriaSolar === "function") {
         cargarGaleriaSolar(solar.id);

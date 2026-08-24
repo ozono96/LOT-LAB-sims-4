@@ -198,8 +198,26 @@ function contarValoresFiltro(nombre){
 
 }
 
-
-
-
+// Exponer funciones y getters/setters en window para sincronización OBS
+window.obtenerEstadoFiltros = obtenerEstadoFiltros;
+window.establecerEstadoFiltros = function(nuevoEstado) {
+    estadoFiltros = structuredClone(nuevoEstado || {});
+};
+window.obtenerFiltroAbierto = obtenerFiltroAbierto;
+window.establecerFiltroAbierto = function(nombre) {
+    filtroAbierto = nombre;
+};
+window.abrirFiltro = abrirFiltro;
+window.cerrarFiltro = cerrarFiltro;
+window.aplicarFiltro = aplicarFiltro;
+window.eliminarFiltro = eliminarFiltro;
+window.eliminarTodosLosFiltros = eliminarTodosLosFiltros;
+window.existeFiltro = existeFiltro;
+window.obtenerFiltro = obtenerFiltro;
+window.numeroFiltrosAplicados = numeroFiltrosAplicados;
+window.hayFiltros = hayFiltros;
+window.filtroTieneValor = filtroTieneValor;
+window.alternarValorFiltro = alternarValorFiltro;
+window.contarValoresFiltro = contarValoresFiltro;
 
 console.log("✔ filterCore cargado");

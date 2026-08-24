@@ -12,6 +12,7 @@ function mostrarPanelFiltro() {
     if (!nombre) return;
 
     const panel = document.getElementById("panelFiltro");
+    if (panel) panel.setAttribute("data-sync-id", "panelFiltro");
 
     const opciones = obtenerOpcionesDisponibles(nombre);
 
@@ -197,6 +198,16 @@ function mostrarPanelFiltro() {
                 // Ignorar los botones que tienen una lógica de evento especial
                 if (boton.id !== "hiddenTamanoBoton" && boton.id !== "btnModoUnico" && boton.id !== "btnModoMultiple") {
                     boton.classList.toggle("seleccionada");
+
+                    if (!window.esSincronizacionOBS && typeof window.emitirEventoOBS === "function") {
+                        const seleccionadas = Array.from(document.querySelectorAll("#listaOpcionesFiltro .opcionFiltro.seleccionada"))
+                            .map(b => b.dataset.valor)
+                            .filter(Boolean);
+                        window.emitirEventoOBS("SYNC_ACCION", {
+                            accion: "FILTRO_OPCIONES_SELECCIONADAS",
+                            payload: { filtro: obtenerFiltroAbierto(), seleccionadas }
+                        });
+                    }
                 }
             });
         });
@@ -216,6 +227,13 @@ function mostrarPanelFiltro() {
     document
         .getElementById("eliminarFiltro")
         .addEventListener("click", eliminarFiltroUI);
+
+    if (!window.esSincronizacionOBS && typeof window.emitirEventoOBS === "function") {
+        window.emitirEventoOBS("SYNC_ACCION", {
+            accion: "FILTRO_SOLARES_PANEL",
+            payload: { filtroAbierto: nombre, panelAbierto: true }
+        });
+    }
 
 }
 
@@ -251,6 +269,13 @@ function confirmarFiltroUI() {
 
     actualizarZonaBorrar();
 
+    if (!window.esSincronizacionOBS && typeof window.emitirEventoOBS === "function") {
+        window.emitirEventoOBS("SYNC_ACCION", {
+            accion: "FILTROS_SOLARES_STATE",
+            payload: { estadoFiltros: obtenerEstadoFiltros(), filtroAbierto: null }
+        });
+    }
+
 }
 
 
@@ -271,6 +296,13 @@ function eliminarFiltroUI() {
 
     actualizarZonaBorrar();
 
+    if (!window.esSincronizacionOBS && typeof window.emitirEventoOBS === "function") {
+        window.emitirEventoOBS("SYNC_ACCION", {
+            accion: "FILTROS_SOLARES_STATE",
+            payload: { estadoFiltros: obtenerEstadoFiltros(), filtroAbierto: null }
+        });
+    }
+
 }
 
 
@@ -284,6 +316,13 @@ function cerrarPanelFiltro() {
         .innerHTML = "";
 
     cerrarFiltro();
+
+    if (!window.esSincronizacionOBS && typeof window.emitirEventoOBS === "function") {
+        window.emitirEventoOBS("SYNC_ACCION", {
+            accion: "FILTRO_SOLARES_PANEL",
+            payload: { filtroAbierto: null, panelAbierto: false }
+        });
+    }
 
 }
 
@@ -479,5 +518,13 @@ function actualizarContadorSolares() {
 }
 
 document.addEventListener("datosCargados", actualizarContadorSolares);
+
+window.mostrarPanelFiltro = mostrarPanelFiltro;
+window.cerrarPanelFiltro = cerrarPanelFiltro;
+window.confirmarFiltroUI = confirmarFiltroUI;
+window.eliminarFiltroUI = eliminarFiltroUI;
+window.actualizarBotonesFiltros = actualizarBotonesFiltros;
+window.actualizarZonaBorrar = actualizarZonaBorrar;
+window.actualizarContadorSolares = actualizarContadorSolares;
 
 console.log("✔ filterUI cargado");

@@ -81,22 +81,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     document
-        .getElementById("ventanaFichaSolar")
-        ?.querySelector(".cerrar")
-        ?.addEventListener("click", () => {
-
-            cerrarVentana("ventanaFichaSolar");
-
-            if (window.ventanaAnterior) {
-                abrirVentana(window.ventanaAnterior);
-            } else {
-                abrirVentana("ventanaBuscador");
-            }
-
-        });
-
-
-    document
         .getElementById("ventanaResultados")
         ?.querySelector(".cerrar")
         ?.addEventListener("click", () => {
@@ -106,6 +90,16 @@ document.addEventListener("DOMContentLoaded", () => {
             abrirVentana("ventanaBuscador");
 
         });
+
+    // Refresh view if data loads after navigating via direct URL
+    document.addEventListener("datosCargados", () => {
+        if (window.ventanaActual === "ventanaListado" && typeof window.mostrarListadoCompleto === "function") {
+            window.mostrarListadoCompleto();
+        }
+        if (window.ventanaActual === "ventanaAleatorio" && typeof window.mostrarAleatorio === "function") {
+            window.mostrarAleatorio();
+        }
+    });
 
 });
 
@@ -126,6 +120,14 @@ function buscarSolares() {
 
     abrirVentana("ventanaResultados");
     mostrarResultados();
+
+    // Sincronizar filtros y resultados con OBS
+    if (!window.esSincronizacionOBS && typeof window.emitirEventoOBS === "function" && typeof window.obtenerEstadoFiltros === "function") {
+        window.emitirEventoOBS("SYNC_ACCION", {
+            accion: "BUSCAR_SOLARES_RESULTADO",
+            payload: { estadoFiltros: window.obtenerEstadoFiltros() }
+        });
+    }
 
 }
 
@@ -259,10 +261,23 @@ function mostrarAleatorio() {
 function mostrarListadoCompleto() {
 
     const zona = document.getElementById("listaCompletaSolares");
+    if (!zona) return;
+
+    const db = (typeof database !== "undefined" && database) ? database : window.database;
+
+    if (!db || !Array.isArray(db.solares) || !db.solares.length || !Array.isArray(db.mundos) || !db.mundos.length) {
+        document.addEventListener("datosCargados", () => {
+            if (window.ventanaActual === "ventanaListado") {
+                mostrarListadoCompleto();
+            }
+        }, { once: true });
+        return;
+    }
+
     zona.innerHTML = "";
 
     const mundosSolares = {};
-    database.solares.forEach(solar => {
+    db.solares.forEach(solar => {
         const mundo = solar.mundo || "Sin mundo";
         if (!mundosSolares[mundo]) {
             mundosSolares[mundo] = [];
@@ -275,7 +290,7 @@ function mostrarListadoCompleto() {
     const mundosContenido = [];
     const procesados = new Set();
 
-    database.mundos.forEach(fila => {
+    db.mundos.forEach(fila => {
         const nombreMundo = fila[0];
         if (mundosSolares[nombreMundo]) {
             procesados.add(nombreMundo);
@@ -394,21 +409,66 @@ function mostrarListadoCompleto() {
     // Listeners acordeón de mundos
     document
         .querySelectorAll("#listaCompletaSolares .tituloMundo")
-        .forEach(boton => {
+        .forEach((boton, idx) => {
             boton.addEventListener("click", () => {
                 boton.classList.toggle("abierto");
                 boton.nextElementSibling.classList.toggle("abierto");
+
+                if (!window.esSincronizacionOBS && typeof window.emitirEventoOBS === "function") {
+                    window.emitirEventoOBS("SYNC_ACCION", {
+                        accion: "LISTADO_ACORDEON_TOGGLE",
+                        payload: { tipo: "mundo", idx, abierto: boton.classList.contains("abierto") }
+                    });
+                }
             });
         });
 
     // Listeners acordeón de barrios
     document
         .querySelectorAll("#listaCompletaSolares .tituloBarrio")
-        .forEach(boton => {
+        .forEach((boton, idx) => {
             boton.addEventListener("click", () => {
                 boton.classList.toggle("abierto");
                 boton.nextElementSibling.classList.toggle("abierto");
+
+                if (!window.esSincronizacionOBS && typeof window.emitirEventoOBS === "function") {
+                    window.emitirEventoOBS("SYNC_ACCION", {
+                        accion: "LISTADO_ACORDEON_TOGGLE",
+                        payload: { tipo: "barrio", idx, abierto: boton.classList.contains("abierto") }
+                    });
+                }
             });
         });
 
 }
+
+// Re-vincular solo los listeners de acordeón en OBS tras recibir el HTML del listado
+// (el HTML llega correcto, los addEventListener deben recrearse porque no se serializan)
+function vincularListenersListado() {
+    document
+        .querySelectorAll("#listaCompletaSolares .tituloMundo")
+        .forEach((boton, idx) => {
+            const nuevoBoton = boton.cloneNode(true);
+            boton.parentNode.replaceChild(nuevoBoton, boton);
+            nuevoBoton.addEventListener("click", () => {
+                nuevoBoton.classList.toggle("abierto");
+                nuevoBoton.nextElementSibling.classList.toggle("abierto");
+            });
+        });
+
+    document
+        .querySelectorAll("#listaCompletaSolares .tituloBarrio")
+        .forEach((boton, idx) => {
+            const nuevoBoton = boton.cloneNode(true);
+            boton.parentNode.replaceChild(nuevoBoton, boton);
+            nuevoBoton.addEventListener("click", () => {
+                nuevoBoton.classList.toggle("abierto");
+                nuevoBoton.nextElementSibling.classList.toggle("abierto");
+            });
+        });
+}
+
+window.mostrarResultados = mostrarResultados;
+window.mostrarListadoCompleto = mostrarListadoCompleto;
+window.vincularListenersListado = vincularListenersListado;
+

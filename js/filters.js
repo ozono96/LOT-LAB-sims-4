@@ -52,6 +52,13 @@ function iniciarFiltros() {
 
         abrirVentana("ventanaBuscador");
 
+        if (!window.esSincronizacionOBS && typeof window.emitirEventoOBS === "function") {
+            window.emitirEventoOBS("SYNC_ACCION", {
+                accion: "FILTROS_SOLARES_STATE",
+                payload: { estadoFiltros: {} }
+            });
+        }
+
     });
 
 

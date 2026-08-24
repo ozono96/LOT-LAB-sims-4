@@ -123,7 +123,7 @@
                 </button>
 
                 <button id="botonModsSimfile" class="deshabilitado" data-tooltip="🏗️Próximamente">
-                    📦 Mods & Simfile
+                    📦 CC y Save Files
                 </button>
 
                 <button id="botonAcercaDe">
@@ -640,34 +640,242 @@
 
             </div>
 
-            <div id="ventanaRetoResultado" class="ventana">
+            <div id="wrapperPosicionOBS">
+                <div id="composicionRetoTemporizador">
+                    <div id="ventanaRetoResultado" class="ventana">
 
-                <div class="cabeceraVentana">
-                    <button class="compartir" title="Compartir">
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <path
-                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
-                        </svg>
-                    </button>
-                    <button class="cerrar">✕</button>
+                        <div class="cabeceraVentana">
+                            <button class="compartir" title="Compartir">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path
+                                        d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                                </svg>
+                            </button>
+                            <button class="cerrar">✕</button>
+                        </div>
+
+                        <h2>
+                            🏆 Reto Generado
+                        </h2>
+
+                        <div id="contenidoRetoResultado"></div>
+
+                    <div class="accionesBuscador"
+                        style="margin-top: 30px; display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap;">
+                        <button id="volverOpcionesBtn" onclick="abrirVentana('ventanaRetosOpciones')">
+                            ⬅️ Volver a opciones
+                        </button>
+                        <button id="toggleTemporizadorRetoBtn" onclick="toggleTemporizadorReto()">
+                            ⏱️ Abrir temporizador
+                        </button>
+                    </div>
+
                 </div>
 
-                <h2>
-                    🏆 Reto Generado
-                </h2>
+                <!-- ==================== VENTANA RULETA DE DESASTRES ==================== -->
+                <div id="ventanaRuletaDesastres" class="ventana" style="display: none;">
+                    <div class="cabeceraVentana">
+                        <button class="compartir" title="Compartir" data-tooltip="Compartir">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path
+                                    d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                            </svg>
+                        </button>
+                        <button class="cerrar">✕</button>
+                    </div>
+                    <h2>🎡 Ruleta de Desastres</h2>
+                    <p class="subtituloVentana">¡Añade eventos imprevistos a tu partida para hacer tus construcciones más
+                        divertidas y desafiantes!</p>
 
-                <div id="contenidoRetoResultado"></div>
+                    <!-- PANTALLA 1: CONFIGURACIÓN -->
+                    <div id="pantallaConfigRuletaDesastres">
+                        <div class="seccionConfigDesastres">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+                                <h3 style="margin: 0;">⚙️ Configuración de Desastres</h3>
+                                <button type="button" id="btnToggleTodosDesastres" class="botonSecundario">
+                                    ☑️ Marcar / desmarcar todos
+                                </button>
+                            </div>
+                            <p class="descripcionConfig">Selecciona los tipos de eventos que deseas incluir en la ruleta:
+                            </p>
 
-                <div class="accionesBuscador"
-                    style="margin-top: 30px; display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap;">
-                    <button id="volverOpcionesBtn" onclick="abrirVentana('ventanaRetosOpciones')">
-                        ⬅️ Volver a opciones
-                    </button>
-                    <button id="toggleTemporizadorRetoBtn" onclick="toggleTemporizadorReto()">
-                        ⏱️ Abrir temporizador
-                    </button>
+                            <div id="contenedorCheckboxesDesastres" class="gridCheckboxesDesastres">
+                                <!-- Se rellena dinámicamente -->
+                            </div>
+                        </div>
+
+                        <!-- Configuración de Dinero -->
+                        <div id="seccionDineroDesastres" class="seccionConfigDesastres">
+                            <h3>💰 Rango para Desastres Financieros</h3>
+                            <div class="formRowDinero">
+                                <div class="formCampo">
+                                    <label for="inputDesastreDineroMin">Mínimo (§):</label>
+                                    <input type="number" id="inputDesastreDineroMin" value="5000" min="100" max="1000000"
+                                        step="1000">
+                                </div>
+                                <div class="formCampo">
+                                    <label for="inputDesastreDineroMax">Máximo (§):</label>
+                                    <input type="number" id="inputDesastreDineroMax" value="25000" min="100" max="1000000"
+                                        step="1000">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Configuración de Modo -->
+                        <div class="seccionConfigDesastres">
+                            <h3>🔄 Modo de Funcionamiento</h3>
+                            <div class="selectorModoRuleta">
+                                <label class="radioModoItem">
+                                    <input type="radio" name="modoRuletaDesastres" id="modoManualRuletaDesastres"
+                                        value="manual" checked>
+                                    <span><strong>🖐️ Modo Manual:</strong> Gira la ruleta cuando quieras pulsando un
+                                        botón.</span>
+                                </label>
+                                <label class="radioModoItem">
+                                    <input type="radio" name="modoRuletaDesastres" id="modoAutoRuletaDesastres"
+                                        value="auto">
+                                    <span><strong>⏱️ Modo Automático:</strong> Gira automáticamente cada N minutos.</span>
+                                </label>
+                            </div>
+
+                            <div id="opcionesModoAutoDesastres" class="formRowIntervalo"
+                                style="margin-top: 15px; display: none;">
+                                <div class="formCampo">
+                                    <label for="inputDesastreIntervalo">Intervalo (minutos):</label>
+                                    <input type="number" id="inputDesastreIntervalo" value="5" min="1" max="120">
+                                </div>
+                                <div class="formCampo">
+                                    <label for="inputDesastrePausa">Tiempo de pausa (minutos):</label>
+                                    <input type="number" id="inputDesastrePausa" value="1" min="1" max="5">
+                                </div>
+                                <div class="formCampo">
+                                    <label for="inputDesastreTiradasAuto">Número de tiradas (0 = Ilimitadas):</label>
+                                    <input type="number" id="inputDesastreTiradasAuto" value="0" min="0" max="100">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accionesRuletaDesastres">
+                            <button type="button" id="btnVolverPacksDesdeRuletaConfig" class="botonReto"
+                                style="margin-right: 10px;">
+                                📦 Selector de Packs
+                            </button>
+                            <button type="button" id="btnComenzarRuletaDesastres" class="botonReto btnGirarDestacado">
+                                🚀 Comenzar Ruleta
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- PANTALLA 2: JUEGO / RESULTADOS -->
+                    <div id="pantallaJuegoRuletaDesastres" style="display: none;">
+                        <div class="cabeceraJuegoDesastres">
+                            <button type="button" id="btnVolverPacksDesdeRuletaJuego" class="botonReto">
+                                📦 Selector de Packs
+                            </button>
+                            <button type="button" id="btnConfigRuletaDesastres" class="botonReto">
+                                ⚙️ Cambiar Configuración
+                            </button>
+                            <button type="button" id="toggleTemporizadorRuletaBtn" class="botonReto">
+                                ⏱️ Abrir temporizador
+                            </button>
+                            <button type="button" id="btnPausarReanudarRuleta" class="botonReto" style="display: none;">
+                                ⏸️ Pausar
+                            </button>
+                            <div id="divCuentaAtrasRuletaDesastres" class="cuentaAtrasContenedor" style="display: none;">
+                                <span class="iconoReloj">⏱️</span>
+                                <span id="labelEstadoCuentaAtrasDesastres">Siguiente desastre en:</span>
+                                <span id="displayCuentaAtrasDesastres" class="timerDigits">05:00</span>
+                            </div>
+                        </div>
+
+                        <div class="tarjetaDesastreContenedor">
+                            <div id="tarjetaResultadoDesastre" class="tarjetaResultadoDesastre">
+                                <div id="iconoResultadoDesastre" class="iconoTarjeta">🎡</div>
+                                <h3 id="tituloResultadoDesastre">¡Listos para girar!</h3>
+                                <p id="descResultadoDesastre">Pulsa el botón de abajo para generar tu primer desastre.</p>
+                                <div id="detalleResultadoDesastre" class="detalleTarjeta"></div>
+                            </div>
+                        </div>
+
+                        <div class="accionesJuegoDesastres">
+                            <button type="button" id="btnGirarRuletaDesastres" class="botonReto btnGirarDestacado">
+                                🎡 Girar Ruleta
+                            </button>
+                        </div>
+
+                        <!-- HISTORIAL DE DESASTRES -->
+                        <div class="seccionHistorialDesastres">
+                            <div class="cabeceraHistorial">
+                                <h3>📜 Historial de Desastres de la Sesión</h3>
+                                <button type="button" id="btnLimpiarHistorialDesastres" class="botonSecundario">
+                                    🗑️ Limpiar
+                                </button>
+                            </div>
+                            <div id="listaHistorialDesastres" class="listaHistorialDesastres">
+                                <div class="historialVacio">Aún no ha ocurrido ningún desastre. ¡Gira la ruleta!</div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
+                <!-- ==================== FIN VENTANA RULETA DE DESASTRES ==================== -->
 
+                <div id="ventanaTemporizador" class="ventana ventanaPequena">
+
+                    <div class="cabeceraVentana">
+                        <button class="cerrar" data-tooltip="Cerrar temporizador">✕</button>
+                    </div>
+
+                    <h2>⏱️ Temporizador de Retos</h2>
+
+                    <div id="configuracionTiempoContenedor" style="text-align: center; margin: 20px 0;">
+                        <label for="inputMinutosTemporizador"
+                            style="font-weight: bold; display: block; margin-bottom: 12px; font-size: 1.05rem;">Configura el
+                            tiempo (minutos):</label>
+                        <div class="habNumeroWrap">
+                            <div class="habNumeroDisplay">
+                                <input type="number" id="inputMinutosTemporizador" min="1" max="60" value="15" readonly
+                                    class="habCantidadInput"
+                                    data-tooltip="Rueda del ratón para cambiar el tiempo">
+                            </div>
+                        </div>
+                        <p style="font-size: 0.85rem; opacity: 0.75; margin-top: 10px;">(Usa la rueda del ratón para cambiar el tiempo)</p>
+                    </div>
+
+                    <div class="accionesBuscador" style="margin-top: 10px; justify-content: center;">
+                        <button id="iniciarTemporizador" class="botonReto btnGirarDestacado"
+                            data-tooltip="Iniciar la cuenta atrás">
+                            ▶️ Iniciar Temporizador
+                        </button>
+                    </div>
+
+                    <div id="displayTemporizador" class="displayTemporizadorDigital" style="display: none;">
+                        <span id="textoTiempoDigital" class="digitosTiempo">00:00</span>
+                    </div>
+
+                    <div id="accionesTemporizadorEnCurso" class="accionesTemporizadorGrid" style="display: none;">
+                        <button type="button" id="pausarTemporizador" class="btnTimerAction btnTimerPause"
+                            data-tooltip="Pausar temporizador">
+                            <span class="iconoTimerAction">⏸️</span>
+                            <span class="textoTimerAction">Pausar</span>
+                        </button>
+                        <button type="button" id="detenerTemporizador" class="btnTimerAction btnTimerStop"
+                            data-tooltip="Detener temporizador">
+                            <span class="iconoTimerAction">⏹️</span>
+                            <span class="textoTimerAction">Detener</span>
+                        </button>
+                    </div>
+
+                    <div id="contenedorNuevoTemporizador" style="display: none; justify-content: center; margin-top: 18px;">
+                        <button type="button" id="btnNuevoTemporizador" class="botonReto btnGirarDestacado"
+                            data-tooltip="Configurar un nuevo temporizador">
+                            🔄 Configurar otro temporizador
+                        </button>
+                    </div>
+
+                </div>
+            </div>
             </div>
 
             <div id="ventanaConfirmarBorrar" class="ventana ventanaPequena">
@@ -691,66 +899,6 @@
                 <button id="cancelarBorrar">
                     Cancelar
                 </button>
-
-            </div>
-
-            <div id="ventanaTemporizador" class="ventana ventanaPequena">
-
-                <div class="cabeceraVentana">
-                    <button class="cerrar" data-tooltip="Cerrar temporizador">✕</button>
-                </div>
-
-                <h2>⏱️ Temporizador de Retos</h2>
-
-                <div id="configuracionTiempoContenedor" style="text-align: center; margin: 20px 0;">
-                    <label for="inputMinutosTemporizador"
-                        style="font-weight: bold; display: block; margin-bottom: 12px; font-size: 1.05rem;">Configura el
-                        tiempo (minutos):</label>
-                    <div class="habNumeroWrap">
-                        <button type="button" class="habNumeroBtn" id="btnRestarMinuto" aria-label="Menos"
-                            data-tooltip="Restar 1 minuto">−</button>
-                        <div class="habNumeroDisplay">
-                            <input type="number" id="inputMinutosTemporizador" min="1" max="60" value="15" readonly
-                                class="habCantidadInput"
-                                data-tooltip="Rueda del ratón o botones para cambiar el tiempo">
-                        </div>
-                        <button type="button" class="habNumeroBtn" id="btnSumarMinuto" aria-label="Más"
-                            data-tooltip="Sumar 1 minuto">+</button>
-                    </div>
-                    <p style="font-size: 0.85rem; opacity: 0.75; margin-top: 10px;">(Usa la rueda del ratón o los
-                        botones para cambiar el tiempo)</p>
-                </div>
-
-                <div class="accionesBuscador" style="margin-top: 10px; justify-content: center;">
-                    <button id="iniciarTemporizador" class="botonReto btnGirarDestacado"
-                        data-tooltip="Iniciar la cuenta atrás">
-                        ▶️ Iniciar Temporizador
-                    </button>
-                </div>
-
-                <div id="displayTemporizador" class="displayTemporizadorDigital" style="display: none;">
-                    <span id="textoTiempoDigital" class="digitosTiempo">00:00</span>
-                </div>
-
-                <div id="accionesTemporizadorEnCurso" class="accionesTemporizadorGrid" style="display: none;">
-                    <button type="button" id="pausarTemporizador" class="btnTimerAction btnTimerPause"
-                        data-tooltip="Pausar temporizador">
-                        <span class="iconoTimerAction">⏸️</span>
-                        <span class="textoTimerAction">Pausar</span>
-                    </button>
-                    <button type="button" id="detenerTemporizador" class="btnTimerAction btnTimerStop"
-                        data-tooltip="Detener temporizador">
-                        <span class="iconoTimerAction">⏹️</span>
-                        <span class="textoTimerAction">Detener</span>
-                    </button>
-                </div>
-
-                <div id="contenedorNuevoTemporizador" style="display: none; justify-content: center; margin-top: 18px;">
-                    <button type="button" id="btnNuevoTemporizador" class="botonReto btnGirarDestacado"
-                        data-tooltip="Configurar un nuevo temporizador">
-                        🔄 Configurar otro temporizador
-                    </button>
-                </div>
 
             </div>
 
@@ -2449,7 +2597,7 @@
                                         </svg>
                                     </button>
                                 </div>
-                                <div class="graficoScrollHoriz" data-chart="porTipo">
+                                <div id="scrollGraficoPorTipo" class="graficoScrollHoriz" data-chart="porTipo">
                                     <canvas id="graficoPorTipo" class="graficoCanvas"></canvas>
                                 </div>
                                 <div id="estatPrecioTotalBanner" class="estatPrecioTotalBanner">
@@ -2472,7 +2620,7 @@
                                         </svg>
                                     </button>
                                 </div>
-                                <div class="graficoScrollHoriz" data-chart="porMeses">
+                                <div id="scrollGraficoPorMeses" class="graficoScrollHoriz" data-chart="porMeses">
                                     <canvas id="graficoPorMeses" class="graficoCanvas"></canvas>
                                 </div>
                             </div>
@@ -2492,7 +2640,7 @@
                                     </div>
                                     <div id="estatControlesLineasTemporal" class="estatControlesLineas"></div>
                                 </div>
-                                <div class="graficoScrollHoriz" data-chart="temporal">
+                                <div id="scrollGraficoTemporal" class="graficoScrollHoriz" data-chart="temporal">
                                     <canvas id="graficoTemporal" class="graficoCanvas"></canvas>
                                 </div>
                             </div>
@@ -2526,7 +2674,7 @@
                                         </svg>
                                     </button>
                                 </div>
-                                <div class="graficoScrollHoriz" data-chart="solares">
+                                <div id="scrollGraficoSolares" class="graficoScrollHoriz" data-chart="solares">
                                     <canvas id="graficoSolaresMundos" class="graficoCanvas"></canvas>
                                 </div>
                             </div>
@@ -2543,7 +2691,7 @@
                                         </svg>
                                     </button>
                                 </div>
-                                <div class="graficoScrollHoriz" data-chart="objetos">
+                                <div id="scrollGraficoObjetos" class="graficoScrollHoriz" data-chart="objetos">
                                     <canvas id="graficoObjetos" class="graficoCanvas"></canvas>
                                 </div>
                             </div>
@@ -2556,180 +2704,6 @@
             <!-- ==================== FIN VENTANA ESTADÍSTICAS ==================== -->
 
 
-            <!-- ==================== VENTANA RULETA DE DESASTRES ==================== -->
-            <div id="ventanaRuletaDesastres" class="ventana">
-                <div class="cabeceraVentana">
-                    <button class="compartir" title="Compartir" data-tooltip="Compartir">
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <path
-                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
-                        </svg>
-                    </button>
-                    <button class="cerrar">✕</button>
-                </div>
-                <h2>🎡 Ruleta de Desastres</h2>
-                <p class="subtituloVentana">¡Añade eventos imprevistos a tu partida para hacer tus construcciones más
-                    divertidas y desafiantes!</p>
-
-                <!-- PANTALLA 1: CONFIGURACIÓN -->
-                <div id="pantallaConfigRuletaDesastres">
-                    <div class="seccionConfigDesastres">
-                        <div
-                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
-                            <h3 style="margin: 0;">⚙️ Configuración de Desastres</h3>
-                            <button type="button" id="btnToggleTodosDesastres" class="botonSecundario">
-                                ☑️ Marcar / desmarcar todos
-                            </button>
-                        </div>
-                        <p class="descripcionConfig">Selecciona los tipos de eventos que deseas incluir en la ruleta:
-                        </p>
-
-                        <div id="contenedorCheckboxesDesastres" class="gridCheckboxesDesastres">
-                            <!-- Se rellena dinámicamente -->
-                        </div>
-                    </div>
-
-                    <!-- Configuración de Dinero -->
-                    <div id="seccionDineroDesastres" class="seccionConfigDesastres">
-                        <h3>💰 Rango para Desastres Financieros</h3>
-                        <div class="formRowDinero">
-                            <div class="formCampo">
-                                <label for="inputDesastreDineroMin">Mínimo (§):</label>
-                                <input type="number" id="inputDesastreDineroMin" value="5000" min="100" max="1000000"
-                                    step="1000">
-                            </div>
-                            <div class="formCampo">
-                                <label for="inputDesastreDineroMax">Máximo (§):</label>
-                                <input type="number" id="inputDesastreDineroMax" value="25000" min="100" max="1000000"
-                                    step="1000">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Configuración de Modo -->
-                    <div class="seccionConfigDesastres">
-                        <h3>🔄 Modo de Funcionamiento</h3>
-                        <div class="selectorModoRuleta">
-                            <label class="radioModoItem">
-                                <input type="radio" name="modoRuletaDesastres" id="modoManualRuletaDesastres"
-                                    value="manual" checked>
-                                <span><strong>🖐️ Modo Manual:</strong> Gira la ruleta cuando quieras pulsando un
-                                    botón.</span>
-                            </label>
-                            <label class="radioModoItem">
-                                <input type="radio" name="modoRuletaDesastres" id="modoAutoRuletaDesastres"
-                                    value="auto">
-                                <span><strong>⏱️ Modo Automático:</strong> Gira automáticamente cada N minutos.</span>
-                            </label>
-                        </div>
-
-                        <div id="opcionesModoAutoDesastres" class="formRowIntervalo"
-                            style="margin-top: 15px; display: none;">
-                            <div class="formCampo">
-                                <label for="inputDesastreIntervalo">Intervalo (minutos):</label>
-                                <input type="number" id="inputDesastreIntervalo" value="5" min="1" max="120">
-                            </div>
-                            <div class="formCampo">
-                                <label for="inputDesastrePausa">Tiempo de pausa (minutos):</label>
-                                <input type="number" id="inputDesastrePausa" value="1" min="1" max="5">
-                            </div>
-                            <div class="formCampo">
-                                <label for="inputDesastreTiradasAuto">Número de tiradas (0 = Ilimitadas):</label>
-                                <input type="number" id="inputDesastreTiradasAuto" value="0" min="0" max="100">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="accionesRuletaDesastres">
-                        <button type="button" id="btnVolverPacksDesdeRuletaConfig" class="botonReto"
-                            style="margin-right: 10px;">
-                            📦 Selector de Packs
-                        </button>
-                        <button type="button" id="btnComenzarRuletaDesastres" class="botonReto btnGirarDestacado">
-                            🚀 Comenzar Ruleta
-                        </button>
-                    </div>
-                </div>
-
-                <!-- PANTALLA 2: JUEGO / RESULTADOS -->
-                <div id="pantallaJuegoRuletaDesastres" style="display: none;">
-                    <div class="cabeceraJuegoDesastres">
-                        <button type="button" id="btnVolverPacksDesdeRuletaJuego" class="botonReto">
-                            📦 Selector de Packs
-                        </button>
-                        <button type="button" id="btnConfigRuletaDesastres" class="botonReto">
-                            ⚙️ Cambiar Configuración
-                        </button>
-                        <button type="button" id="toggleTemporizadorRuletaBtn" class="botonReto">
-                            ⏱️ Abrir temporizador
-                        </button>
-                        <button type="button" id="btnPausarReanudarRuleta" class="botonReto" style="display: none;">
-                            ⏸️ Pausar
-                        </button>
-                        <div id="divCuentaAtrasRuletaDesastres" class="cuentaAtrasContenedor" style="display: none;">
-                            <span class="iconoReloj">⏱️</span>
-                            <span id="labelEstadoCuentaAtrasDesastres">Siguiente desastre en:</span>
-                            <span id="displayCuentaAtrasDesastres" class="timerDigits">05:00</span>
-                        </div>
-                    </div>
-
-                    <div class="tarjetaDesastreContenedor">
-                        <div id="tarjetaResultadoDesastre" class="tarjetaResultadoDesastre">
-                            <div id="iconoResultadoDesastre" class="iconoTarjeta">🎡</div>
-                            <h3 id="tituloResultadoDesastre">¡Listos para girar!</h3>
-                            <p id="descResultadoDesastre">Pulsa el botón de abajo para generar tu primer desastre.</p>
-                            <div id="detalleResultadoDesastre" class="detalleTarjeta"></div>
-                        </div>
-                    </div>
-
-                    <div class="accionesJuegoDesastres">
-                        <button type="button" id="btnGirarRuletaDesastres" class="botonReto btnGirarDestacado">
-                            🎡 Girar Ruleta
-                        </button>
-                    </div>
-
-                    <!-- HISTORIAL DE DESASTRES -->
-                    <div class="seccionHistorialDesastres">
-                        <div class="cabeceraHistorial">
-                            <h3>📜 Historial de Desastres de la Sesión</h3>
-                            <button type="button" id="btnLimpiarHistorialDesastres" class="botonSecundario">
-                                🗑️ Limpiar
-                            </button>
-                        </div>
-                        <div id="listaHistorialDesastres" class="listaHistorialDesastres">
-                            <div class="historialVacio">Aún no ha ocurrido ningún desastre. ¡Gira la ruleta!</div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-            <!-- ==================== FIN VENTANA RULETA DE DESASTRES ==================== -->
-
-            <!-- ==================== VENTANA HABILIDADES: SELECTOR DE PACKS ==================== -->
-            <div id="ventanaHabilidadesPacks" class="ventana">
-                <div class="cabeceraVentana">
-                    <button class="compartir" title="Compartir">
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <path
-                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
-                        </svg>
-                    </button>
-                    <button class="cerrar">✕</button>
-                </div>
-
-                <h2>🧠 Habilidades al azar</h2>
-                <p class="subtituloVentana">Selecciona los packs que tienes instalados para filtrar las habilidades
-                    disponibles:</p>
-
-                <div id="listaPacksHabilidades"></div>
-
-                <div class="accionesBuscador" style="margin-top: 30px;">
-                    <button id="aceptarPacksHabilidades">
-                        Continuar ➡️
-                    </button>
-                </div>
-            </div>
-            <!-- ==================== FIN VENTANA HABILIDADES PACKS ==================== -->
 
             <!-- ==================== VENTANA HABILIDADES: GENERADOR ==================== -->
             <div id="ventanaHabilidadesGenerador" class="ventana">
@@ -2749,15 +2723,13 @@
 
                 <!-- SELECTOR NUMÉRICO CON SCROLL -->
                 <div class="habNumeroWrap">
-                    <button type="button" class="habNumeroBtn" id="habNumeroMenos" aria-label="Menos">−</button>
                     <div class="habNumeroDisplay">
                         <input type="number" id="habCantidad" min="1" max="10" value="1" readonly
                             class="habCantidadInput">
                     </div>
-                    <button type="button" class="habNumeroBtn" id="habNumeroMas" aria-label="Más">+</button>
                 </div>
                 <p style="font-size: 0.8rem; opacity: 0.75; text-align: center; margin-top: 10px; margin-bottom: 20px;">
-                    (Usa la rueda del ratón o los botones para cambiar el número)</p>
+                    (Usa la rueda del ratón para cambiar el número)</p>
 
                 <!-- BOTÓN TIRAR Y VOLVER -->
                 <div class="habAcciones">
@@ -2794,7 +2766,8 @@
                     <div class="icono404">👽</div>
                     <h2 class="titulo404">Página no encontrada</h2>
                     <p class="descripcion404">
-                        La dirección web o sección <strong id="rutaInvalida404">#ejemplo</strong> no existe o ha sido movida.
+                        La dirección web o sección <strong id="rutaInvalida404">#ejemplo</strong> no existe o ha sido
+                        movida.
                     </p>
                     <div class="acciones404">
                         <button id="btnVolverInicio404" class="botonPrincipal404">
@@ -2871,7 +2844,7 @@
 
                 </button>
 
-                <button id="botonOBS" class="toggleModo botonOBSBtn" title="Configurar OBS Overlay" onclick="abrirModalOBS()">
+                <button id="botonOBS" class="toggleModo botonOBSBtn" title="Configurar OBS Overlay">
                     📹 OBS
                 </button>
 
@@ -2905,7 +2878,7 @@
             </div>
 
             <p>
-                El unico buscador de Solares y generador de retos para construir en Los Sims 4 - Versión 1.1.8
+                El unico buscador de Solares y generador de retos para construir en Los Sims 4 - Versión 1.2.0
 
 
             </p>
@@ -2977,26 +2950,30 @@
                     ✅ Listo
                 </button>
             </div>
+        </div>
+    </div>
 
     <!-- MODAL OBS OVERLAY / FUENTE DE NAVEGADOR -->
     <div id="modalOBS" class="modalPacksFlotante" style="display:none;">
-        <div id="overlayOBS" class="overlayPacksFlotante" onclick="cerrarModalOBS()"></div>
+        <div id="overlayOBS" class="overlayPacksFlotante"></div>
         <div class="cardPacksFlotante modalOBSCard">
             <div class="headerPacksFlotante">
                 <h3>📹 Integración OBS (Fuente de Navegador)</h3>
-                <button type="button" id="cerrarModalOBSBtn" class="cerrar" onclick="cerrarModalOBS()">✕</button>
+                <button type="button" id="cerrarModalOBSBtn" class="cerrar">✕</button>
             </div>
 
             <div class="cuerpoModalOBS">
                 <p class="obsGuiaTexto">
-                    Transmite las ventanas de retos, ruletas, temporizador o solares en tu directo de OBS Studio sin mostrar el resto de la web.
+                    Transmite las ventanas de retos, ruletas, temporizador o solares en tu directo de OBS Studio sin
+                    mostrar el resto de la web.
                 </p>
 
                 <div class="obsPasosBox">
                     <ol>
                         <li>Copia el enlace generado a continuación.</li>
                         <li>En OBS Studio, añade una nueva <strong>Fuente de Navegador (Browser Source)</strong>.</li>
-                        <li>Pega el enlace y ajusta el tamaño a la resolución de tu transmisión (ej: <code>1920 x 1080</code>).</li>
+                        <li>Pega el enlace y ajusta el tamaño a la resolución de tu transmisión (ej:
+                            <code>1920 x 1080</code>).</li>
                     </ol>
                 </div>
 
@@ -3009,7 +2986,8 @@
                         <div class="obsBtnGroup">
                             <button type="button" class="obsBtnOption obsBtnPos" data-val="left">⬅️ Izquierda</button>
                             <button type="button" class="obsBtnOption obsBtnPos" data-val="center">↔️ Centro</button>
-                            <button type="button" class="obsBtnOption obsBtnPos activo" data-val="right">➡️ Derecha</button>
+                            <button type="button" class="obsBtnOption obsBtnPos activo" data-val="right">➡️
+                                Derecha</button>
                         </div>
                     </div>
 
@@ -3017,15 +2995,18 @@
                         <label>🎨 Tema Visual (Día / Noche):</label>
                         <div class="obsBtnGroup">
                             <button type="button" class="obsBtnOption obsBtnTheme" data-val="dia">☀️ Modo Día</button>
-                            <button type="button" class="obsBtnOption obsBtnTheme activo" data-val="noche">🌙 Modo Noche</button>
-                            <button type="button" class="obsBtnOption obsBtnTheme" data-val="auto">🔄 Mismo que la Web</button>
+                            <button type="button" class="obsBtnOption obsBtnTheme activo" data-val="noche">🌙 Modo
+                                Noche</button>
+                            <button type="button" class="obsBtnOption obsBtnTheme" data-val="auto">🔄 Mismo que la
+                                Web</button>
                         </div>
                     </div>
 
                     <div class="obsOpcionGrupo">
                         <label>🫥 Estilo de Fondo:</label>
                         <div class="obsBtnGroup">
-                            <button type="button" class="obsBtnOption obsBtnBg activo" data-val="transparent">🫥 Transparente</button>
+                            <button type="button" class="obsBtnOption obsBtnBg activo" data-val="transparent">🫥
+                                Transparente</button>
                             <button type="button" class="obsBtnOption obsBtnBg" data-val="dark">🌙 Oscuro Glass</button>
                         </div>
                     </div>
@@ -3043,18 +3024,17 @@
                     <button type="button" id="btnCopiarUrlOBS" class="botonReto obsBtnCopiar">
                         📋 Copiar Enlace OBS
                     </button>
-                    <a id="btnProbarOBS" target="_blank" class="botonReto obsBtnProbar">
-                        👁️ Vista Previa en Pestaña
-                    </a>
                 </div>
 
                 <p class="obsNotaRealtime">
-                    ✨ <em>Los cambios que realices aquí se aplicarán automáticamente en OBS en tiempo real sin necesidad de volver a copiar el enlace.</em>
+                    ✨ <em>Los cambios que realices aquí se aplicarán automáticamente en OBS en tiempo real sin necesidad
+                        de volver a copiar el enlace.</em>
                 </p>
             </div>
         </div>
     </div>
 
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script src="js/obs.js"></script>
 </body>
 

@@ -2,7 +2,7 @@
    ACERCA DE Y CARRUSEL YOUTUBE
    ========================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
+(function() {
 
     const botonAcercaDe = document.getElementById("botonAcercaDe");
     const carruselTrack = document.getElementById("carruselVideos");
@@ -213,28 +213,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
+    window.inicializarCarruselAcercaDe = function() {
+        cargarVideos(); // Recargar aleatorios al abrir
+        position = 0;
+        if (animFrame) cancelAnimationFrame(animFrame);
+        // Retrasamos la animación para dar tiempo al navegador a pintar el DOM
+        // y que el cálculo de scrollWidth no sea 0.
+        setTimeout(() => {
+            animarCarrusel();
+        }, 50);
+    };
+
     if (botonAcercaDe) {
         botonAcercaDe.addEventListener("click", () => {
-            cargarVideos(); // Recargar aleatorios al abrir
+            window.inicializarCarruselAcercaDe();
             abrirVentana("ventanaAcercaDe", true);
-            position = 0;
-            if (animFrame) cancelAnimationFrame(animFrame);
-            animarCarrusel();
         });
     }
 
-    // Abrir ventana por defecto si no hay hash en la URL que diga lo contrario
-    // Se ejecuta con un pequeño timeout para asegurar que todo está cargado.
-    setTimeout(() => {
-        // Solo abrir si no se ha abierto ya otra ventana (ej: por un ID guardado)
-        const ventanasAbiertas = document.querySelectorAll(".ventana[style*='display: block']");
-        if (ventanasAbiertas.length === 0) {
-            cargarVideos();
-            abrirVentana("ventanaAcercaDe");
-            position = 0;
-            if (animFrame) cancelAnimationFrame(animFrame);
-            animarCarrusel();
-        }
-    }, 100);
-
-});
+})();

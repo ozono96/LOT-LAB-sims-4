@@ -57,51 +57,40 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Botones + / - para ajustar los minutos
-    const btnRestar = document.getElementById("btnRestarMinuto");
-    const btnSumar = document.getElementById("btnSumarMinuto");
+    // Función central: actualiza el valor del input y emite a OBS si procede
+    function actualizarMinutosTemporizador(nuevoValor, emitir = true) {
+        const max = parseInt(inputMinutos.max, 10) || 60;
+        const min = parseInt(inputMinutos.min, 10) || 1;
+        let val = parseInt(nuevoValor, 10);
+        if (isNaN(val)) val = 15;
+        if (val > max) val = max;
+        if (val < min) val = min;
+        inputMinutos.value = val;
 
-    if (btnRestar && inputMinutos) {
-        btnRestar.addEventListener("click", () => {
-            let val = parseInt(inputMinutos.value, 10) || 15;
-            if (val > 1) {
-                inputMinutos.value = val - 1;
-            }
-        });
+        if (emitir && typeof window.emitirEventoOBS === "function" && !window.esSincronizacionOBS) {
+            window.emitirEventoOBS("SYNC_ACCION", {
+                accion: "TEMPORIZADOR_MINUTOS_STATE",
+                payload: { minutos: val }
+            });
+        }
     }
 
-    if (btnSumar && inputMinutos) {
-        btnSumar.addEventListener("click", () => {
-            let val = parseInt(inputMinutos.value, 10) || 15;
-            if (val < 60) {
-                inputMinutos.value = val + 1;
-            }
-        });
-    }
+    // Exponer para que OBS pueda sincronizar el valor del selector
+    window.actualizarMinutosTemporizadorObs = function(payload) {
+        if (!payload || payload.minutos === undefined) return;
+        actualizarMinutosTemporizador(payload.minutos, false);
+    };
 
     // Controlar el input con la rueda del ratón en todo el contenedor del selector
     const tempWrap = document.querySelector("#ventanaTemporizador .habNumeroWrap") || inputMinutos;
     if (tempWrap && inputMinutos) {
         tempWrap.addEventListener("wheel", (e) => {
-            e.preventDefault(); // Evita que la página entera haga scroll
-            let val = parseInt(inputMinutos.value, 10);
-            if (isNaN(val)) val = 15;
-
-            if (e.deltaY < 0) {
-                val++;
-            } else {
-                val--;
-            }
-
-            const max = parseInt(inputMinutos.max, 10) || 60;
-            const min = parseInt(inputMinutos.min, 10) || 1;
-
-            if (val > max) val = max;
-            if (val < min) val = min;
-
-            inputMinutos.value = val;
+            e.preventDefault();
+            const val = parseInt(inputMinutos.value, 10) || 15;
+            actualizarMinutosTemporizador(val + (e.deltaY < 0 ? 1 : -1));
         }, { passive: false });
     }
+
 
     // Abrir ventana desde el menú
     if (botonTemporizadorMenu) {
@@ -151,6 +140,10 @@ document.addEventListener("DOMContentLoaded", () => {
             if (temporizadorInterval) clearInterval(temporizadorInterval);
 
             temporizadorInterval = setInterval(tick, 1000);
+            
+            if (typeof window.emitirEventoOBS === "function" && !window.esSincronizacionOBS) {
+                window.emitirEventoOBS("SYNC_ACCION", { accion: "TEMPORIZADOR", payload: { action: "START", tiempoRestante: tiempoRestanteEnSegundos } });
+            }
         });
     }
 
@@ -166,6 +159,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 displayTemporizador.classList.remove("pausado", "tiempoAgotado");
                 displayTemporizador.classList.add("enMarcha");
                 temporizadorInterval = setInterval(tick, 1000);
+                
+                if (typeof window.emitirEventoOBS === "function" && !window.esSincronizacionOBS) {
+                    window.emitirEventoOBS("SYNC_ACCION", { accion: "TEMPORIZADOR", payload: { action: "RESUME", tiempoRestante: tiempoRestanteEnSegundos } });
+                }
             } else {
                 // Pausar -> Naranja
                 estaPausado = true;
@@ -175,6 +172,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 displayTemporizador.classList.remove("enMarcha", "tiempoAgotado");
                 displayTemporizador.classList.add("pausado");
                 if (temporizadorInterval) clearInterval(temporizadorInterval);
+                
+                if (typeof window.emitirEventoOBS === "function" && !window.esSincronizacionOBS) {
+                    window.emitirEventoOBS("SYNC_ACCION", { accion: "TEMPORIZADOR", payload: { action: "PAUSE", tiempoRestante: tiempoRestanteEnSegundos } });
+                }
             }
         });
     }
@@ -184,6 +185,10 @@ document.addEventListener("DOMContentLoaded", () => {
         botonDetener.addEventListener("click", () => {
             if (temporizadorInterval) clearInterval(temporizadorInterval);
             reiniciarUI();
+            
+            if (typeof window.emitirEventoOBS === "function" && !window.esSincronizacionOBS) {
+                window.emitirEventoOBS("SYNC_ACCION", { accion: "TEMPORIZADOR", payload: { action: "STOP" } });
+            }
         });
     }
 
@@ -319,4 +324,26 @@ document.addEventListener("DOMContentLoaded", () => {
             displayTemporizador.textContent = "00:00";
         }
     }
+
+    // Exponer la función para que OBS la llame
+    window.ejecutarTemporizadorObs = function (payload) {
+        if (!payload) return;
+        
+        if (payload.action === "START") {
+            inputMinutos.value = Math.ceil(payload.tiempoRestante / 60);
+            if (botonIniciar) botonIniciar.click(); // simular click
+            tiempoRestanteEnSegundos = payload.tiempoRestante;
+            actualizarDisplay();
+        } else if (payload.action === "PAUSE") {
+            if (!estaPausado && botonPausar) botonPausar.click();
+            tiempoRestanteEnSegundos = payload.tiempoRestante;
+            actualizarDisplay();
+        } else if (payload.action === "RESUME") {
+            if (estaPausado && botonPausar) botonPausar.click();
+            tiempoRestanteEnSegundos = payload.tiempoRestante;
+            actualizarDisplay();
+        } else if (payload.action === "STOP") {
+            if (botonDetener) botonDetener.click();
+        }
+    };
 });

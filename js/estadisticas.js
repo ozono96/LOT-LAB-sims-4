@@ -298,6 +298,29 @@ async function cargarEstadisticasSims4() {
     actualizarContador(ESTAD.packsFiltrados.length, ESTAD.packsOriginales.length);
 }
 
+function obtenerFiltrosEstadisticasActuales() {
+    return {
+        texto: document.getElementById("estatBuscarTexto")?.value || "",
+        fechaDesde: document.getElementById("estatFechaDesde")?.value || "",
+        fechaHasta: document.getElementById("estatFechaHasta")?.value || "",
+        precioMin: document.getElementById("estatPrecioMin")?.value || "",
+        precioMax: document.getElementById("estatPrecioMax")?.value || "",
+        tipoPack: document.getElementById("estatTipoPack")?.value || ""
+    };
+}
+
+function sincronizarEstadisticasOBS() {
+    if (!window.esSincronizacionOBS && typeof window.emitirEventoOBS === "function") {
+        window.emitirEventoOBS("SYNC_ACCION", {
+            accion: "ESTADISTICAS_STATE",
+            payload: {
+                vista: ESTAD.vistaActual,
+                filtros: obtenerFiltrosEstadisticasActuales()
+            }
+        });
+    }
+}
+
 // ── Filtrado en tiempo real ──────────────────────────────
 function aplicarFiltrosEstadisticas() {
     const textoInput = document.getElementById("estatBuscarTexto")?.value || "";
@@ -340,6 +363,8 @@ function aplicarFiltrosEstadisticas() {
     } else {
         requestAnimationFrame(() => renderizarGraficos(ESTAD.packsFiltrados));
     }
+
+    sincronizarEstadisticasOBS();
 }
 
 // ── Resumen dinámico (cards superiores) ──────────────────
@@ -1494,6 +1519,8 @@ function toggleVistaEstadisticas(vista) {
         if (vistaLista) vistaLista.style.display = "none";
         requestAnimationFrame(() => renderizarGraficos(ESTAD.packsFiltrados));
     }
+
+    sincronizarEstadisticasOBS();
 }
 
 // ── State para el Selector de Fecha Personalizado ─────────
@@ -2089,3 +2116,8 @@ function abrirEstadisticas() {
         }
     }
 }
+
+window.abrirEstadisticas = abrirEstadisticas;
+window.toggleVistaEstadisticas = toggleVistaEstadisticas;
+window.aplicarFiltrosEstadisticas = aplicarFiltrosEstadisticas;
+window.ESTAD = ESTAD;

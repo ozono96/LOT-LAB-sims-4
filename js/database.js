@@ -19,3 +19,5 @@ const database = {
     etapasVida: []
 
 };
+
+window.database = database;

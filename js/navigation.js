@@ -48,6 +48,12 @@ const MAPA_RUTAS = {
     "habilidades-packs": "ventanaRetos",
     "habilidades-generador": "ventanaHabilidadesGenerador",
 
+    "packs-azar": "ventanaRetos",
+    "packs-generador": "ventanaPacksGenerador",
+
+    "mundos-azar": "ventanaRetos",
+    "mundos-generador": "ventanaMundosGenerador",
+
     "trucos": "ventanaTrucos",
     "truco": "ventanaTrucos",
     "cheats": "ventanaTrucos",
@@ -75,6 +81,8 @@ const VENTANA_A_SLUG = {
     "ventanaRuletaColor": "ruleta-color",
     "ventanaTemporizador": "temporizador",
     "ventanaHabilidadesGenerador": "habilidades-generador",
+    "ventanaPacksGenerador": "packs-generador",
+    "ventanaMundosGenerador": "mundos-generador",
     "ventanaTrucos": "trucos",
     "ventanaTrucosConstruir": "trucos-construir",
     "ventanaTrucosCAS": "trucos-cas",
@@ -399,6 +407,16 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                     if (ventana.id === "ventanaHabilidadesGenerador") {
                         window.proximaVentanaTrasPacks = "ventanaHabilidadesGenerador";
+                        abrirVentana("ventanaRetos", true);
+                        return;
+                    }
+                    if (ventana.id === "ventanaPacksGenerador") {
+                        window.proximaVentanaTrasPacks = "ventanaPacksGenerador";
+                        abrirVentana("ventanaRetos", true);
+                        return;
+                    }
+                    if (ventana.id === "ventanaMundosGenerador") {
+                        window.proximaVentanaTrasPacks = "ventanaMundosGenerador";
                         abrirVentana("ventanaRetos", true);
                         return;
                     }

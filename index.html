@@ -114,6 +114,14 @@
                     🧠 Habilidades al azar
                 </button>
 
+                <button id="botonPacks">
+                    🎁 Packs al azar
+                </button>
+
+                <button id="botonMundos">
+                    🌍 Mundos al azar
+                </button>
+
                 <button id="botonEstadisticas">
                     📊 Estadísticas Sims 4
                 </button>
@@ -789,12 +797,23 @@
                             </div>
                         </div>
 
-                        <div class="tarjetaDesastreContenedor">
-                            <div id="tarjetaResultadoDesastre" class="tarjetaResultadoDesastre">
-                                <div id="iconoResultadoDesastre" class="iconoTarjeta">🎡</div>
-                                <h3 id="tituloResultadoDesastre">¡Listos para girar!</h3>
-                                <p id="descResultadoDesastre">Pulsa el botón de abajo para generar tu primer desastre.</p>
-                                <div id="detalleResultadoDesastre" class="detalleTarjeta"></div>
+                        <!-- ÁREA DE ANIMACIÓN DE RULETA / SLOT VERTICAL -->
+                        <div class="desastreVisorWrap">
+                            <!-- Cuadro de bienvenida inicial centrado con el mismo tamaño exacto -->
+                            <div id="desastreBienvenida" class="desastreBienvenida">
+                                <div class="desastreItemIcono" style="font-size: 3.2rem; margin-bottom: 8px;">🎡</div>
+                                <div class="desastreItemTitulo" style="font-size: 1.35rem; margin-bottom: 6px;">¡Listos para girar!</div>
+                                <div class="desastreItemDesc" style="font-size: 0.95rem; max-width: 480px; margin-bottom: 6px;">Pulsa el botón de abajo o espera al temporizador para generar un desastre.</div>
+                                <div class="desastreItemDetalle" style="font-size: 0.82rem;">Los desastres respetan tus categorías y packs activos.</div>
+                            </div>
+
+                            <!-- Visor de animación vertical (aparece al girar) -->
+                            <div id="desastreAnimacion" class="desastreAnimacion" style="display: none;">
+                                <div class="desastreSelectorCentral">
+                                    <span class="desastreSelectorPunteroIzq"></span>
+                                    <span class="desastreSelectorPunteroDer"></span>
+                                </div>
+                                <div id="desastreAnimacionPista" class="desastreAnimacionPista"></div>
                             </div>
                         </div>
 
@@ -2744,10 +2763,31 @@
 
                 <!-- ÁREA DE ANIMACIÓN / RESULTADO -->
                 <div id="habResultadoWrap" class="habResultadoWrap" style="display:none;">
-                    <!-- Animación de ruleta -->
+                    <!-- Indicador de selección secuencial centrado -->
+                    <div id="habProgresoSeleccionWrap" class="habProgresoSeleccionWrap" style="display:none;">
+                        <div id="habProgresoSeleccion" class="habProgresoSeleccion">
+                            <span class="habProgresoDot">🟢</span>
+                            <span id="habProgresoTexto" class="habProgresoTexto">SELECCIÓN 1/1</span>
+                        </div>
+                    </div>
+
+                    <!-- Animación de ruleta / slot horizontal -->
                     <div id="habAnimacion" class="habAnimacion">
+                        <div class="habSelectorCentral">
+                            <span class="habSelectorPunteroTop"></span>
+                            <span class="habSelectorPunteroBottom"></span>
+                        </div>
                         <div id="habAnimacionPista" class="habAnimacionPista"></div>
                     </div>
+
+                    <!-- Botón para acelerar selección múltiple -->
+                    <div id="habAcelerarWrap" class="habAcelerarWrap" style="display:none;">
+                        <button id="habBtnAcelerar" class="habBtnAcelerar" type="button" title="Acelerar selección de habilidades">
+                            <span class="habIconoRayo">⚡</span>
+                            <span id="habTextoAcelerar">Acelerar</span>
+                        </button>
+                    </div>
+
                     <!-- Resultado final -->
                     <div id="habResultadoFinal" class="habResultadoFinal" style="display:none;">
                         <h3 class="habResultadoTitulo">✨ Tus habilidades generadas:</h3>
@@ -2756,6 +2796,152 @@
                 </div>
             </div>
             <!-- ==================== FIN VENTANA HABILIDADES GENERADOR ==================== -->
+
+            <!-- ==================== VENTANA PACKS AL AZAR GENERADOR ==================== -->
+            <div id="ventanaPacksGenerador" class="ventana" style="display:none;">
+                <div class="cabeceraVentana">
+                    <button class="compartir" title="Compartir">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                        </svg>
+                    </button>
+                    <button class="cerrar">✕</button>
+                </div>
+
+                <h2>🎁 Packs al azar</h2>
+                <p class="subtituloVentana" style="text-align: center;">Selecciona el número de packs que quieres
+                    que salgan en esta tirada</p>
+
+                <!-- SELECTOR NUMÉRICO CON SCROLL -->
+                <div class="habNumeroWrap">
+                    <div class="habNumeroDisplay">
+                        <input type="number" id="packsCantidad" min="1" max="10" value="1" readonly
+                            class="habCantidadInput">
+                    </div>
+                </div>
+                <p style="font-size: 0.8rem; opacity: 0.75; text-align: center; margin-top: 10px; margin-bottom: 20px;">
+                    (Usa la rueda del ratón para cambiar el número)</p>
+
+                <!-- BOTÓN TIRAR Y VOLVER -->
+                <div class="habAcciones">
+                    <button id="packsBtnTirar" class="habBtnTirar">
+                        <span class="habBtnIcono">🎲</span>
+                        <span>¡Tirar!</span>
+                    </button>
+                    <button type="button" id="packsBtnVolver" class="botonReto">
+                        📦 Selector de Packs
+                    </button>
+                </div>
+
+                <!-- ÁREA DE ANIMACIÓN / RESULTADO -->
+                <div id="packsResultadoWrap" class="habResultadoWrap" style="display:none;">
+                    <!-- Indicador de selección secuencial centrado -->
+                    <div id="packsProgresoSeleccionWrap" class="habProgresoSeleccionWrap" style="display:none;">
+                        <div id="packsProgresoSeleccion" class="habProgresoSeleccion">
+                            <span class="habProgresoDot">🟢</span>
+                            <span id="packsProgresoTexto" class="habProgresoTexto">SELECCIÓN 1/1</span>
+                        </div>
+                    </div>
+
+                    <!-- Animación de ruleta / slot horizontal -->
+                    <div id="packsAnimacion" class="habAnimacion">
+                        <div class="habSelectorCentral">
+                            <span class="habSelectorPunteroTop"></span>
+                            <span class="habSelectorPunteroBottom"></span>
+                        </div>
+                        <div id="packsAnimacionPista" class="habAnimacionPista"></div>
+                    </div>
+
+                    <!-- Botón para acelerar selección múltiple -->
+                    <div id="packsAcelerarWrap" class="habAcelerarWrap" style="display:none;">
+                        <button id="packsBtnAcelerar" class="habBtnAcelerar" type="button" title="Acelerar selección de packs">
+                            <span class="habIconoRayo">⚡</span>
+                            <span id="packsTextoAcelerar">Acelerar</span>
+                        </button>
+                    </div>
+
+                    <!-- Resultado final -->
+                    <div id="packsResultadoFinal" class="habResultadoFinal" style="display:none;">
+                        <h3 class="habResultadoTitulo">✨ Tus packs generados:</h3>
+                        <div id="packsResultadoGrid" class="habResultadoGrid"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- ==================== FIN VENTANA PACKS AL AZAR GENERADOR ==================== -->
+
+            <!-- ==================== VENTANA MUNDOS AL AZAR GENERADOR ==================== -->
+            <div id="ventanaMundosGenerador" class="ventana" style="display:none;">
+                <div class="cabeceraVentana">
+                    <button class="compartir" title="Compartir">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                        </svg>
+                    </button>
+                    <button class="cerrar">✕</button>
+                </div>
+
+                <h2>🌍 Mundos al azar</h2>
+                <p class="subtituloVentana" style="text-align: center;">Selecciona el número de mundos que quieres
+                    que salgan en esta tirada</p>
+
+                <!-- SELECTOR NUMÉRICO CON SCROLL -->
+                <div class="habNumeroWrap">
+                    <div class="habNumeroDisplay">
+                        <input type="number" id="mundosCantidad" min="1" max="10" value="1" readonly
+                            class="habCantidadInput">
+                    </div>
+                </div>
+                <p style="font-size: 0.8rem; opacity: 0.75; text-align: center; margin-top: 10px; margin-bottom: 20px;">
+                    (Usa la rueda del ratón para cambiar el número)</p>
+
+                <!-- BOTÓN TIRAR Y VOLVER -->
+                <div class="habAcciones">
+                    <button id="mundosBtnTirar" class="habBtnTirar">
+                        <span class="habBtnIcono">🎲</span>
+                        <span>¡Tirar!</span>
+                    </button>
+                    <button type="button" id="mundosBtnVolver" class="botonReto">
+                        📦 Selector de Packs
+                    </button>
+                </div>
+
+                <!-- ÁREA DE ANIMACIÓN / RESULTADO -->
+                <div id="mundosResultadoWrap" class="habResultadoWrap" style="display:none;">
+                    <!-- Indicador de selección secuencial centrado -->
+                    <div id="mundosProgresoSeleccionWrap" class="habProgresoSeleccionWrap" style="display:none;">
+                        <div id="mundosProgresoSeleccion" class="habProgresoSeleccion">
+                            <span class="habProgresoDot">🟢</span>
+                            <span id="mundosProgresoTexto" class="habProgresoTexto">SELECCIÓN 1/1</span>
+                        </div>
+                    </div>
+
+                    <!-- Animación de ruleta / slot horizontal -->
+                    <div id="mundosAnimacion" class="habAnimacion">
+                        <div class="habSelectorCentral">
+                            <span class="habSelectorPunteroTop"></span>
+                            <span class="habSelectorPunteroBottom"></span>
+                        </div>
+                        <div id="mundosAnimacionPista" class="habAnimacionPista"></div>
+                    </div>
+
+                    <!-- Botón para acelerar selección múltiple -->
+                    <div id="mundosAcelerarWrap" class="habAcelerarWrap" style="display:none;">
+                        <button id="mundosBtnAcelerar" class="habBtnAcelerar" type="button" title="Acelerar selección de mundos">
+                            <span class="habIconoRayo">⚡</span>
+                            <span id="mundosTextoAcelerar">Acelerar</span>
+                        </button>
+                    </div>
+
+                    <!-- Resultado final -->
+                    <div id="mundosResultadoFinal" class="habResultadoFinal" style="display:none;">
+                        <h3 class="habResultadoTitulo">✨ Tus mundos generados:</h3>
+                        <div id="mundosResultadoGrid" class="habResultadoGrid"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- ==================== FIN VENTANA MUNDOS AL AZAR GENERADOR ==================== -->
 
             <!-- ==================== VENTANA 404: PÁGINA NO ENCONTRADA ==================== -->
             <div id="ventana404" class="ventana" style="display:none;">
@@ -2816,7 +3002,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="js/compartir.js"></script>
     <script src="js/estadisticas.js"></script>
+    <script src="js/carrusel-random.js"></script>
     <script src="js/habilidades.js"></script>
+    <script src="js/packs-azar.js"></script>
+    <script src="js/mundos-azar.js"></script>
     <script src="js/app.js"></script>
     <script src="js/theme.js"></script>
     <script src="js/menu-flotante.js"></script>

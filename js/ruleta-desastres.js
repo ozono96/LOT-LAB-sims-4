@@ -745,8 +745,131 @@ function sonarFanfarriaFinTiradas() {
     } catch (e) { }
 }
 
-// Ejecuta un giro de la ruleta de desastres
+// ── Variables de animación vertical ──
+let ruletaDesastresAnimando = false;
+let ruletaDesastresAnimTimer = null;
+
+function generarDesastreValidoAleatorio() {
+    const activasKeys = Object.keys(EstadoRuletaDesastres.categoriasActivas).filter(id => EstadoRuletaDesastres.categoriasActivas[id]);
+    if (activasKeys.length === 0) return null;
+    const modId = activasKeys[Math.floor(Math.random() * activasKeys.length)];
+    const modulo = ModulosDesastres[modId];
+    if (!modulo) return null;
+    const resultado = modulo.generar(EstadoRuletaDesastres);
+    return {
+        modId,
+        moduloIcono: modulo.icono,
+        resultado
+    };
+}
+
+function crearItemDesastreHTML(item, idx, esTarget) {
+    const icono = item.resultado.iconoHTML
+        ? item.resultado.iconoHTML
+        : `<span style="font-size:2.5rem;line-height:1;">${item.moduloIcono || item.resultado.icono || "🎡"}</span>`;
+    const titulo = item.resultado.titulo || "Desastre";
+    const desc = item.resultado.descripcion || "";
+    const detalle = item.resultado.detalle || "";
+
+    return `<div class="desastreAnim-item${esTarget ? " desastreAnim-item--target" : ""}" data-idx="${idx}">
+        <div class="desastreItemIcono">${icono}</div>
+        <div class="desastreItemContenido">
+            <div class="desastreItemTitulo">${titulo}</div>
+            <div class="desastreItemDesc">${desc}</div>
+            <div class="desastreItemDetalle">${detalle}</div>
+        </div>
+    </div>`;
+}
+
+function animarGiroRuletaDesastres(targetDesastre) {
+    if (!targetDesastre || !targetDesastre.resultado) return;
+
+    ruletaDesastresAnimando = true;
+    if (ruletaDesastresAnimTimer) {
+        clearTimeout(ruletaDesastresAnimTimer);
+        ruletaDesastresAnimTimer = null;
+    }
+
+    const btnGirar = document.getElementById("btnGirarRuletaDesastres");
+    if (btnGirar) btnGirar.disabled = true;
+
+    const bienvenida = document.getElementById("desastreBienvenida");
+    const animacion = document.getElementById("desastreAnimacion");
+    const pista = document.getElementById("desastreAnimacionPista");
+
+    // Ocultar bienvenida y mostrar visor de animación
+    if (bienvenida) bienvenida.style.display = "none";
+    if (animacion) animacion.style.display = "block";
+
+    if (!animacion || !pista) {
+        ruletaDesastresAnimando = false;
+        if (btnGirar) btnGirar.disabled = false;
+        return;
+    }
+
+    // 22 elementos previos + 1 elemento objetivo + 12 posteriores
+    const targetIndex = 22;
+    const secuencia = [];
+
+    for (let i = 0; i < targetIndex; i++) {
+        const dummy = generarDesastreValidoAleatorio() || targetDesastre;
+        secuencia.push(dummy);
+    }
+    // Elemento objetivo exacto
+    secuencia.push(targetDesastre);
+    // Elementos posteriores
+    for (let i = 0; i < 12; i++) {
+        const dummy = generarDesastreValidoAleatorio() || targetDesastre;
+        secuencia.push(dummy);
+    }
+
+    pista.innerHTML = secuencia.map((item, idx) => crearItemDesastreHTML(item, idx, idx === targetIndex)).join("");
+
+    requestAnimationFrame(() => {
+        const animHeight = animacion.getBoundingClientRect().height || 270;
+        const itemHeight = 124;
+        const itemGap = 12;
+        const step = itemHeight + itemGap;
+
+        const startY = (animHeight - itemHeight) / 2;
+        const targetY = startY - (targetIndex * step);
+
+        pista.style.transition = "none";
+        pista.style.transform = "translateY(" + startY + "px)";
+
+        requestAnimationFrame(() => {
+            const duracionMs = 2800;
+            const curva = "cubic-bezier(0.12, 0.85, 0.18, 1.0)";
+
+            pista.style.transition = "transform " + (duracionMs / 1000) + "s " + curva;
+            pista.style.transform = "translateY(" + targetY + "px)";
+
+            ruletaDesastresAnimTimer = setTimeout(() => {
+                const itemLanded = pista.querySelector(".desastreAnim-item[data-idx='" + targetIndex + "']");
+                if (itemLanded) itemLanded.classList.add("desastreAnim-item--elegida");
+
+                // Registrar en historial
+                const ahora = new Date();
+                const horaFmt = ahora.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+
+                ruletaDesastresHistorial.unshift({
+                    hora: horaFmt,
+                    icono: targetDesastre.moduloIcono || targetDesastre.resultado.icono || "🎡",
+                    iconoHTML: targetDesastre.resultado.iconoHTML || null,
+                    descripcion: targetDesastre.resultado.descripcion
+                });
+
+                renderizarHistorialDesastres();
+                ruletaDesastresAnimando = false;
+                if (btnGirar) btnGirar.disabled = false;
+            }, duracionMs + 40);
+        });
+    });
+}
+
+// Ejecuta un giro de la ruleta de desastres (Manual o Automático)
 function ejecutarGiroDesastre(esManual) {
+    if (ruletaDesastresAnimando) return;
     const activasKeys = Object.keys(EstadoRuletaDesastres.categoriasActivas).filter(id => EstadoRuletaDesastres.categoriasActivas[id]);
     if (activasKeys.length === 0) return;
 
@@ -756,44 +879,18 @@ function ejecutarGiroDesastre(esManual) {
     if (!modulo) return;
 
     const resultado = modulo.generar(EstadoRuletaDesastres);
-    
+    const targetDesastre = {
+        modId,
+        moduloIcono: modulo.icono,
+        resultado
+    };
+
     // Emitir a OBS (Master)
     if (typeof window.emitirEventoOBS === "function" && !window.esSincronizacionOBS) {
         window.emitirEventoOBS("SYNC_ACCION", { accion: "GIRAR_RULETA_DESASTRES", payload: { modId, resultado } });
     }
 
-    // Animación visual de tarjeta
-    const cardRes = document.getElementById("tarjetaResultadoDesastre");
-    if (cardRes) {
-        cardRes.classList.add("animarGiroDesastre");
-        setTimeout(() => {
-            const containerIcono = document.getElementById("iconoResultadoDesastre");
-            if (containerIcono) {
-                if (resultado.iconoHTML) {
-                    containerIcono.innerHTML = resultado.iconoHTML;
-                } else {
-                    containerIcono.textContent = modulo.icono;
-                }
-            }
-            document.getElementById("tituloResultadoDesastre").textContent = resultado.titulo;
-            document.getElementById("descResultadoDesastre").innerHTML = resultado.descripcion;
-            document.getElementById("detalleResultadoDesastre").textContent = resultado.detalle || "";
-            cardRes.classList.remove("animarGiroDesastre");
-        }, 200);
-    }
-
-    // Registrar en el historial
-    const ahora = new Date();
-    const horaFmt = ahora.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
-    
-    ruletaDesastresHistorial.unshift({
-        hora: horaFmt,
-        icono: modulo.icono,
-        iconoHTML: resultado.iconoHTML || null,
-        descripcion: resultado.descripcion
-    });
-
-    renderizarHistorialDesastres();
+    animarGiroRuletaDesastres(targetDesastre);
 }
 
 function renderizarHistorialDesastres() {
@@ -824,42 +921,13 @@ window.ejecutarGiroRuletaDesastresObs = function(payload) {
     if (!payload || !payload.resultado || !payload.modId) return;
     
     const modulo = ModulosDesastres[payload.modId];
-    if (!modulo) return;
+    const targetDesastre = {
+        modId: payload.modId,
+        moduloIcono: modulo ? modulo.icono : "🎡",
+        resultado: payload.resultado
+    };
     
-    const resultado = payload.resultado;
-    
-    // Animación visual de tarjeta
-    const cardRes = document.getElementById("tarjetaResultadoDesastre");
-    if (cardRes) {
-        cardRes.classList.add("animarGiroDesastre");
-        setTimeout(() => {
-            const containerIcono = document.getElementById("iconoResultadoDesastre");
-            if (containerIcono) {
-                if (resultado.iconoHTML) {
-                    containerIcono.innerHTML = resultado.iconoHTML;
-                } else {
-                    containerIcono.textContent = modulo.icono;
-                }
-            }
-            document.getElementById("tituloResultadoDesastre").textContent = resultado.titulo;
-            document.getElementById("descResultadoDesastre").innerHTML = resultado.descripcion;
-            document.getElementById("detalleResultadoDesastre").textContent = resultado.detalle || "";
-            cardRes.classList.remove("animarGiroDesastre");
-        }, 200);
-    }
-    
-    // Registrar en historial
-    const ahora = new Date();
-    const horaFmt = ahora.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
-    
-    ruletaDesastresHistorial.unshift({
-        hora: horaFmt,
-        icono: modulo.icono,
-        iconoHTML: resultado.iconoHTML || null,
-        descripcion: resultado.descripcion
-    });
-
-    renderizarHistorialDesastres();
+    animarGiroRuletaDesastres(targetDesastre);
 };
 
 window.ejecutarSubpantallaRuletaDesastresObs = function(payload) {

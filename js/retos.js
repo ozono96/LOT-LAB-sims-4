@@ -20,10 +20,16 @@ document.addEventListener("DOMContentLoaded", () => {
         const destino = window.proximaVentanaTrasPacks || "ventanaRetosOpciones";
         window.proximaVentanaTrasPacks = null;
 
-        // Si el destino es el generador de Habilidades, actualizar su filtro
+        // Si el destino es el generador de Habilidades, Packs o Mundos, actualizar sus filtros
         if (destino === "ventanaHabilidadesGenerador") {
             if (typeof window._habFiltrarHabilidades === "function") window._habFiltrarHabilidades();
             if (typeof window._habInicializarGenerador === "function") window._habInicializarGenerador();
+        } else if (destino === "ventanaPacksGenerador") {
+            if (typeof window._packsFiltrarPacks === "function") window._packsFiltrarPacks();
+            if (typeof window._packsInicializarGenerador === "function") window._packsInicializarGenerador();
+        } else if (destino === "ventanaMundosGenerador") {
+            if (typeof window._mundosFiltrarMundos === "function") window._mundosFiltrarMundos();
+            if (typeof window._mundosInicializarGenerador === "function") window._mundosInicializarGenerador();
         }
 
         if (typeof abrirVentana === "function") {

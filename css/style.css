@@ -558,6 +558,13 @@ header p {
     padding-bottom: 35px;
 }
 
+#ventanaHabilidadesGenerador,
+#ventanaPacksGenerador,
+#ventanaMundosGenerador {
+    max-width: 680px;
+    padding-bottom: 35px;
+}
+
 .popoverFlotante input[type="range"] {
     display: block;
     margin: 0 auto;
@@ -870,6 +877,9 @@ button:hover {
 #botonRuletaDesastres,
 #botonTirarDados,
 #botonHabilidades,
+#botonPacks,
+#botonMundos,
+#botonEstadisticas,
 #botonModsSimfile,
 #botonAcercaDe {
 
@@ -918,6 +928,9 @@ button.deshabilitado:hover {
 #botonRuletaDesastres:hover,
 #botonTirarDados:hover,
 #botonHabilidades:hover,
+#botonPacks:hover,
+#botonMundos:hover,
+#botonEstadisticas:hover,
 #botonAcercaDe:hover {
 
     background: var(--color-secundario);
@@ -6635,59 +6648,233 @@ body.modo-dia .timerDigits {
     color: #27ae60;
 }
 
-.tarjetaDesastreContenedor {
-    display: flex;
-    justify-content: center;
-    margin: 20px 0 30px 0;
-}
-
-.tarjetaResultadoDesastre {
-    background: rgba(30, 38, 55, 0.92);
-    border: 2px solid rgba(46, 204, 113, 0.5);
-    border-radius: var(--radio-grande);
-    padding: 30px 40px;
-    text-align: center;
-    max-width: 550px;
+/* ==========================================================
+   ANIMACIÓN RULETA DE DESASTRES (SLOT VERTICAL TAMAÑO FIJO)
+========================================================== */
+.desastreVisorWrap {
     width: 100%;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    max-width: 620px;
+    height: 270px;
+    margin: 20px auto 25px auto;
+    position: relative;
+    box-sizing: border-box;
 }
 
-body.modo-dia .tarjetaResultadoDesastre {
-    background: rgba(255, 255, 255, 0.97);
-    border-color: rgba(39, 174, 96, 0.5);
+/* CUADRO DE BIENVENIDA INICIAL (OCUPA EL MISMO ESPACIO Y TAMAÑO EXACTO) */
+.desastreBienvenida {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px 24px;
+    box-sizing: border-box;
+    background: var(--color-tarjeta);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    border: 2px solid var(--borde);
+    border-radius: var(--radio-grande, 20px);
+    box-shadow: var(--sombra-fuerte), inset 0 0 20px rgba(0, 0, 0, 0.2);
 }
 
-.iconoTarjeta {
-    font-size: 3.5rem;
-    margin-bottom: 12px;
+/* CONTENEDOR DE ANIMACIÓN VERTICAL */
+.desastreAnimacion {
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+    position: relative;
+    background: var(--color-tarjeta);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    border: 2px solid var(--borde);
+    border-radius: var(--radio-grande, 20px);
+    padding: 0;
+    box-shadow: var(--sombra-fuerte), inset 0 0 20px rgba(0, 0, 0, 0.25);
+    box-sizing: border-box;
 }
 
-.tarjetaResultadoDesastre h3 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    color: #2ecc71;
+/* DEGRADADOS SUPERIOR E INFERIOR PARA ENMASCARAR EN VERTICAL */
+.desastreAnimacion::before,
+.desastreAnimacion::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 65px;
+    z-index: 5;
+    pointer-events: none;
 }
 
-body.modo-dia .tarjetaResultadoDesastre h3 {
+.desastreAnimacion::before {
+    top: 0;
+    background: linear-gradient(to bottom, rgba(13, 59, 102, 0.96), transparent);
+}
+
+.desastreAnimacion::after {
+    bottom: 0;
+    background: linear-gradient(to top, rgba(13, 59, 102, 0.96), transparent);
+}
+
+body.modo-dia .desastreAnimacion::before {
+    background: linear-gradient(to bottom, rgba(243, 238, 227, 0.96), transparent);
+}
+
+body.modo-dia .desastreAnimacion::after {
+    background: linear-gradient(to top, rgba(243, 238, 227, 0.96), transparent);
+}
+
+/* MARCO / SELECTOR VERDE CENTRAL FIJO (ENFOQUE VERTICAL) */
+.desastreSelectorCentral {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: calc(100% - 24px);
+    max-width: 580px;
+    height: 124px;
+    border: 3px solid var(--color-resaltado, #2ECC71);
+    border-radius: var(--radio-normal, 14px);
+    box-shadow: 0 0 25px rgba(46, 204, 113, 0.45), inset 0 0 15px rgba(46, 204, 113, 0.2);
+    pointer-events: none;
+    z-index: 10;
+    box-sizing: border-box;
+}
+
+/* PUNTEROS LATERALES (IZQUIERDA Y DERECHA) APUNTANDO HACIA EL CENTRO */
+.desastreSelectorPunteroIzq,
+.desastreSelectorPunteroDer {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+}
+
+.desastreSelectorPunteroIzq {
+    left: -12px;
+    border-left: 12px solid var(--color-resaltado, #2ECC71);
+    filter: drop-shadow(-2px 0 4px rgba(46, 204, 113, 0.6));
+}
+
+.desastreSelectorPunteroDer {
+    right: -12px;
+    border-right: 12px solid var(--color-resaltado, #2ECC71);
+    filter: drop-shadow(2px 0 4px rgba(46, 204, 113, 0.6));
+}
+
+/* PISTA DE DESASTRES VERTICAL */
+.desastreAnimacionPista {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    will-change: transform;
+    padding: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* TARJETA INDIVIDUAL DE DESASTRE EN LA PISTA VERTICAL */
+.desastreAnim-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    width: calc(100% - 24px);
+    max-width: 580px;
+    height: 124px;
+    min-height: 124px;
+    max-height: 124px;
+    padding: 10px 18px;
+    background: var(--color-tarjeta);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    border: 1.5px solid var(--borde);
+    border-radius: var(--radio-normal, 14px);
+    flex-shrink: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+body.modo-dia .desastreAnim-item {
+    background: rgba(255, 255, 255, 0.88);
+}
+
+.desastreAnim-item--elegida {
+    border-color: var(--color-resaltado) !important;
+    background: rgba(46, 204, 113, 0.18) !important;
+    box-shadow: 0 0 22px rgba(46, 204, 113, 0.55) !important;
+}
+
+body.modo-dia .desastreAnim-item--elegida {
+    background: rgba(46, 204, 113, 0.22) !important;
+}
+
+.desastreItemIcono {
+    font-size: 2.5rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    min-width: 50px;
+}
+
+.desastreItemIcono img {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+}
+
+.desastreItemContenido {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+}
+
+.desastreItemTitulo {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--color-resaltado);
+    margin-bottom: 3px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body.modo-dia .desastreItemTitulo {
     color: #27ae60;
 }
 
-.tarjetaResultadoDesastre p {
-    font-size: 1.15rem;
-    line-height: 1.5;
-    margin-bottom: 12px;
+.desastreItemDesc {
+    font-size: 0.88rem;
+    line-height: 1.35;
+    color: var(--color-texto);
+    margin-bottom: 2px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 
-.detalleTarjeta {
-    font-size: 0.92rem;
-    opacity: 0.8;
+.desastreItemDetalle {
+    font-size: 0.76rem;
+    opacity: 0.75;
     font-style: italic;
-}
-
-.animarGiroDesastre {
-    transform: scale(0.85) rotate(-5deg);
-    opacity: 0.4;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .accionesJuegoDesastres {
@@ -7009,7 +7196,9 @@ body.modo-dia .displayTemporizadorDigital {
     cursor: not-allowed;
 }
 
-#ventanaHabilidadesGenerador {
+#ventanaHabilidadesGenerador,
+#ventanaPacksGenerador,
+#ventanaMundosGenerador {
     max-width: 680px;
     padding-bottom: 35px;
 }
@@ -7121,24 +7310,25 @@ body.modo-dia .displayTemporizadorDigital {
     text-decoration: underline;
 }
 
-/* ÃREA DE ANIMACIÃ“N DE RULETA */
+/* ÁREA DE ANIMACIÓN DE RULETA / SLOT HORIZONTAL */
 .habResultadoWrap {
     margin-top: 20px;
 }
 
 .habAnimacion {
     width: 100%;
-    max-width: 520px;
+    max-width: 600px;
     margin: 0 auto;
     overflow: hidden;
     position: relative;
     background: var(--color-tarjeta);
     backdrop-filter: blur(var(--blur));
     -webkit-backdrop-filter: blur(var(--blur));
-    border: 2px solid var(--color-resaltado);
+    border: 2px solid var(--borde);
     border-radius: var(--radio-grande, 20px);
-    padding: 20px 10px;
-    box-shadow: var(--sombra-fuerte);
+    padding: 16px 0;
+    box-shadow: var(--sombra-fuerte), inset 0 0 20px rgba(0, 0, 0, 0.25);
+    box-sizing: border-box;
 }
 
 .habAnimacion::before,
@@ -7147,35 +7337,79 @@ body.modo-dia .displayTemporizadorDigital {
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 45px;
-    z-index: 2;
+    width: 75px;
+    z-index: 5;
     pointer-events: none;
 }
 
 .habAnimacion::before {
     left: 0;
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.5), transparent);
+    background: linear-gradient(to right, rgba(13, 59, 102, 0.9), transparent);
 }
 
 .habAnimacion::after {
     right: 0;
-    background: linear-gradient(to left, rgba(0, 0, 0, 0.5), transparent);
+    background: linear-gradient(to left, rgba(13, 59, 102, 0.9), transparent);
 }
 
 body.modo-dia .habAnimacion::before {
-    background: linear-gradient(to right, rgba(243, 238, 227, 0.8), transparent);
+    background: linear-gradient(to right, rgba(243, 238, 227, 0.95), transparent);
 }
 
 body.modo-dia .habAnimacion::after {
-    background: linear-gradient(to left, rgba(243, 238, 227, 0.8), transparent);
+    background: linear-gradient(to left, rgba(243, 238, 227, 0.95), transparent);
+}
+
+/* Selector verde central fijo */
+.habSelectorCentral {
+    position: absolute;
+    top: 8px;
+    bottom: 8px;
+    left: 50%;
+    width: 114px;
+    transform: translateX(-50%);
+    border: 3px solid var(--color-resaltado, #2ECC71);
+    border-radius: var(--radio-normal, 14px);
+    box-shadow: 0 0 20px rgba(46, 204, 113, 0.65), inset 0 0 15px rgba(46, 204, 113, 0.2);
+    z-index: 6;
+    pointer-events: none;
+    background: rgba(46, 204, 113, 0.08);
+    box-sizing: border-box;
+}
+
+.habSelectorPunteroTop {
+    position: absolute;
+    top: -9px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 9px solid var(--color-resaltado, #2ECC71);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.habSelectorPunteroBottom {
+    position: absolute;
+    bottom: -9px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 9px solid var(--color-resaltado, #2ECC71);
+    filter: drop-shadow(0 -2px 4px rgba(0, 0, 0, 0.5));
 }
 
 .habAnimacionPista {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
     will-change: transform;
     white-space: nowrap;
+    padding: 0 10px;
 }
 
 .habAnim-item {
@@ -7184,40 +7418,145 @@ body.modo-dia .habAnimacion::after {
     align-items: center;
     justify-content: center;
     gap: 6px;
-    min-width: 110px;
-    width: 110px;
-    padding: 12px 8px;
-    background: rgba(255, 255, 255, 0.06);
+    width: 104px;
+    min-width: 104px;
+    height: 100px;
+    padding: 8px 6px;
+    background: rgba(255, 255, 255, 0.08);
     border: 1px solid var(--borde);
     border-radius: var(--radio-normal, 12px);
     text-align: center;
     flex-shrink: 0;
+    box-sizing: border-box;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+body.modo-dia .habAnim-item {
+    background: rgba(0, 0, 0, 0.04);
 }
 
 .habAnim-item img {
-    width: 52px;
-    height: 52px;
+    width: 48px;
+    height: 48px;
     object-fit: contain;
 }
 
 .habAnim-item--elegida {
-    border-color: var(--color-resaltado);
-    background: rgba(46, 204, 113, 0.15);
-    box-shadow: 0 0 15px rgba(46, 204, 113, 0.4);
+    border-color: var(--color-resaltado) !important;
+    background: rgba(46, 204, 113, 0.25) !important;
+    box-shadow: 0 0 18px rgba(46, 204, 113, 0.6) !important;
+    transform: scale(1.04);
 }
 
 .habAnim-nombre {
-    font-size: 0.78rem;
-    font-weight: 600;
+    font-size: 0.76rem;
+    font-weight: 700;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 100px;
+    max-width: 92px;
+    color: var(--color-texto);
 }
 
-/* RESULTADO FINAL GRID */
+/* INDICADOR DE SELECCIÓN SECUENCIAL */
+.habProgresoSeleccionWrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 0 auto 14px auto;
+    text-align: center;
+}
+
+.habProgresoSeleccion {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 6px 18px;
+    margin: 0 auto;
+    background: var(--color-tarjeta);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    border: 1.5px solid var(--color-resaltado, #2ECC71);
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: var(--color-texto);
+    box-shadow: 0 4px 15px rgba(46, 204, 113, 0.25);
+    animation: pulsoBadgeHab 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes pulsoBadgeHab {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.03);
+        box-shadow: 0 4px 20px rgba(46, 204, 113, 0.45);
+    }
+}
+
+.habProgresoDot {
+    font-size: 0.85rem;
+    line-height: 1;
+}
+
+/* BOTÓN DE ACELERACIÓN */
+.habAcelerarWrap {
+    display: flex;
+    justify-content: center;
+    margin: 14px 0 6px 0;
+}
+
+.habBtnAcelerar {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 24px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    border-radius: var(--radio-normal, 12px);
+    border: 2px solid #f1c40f;
+    background: linear-gradient(135deg, rgba(241, 196, 15, 0.18), rgba(230, 126, 34, 0.22));
+    color: var(--color-texto);
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(241, 196, 15, 0.25);
+    transition: all var(--transicion);
+}
+
+.habBtnAcelerar:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 6px 20px rgba(241, 196, 15, 0.45);
+    border-color: #f39c12;
+    background: linear-gradient(135deg, rgba(241, 196, 15, 0.3), rgba(230, 126, 34, 0.35));
+}
+
+.habBtnAcelerar.habBtnAcelerar--activo {
+    border-color: var(--color-resaltado, #2ECC71);
+    background: linear-gradient(135deg, rgba(46, 204, 113, 0.3), rgba(39, 174, 96, 0.4));
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(46, 204, 113, 0.6);
+    animation: brilloAcelerado 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes brilloAcelerado {
+    from {
+        box-shadow: 0 0 12px rgba(46, 204, 113, 0.4);
+    }
+    to {
+        box-shadow: 0 0 25px rgba(46, 204, 113, 0.8);
+    }
+}
+
+.habIconoRayo {
+    font-size: 1.1rem;
+}
+
+/* RESULTADO FINAL GRID HORIZONTAL */
 .habResultadoFinal {
-    margin-top: 15px;
+    margin-top: 20px;
     text-align: center;
 }
 
@@ -7569,6 +7908,38 @@ body.modo-dia .habAnimacion::after {
 
 .botonOBSBtn:hover {
     background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Modo día: iguala el color del .toggleModo adyacente */
+body.modo-dia .botonOBSBtn {
+    background: var(--color-advertencia);
+    color: #2B2B2B;
+    border-color: transparent;
+}
+
+body.modo-dia .botonOBSBtn:hover {
+    background: rgba(255, 213, 74, 0.75);
+    box-shadow:
+        0 0 8px rgba(255, 213, 74, 0.60),
+        0 0 18px rgba(255, 213, 74, 0.45),
+        0 0 30px rgba(255, 213, 74, 0.25);
+    transform: translateY(-2px);
+}
+
+/* Modo noche: iguala el color del .toggleModo adyacente */
+body.modo-noche .botonOBSBtn {
+    background: #6A5ACD;
+    color: #EDEDED;
+    border-color: transparent;
+}
+
+body.modo-noche .botonOBSBtn:hover {
+    background: rgba(106, 90, 205, 0.75);
+    box-shadow:
+        0 0 8px rgba(106, 90, 205, 0.60),
+        0 0 18px rgba(106, 90, 205, 0.45),
+        0 0 30px rgba(106, 90, 205, 0.25);
     transform: translateY(-2px);
 }
 

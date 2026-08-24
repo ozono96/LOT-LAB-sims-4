@@ -7,7 +7,9 @@
 const HAB = {
     habilidadesFiltradas: [],
     cantidad: 1,
-    animacionActiva: false
+    animacionActiva: false,
+    acelerado: false,
+    animTimer: null
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -35,6 +37,10 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("habBtnTirar")?.addEventListener("click", () => {
         if (!HAB.animacionActiva) _habTirar();
     });
+
+    document.getElementById("habBtnAcelerar")?.addEventListener("click", () => {
+        _habAlternarAcelerar();
+    });
 });
 
 document.addEventListener("datosCargados", () => {
@@ -58,14 +64,31 @@ function _habFiltrarHabilidades() {
 // ── Inicializar ventana generadora ────────────────────────
 function _habInicializarGenerador() {
     HAB.cantidad = 1;
+    HAB.animacionActiva = false;
+    HAB.acelerado = false;
+    if (HAB.animTimer) { clearTimeout(HAB.animTimer); HAB.animTimer = null; }
+
     const input = document.getElementById("habCantidad");
     if (input) input.value = 1;
     const wrap = document.getElementById("habResultadoWrap");
     const final = document.getElementById("habResultadoFinal");
     const animacion = document.getElementById("habAnimacion");
+    const pista = document.getElementById("habAnimacionPista");
+    const progresoEl = document.getElementById("habProgresoSeleccionWrap");
+    const acelerarWrap = document.getElementById("habAcelerarWrap");
+
     if (wrap) wrap.style.display = "none";
     if (final) final.style.display = "none";
     if (animacion) animacion.style.display = "block";
+    if (progresoEl) progresoEl.style.display = "none";
+    if (acelerarWrap) acelerarWrap.style.display = "none";
+    _habActualizarUIAcelerar(false);
+
+    if (pista) {
+        pista.style.transition = "none";
+        pista.style.transform = "translateX(0)";
+        pista.innerHTML = "";
+    }
     const btn = document.getElementById("habBtnTirar");
     if (btn) {
         btn.disabled = HAB.habilidadesFiltradas.length === 0;
@@ -93,8 +116,7 @@ function _habCambiarCantidad(delta) {
     }
 }
 
-// Función ejecutada remotamente por OBS Viewer para sincronizar el valor del selector
-window.actualizarCantidadHabilidadesObs = function(payload) {
+window.actualizarCantidadHabilidadesObs = function (payload) {
     if (!payload || payload.cantidad === undefined) return;
     const input = document.getElementById("habCantidad");
     if (!input) return;
@@ -103,88 +125,155 @@ window.actualizarCantidadHabilidadesObs = function(payload) {
     input.value = val;
 };
 
-function _habActualizarBotonesNumero() {
-    // Botones eliminados; función conservada por compatibilidad con llamadas existentes
+// ── Control de Aceleración ────────────────────────────────
+function _habAlternarAcelerar() {
+    HAB.acelerado = true;
+    _habActualizarUIAcelerar(true);
+
+    if (typeof window.emitirEventoOBS === "function" && !window.esSincronizacionOBS) {
+        window.emitirEventoOBS("SYNC_ACCION", {
+            accion: "HAB_ACELERAR_STATE",
+            payload: { acelerado: true }
+        });
+    }
 }
+
+function _habActualizarUIAcelerar(activo) {
+    const btn = document.getElementById("habBtnAcelerar");
+    const txt = document.getElementById("habTextoAcelerar");
+    if (btn) btn.classList.toggle("habBtnAcelerar--activo", !!activo);
+    if (txt) txt.textContent = activo ? "Acelerado" : "Acelerar";
+}
+
+window.setAceleradoHabilidadesObs = function (payload) {
+    const activo = payload && payload.acelerado !== undefined ? payload.acelerado : true;
+    HAB.acelerado = !!activo;
+    _habActualizarUIAcelerar(HAB.acelerado);
+};
+
+function _habActualizarBotonesNumero() {}
 
 // ── Tirar: animación + resultado ──────────────────────────
 function _habTirar() {
     if (HAB.habilidadesFiltradas.length === 0 || HAB.animacionActiva) return;
-    if (window.esSincronizacionOBS) return; // Viewer no debe tirar por su cuenta
+    if (window.esSincronizacionOBS) return;
     HAB.animacionActiva = true;
 
     const cantidad = Math.min(HAB.cantidad, HAB.habilidadesFiltradas.length);
     const shuffled = [...HAB.habilidadesFiltradas].sort(() => Math.random() - 0.5);
     const elegidas = shuffled.slice(0, cantidad);
 
+    HAB.acelerado = false;
+
     if (typeof window.emitirEventoOBS === 'function') {
         window.emitirEventoOBS('TIRAR_HABILIDADES', {
             elegidas: elegidas,
-            cantidad: cantidad
+            cantidad: cantidad,
+            acelerado: false
         });
     }
 
     _habAnimarTirada(elegidas);
 }
 
-// ── Animación extraída para ser reutilizable por OBS ───────
+// ── Animación horizontal secuencial delegada al engine común ───────
 function _habAnimarTirada(elegidas) {
     HAB.animacionActiva = true;
+    if (HAB.animTimer) { clearTimeout(HAB.animTimer); HAB.animTimer = null; }
+
     const wrap = document.getElementById("habResultadoWrap");
-    const pista = document.getElementById("habAnimacionPista");
     const final = document.getElementById("habResultadoFinal");
     const animacion = document.getElementById("habAnimacion");
-    if (!wrap || !pista || !final || !animacion) { HAB.animacionActiva = false; return; }
+    const progresoEl = document.getElementById("habProgresoSeleccionWrap");
+    const acelerarWrap = document.getElementById("habAcelerarWrap");
+
+    if (!wrap || !final || !animacion) { HAB.animacionActiva = false; return; }
 
     wrap.style.display = "block";
     final.style.display = "none";
     animacion.style.display = "block";
 
-    // Construir pista de animación (usar elegidas como fallback si habilidadesFiltradas está vacío)
+    if (elegidas.length > 1) {
+        if (progresoEl) progresoEl.style.display = "flex";
+        if (acelerarWrap) acelerarWrap.style.display = "flex";
+        _habActualizarUIAcelerar(HAB.acelerado);
+    } else {
+        if (progresoEl) progresoEl.style.display = "none";
+        if (acelerarWrap) acelerarWrap.style.display = "none";
+    }
+
     const fuenteAnim = (HAB.habilidadesFiltradas && HAB.habilidadesFiltradas.length > 0)
         ? HAB.habilidadesFiltradas
         : elegidas;
-    const todasAnim = [...fuenteAnim].sort(() => Math.random() - 0.5);
-    let pistaHTML = "";
 
-    const crearItemHTML = (fila, claseExtra) => {
-        const nombre = (fila[0] || "").trim();
-        const id = (fila[2] || "").trim();
-        const imgHTML = id
-            ? "<img src='img/Habilidades/" + id + ".png' alt='" + nombre + "' loading='lazy' onerror=\"this.style.display='none';this.nextElementSibling.style.display='flex'\"><span class='habAnim-fallback' style='display:none;font-size:1.6rem;'>🧠</span>"
-            : "<span class='habAnim-fallback' style='font-size:1.6rem;'>🧠</span>";
-        return "<div class='habAnim-item" + (claseExtra ? " " + claseExtra : "") + "'>" + imgHTML + "<span class='habAnim-nombre'>" + nombre + "</span></div>";
-    };
+    window.ejecutarGiroSecuencialSlot({
+        estado: HAB,
+        elegidas: elegidas,
+        index: 0,
+        fuentePool: fuenteAnim,
+        ids: {
+            animacion: "habAnimacion",
+            pista: "habAnimacionPista",
+            progresoWrap: "habProgresoSeleccionWrap",
+            progresoTexto: "habProgresoTexto",
+            acelerarWrap: "habAcelerarWrap",
+            final: "habResultadoFinal",
+            grid: "habResultadoGrid"
+        },
+        renderItemTrackHTML: (fila, idx) => {
+            const nombre = (fila[0] || "").trim();
+            const id = (fila[2] || "").trim();
+            const imgHTML = id
+                ? "<img src='img/Habilidades/" + id + ".png' alt='" + nombre + "' loading='lazy' onerror=\"this.style.display='none';this.nextElementSibling.style.display='flex'\"><span class='habAnim-fallback' style='display:none;font-size:1.6rem;'>🧠</span>"
+                : "<span class='habAnim-fallback' style='font-size:1.6rem;'>🧠</span>";
+            return "<div class='habAnim-item' data-idx='" + idx + "'>" +
+                imgHTML +
+                "<span class='habAnim-nombre' title='" + nombre + "'>" + nombre + "</span>" +
+            "</div>";
+        },
+        renderCardFinal: (fila, i) => {
+            const nombre = (fila[0] || "").trim();
+            const packReq = (fila[1] || "").trim();
+            const id = (fila[2] || "").trim();
+            const esBase = !packReq || packReq.toLowerCase() === "base" || packReq.toLowerCase() === "juego base";
+            const nombrePackNormalizado = esBase ? "Juego Base" : packReq;
+            const imgSrc = id ? "img/Habilidades/" + id + ".png" : "";
 
-    for (let r = 0; r < 3; r++) {
-        todasAnim.forEach(fila => { pistaHTML += crearItemHTML(fila, ""); });
-    }
-    elegidas.forEach(fila => { pistaHTML += crearItemHTML(fila, "habAnim-item--elegida"); });
+            const rutaIcono = typeof rutaIconoPack === "function" ? rutaIconoPack(nombrePackNormalizado) : null;
 
-    pista.innerHTML = pistaHTML;
+            const card = document.createElement("div");
+            card.className = "habResultadoCard";
+            card.style.animationDelay = (i * 0.08) + "s";
 
-    // Animación con requestAnimationFrame
-    requestAnimationFrame(() => {
-        const itemW = 130;
-        const numItems = pista.children.length;
-        const animWidth = animacion.offsetWidth || 400;
-        const margen = Math.max(0, numItems * itemW - animWidth - elegidas.length * itemW - 10);
-        pista.style.transition = "none";
-        pista.style.transform = "translateX(0)";
-        requestAnimationFrame(() => {
-            pista.style.transition = "transform 3s cubic-bezier(0.17, 0.67, 0.12, 1)";
-            pista.style.transform = "translateX(-" + margen + "px)";
-            setTimeout(() => {
-                animacion.style.display = "none";
-                _habMostrarResultado(elegidas, final);
-                HAB.animacionActiva = false;
-            }, 3150);
-        });
+            let packBadgeHTML = "";
+            if (rutaIcono) {
+                packBadgeHTML = "<div class='habResultadoCardPack" + (esBase ? " habResultadoCardPackBase" : "") + "'>" +
+                    "<img src='" + rutaIcono + "' alt='" + nombrePackNormalizado + "' title='" + nombrePackNormalizado + "' class='iconoPackMini' style='width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:4px;' onerror=\"this.style.display='none'\">" +
+                    "<span>" + nombrePackNormalizado + "</span>" +
+                "</div>";
+            } else {
+                packBadgeHTML = "<div class='habResultadoCardPack" + (esBase ? " habResultadoCardPackBase" : "") + "'>" +
+                    (esBase ? "🎮 Juego Base" : "📦 " + packReq) +
+                "</div>";
+            }
+
+            card.innerHTML =
+                "<div class='habResultadoCardImg'>" +
+                    (imgSrc
+                        ? "<img src='" + imgSrc + "' alt='" + nombre + "' onerror=\"this.style.display='none';this.nextElementSibling.style.display='flex'\">"
+                        : "") +
+                    "<div class='habResultadoCardFallback' style='" + (imgSrc ? "display:none" : "display:flex") + "'>🧠</div>" +
+                "</div>" +
+                "<div class='habResultadoCardNombre'>" + nombre + "</div>" +
+                packBadgeHTML;
+
+            return card;
+        }
     });
 }
 
 // ── Ejecutar tirada precalculada desde OBS ─────────────────
-window.ejecutarTiradaHabilidadesObs = function(data) {
+window.ejecutarTiradaHabilidadesObs = function (data) {
     if (!data || !data.elegidas) return;
     if (typeof window.abrirVentana === "function") {
         window.abrirVentana("ventanaHabilidadesGenerador", false);
@@ -192,11 +281,15 @@ window.ejecutarTiradaHabilidadesObs = function(data) {
     if (!HAB.habilidadesFiltradas || HAB.habilidadesFiltradas.length === 0) {
         _habFiltrarHabilidades();
     }
+    if (data.acelerado !== undefined) {
+        HAB.acelerado = !!data.acelerado;
+        _habActualizarUIAcelerar(HAB.acelerado);
+    }
     _habAnimarTirada(data.elegidas);
 };
 
 // ── Restaurar resultado estático en FULL_STATE sin animación ─
-window.restaurarResultadoHabilidadesObs = function(data) {
+window.restaurarResultadoHabilidadesObs = function (data) {
     if (!data || !data.elegidas) return;
     if (typeof window.abrirVentana === "function") {
         window.abrirVentana("ventanaHabilidadesGenerador", false);
@@ -204,35 +297,24 @@ window.restaurarResultadoHabilidadesObs = function(data) {
     const wrap = document.getElementById("habResultadoWrap");
     const final = document.getElementById("habResultadoFinal");
     const animacion = document.getElementById("habAnimacion");
-    if (!wrap || !final) return;
+    const progresoEl = document.getElementById("habProgresoSeleccionWrap");
+    const acelerarWrap = document.getElementById("habAcelerarWrap");
+    const grid = document.getElementById("habResultadoGrid");
+    if (!wrap || !final || !grid) return;
 
     wrap.style.display = "block";
     if (animacion) animacion.style.display = "none";
-    _habMostrarResultado(data.elegidas, final);
-};
-
-window._habFiltrarHabilidades = _habFiltrarHabilidades;
-window._habInicializarGenerador = _habInicializarGenerador;
-
-// ── Mostrar resultado final ───────────────────────────────
-function _habMostrarResultado(elegidas, finalEl) {
-    const grid = document.getElementById("habResultadoGrid");
-    if (!grid) return;
-
-    // Eliminar botón tirar otra vez si existía anteriormente
-    const oldBtn = finalEl.querySelector(".habBtnTirarOtraVez");
-    if (oldBtn) oldBtn.remove();
+    if (progresoEl) progresoEl.style.display = "none";
+    if (acelerarWrap) acelerarWrap.style.display = "none";
 
     grid.innerHTML = "";
-
-    elegidas.forEach((fila, i) => {
+    data.elegidas.forEach((fila, i) => {
         const nombre = (fila[0] || "").trim();
         const packReq = (fila[1] || "").trim();
         const id = (fila[2] || "").trim();
         const esBase = !packReq || packReq.toLowerCase() === "base" || packReq.toLowerCase() === "juego base";
         const nombrePackNormalizado = esBase ? "Juego Base" : packReq;
         const imgSrc = id ? "img/Habilidades/" + id + ".png" : "";
-
         const rutaIcono = typeof rutaIconoPack === "function" ? rutaIconoPack(nombrePackNormalizado) : null;
 
         const card = document.createElement("div");
@@ -264,5 +346,8 @@ function _habMostrarResultado(elegidas, finalEl) {
         grid.appendChild(card);
     });
 
-    finalEl.style.display = "block";
-}
+    final.style.display = "block";
+};
+
+window._habFiltrarHabilidades = _habFiltrarHabilidades;
+window._habInicializarGenerador = _habInicializarGenerador;

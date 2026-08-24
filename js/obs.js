@@ -142,6 +142,8 @@
         if (msg.tipo === "SYNC_FICHA_SOLAR") EstadoGlobal.estadosSemanticos.fichaSolar = msg;
         if (msg.tipo === "RETO_GENERADO") EstadoGlobal.estadosSemanticos.retoGenerado = msg;
         if (msg.tipo === "TIRAR_HABILIDADES") EstadoGlobal.estadosSemanticos.habilidades = msg;
+        if (msg.tipo === "TIRAR_PACKS") EstadoGlobal.estadosSemanticos.packs = msg;
+        if (msg.tipo === "TIRAR_MUNDOS") EstadoGlobal.estadosSemanticos.mundos = msg;
 
         if (msg.tipo === "SYNC_UI_BATCH") {
             // Actualizar uiState y htmlState
@@ -427,6 +429,8 @@
                     if (sem.temporizadorAcoplado && typeof window.ejecutarTemporizadorAcopladoObs === 'function') window.ejecutarTemporizadorAcopladoObs(sem.temporizadorAcoplado);
                     if (sem.estadisticas && typeof window.ejecutarEstadisticasObs === 'function') window.ejecutarEstadisticasObs(sem.estadisticas);
                     if (sem.habilidades && typeof window.restaurarResultadoHabilidadesObs === 'function') window.restaurarResultadoHabilidadesObs(sem.habilidades);
+                    if (sem.packs && typeof window.restaurarResultadoPacksObs === 'function') window.restaurarResultadoPacksObs(sem.packs);
+                    if (sem.mundos && typeof window.restaurarResultadoMundosObs === 'function') window.restaurarResultadoMundosObs(sem.mundos);
                     if (sem.ruletaDesastresSubpantalla && typeof window.ejecutarSubpantallaRuletaDesastresObs === 'function') window.ejecutarSubpantallaRuletaDesastresObs(sem.ruletaDesastresSubpantalla);
                     if (sem.ruletaDesastresConfig && typeof window.aplicarConfigRuletaDesastresObs === 'function') window.aplicarConfigRuletaDesastresObs(sem.ruletaDesastresConfig);
                     if (sem.ruletaDesastres) procesarMensajeObs(sem.ruletaDesastres);
@@ -437,6 +441,8 @@
                     if (sem.dados) procesarMensajeObs(sem.dados);
                     if (sem.dadosTiradas && typeof window.actualizarTiradasDadosObs === 'function') window.actualizarTiradasDadosObs(sem.dadosTiradas);
                     if (sem.habCantidad && typeof window.actualizarCantidadHabilidadesObs === 'function') window.actualizarCantidadHabilidadesObs(sem.habCantidad);
+                    if (sem.packsCantidad && typeof window.actualizarCantidadPacksObs === 'function') window.actualizarCantidadPacksObs(sem.packsCantidad);
+                    if (sem.mundosCantidad && typeof window.actualizarCantidadMundosObs === 'function') window.actualizarCantidadMundosObs(sem.mundosCantidad);
 
                     // Restaurar estado de filtros de solares
                     if (sem.filtrosSolares && typeof window.establecerEstadoFiltros === 'function') {
@@ -456,6 +462,12 @@
                     if (data.estado.ventanaActual === 'ventanaHabilidadesGenerador') {
                         if (typeof window._habFiltrarHabilidades === 'function') window._habFiltrarHabilidades();
                         if (typeof window._habInicializarGenerador === 'function') window._habInicializarGenerador();
+                    } else if (data.estado.ventanaActual === 'ventanaPacksGenerador') {
+                        if (typeof window._packsFiltrarPacks === 'function') window._packsFiltrarPacks();
+                        if (typeof window._packsInicializarGenerador === 'function') window._packsInicializarGenerador();
+                    } else if (data.estado.ventanaActual === 'ventanaMundosGenerador') {
+                        if (typeof window._mundosFiltrarMundos === 'function') window._mundosFiltrarMundos();
+                        if (typeof window._mundosInicializarGenerador === 'function') window._mundosInicializarGenerador();
                     } else if (data.estado.ventanaActual === 'ventanaEstadisticas') {
                         if (typeof window.abrirEstadisticas === 'function') window.abrirEstadisticas();
                         if (sem && sem.estadisticas && typeof window.ejecutarEstadisticasObs === 'function') window.ejecutarEstadisticasObs(sem.estadisticas);
@@ -500,6 +512,12 @@
                         if (data.idVentana === 'ventanaHabilidadesGenerador') {
                             if (typeof window._habFiltrarHabilidades === 'function') window._habFiltrarHabilidades();
                             if (typeof window._habInicializarGenerador === 'function') window._habInicializarGenerador();
+                        } else if (data.idVentana === 'ventanaPacksGenerador') {
+                            if (typeof window._packsFiltrarPacks === 'function') window._packsFiltrarPacks();
+                            if (typeof window._packsInicializarGenerador === 'function') window._packsInicializarGenerador();
+                        } else if (data.idVentana === 'ventanaMundosGenerador') {
+                            if (typeof window._mundosFiltrarMundos === 'function') window._mundosFiltrarMundos();
+                            if (typeof window._mundosInicializarGenerador === 'function') window._mundosInicializarGenerador();
                         } else if (data.idVentana === 'ventanaEstadisticas') {
                             if (typeof window.abrirEstadisticas === 'function') window.abrirEstadisticas();
                         } else if (data.idVentana === 'ventanaRetoResultado') {
@@ -582,6 +600,16 @@
                             window.ejecutarTiradaHabilidadesObs(data);
                         }
                         break;
+                    case 'TIRAR_PACKS':
+                        if (typeof window.ejecutarTiradaPacksObs === 'function') {
+                            window.ejecutarTiradaPacksObs(data);
+                        }
+                        break;
+                    case 'TIRAR_MUNDOS':
+                        if (typeof window.ejecutarTiradaMundosObs === 'function') {
+                            window.ejecutarTiradaMundosObs(data);
+                        }
+                        break;
                     case 'SYNC_MODAL_PACKS':
                         if (data.visible && typeof window.abrirModalPacksFlotante === 'function') {
                             window.abrirModalPacksFlotante(data.titulo, data.packs);
@@ -604,6 +632,16 @@
                             window.actualizarTiradasDadosObs(data.payload);
                         } else if (data.accion === 'HAB_CANTIDAD_STATE' && typeof window.actualizarCantidadHabilidadesObs === 'function') {
                             window.actualizarCantidadHabilidadesObs(data.payload);
+                        } else if (data.accion === 'HAB_ACELERAR_STATE' && typeof window.setAceleradoHabilidadesObs === 'function') {
+                            window.setAceleradoHabilidadesObs(data.payload);
+                        } else if (data.accion === 'PACKS_CANTIDAD_STATE' && typeof window.actualizarCantidadPacksObs === 'function') {
+                            window.actualizarCantidadPacksObs(data.payload);
+                        } else if (data.accion === 'PACKS_ACELERAR_STATE' && typeof window.setAceleradoPacksObs === 'function') {
+                            window.setAceleradoPacksObs(data.payload);
+                        } else if (data.accion === 'MUNDOS_CANTIDAD_STATE' && typeof window.actualizarCantidadMundosObs === 'function') {
+                            window.actualizarCantidadMundosObs(data.payload);
+                        } else if (data.accion === 'MUNDOS_ACELERAR_STATE' && typeof window.setAceleradoMundosObs === 'function') {
+                            window.setAceleradoMundosObs(data.payload);
                         } else if (data.accion === 'TEMPORIZADOR' && typeof window.ejecutarTemporizadorObs === 'function') {
                             window.ejecutarTemporizadorObs(data.payload);
                         } else if (data.accion === 'TEMPORIZADOR_MINUTOS_STATE' && typeof window.actualizarMinutosTemporizadorObs === 'function') {

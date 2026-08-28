@@ -14,6 +14,8 @@ const ESTAD = {
     zoomFactor: {
         porTipo: 1,
         porMeses: 1,
+        mesesAno: 1,
+        diasSemana: 1,
         temporal: 1,
         solares: 1,
         objetos: 1,
@@ -26,7 +28,8 @@ const ESTAD = {
         "Kits": true,
         "Packs gratuitos": true,
         "Juego Base": true,
-    }
+    },
+    detalleActivo: null, // { chartId, tipo, valor, titulo }
 };
 
 // ── Mapa de tipos por prefijo de ID ─────────────────────
@@ -251,7 +254,7 @@ function parsearFilasEstadisticas(filas) {
 
     const vistos = new Set();
     const unicos = packs.filter(p => {
-        const key = p.codigoInterno || p.id || p.nombre;
+        const key = `${p.codigoInterno}_${p.nombre}`;
         if (vistos.has(key)) return false;
         vistos.add(key);
         return true;
@@ -273,7 +276,9 @@ async function cargarEstadisticasSims4() {
     mostrarEstadCargando(true);
 
     try {
-        const filas = await cargarHoja(CONFIG.SHEETS.ESTADISTICAS_SIMS4);
+        // nocache: true → cache: "no-store" en fetch: el navegador siempre va a la red.
+        // rango: "A1:ZZ500" → fuerza a Google Sheets a leer todas las filas y columnas de la hoja.
+        const filas = await cargarHoja(CONFIG.SHEETS.ESTADISTICAS_SIMS4, { nocache: true, rango: "A1:ZZ500" });
         if (!filas || filas.length === 0) {
             mostrarEstadError("No se pudieron cargar los datos de estadísticas.");
             return;
@@ -296,6 +301,45 @@ async function cargarEstadisticasSims4() {
     actualizarResumen(ESTAD.packsFiltrados);
     renderizarLista(ESTAD.packsFiltrados);
     actualizarContador(ESTAD.packsFiltrados.length, ESTAD.packsOriginales.length);
+}
+
+// ── Actualización en segundo plano desde Google Sheets ────
+// Recarga silenciosa al reabrir la ventana dentro de la misma sesión.
+// Si falla, mantiene los datos anteriores sin vaciar la vista.
+async function refrescarEstadisticasEnSegundoPlano() {
+    try {
+        const filas = await cargarHoja(CONFIG.SHEETS.ESTADISTICAS_SIMS4, { nocache: true, rango: "A1:ZZ500" });
+        if (!filas || filas.length === 0) return;
+
+        const nuevosPacks = parsearFilasEstadisticas(filas);
+        if (!nuevosPacks || nuevosPacks.length === 0) return;
+
+        ESTAD.packsOriginales = nuevosPacks;
+
+        // Reaplicar filtros activos sobre los datos nuevos
+        const filtros = obtenerFiltrosEstadisticasActuales();
+        const hayFiltros = Boolean(
+            filtros.texto || filtros.fechaDesde || filtros.fechaHasta ||
+            filtros.precioMin || filtros.precioMax || filtros.tipoPack
+        );
+        if (hayFiltros) {
+            aplicarFiltrosEstadisticas();
+        } else {
+            ESTAD.packsFiltrados = [...ESTAD.packsOriginales];
+        }
+
+        actualizarResumen(ESTAD.packsFiltrados);
+        if (ESTAD.vistaActual === "lista") {
+            renderizarLista(ESTAD.packsFiltrados);
+        } else {
+            requestAnimationFrame(() => renderizarGraficos(ESTAD.packsFiltrados));
+        }
+        actualizarContador(ESTAD.packsFiltrados.length, ESTAD.packsOriginales.length);
+
+    } catch (err) {
+        // Fallo silencioso: no interrumpe ni vacía la vista
+        console.warn("Actualización en segundo plano fallida, se mantienen datos anteriores.", err);
+    }
 }
 
 function obtenerFiltrosEstadisticasActuales() {
@@ -564,10 +608,16 @@ function renderizarLista(packs) {
 function renderizarGraficos(packs) {
     dibujarGraficoLanzamientosYPrecios(packs);
     dibujarGraficoPorMeses(packs);
+    dibujarGraficoMesesAno(packs);
+    dibujarGraficoDiasSemana(packs);
     dibujarGraficoTemporal(packs);
     dibujarGraficoPastel(packs);
+    dibujarGraficoPrecio(packs);
     dibujarGraficoSolaresMundos(packs);
     dibujarGraficoObjetos(packs);
+
+    // Si hay un panel de detalle abierto, actualizarlo con los packs filtrados actuales
+    actualizarDetalleLanzamientos();
 }
 
 // Helper: obtener contexto con soporte de zoom
@@ -820,6 +870,529 @@ function dibujarGraficoPorMeses(packs) {
     });
 }
 
+const NOMBRES_MESES_COMPLETOS = [
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+];
+
+const NOMBRES_DIAS_SEMANA = [
+    "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"
+];
+
+const ORDEN_STACK_CATEGORIAS = [
+    "Expansión", "Contenido", "Accesorios", "Kits", "Packs gratuitos", "Juego Base"
+];
+
+// ── Gráfico NUEVO: Lanzamientos por mes del año (12 meses - Barras apiladas) ──
+function dibujarGraficoMesesAno(packs) {
+    const conFecha = packs.filter(p => p.fechaISO);
+    const ctx = getCtx("graficoMesesAno", 12, 58, "mesesAno");
+    if (!ctx) return;
+    const W = ctx._cW, H = ctx._cH;
+    ctx.clearRect(0, 0, W, H);
+
+    if (conFecha.length === 0) {
+        dibujarVacio(ctx, W, H, "Sin datos de fecha en el intervalo seleccionado");
+        return;
+    }
+
+    // Inicializar 12 meses
+    const meses = Array.from({ length: 12 }, (_, i) => ({
+        index: i,
+        nombre: NOMBRES_MESES[i] || "",
+        nombreCompleto: NOMBRES_MESES_COMPLETOS[i] || "",
+        total: 0,
+        porTipo: {}
+    }));
+
+    conFecha.forEach(p => {
+        const partes = p.fechaISO.split("-");
+        const mm = parseInt(partes[1], 10);
+        if (mm >= 1 && mm <= 12) {
+            const mIdx = mm - 1;
+            meses[mIdx].total++;
+            const t = p.tipoPack || "Otro";
+            meses[mIdx].porTipo[t] = (meses[mIdx].porTipo[t] || 0) + 1;
+        }
+    });
+
+    const maxTotalMes = Math.max(...meses.map(m => m.total), 1);
+    const pad = { top: 38, right: 20, bottom: 65, left: 45 };
+    const aW = W - pad.left - pad.right;
+    const aH = H - pad.top - pad.bottom;
+
+    ctx.fillStyle = colorFondoG(ctx);
+    ctx.fillRect(0, 0, W, H);
+
+    // Cuadrícula Y
+    for (let i = 0; i <= 4; i++) {
+        const y = pad.top + (aH / 4) * i;
+        ctx.beginPath();
+        ctx.strokeStyle = colorLinea(ctx);
+        ctx.lineWidth = 1;
+        ctx.moveTo(pad.left, y);
+        ctx.lineTo(pad.left + aW, y);
+        ctx.stroke();
+        const val = Math.round(maxTotalMes - (maxTotalMes / 4) * i);
+        ctx.fillStyle = colorSubTexto(ctx);
+        ctx.font = "10px 'Segoe UI', sans-serif";
+        ctx.textAlign = "right";
+        ctx.fillText(val + (val === 1 ? " pack" : " packs"), pad.left - 5, y + 4);
+    }
+
+    if (!ESTAD.hitboxes) ESTAD.hitboxes = [];
+    ESTAD.hitboxes = ESTAD.hitboxes.filter(h => h.chartId !== "graficoMesesAno");
+
+    const barW = aW / 12;
+    const barPad = Math.max(3, barW * 0.16);
+    const bW = Math.max(barW - barPad * 2, 4);
+
+    meses.forEach((mesData, i) => {
+        const x = pad.left + barW * i + barPad;
+        let currY = pad.top + aH;
+
+        const tiposActivos = ORDEN_STACK_CATEGORIAS.filter(t => (mesData.porTipo[t] || 0) > 0);
+        const desglose = [];
+
+        tiposActivos.forEach((tipo, tIdx) => {
+            const cant = mesData.porTipo[tipo];
+            const color = COLORES_TIPO[tipo] || "#2563EB";
+            desglose.push({ tipo, cant, color });
+
+            const segH = (cant / maxTotalMes) * aH;
+            const segY = currY - segH;
+
+            const grd = ctx.createLinearGradient(0, segY, 0, segY + segH);
+            grd.addColorStop(0, colorConAlpha(color, "FF"));
+            grd.addColorStop(1, colorConAlpha(color, "77"));
+            ctx.fillStyle = grd;
+
+            const esCima = (tIdx === tiposActivos.length - 1);
+            if (esCima && segH >= 4) {
+                roundRect(ctx, x, segY, bW, segH, 4);
+            } else {
+                ctx.beginPath();
+                ctx.rect(x, segY, bW, segH);
+                ctx.closePath();
+            }
+            ctx.fill();
+
+            // Línea separadora sutil si hay varios segmentos
+            if (tiposActivos.length > 1 && !esCima) {
+                ctx.strokeStyle = ctx._isDark ? "rgba(0,0,0,0.35)" : "rgba(255,255,255,0.45)";
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(x, segY);
+                ctx.lineTo(x + bW, segY);
+                ctx.stroke();
+            }
+
+            // Número dentro del segmento si cabe
+            if (segH >= 15 && bW >= 14) {
+                ctx.fillStyle = "#ffffff";
+                ctx.shadowColor = "rgba(0,0,0,0.6)";
+                ctx.shadowBlur = 3;
+                ctx.font = "bold 9px 'Segoe UI', sans-serif";
+                ctx.textAlign = "center";
+                ctx.fillText(cant, x + bW / 2, segY + segH / 2 + 3);
+                ctx.shadowBlur = 0;
+            }
+
+            currY = segY;
+        });
+
+        // Total encima de la barra apilada
+        if (mesData.total > 0) {
+            ctx.fillStyle = colorTexto(ctx);
+            ctx.font = "bold 10px 'Segoe UI', sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText(mesData.total, x + bW / 2, currY - 6);
+        }
+
+        // Resaltado si esta barra está activa en el panel desplegable
+        const esSeleccionado = Boolean(ESTAD.detalleActivo && ESTAD.detalleActivo.chartId === "graficoMesesAno" && ESTAD.detalleActivo.valor === i);
+        if (esSeleccionado) {
+            ctx.save();
+            ctx.strokeStyle = ctx._isDark ? "#3aeded" : "#2563EB";
+            ctx.lineWidth = 2.5;
+            const fullBarH = Math.max(pad.top + aH - currY, 6);
+            roundRect(ctx, x - 2, currY - 2, bW + 4, fullBarH + 4, 6);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        // Etiqueta del mes en eje X
+        ctx.fillStyle = esSeleccionado ? (ctx._isDark ? "#3aeded" : "#2563EB") : colorTexto(ctx);
+        ctx.font = esSeleccionado ? "bold 11px 'Segoe UI', sans-serif" : "bold 10px 'Segoe UI', sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(mesData.nombre, x + bW / 2, pad.top + aH + 18);
+
+        // Hitbox para tooltip hover y click
+        ESTAD.hitboxes.push({
+            chartId: "graficoMesesAno",
+            x1: x - 2,
+            x2: x + bW + 2,
+            y1: pad.top,
+            y2: pad.top + aH + 28,
+            tipo: "mes",
+            valor: i,
+            tituloRaw: mesData.nombreCompleto,
+            titulo: `📅 ${mesData.nombreCompleto}`,
+            total: mesData.total,
+            desglose: desglose
+        });
+    });
+
+    // Leyenda inferior de categorías
+    dibujarLeyendaStack(ctx, W, H, pad);
+}
+
+// ── Gráfico NUEVO: Lanzamientos por día de la semana (7 días - Barras apiladas) ──
+function dibujarGraficoDiasSemana(packs) {
+    const conFecha = packs.filter(p => p.fechaISO);
+    const ctx = getCtx("graficoDiasSemana", 7, 75, "diasSemana");
+    if (!ctx) return;
+    const W = ctx._cW, H = ctx._cH;
+    ctx.clearRect(0, 0, W, H);
+
+    if (conFecha.length === 0) {
+        dibujarVacio(ctx, W, H, "Sin datos de fecha en el intervalo seleccionado");
+        return;
+    }
+
+    // Inicializar 7 días (Lunes=0 ... Domingo=6)
+    const dias = Array.from({ length: 7 }, (_, i) => ({
+        index: i,
+        nombre: NOMBRES_DIAS_SEMANA[i] || "",
+        total: 0,
+        porTipo: {}
+    }));
+
+    conFecha.forEach(p => {
+        const partes = p.fechaISO.split("-");
+        const yyyy = parseInt(partes[0], 10);
+        const mm = parseInt(partes[1], 10);
+        const dd = parseInt(partes[2], 10);
+
+        // Fecha de calendario a mediodía local para evitar cualquier salto horario
+        const fechaCal = new Date(yyyy, mm - 1, dd, 12, 0, 0);
+        const diaIdx = (fechaCal.getDay() + 6) % 7; // 0=Lunes ... 6=Domingo
+
+        if (diaIdx >= 0 && diaIdx < 7) {
+            dias[diaIdx].total++;
+            const t = p.tipoPack || "Otro";
+            dias[diaIdx].porTipo[t] = (dias[diaIdx].porTipo[t] || 0) + 1;
+        }
+    });
+
+    const maxTotalDia = Math.max(...dias.map(d => d.total), 1);
+    const pad = { top: 38, right: 20, bottom: 65, left: 45 };
+    const aW = W - pad.left - pad.right;
+    const aH = H - pad.top - pad.bottom;
+
+    ctx.fillStyle = colorFondoG(ctx);
+    ctx.fillRect(0, 0, W, H);
+
+    // Cuadrícula Y
+    for (let i = 0; i <= 4; i++) {
+        const y = pad.top + (aH / 4) * i;
+        ctx.beginPath();
+        ctx.strokeStyle = colorLinea(ctx);
+        ctx.lineWidth = 1;
+        ctx.moveTo(pad.left, y);
+        ctx.lineTo(pad.left + aW, y);
+        ctx.stroke();
+        const val = Math.round(maxTotalDia - (maxTotalDia / 4) * i);
+        ctx.fillStyle = colorSubTexto(ctx);
+        ctx.font = "10px 'Segoe UI', sans-serif";
+        ctx.textAlign = "right";
+        ctx.fillText(val + (val === 1 ? " pack" : " packs"), pad.left - 5, y + 4);
+    }
+
+    if (!ESTAD.hitboxes) ESTAD.hitboxes = [];
+    ESTAD.hitboxes = ESTAD.hitboxes.filter(h => h.chartId !== "graficoDiasSemana");
+
+    const barW = aW / 7;
+    const barPad = Math.max(8, barW * 0.22);
+    const bW = Math.max(barW - barPad * 2, 8);
+
+    dias.forEach((diaData, i) => {
+        const x = pad.left + barW * i + barPad;
+        let currY = pad.top + aH;
+
+        const tiposActivos = ORDEN_STACK_CATEGORIAS.filter(t => (diaData.porTipo[t] || 0) > 0);
+        const desglose = [];
+
+        tiposActivos.forEach((tipo, tIdx) => {
+            const cant = diaData.porTipo[tipo];
+            const color = COLORES_TIPO[tipo] || "#2563EB";
+            desglose.push({ tipo, cant, color });
+
+            const segH = (cant / maxTotalDia) * aH;
+            const segY = currY - segH;
+
+            const grd = ctx.createLinearGradient(0, segY, 0, segY + segH);
+            grd.addColorStop(0, colorConAlpha(color, "FF"));
+            grd.addColorStop(1, colorConAlpha(color, "77"));
+            ctx.fillStyle = grd;
+
+            const esCima = (tIdx === tiposActivos.length - 1);
+            if (esCima && segH >= 4) {
+                roundRect(ctx, x, segY, bW, segH, 5);
+            } else {
+                ctx.beginPath();
+                ctx.rect(x, segY, bW, segH);
+                ctx.closePath();
+            }
+            ctx.fill();
+
+            if (tiposActivos.length > 1 && !esCima) {
+                ctx.strokeStyle = ctx._isDark ? "rgba(0,0,0,0.35)" : "rgba(255,255,255,0.45)";
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(x, segY);
+                ctx.lineTo(x + bW, segY);
+                ctx.stroke();
+            }
+
+            if (segH >= 15 && bW >= 14) {
+                ctx.fillStyle = "#ffffff";
+                ctx.shadowColor = "rgba(0,0,0,0.6)";
+                ctx.shadowBlur = 3;
+                ctx.font = "bold 10px 'Segoe UI', sans-serif";
+                ctx.textAlign = "center";
+                ctx.fillText(cant, x + bW / 2, segY + segH / 2 + 3);
+                ctx.shadowBlur = 0;
+            }
+
+            currY = segY;
+        });
+
+        // Total encima de la barra apilada
+        if (diaData.total > 0) {
+            ctx.fillStyle = colorTexto(ctx);
+            ctx.font = "bold 11px 'Segoe UI', sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText(diaData.total, x + bW / 2, currY - 6);
+        }
+
+        // Resaltado si esta barra está activa en el panel desplegable
+        const esSeleccionado = Boolean(ESTAD.detalleActivo && ESTAD.detalleActivo.chartId === "graficoDiasSemana" && ESTAD.detalleActivo.valor === i);
+        if (esSeleccionado) {
+            ctx.save();
+            ctx.strokeStyle = ctx._isDark ? "#3aeded" : "#2563EB";
+            ctx.lineWidth = 2.5;
+            const fullBarH = Math.max(pad.top + aH - currY, 6);
+            roundRect(ctx, x - 2, currY - 2, bW + 4, fullBarH + 4, 6);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        // Etiqueta del día en eje X
+        ctx.fillStyle = esSeleccionado ? (ctx._isDark ? "#3aeded" : "#2563EB") : colorTexto(ctx);
+        ctx.font = esSeleccionado ? "bold 12px 'Segoe UI', sans-serif" : "bold 11px 'Segoe UI', sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(diaData.nombre, x + bW / 2, pad.top + aH + 18);
+
+        // Hitbox para tooltip hover y click
+        ESTAD.hitboxes.push({
+            chartId: "graficoDiasSemana",
+            x1: x - 4,
+            x2: x + bW + 4,
+            y1: pad.top,
+            y2: pad.top + aH + 28,
+            tipo: "dia",
+            valor: i,
+            tituloRaw: diaData.nombre,
+            titulo: `📆 ${diaData.nombre}`,
+            total: diaData.total,
+            desglose: desglose
+        });
+    });
+
+    // Leyenda inferior de categorías
+    dibujarLeyendaStack(ctx, W, H, pad);
+}
+
+// Helper: Leyenda horizontal para gráficos de barras apiladas
+function dibujarLeyendaStack(ctx, W, H, pad) {
+    const tipos = ORDEN_STACK_CATEGORIAS;
+    const leyY = H - 12;
+
+    ctx.font = "9.5px 'Segoe UI', sans-serif";
+    const items = tipos.map(t => ({
+        tipo: t,
+        color: COLORES_TIPO[t] || "#2563EB",
+        w: ctx.measureText(t).width + 16
+    }));
+
+    const totalW = items.reduce((s, i) => s + i.w + 8, 0) - 8;
+    let startX = Math.max(pad.left, (W - totalW) / 2);
+
+    items.forEach(item => {
+        ctx.fillStyle = item.color;
+        roundRect(ctx, startX, leyY - 8, 9, 9, 2);
+        ctx.fill();
+
+        ctx.fillStyle = colorSubTexto(ctx);
+        ctx.font = "9.5px 'Segoe UI', sans-serif";
+        ctx.textAlign = "left";
+        ctx.fillText(item.tipo, startX + 13, leyY);
+
+        startX += item.w + 8;
+    });
+}
+
+// ── Detalle desplegable de lanzamientos al pulsar barras ───────
+
+function mostrarDetalleLanzamientos(chartId, tipo, valor, titulo) {
+    ESTAD.detalleActivo = { chartId, tipo, valor, titulo };
+
+    const panelId = chartId === "graficoMesesAno" ? "panelDetalleMesesAno" : "panelDetalleDiasSemana";
+    const panel = document.getElementById(panelId);
+    const otroPanelId = chartId === "graficoMesesAno" ? "panelDetalleDiasSemana" : "panelDetalleMesesAno";
+    const otroPanel = document.getElementById(otroPanelId);
+
+    if (otroPanel) otroPanel.style.display = "none";
+    if (!panel) return;
+
+    // Filtrar packs exclusivamente a partir de ESTAD.packsFiltrados
+    let packsDetalle = [];
+    if (tipo === "mes") {
+        packsDetalle = ESTAD.packsFiltrados.filter(p => {
+            if (!p.fechaISO) return false;
+            const partes = p.fechaISO.split("-");
+            return parseInt(partes[1], 10) - 1 === valor;
+        });
+    } else if (tipo === "dia") {
+        packsDetalle = ESTAD.packsFiltrados.filter(p => {
+            if (!p.fechaISO) return false;
+            const [y, m, d] = p.fechaISO.split("-").map(Number);
+            const fechaCal = new Date(y, m - 1, d, 12, 0, 0);
+            return (fechaCal.getDay() + 6) % 7 === valor;
+        });
+    }
+
+    // Ordenar cronológicamente
+    packsDetalle.sort((a, b) => (a.fechaISO || "").localeCompare(b.fechaISO || ""));
+
+    const mapaSolares = obtenerMapaConteoSolares();
+
+    let contenidoHTML = "";
+    if (packsDetalle.length === 0) {
+        contenidoHTML = `<div class="estatDetalleVacio">
+            <span style="font-size:1.8rem; opacity:0.8;">ℹ️</span>
+            <div><strong>Sin lanzamientos</strong></div>
+            <div style="opacity:0.75; font-size:0.85rem;">No hay packs que coincidan con los filtros seleccionados para este ${tipo === "mes" ? "mes" : "día"}.</div>
+        </div>`;
+    } else {
+        const itemsHTML = packsDetalle.map(pack => {
+            const colorTipo = COLORES_TIPO[pack.tipoPack] || "#2563EB";
+            const badgeCodigo = pack.codigoInterno || pack.id;
+            const badgeId = `<span class="packBadgeId" style="background:${colorTipo}; color:#ffffff; border-color:${colorTipo}; font-size:0.75rem; padding:2px 8px;">${badgeCodigo}</span>`;
+            const badgeTipo = `<span class="packBadgeTipo" style="background:${colorConAlpha(colorTipo, "22")}; color:${colorTipo}; border:1px solid ${colorConAlpha(colorTipo, "55")}; font-size:0.7rem; padding:2px 8px;">${pack.tipoPack}</span>`;
+
+            let precioDisplay = "";
+            if (pack.esJuegoBase || pack.precio === 0) {
+                precioDisplay = `<span class="packPrecio packPrecioGratis" style="font-size:0.82rem; padding:2px 8px;">Gratis</span>`;
+            } else {
+                precioDisplay = `<span class="packPrecio" style="font-size:0.82rem; padding:2px 8px;">${formatearEuros(pack.precio)}</span>`;
+            }
+
+            let fechaDisplay = "";
+            if (pack.fechaISO) {
+                const partes = pack.fechaISO.split("-");
+                const d = new Date(parseInt(partes[0], 10), parseInt(partes[1], 10) - 1, parseInt(partes[2], 10), 12, 0, 0);
+                const fechaBonita = d.toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" });
+                fechaDisplay = `📅 ${fechaBonita}`;
+            } else if (pack.fecha) {
+                fechaDisplay = `📅 ${pack.fecha}`;
+            }
+
+            const cantSolares = mapaSolares.get(pack.id) || 0;
+            let solaresHTML = "";
+            if (cantSolares > 0) {
+                solaresHTML = `<div class="packSolares" style="font-size:0.78rem; padding:2px 8px;">
+                    <span class="packSolaresIcono">🏡</span>
+                    <strong class="packSolaresNum">${cantSolares}</strong>
+                    <span class="packSolaresLabel"> ${cantSolares === 1 ? 'solar' : 'solares'}</span>
+                </div>`;
+            }
+
+            let objetosHTML = "";
+            if (pack.objetos !== null) {
+                objetosHTML = `<div class="packObjetos" style="font-size:0.78rem; padding:2px 8px;">
+                    <span class="packObjetosIcono">🏠</span>
+                    <strong class="packObjetosNum">${pack.objetos.toLocaleString("es-ES")}</strong>
+                    <span class="packObjetosLabel"> objetos</span>
+                </div>`;
+            }
+
+            return `<div class="estatDetallePackCard">
+                <div class="estatDetallePackImgWrap">
+                    <img
+                        src="${pack.rutaImg}"
+                        alt="${pack.nombre}"
+                        class="estatDetallePackImg"
+                        onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+                    >
+                    <div class="packIconoFallback" style="display:none; font-size:1.3rem;">📦</div>
+                </div>
+                <div class="estatDetallePackInfo">
+                    <div class="estatDetallePackRowTop">
+                        ${badgeId}
+                        <span class="estatDetallePackNombre">${pack.nombre}</span>
+                        <div style="margin-left:auto;">${badgeTipo}</div>
+                    </div>
+                    <div class="estatDetallePackRowBottom">
+                        <span class="estatDetallePackFecha">${fechaDisplay}</span>
+                        <div>${precioDisplay}</div>
+                        ${solaresHTML}
+                        ${objetosHTML}
+                    </div>
+                </div>
+            </div>`;
+        }).join("");
+
+        contenidoHTML = `<div class="estatDetalleLista">${itemsHTML}</div>`;
+    }
+
+    const iconoTitulo = tipo === "mes" ? "📅 " : "📆 ";
+    panel.innerHTML = `
+        <div class="estatDetalleHeader">
+            <div class="estatDetalleTituloWrap">
+                <h4 class="estatDetalleTitulo">${iconoTitulo}${titulo}</h4>
+                <span class="estatDetalleBadgeCount">${packsDetalle.length} ${packsDetalle.length === 1 ? 'lanzamiento encontrado' : 'lanzamientos encontrados'}</span>
+            </div>
+            <button type="button" class="estatDetalleBtnCerrar" onclick="cerrarDetalleLanzamientos('${chartId}')" title="Cerrar detalle">✕</button>
+        </div>
+        ${contenidoHTML}
+    `;
+
+    panel.style.display = "flex";
+}
+
+function cerrarDetalleLanzamientos(chartId) {
+    if (ESTAD.detalleActivo && ESTAD.detalleActivo.chartId === chartId) {
+        ESTAD.detalleActivo = null;
+    }
+    const panelId = chartId === "graficoMesesAno" ? "panelDetalleMesesAno" : "panelDetalleDiasSemana";
+    const panel = document.getElementById(panelId);
+    if (panel) panel.style.display = "none";
+
+    renderizarGraficos(ESTAD.packsFiltrados);
+}
+
+function actualizarDetalleLanzamientos() {
+    if (!ESTAD.detalleActivo) return;
+    const { chartId, tipo, valor, titulo } = ESTAD.detalleActivo;
+    const panelId = chartId === "graficoMesesAno" ? "panelDetalleMesesAno" : "panelDetalleDiasSemana";
+    const panel = document.getElementById(panelId);
+    if (panel && panel.style.display !== "none") {
+        mostrarDetalleLanzamientos(chartId, tipo, valor, titulo);
+    }
+}
+
 // ── Gráfico 3: Multilínea temporal por tipo y global ──────────────────
 function dibujarGraficoTemporal(packs) {
     const conFecha = packs.filter(p => p.fechaISO || p.anioLanzamiento);
@@ -1009,8 +1582,11 @@ function dibujarGraficoPastel(packs) {
     ctx.fillStyle = colorFondoG(ctx);
     ctx.fillRect(0, 0, W, H);
 
-    // Ajustar posiciones responsivas para que el rosco y la leyenda no se salgan nunca
-    const cx = Math.min(W * 0.28, 135);
+    if (!ESTAD.donutSlices) ESTAD.donutSlices = [];
+    ESTAD.donutSlices = ESTAD.donutSlices.filter(s => s.chartId !== "graficoPastel");
+
+    // Posición del rosco y de la leyenda
+    const cx = Math.min(W * 0.28, 125);
     const cy = H / 2;
     const radio = Math.min(cx - 15, H * 0.38);
 
@@ -1019,6 +1595,7 @@ function dibujarGraficoPastel(packs) {
         const frac = valores[i] / total;
         const angFin = ang + frac * Math.PI * 2;
         const color = COLORES_TIPO[tipo] || "#2563EB";
+
         ctx.beginPath();
         ctx.moveTo(cx, cy);
         ctx.arc(cx, cy, radio, ang, angFin);
@@ -1028,6 +1605,21 @@ function dibujarGraficoPastel(packs) {
         ctx.strokeStyle = "rgba(255,255,255,0.2)";
         ctx.lineWidth = 2;
         ctx.stroke();
+
+        ESTAD.donutSlices.push({
+            chartId: "graficoPastel",
+            cx, cy,
+            innerR: radio * 0.5,
+            outerR: radio,
+            angInicio: ang,
+            angFin: angFin,
+            tipo,
+            cantPacks: valores[i],
+            totalPacks: total,
+            pct: ((valores[i] / total) * 100).toFixed(1).replace(".0", ""),
+            color
+        });
+
         ang = angFin;
     });
 
@@ -1044,18 +1636,122 @@ function dibujarGraficoPastel(packs) {
     ctx.fillStyle = colorSubTexto(ctx);
     ctx.fillText("packs", cx, cy + 18);
 
-    // Leyenda dentro del contenedor sin desbordar
-    const leyX = cx + radio + 20;
+    // Leyenda lateral
+    const leyX = cx + radio + 18;
     let leyY = H / 2 - (tipos.length * 22) / 2;
     tipos.forEach((tipo, i) => {
         ctx.fillStyle = COLORES_TIPO[tipo] || "#2563EB";
-        roundRect(ctx, leyX, leyY, 12, 12, 3);
+        roundRect(ctx, leyX, leyY, 11, 11, 3);
         ctx.fill();
         ctx.fillStyle = colorTexto(ctx);
-        ctx.font = "11px 'Segoe UI', sans-serif";
+        ctx.font = "10.5px 'Segoe UI', sans-serif";
         ctx.textAlign = "left";
         const pct = Math.round((valores[i] / total) * 100);
-        ctx.fillText(`${tipo}: ${valores[i]} (${pct}%)`, leyX + 18, leyY + 10);
+        ctx.fillText(`${tipo}: ${valores[i]} (${pct}%)`, leyX + 16, leyY + 9);
+        leyY += 22;
+    });
+}
+
+// ── Gráfico NUEVO: Distribución por precio acumulado por categoría ──────
+function dibujarGraficoPrecio(packs) {
+    const ctx = getCtx("graficoPrecio");
+    if (!ctx) return;
+    const W = ctx._cW, H = ctx._cH;
+    ctx.clearRect(0, 0, W, H);
+
+    const precioPorTipo = {};
+    const cantidadPorTipo = {};
+    let totalPrecio = 0;
+
+    packs.forEach(p => {
+        const t = p.tipoPack || "Otro";
+        const precio = (typeof p.precio === "number" && !isNaN(p.precio)) ? p.precio : 0;
+        precioPorTipo[t] = (precioPorTipo[t] || 0) + precio;
+        cantidadPorTipo[t] = (cantidadPorTipo[t] || 0) + 1;
+        totalPrecio += precio;
+    });
+
+    if (totalPrecio === 0) {
+        dibujarVacio(ctx, W, H, "Sin costes en la selección actual");
+        return;
+    }
+
+    ctx.fillStyle = colorFondoG(ctx);
+    ctx.fillRect(0, 0, W, H);
+
+    if (!ESTAD.donutSlices) ESTAD.donutSlices = [];
+    ESTAD.donutSlices = ESTAD.donutSlices.filter(s => s.chartId !== "graficoPrecio");
+
+    // Solo tipos con precio > 0 para los segmentos del rosco
+    const tiposConPrecio = Object.keys(precioPorTipo).filter(t => precioPorTipo[t] > 0);
+    tiposConPrecio.sort((a, b) => precioPorTipo[b] - precioPorTipo[a]);
+
+    // Posición del rosco y de la leyenda (idéntico a graficoPastel)
+    const cx = Math.min(W * 0.28, 125);
+    const cy = H / 2;
+    const radio = Math.min(cx - 15, H * 0.38);
+
+    let ang = -Math.PI / 2;
+    tiposConPrecio.forEach((tipo) => {
+        const frac = precioPorTipo[tipo] / totalPrecio;
+        const angFin = ang + frac * Math.PI * 2;
+        const color = COLORES_TIPO[tipo] || "#2563EB";
+
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, radio, ang, angFin);
+        ctx.closePath();
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.strokeStyle = "rgba(255,255,255,0.2)";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ESTAD.donutSlices.push({
+            chartId: "graficoPrecio",
+            cx, cy,
+            innerR: radio * 0.5,
+            outerR: radio,
+            angInicio: ang,
+            angFin: angFin,
+            tipo,
+            precio: precioPorTipo[tipo],
+            totalPrecio,
+            pct: ((precioPorTipo[tipo] / totalPrecio) * 100).toFixed(1).replace(".0", ""),
+            cantPacks: cantidadPorTipo[tipo] || 0,
+            color
+        });
+
+        ang = angFin;
+    });
+
+    // Donut central con coste total
+    ctx.beginPath();
+    ctx.arc(cx, cy, radio * 0.5, 0, Math.PI * 2);
+    ctx.fillStyle = ctx._isDark ? "rgba(25,25,35,0.97)" : "rgba(245,245,245,0.97)";
+    ctx.fill();
+    ctx.fillStyle = colorTexto(ctx);
+    const strTotal = formatearEuros(totalPrecio);
+    const fontSize = strTotal.length > 9 ? 12 : (strTotal.length > 7 ? 13 : 15);
+    ctx.font = `bold ${fontSize}px 'Segoe UI', sans-serif`;
+    ctx.textAlign = "center";
+    ctx.fillText(strTotal, cx, cy + 4);
+    ctx.font = `9.5px 'Segoe UI', sans-serif`;
+    ctx.fillStyle = colorSubTexto(ctx);
+    ctx.fillText("coste total", cx, cy + 17);
+
+    // Leyenda lateral idéntica a graficoPastel
+    const leyX = cx + radio + 18;
+    let leyY = H / 2 - (tiposConPrecio.length * 22) / 2;
+    tiposConPrecio.forEach((tipo) => {
+        ctx.fillStyle = COLORES_TIPO[tipo] || "#2563EB";
+        roundRect(ctx, leyX, leyY, 11, 11, 3);
+        ctx.fill();
+        ctx.fillStyle = colorTexto(ctx);
+        ctx.font = "10.5px 'Segoe UI', sans-serif";
+        ctx.textAlign = "left";
+        const pct = ((precioPorTipo[tipo] / totalPrecio) * 100).toFixed(1).replace(".0", "");
+        ctx.fillText(`${tipo}: ${formatearEuros(precioPorTipo[tipo])} (${pct}%)`, leyX + 16, leyY + 9);
         leyY += 22;
     });
 }
@@ -1789,6 +2485,7 @@ function inicializarEventosEstadisticas() {
     document.getElementById("estatBtnGraficos")
         ?.addEventListener("click", () => toggleVistaEstadisticas("graficos"));
 
+
     // Botones de Compartir/Descargar imagen de gráfico
     document.querySelectorAll(".graficoBtnCompartir").forEach(btn => {
         btn.addEventListener("click", (e) => {
@@ -2069,6 +2766,61 @@ function inicializarTooltipGraficos() {
             const mouseX = (e.clientX - rect.left) * scaleX;
             const mouseY = (e.clientY - rect.top) * scaleY;
 
+            // 1. Comprobar sectores circulares de gráficos Donut (graficoPastel, graficoPrecio)
+            if (chartId === "graficoPastel" || chartId === "graficoPrecio") {
+                if (ESTAD.donutSlices && ESTAD.donutSlices.length > 0) {
+                    const slices = ESTAD.donutSlices.filter(s => s.chartId === chartId);
+                    if (slices.length > 0) {
+                        const { cx, cy } = slices[0];
+                        const dist = Math.hypot(mouseX - cx, mouseY - cy);
+                        let ang = Math.atan2(mouseY - cy, mouseX - cx);
+                        if (ang < -Math.PI / 2) ang += Math.PI * 2;
+
+                        const slice = slices.find(s =>
+                            dist >= s.innerR && dist <= s.outerR &&
+                            ang >= s.angInicio && ang <= s.angFin
+                        );
+
+                        if (slice) {
+                            const isDark = document.body.classList.contains("modo-noche");
+                            const bordeSep = isDark ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.12)";
+                            if (slice.chartId === "graficoPrecio") {
+                                tooltip.innerHTML = `<div style="text-align:left; min-width:145px;">
+                                    <div style="font-weight:800; font-size:0.9rem; border-bottom:1px solid ${bordeSep}; padding-bottom:4px; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+                                        <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:${slice.color};"></span>
+                                        <span>${slice.tipo}</span>
+                                    </div>
+                                    <div style="font-size:0.88rem; font-weight:800; color:${slice.color}; margin-top:2px;">${formatearEuros(slice.precio)}</div>
+                                    <div style="font-size:0.8rem; opacity:0.88; margin-top:2px;">${slice.pct}% del coste total</div>
+                                    <div style="font-size:0.78rem; opacity:0.75; margin-top:2px;">📦 ${slice.cantPacks} ${slice.cantPacks === 1 ? 'pack' : 'packs'}</div>
+                                </div>`;
+                            } else {
+                                tooltip.innerHTML = `<div style="text-align:left; min-width:130px;">
+                                    <div style="font-weight:800; font-size:0.9rem; border-bottom:1px solid ${bordeSep}; padding-bottom:4px; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+                                        <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:${slice.color};"></span>
+                                        <span>${slice.tipo}</span>
+                                    </div>
+                                    <div style="font-size:0.88rem; font-weight:800; color:${slice.color}; margin-top:2px;">${slice.cantPacks} ${slice.cantPacks === 1 ? 'pack' : 'packs'}</div>
+                                    <div style="font-size:0.8rem; opacity:0.88; margin-top:2px;">${slice.pct}% de los packs</div>
+                                </div>`;
+                            }
+                            tooltip.style.left = e.clientX + "px";
+                            tooltip.style.top = e.clientY + "px";
+                            tooltip.style.display = "block";
+                            canvas.style.cursor = "pointer";
+                            return;
+                        }
+                    }
+                }
+            }
+
+            // 2. Comprobar hitboxes rectangulares de gráficos de barras/puntos
+            if (!ESTAD.hitboxes || ESTAD.hitboxes.length === 0) {
+                tooltip.style.display = "none";
+                canvas.style.cursor = "default";
+                return;
+            }
+
             const hit = ESTAD.hitboxes.find(h =>
                 h.chartId === chartId &&
                 mouseX >= h.x1 && mouseX <= h.x2 &&
@@ -2076,25 +2828,84 @@ function inicializarTooltipGraficos() {
             );
 
             if (hit) {
-                const p = hit.pack;
-                const anio = p.anioLanzamiento || (p.fecha ? p.fecha : "N/A");
-                let infoExtra = "";
-                if (hit.chartId === "graficoObjetos" && p.objetos) {
-                    infoExtra = `<br><span style="opacity:0.85;font-size:0.78rem;">🏠 Objetos: ${p.objetos.toLocaleString("es-ES")}</span>`;
-                } else if (hit.chartId === "graficoSolaresMundos" && hit.cantSolares) {
-                    infoExtra = `<br><span style="opacity:0.85;font-size:0.78rem;">🏡 Solares: ${hit.cantSolares.toLocaleString("es-ES")}</span>`;
+                if (hit.desglose) {
+                    const lineasDesglose = (hit.desglose.length > 0)
+                        ? hit.desglose.map(d =>
+                            `<div style="display:flex; align-items:center; justify-content:space-between; gap:14px; margin-top:3px;">
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                    <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:${d.color}; flex-shrink:0;"></span>
+                                    <span style="font-size:0.8rem; opacity:0.9;">${d.tipo}</span>
+                                </div>
+                                <strong style="font-size:0.82rem;">${d.cant}</strong>
+                            </div>`
+                        ).join("")
+                        : `<div style="font-size:0.8rem; opacity:0.75; font-style:italic; margin-top:2px;">Sin lanzamientos</div>`;
+
+                    const isDark = document.body.classList.contains("modo-noche");
+                    const bordeSep = isDark ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.12)";
+                    const badgeBg = isDark ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.08)";
+
+                    tooltip.innerHTML = `<div style="text-align:left; min-width:145px;">
+                        <div style="font-weight:800; font-size:0.9rem; border-bottom:1px solid ${bordeSep}; padding-bottom:4px; margin-bottom:4px; display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                            <span>${hit.titulo}</span>
+                            <span style="background:${badgeBg}; padding:1px 7px; border-radius:100px; font-size:0.75rem;">${hit.total} ${hit.total === 1 ? 'pack' : 'packs'}</span>
+                        </div>
+                        ${lineasDesglose}
+                    </div>`;
+                } else if (hit.pack) {
+                    const p = hit.pack;
+                    const anio = p.anioLanzamiento || (p.fecha ? p.fecha : "N/A");
+                    let infoExtra = "";
+                    if (hit.chartId === "graficoObjetos" && p.objetos) {
+                        infoExtra = `<br><span style="opacity:0.85;font-size:0.78rem;">🏠 Objetos: ${p.objetos.toLocaleString("es-ES")}</span>`;
+                    } else if (hit.chartId === "graficoSolaresMundos" && hit.cantSolares) {
+                        infoExtra = `<br><span style="opacity:0.85;font-size:0.78rem;">🏡 Solares: ${hit.cantSolares.toLocaleString("es-ES")}</span>`;
+                    }
+                    tooltip.innerHTML = `<strong>${p.nombre}</strong><br><span style="opacity:0.85;font-size:0.78rem;">📅 Lanzamiento: ${anio}</span>${infoExtra}`;
                 }
-                tooltip.innerHTML = `<strong>${p.nombre}</strong><br><span style="opacity:0.85;font-size:0.78rem;">📅 Lanzamiento: ${anio}</span>${infoExtra}`;
                 tooltip.style.left = e.clientX + "px";
                 tooltip.style.top = e.clientY + "px";
                 tooltip.style.display = "block";
+
+                if (hit.tipo === "mes" || hit.tipo === "dia") {
+                    canvas.style.cursor = "pointer";
+                } else {
+                    canvas.style.cursor = "default";
+                }
             } else {
                 tooltip.style.display = "none";
+                canvas.style.cursor = "default";
+            }
+        });
+
+        // Click en barras de mes o día para desplegar panel de detalle
+        canvas.addEventListener("click", (e) => {
+            const chartId = canvas.id;
+            if (chartId !== "graficoMesesAno" && chartId !== "graficoDiasSemana") return;
+            if (!ESTAD.hitboxes || ESTAD.hitboxes.length === 0) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            const scaleX = (canvas.width / dpr) / rect.width;
+            const scaleY = (canvas.height / dpr) / rect.height;
+
+            const mouseX = (e.clientX - rect.left) * scaleX;
+            const mouseY = (e.clientY - rect.top) * scaleY;
+
+            const hit = ESTAD.hitboxes.find(h =>
+                h.chartId === chartId &&
+                mouseX >= h.x1 && mouseX <= h.x2 &&
+                mouseY >= h.y1 && mouseY <= h.y2
+            );
+
+            if (hit && (hit.tipo === "mes" || hit.tipo === "dia")) {
+                mostrarDetalleLanzamientos(hit.chartId, hit.tipo, hit.valor, hit.tituloRaw || hit.titulo);
             }
         });
 
         canvas.addEventListener("mouseleave", () => {
             if (tooltip) tooltip.style.display = "none";
+            canvas.style.cursor = "default";
         });
     });
 }
@@ -2114,10 +2925,14 @@ function abrirEstadisticas() {
         } else {
             requestAnimationFrame(() => renderizarGraficos(ESTAD.packsFiltrados));
         }
+        // Actualización silenciosa en segundo plano: si la hoja cambió, refresca la vista
+        refrescarEstadisticasEnSegundoPlano();
     }
 }
 
 window.abrirEstadisticas = abrirEstadisticas;
 window.toggleVistaEstadisticas = toggleVistaEstadisticas;
 window.aplicarFiltrosEstadisticas = aplicarFiltrosEstadisticas;
+window.mostrarDetalleLanzamientos = mostrarDetalleLanzamientos;
+window.cerrarDetalleLanzamientos = cerrarDetalleLanzamientos;
 window.ESTAD = ESTAD;

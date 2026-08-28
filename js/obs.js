@@ -6,7 +6,7 @@
     // ─── CONFIGURACIÓN E INICIALIZACIÓN ──────────────────────
     const OBS_STORAGE_KEY = 'lotlab_obs_settings';
     
-    let obsConfig = { pos: 'right', theme: 'noche', bg: 'transparent' };
+    let obsConfig = { pos: 'right', theme: 'noche', bg: 'transparent', scale: 100 };
     try {
         const saved = localStorage.getItem(OBS_STORAGE_KEY);
         if (saved) obsConfig = Object.assign(obsConfig, JSON.parse(saved));
@@ -21,6 +21,35 @@
     if (urlParams.has('pos')) obsConfig.pos = urlParams.get('pos');
     if (urlParams.has('theme')) obsConfig.theme = urlParams.get('theme');
     if (urlParams.has('bg')) obsConfig.bg = urlParams.get('bg');
+    if (urlParams.has('scale')) obsConfig.scale = parseInt(urlParams.get('scale'), 10) || 100;
+
+    // Obtener la escala del usuario como número decimal entre 0.20 y 1.00 (por defecto 1.00 = 100%)
+    function obtenerEscalaUsuarioOBS() {
+        const s = parseInt(obsConfig.scale, 10);
+        if (isNaN(s) || s < 20) return 1;
+        return Math.min(Math.max(s, 20), 100) / 100;
+    }
+    window.obtenerEscalaUsuarioOBS = obtenerEscalaUsuarioOBS;
+    window.obsConfig = obsConfig;
+
+    // Aplicar la escala global de OBS a las ventanas y variables CSS
+    function aplicarEscalaOBSGlobal() {
+        if (!isObsMode) return;
+        const escalaUsuario = obtenerEscalaUsuarioOBS();
+
+        // Si la ventana de resultado de reto está visible, calcularEscalaRetoOBS combina auto-fit * escalaUsuario
+        const ventanaReto = document.getElementById("ventanaRetoResultado");
+        const retoVisible = ventanaReto && ventanaReto.style.display !== "none" && getComputedStyle(ventanaReto).display !== "none";
+
+        if (retoVisible && typeof window.calcularEscalaRetoOBS === "function") {
+            window.calcularEscalaRetoOBS();
+        } else {
+            document.body.style.setProperty("--escala-obs", escalaUsuario);
+            const composicion = document.getElementById("composicionRetoTemporizador");
+            if (composicion) composicion.style.setProperty("--escala-obs", escalaUsuario);
+        }
+    }
+    window.aplicarEscalaOBSGlobal = aplicarEscalaOBSGlobal;
 
     // ─── CAPA DE BRANDING (SOLO PARA OBS VIEWER) ─────────────
     function aplicarBrandingOBS() {
@@ -38,44 +67,35 @@
         else if (obsConfig.theme === 'noche') document.body.classList.add('modo-noche', 'modo-obs-noche');
         else document.body.classList.add(localStorage.getItem('modo-color') || 'modo-noche');
 
-        // Branding
-        if (!document.getElementById("obsBrandingLayer")) {
-            const brandingLayer = document.createElement("div");
-            brandingLayer.id = "obsBrandingLayer";
-            brandingLayer.style.position = "fixed";
-            brandingLayer.style.top = "0";
-            brandingLayer.style.left = "0";
-            brandingLayer.style.width = "100%";
-            brandingLayer.style.height = "100%";
-            brandingLayer.style.pointerEvents = "none";
-            brandingLayer.style.zIndex = "999999";
-            
-            const textoIzquierda = document.createElement("div");
-            textoIzquierda.textContent = "LOT-LAB Sims 4";
-            textoIzquierda.style.position = "absolute";
-            textoIzquierda.style.bottom = "12px";
-            textoIzquierda.style.left = "15px";
-            textoIzquierda.style.fontSize = "0.9rem";
-            textoIzquierda.style.opacity = "0.75";
-            textoIzquierda.style.color = "var(--color-texto)";
-            textoIzquierda.style.fontWeight = "bold";
-            textoIzquierda.style.textShadow = "0px 1px 3px rgba(0,0,0,0.5)"; // Para legibilidad en cualquier fondo
+        // Aplicar la escala configurada
+        aplicarEscalaOBSGlobal();
 
-            const textoDerecha = document.createElement("div");
-            textoDerecha.textContent = "Creado por Ozono 96";
-            textoDerecha.style.position = "absolute";
-            textoDerecha.style.bottom = "12px";
-            textoDerecha.style.right = "15px";
-            textoDerecha.style.fontSize = "0.9rem";
-            textoDerecha.style.opacity = "0.75";
-            textoDerecha.style.color = "var(--color-texto)";
-            textoDerecha.style.fontWeight = "bold";
-            textoDerecha.style.textShadow = "0px 1px 3px rgba(0,0,0,0.5)";
-
-            brandingLayer.appendChild(textoIzquierda);
-            brandingLayer.appendChild(textoDerecha);
-            document.body.appendChild(brandingLayer);
+        // Limpiar el antiguo branding fixed al viewport si existiese en el body
+        const oldBodyLayer = document.getElementById("obsBrandingLayer");
+        if (oldBodyLayer && oldBodyLayer.parentElement === document.body) {
+            oldBodyLayer.remove();
         }
+
+        // Asociar la marca de agua a cada ventana para que se posicione respecto a sus límites
+        document.querySelectorAll('.ventana').forEach(ventana => {
+            if (!ventana.querySelector('.obsBrandingLayer')) {
+                const brandingLayer = document.createElement("div");
+                brandingLayer.className = "obsBrandingLayer";
+                brandingLayer.style.pointerEvents = "none";
+                
+                const textoIzquierda = document.createElement("div");
+                textoIzquierda.className = "obsBrandingTextoIzq";
+                textoIzquierda.textContent = "LOT-LAB Sims 4";
+
+                const textoDerecha = document.createElement("div");
+                textoDerecha.className = "obsBrandingTextoDer";
+                textoDerecha.textContent = "Creado por Ozono 96";
+
+                brandingLayer.appendChild(textoIzquierda);
+                brandingLayer.appendChild(textoDerecha);
+                ventana.appendChild(brandingLayer);
+            }
+        });
     }
 
     if (isObsMode && document.readyState === 'loading') {
@@ -141,6 +161,13 @@
         if (msg.tipo === "SYNC_MODAL_PACKS") EstadoGlobal.estadosSemanticos.packs = msg;
         if (msg.tipo === "SYNC_FICHA_SOLAR") EstadoGlobal.estadosSemanticos.fichaSolar = msg;
         if (msg.tipo === "RETO_GENERADO") EstadoGlobal.estadosSemanticos.retoGenerado = msg;
+        if (msg.tipo === "RETO_REROLL" && msg.reto) {
+            if (!EstadoGlobal.estadosSemanticos.retoGenerado) {
+                EstadoGlobal.estadosSemanticos.retoGenerado = { tipo: "RETO_GENERADO", reto: msg.reto };
+            } else {
+                EstadoGlobal.estadosSemanticos.retoGenerado.reto = msg.reto;
+            }
+        }
         if (msg.tipo === "TIRAR_HABILIDADES") EstadoGlobal.estadosSemanticos.habilidades = msg;
         if (msg.tipo === "TIRAR_PACKS") EstadoGlobal.estadosSemanticos.packs = msg;
         if (msg.tipo === "TIRAR_MUNDOS") EstadoGlobal.estadosSemanticos.mundos = msg;
@@ -525,6 +552,7 @@
                         } else if (data.idVentana === 'ventanaListado') {
                             if (typeof window.mostrarListadoCompleto === 'function') window.mostrarListadoCompleto();
                         }
+                        aplicarBrandingOBS();
                         break;
                     case 'SYNC_CERRAR_VENTANA':
                         if (data.idVentana && typeof window.cerrarVentana === 'function') {
@@ -586,13 +614,26 @@
                         }
                         break;
                     case 'RETO_GENERADO':
-                        if (data.reto && typeof window.renderizarResultadoReto === 'function') {
+                        if (data.reto) {
                             window.retoActual = data.reto;
-                            window.renderizarResultadoReto(data.reto);
                             if (typeof window.abrirVentana === 'function') {
                                 window.abrirVentana('ventanaRetoResultado', false);
                             }
-                            // El escalado se dispara dentro de renderizarResultadoReto (doble rAF)
+                            if (data.animar && data.secuencias && typeof window.animarGeneracionReto === 'function') {
+                                window.animarGeneracionReto(data.reto, data.secuencias);
+                            } else if (typeof window.renderizarResultadoReto === 'function') {
+                                window.renderizarResultadoReto(data.reto);
+                            }
+                        }
+                        break;
+                    case 'RETO_REROLL':
+                        if (data.reto) {
+                            window.retoActual = data.reto;
+                            if (data.secuencia && typeof window.animarRerollTarjeta === 'function') {
+                                window.animarRerollTarjeta(data.categoriaId, data.reto, data.secuencia);
+                            } else if (typeof window.renderizarResultadoReto === 'function') {
+                                window.renderizarResultadoReto(data.reto);
+                            }
                         }
                         break;
                     case 'TIRAR_HABILIDADES':
@@ -764,7 +805,7 @@
                 const target = m.target;
                 
                 // Ignorar cambios del propio observer (branding)
-                if (target.id === 'obsBrandingLayer' || target.closest('#obsBrandingLayer')) return;
+                if (target.id === 'obsBrandingLayer' || target.closest('#obsBrandingLayer') || target.classList?.contains('obsBrandingLayer') || target.closest('.obsBrandingLayer')) return;
 
                 if (m.type === 'attributes') {
                     // Filtrar manualmente: solo nos interesan class y style
@@ -901,15 +942,24 @@
         params.set('pos', obsConfig.pos || 'right');
         params.set('theme', obsConfig.theme || 'noche');
         params.set('bg', obsConfig.bg || 'transparent');
+        if (obsConfig.scale && parseInt(obsConfig.scale, 10) !== 100) {
+            params.set('scale', obsConfig.scale);
+        }
         return baseUrl + '?' + params.toString();
     }
 
     window.actualizarModalOBSUI = function () {
         const inputUrlOBS = document.getElementById('inputUrlOBS');
+        const sliderEscala = document.getElementById('sliderEscalaOBS');
+        const valEscala = document.getElementById('valEscalaOBS');
         
         document.querySelectorAll('.obsBtnPos').forEach(b => b.classList.toggle('activo', b.dataset.val === obsConfig.pos));
         document.querySelectorAll('.obsBtnTheme').forEach(b => b.classList.toggle('activo', b.dataset.val === obsConfig.theme));
         document.querySelectorAll('.obsBtnBg').forEach(b => b.classList.toggle('activo', b.dataset.val === obsConfig.bg));
+
+        const escalaActual = obsConfig.scale !== undefined ? parseInt(obsConfig.scale, 10) : 100;
+        if (sliderEscala) sliderEscala.value = escalaActual;
+        if (valEscala) valEscala.textContent = escalaActual + '%';
 
         if (inputUrlOBS && peerSessionId) inputUrlOBS.value = generarUrlOBS();
     };
@@ -933,6 +983,7 @@
     function guardarYNotificarConfigOBS() {
         try { localStorage.setItem(OBS_STORAGE_KEY, JSON.stringify(obsConfig)); } catch (e) {}
         window.actualizarModalOBSUI();
+        aplicarEscalaOBSGlobal();
         window.emitirEventoOBS('SYNC_CONFIG', { config: obsConfig });
     }
 
@@ -942,6 +993,9 @@
         const overlayOBS = document.getElementById('overlayOBS');
         const btnCopiarUrl = document.getElementById('btnCopiarUrlOBS');
         const inputUrlOBS = document.getElementById('inputUrlOBS');
+        const sliderEscala = document.getElementById('sliderEscalaOBS');
+        const valEscala = document.getElementById('valEscalaOBS');
+        const btnResetEscala = document.getElementById('btnResetEscalaOBS');
 
         if (btnAbrirOBS) {
             btnAbrirOBS.addEventListener('click', (e) => {
@@ -961,6 +1015,24 @@
                 guardarYNotificarConfigOBS();
             });
         });
+
+        if (sliderEscala) {
+            sliderEscala.addEventListener('input', function () {
+                const val = parseInt(this.value, 10) || 100;
+                obsConfig.scale = val;
+                if (valEscala) valEscala.textContent = val + '%';
+                guardarYNotificarConfigOBS();
+            });
+        }
+
+        if (btnResetEscala) {
+            btnResetEscala.addEventListener('click', function () {
+                obsConfig.scale = 100;
+                if (sliderEscala) sliderEscala.value = 100;
+                if (valEscala) valEscala.textContent = '100%';
+                guardarYNotificarConfigOBS();
+            });
+        }
 
         document.querySelectorAll('.obsBtnTheme').forEach(btn => {
             btn.addEventListener('click', function () {

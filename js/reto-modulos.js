@@ -1,7 +1,163 @@
-/* =========================================================
-   RETO MODULOS
-   Módulos independientes para cada categoría del modo retos.
-   ========================================================= */
+/**
+ * Construye de forma segura la ruta a la imagen del tipo de solar
+ * a partir del valor de la columna D de "Listado de objetivos".
+ */
+function normalizarRutaIconoTipoSolar(val) {
+    if (!val || typeof val !== "string") return null;
+    let limpio = val.trim();
+    if (!limpio) return null;
+    if (limpio.startsWith("http://") || limpio.startsWith("https://") || limpio.startsWith("data:") || limpio.startsWith("img/")) {
+        return limpio;
+    }
+    if (!limpio.toLowerCase().endsWith(".png")) {
+        limpio += ".png";
+    }
+    return `img/iconos-tipo-solar/${limpio}`;
+}
+window.normalizarRutaIconoTipoSolar = normalizarRutaIconoTipoSolar;
+
+/**
+ * Normaliza un nombre de pack para comparación flexible (minúsculas, sin espacios extra).
+ */
+function _normPack(s) {
+    return (s || "").toLowerCase().trim();
+}
+
+/**
+ * Determina el nombre oficial del Juego Base desde database.packs (columna 10).
+ * Devuelve string o null.
+ */
+function _nombreJuegoBase() {
+    if (typeof database === "undefined" || !database.packs) return null;
+    for (const fila of database.packs) {
+        const jb = (fila[10] || "").trim();
+        if (jb) return jb;
+    }
+    return null;
+}
+
+/**
+ * Filtra la lista de objetivos (Listado de objetivos) según los packs
+ * activos del usuario, aplicando la regla:
+ *   - Columna C vacía → requiere Juego Base
+ *   - Columna C con nombre → requiere ese pack exacto (comparación flexible)
+ *
+ * @param {Array[]} lista      - Filas de database.objetivos
+ * @param {string[]} packsUsuario - Nombres de packs seleccionados por el usuario
+ * @returns {Array[]|null}     - Subconjunto válido, o null si no hay ninguno
+ */
+function filtrarObjetivosPorPacks(lista, packsUsuario) {
+    if (!lista || lista.length === 0) return null;
+
+    const packsNorm = (packsUsuario || []).map(_normPack).filter(Boolean);
+    const nombreJB = _nombreJuegoBase();
+    const jbNorm = nombreJB ? _normPack(nombreJB) : null;
+    const jbActivo = jbNorm ? packsNorm.includes(jbNorm) : false;
+
+    const validos = lista.filter(fila => {
+        if (!fila || fila.length === 0) return false;
+        const colC = (fila[2] || "").trim();
+
+        if (!colC) {
+            // Columna C vacía → Juego Base
+            return jbActivo;
+        }
+
+        const colCNorm = _normPack(colC);
+
+        // Comparación flexible: incluye o está incluido
+        return packsNorm.some(p =>
+            p === colCNorm ||
+            p.includes(colCNorm) ||
+            colCNorm.includes(p)
+        );
+    });
+
+    return validos.length > 0 ? validos : null;
+}
+window.filtrarObjetivosPorPacks = filtrarObjetivosPorPacks;
+
+/**
+ * Comprueba si hay al menos un objetivo disponible para los packs activos.
+ * Devuelve true si hay disponibilidad, false si no hay ninguno.
+ */
+function hayObjetivosDisponibles(packsUsuario) {
+    const lista = (typeof database !== "undefined" && database.objetivos) ? database.objetivos : [];
+    return filtrarObjetivosPorPacks(lista, packsUsuario) !== null;
+}
+window.hayObjetivosDisponibles = hayObjetivosDisponibles;
+
+/**
+ * Filtra la lista de habilidades según los packs activos del usuario.
+ *   - Columna B vacía o 'base'/'juego base' → requiere Juego Base
+ *   - Columna B con nombre de pack → requiere ese pack activo
+ */
+function filtrarHabilidadesPorPacks(lista, packsUsuario) {
+    if (!lista || lista.length === 0) return null;
+
+    const packsNorm = (packsUsuario || []).map(_normPack).filter(Boolean);
+    const nombreJB = _nombreJuegoBase();
+    const jbNorm = nombreJB ? _normPack(nombreJB) : null;
+    const jbActivo = jbNorm ? packsNorm.includes(jbNorm) : (typeof juegoBaseMarcado === "function" ? juegoBaseMarcado() : false);
+
+    const validas = lista.filter(fila => {
+        if (!fila || fila.length === 0) return false;
+        const packReq = (fila[1] || "").trim();
+
+        if (!packReq || _normPack(packReq) === "base" || _normPack(packReq).includes("juego base") || packReq === "-") {
+            return jbActivo;
+        }
+
+        const packReqNorm = _normPack(packReq);
+        return packsNorm.some(p =>
+            p === packReqNorm ||
+            p.includes(packReqNorm) ||
+            packReqNorm.includes(p)
+        );
+    });
+
+    return validas.length > 0 ? validas : null;
+}
+window.filtrarHabilidadesPorPacks = filtrarHabilidadesPorPacks;
+
+/**
+ * Comprueba si hay al menos una habilidad disponible para los packs activos.
+ */
+function hayHabilidadesDisponibles(packsUsuario) {
+    const lista = (typeof database !== "undefined" && database.habilidades) ? database.habilidades : [];
+    return filtrarHabilidadesPorPacks(lista, packsUsuario) !== null;
+}
+window.hayHabilidadesDisponibles = hayHabilidadesDisponibles;
+
+/**
+ * Comprueba si hay al menos un solar disponible para los packs activos del usuario.
+ */
+function haySolaresDisponibles(packsUsuario) {
+    if (typeof database === "undefined" || !database.solares || database.solares.length === 0) return false;
+    const packsNorm = (packsUsuario || []).map(_normPack).filter(Boolean);
+    const nombreJB = _nombreJuegoBase();
+    const jbNorm = nombreJB ? _normPack(nombreJB) : null;
+    const jbActivo = jbNorm ? packsNorm.includes(jbNorm) : (typeof juegoBaseMarcado === "function" ? juegoBaseMarcado() : false);
+
+    return database.solares.some(solar => {
+        const packSolar = (solar.nombrePack || "").trim();
+        const tipoPackSolar = (solar.tipoPack || "").trim().toLowerCase();
+
+        const esJuegoBase = tipoPackSolar.includes("base") || packSolar.toLowerCase().includes("juego base") || packSolar.toLowerCase() === "los sims 4";
+
+        if ((solar.tipoLote || "").trim().toLowerCase() === "solar oculto") {
+            return false;
+        }
+
+        if (esJuegoBase) {
+            return jbActivo;
+        }
+
+        const packSolarNorm = _normPack(packSolar);
+        return packsNorm.some(p => p === packSolarNorm || packSolarNorm.includes(p) || p.includes(packSolarNorm));
+    });
+}
+window.haySolaresDisponibles = haySolaresDisponibles;
 
 const RetoModulos = {
     // 🏛 Estilo Exterior
@@ -165,7 +321,7 @@ const RetoModulos = {
         titulo: "🎯 Tipo de solar",
         generar: function (contexto) {
             const packsUsuario = contexto.packsUsuario || [];
-            const lista = database.objetivos || [];
+            const lista = (typeof database !== "undefined" && database.objetivos) ? database.objetivos : [];
             const opcionesActivas = contexto.opcionesActivas || [];
 
             // Averiguar qué modo está activo
@@ -173,26 +329,27 @@ const RetoModulos = {
             const esSoloComunitario = opcionesActivas.includes("solo-comunitarios");
             const esAleatorio = opcionesActivas.includes("tipo-solar-aleatorio");
 
-            // Filtrar objetivos por packs del usuario
-            let objetivosValidos = lista.filter(fila => {
-                if (!fila || fila.length === 0) return false;
-                const packRequerido = fila[2] ? fila[2].trim() : "";
-                if (!packRequerido || packRequerido.toLowerCase().includes("base")) return true;
-                return packsUsuario.some(p => p.toLowerCase().includes(packRequerido.toLowerCase()) || packRequerido.toLowerCase().includes(p.toLowerCase()));
-            });
+            // ── Filtrado centralizado (columna C vacía = Juego Base) ──
+            const objetivosValidos = filtrarObjetivosPorPacks(lista, packsUsuario);
+            if (!objetivosValidos) {
+                return { texto: "⚠️ Sin packs disponibles", tipo: "_error_sin_packs" };
+            }
 
-            if (objetivosValidos.length === 0) objetivosValidos = lista;
-
-            // Filtrar según el modo elegido
-            let poolResidencial = objetivosValidos.filter(f => (f[0] || "").trim().toLowerCase().includes("residencial"));
-            let poolComunitario = objetivosValidos.filter(f => !(f[0] || "").trim().toLowerCase().includes("residencial"));
+            // Filtrar por modo elegido
+            const poolResidencial = objetivosValidos.filter(f => (f[0] || "").trim().toLowerCase().includes("residencial"));
+            const poolComunitario = objetivosValidos.filter(f => !(f[0] || "").trim().toLowerCase().includes("residencial"));
 
             let poolElegido = objetivosValidos;
 
             if (esSoloResidencial && poolResidencial.length > 0) {
                 poolElegido = poolResidencial;
+            } else if (esSoloResidencial && poolResidencial.length === 0) {
+                // Modo residencial pero sin residenciales disponibles con packs actuales
+                return { texto: "⚠️ Sin tipos residenciales disponibles", tipo: "_error_sin_packs" };
             } else if (esSoloComunitario && poolComunitario.length > 0) {
                 poolElegido = poolComunitario;
+            } else if (esSoloComunitario && poolComunitario.length === 0) {
+                return { texto: "⚠️ Sin tipos comunitarios disponibles", tipo: "_error_sin_packs" };
             } else if (esAleatorio) {
                 // 60% residencial, 40% comunitario
                 if (Math.random() < 0.60 && poolResidencial.length > 0) {
@@ -202,23 +359,29 @@ const RetoModulos = {
                 }
             }
 
-            if (poolElegido.length === 0) return { texto: "Construcción libre" };
+            if (poolElegido.length === 0) return { texto: "⚠️ Sin tipos de solar disponibles", tipo: "_error_sin_packs" };
 
             const filaElegida = poolElegido[Math.floor(Math.random() * poolElegido.length)];
             const tipoObj = (filaElegida[0] || "").trim().toLowerCase();
             const nombreObj = filaElegida[1] || "Construcción libre";
+            const imagenRaw = (filaElegida[3] || "").trim();
+            const imagenObj = normalizarRutaIconoTipoSolar(imagenRaw);
 
             if (tipoObj.includes("residencial")) {
-                const sims = Math.floor(Math.random() * 8) + 1; // 1 a 8 Sims
+                const sims = Math.floor(Math.random() * 8) + 1;
                 return {
+                    nombre: nombreObj,
                     texto: `${nombreObj} (Vivienda para ${sims} ${sims === 1 ? "Sim" : "Sims"})`,
                     tipo: "residencial",
-                    sims: sims
+                    sims: sims,
+                    imagen: imagenObj || null
                 };
             } else {
                 return {
+                    nombre: nombreObj,
                     texto: `${nombreObj} (Solar comunitario)`,
-                    tipo: "comunitario"
+                    tipo: "comunitario",
+                    imagen: imagenObj || null
                 };
             }
         }
@@ -374,25 +537,14 @@ const RetoModulos = {
         id: "habilidades",
         titulo: "🧠 Habilidades Requeridas",
         generar: function (contexto) {
-            const lista = database.habilidades || [];
-            const packsUsuario = (contexto.packsUsuario || []).map(p => p.trim().toLowerCase());
+            const lista = (typeof database !== "undefined" && database.habilidades) ? database.habilidades : [];
+            const packsUsuario = contexto.packsUsuario || [];
             const cantidad = contexto.configHabilidades?.cantidad || 3;
 
-            if (lista.length === 0) {
-                return { texto: "No hay habilidades disponibles.", elementos: [] };
-            }
+            const disponibles = filtrarHabilidadesPorPacks(lista, packsUsuario);
 
-            // Filtrar habilidades por packs del usuario (col B = pack requerido)
-            const disponibles = lista.filter(fila => {
-                const packReq = (fila[1] || "").trim().toLowerCase();
-                if (!packReq || packReq === "base" || packReq.includes("juego base") || packReq === "-" || packReq === "") {
-                    return true;
-                }
-                return packsUsuario.some(p => p.includes(packReq) || packReq.includes(p));
-            });
-
-            if (disponibles.length === 0) {
-                return { texto: "No hay habilidades disponibles para tus packs.", elementos: [] };
+            if (!disponibles || disponibles.length === 0) {
+                return { texto: "No hay habilidades disponibles para tus packs.", elementos: [], tipo: "_error_sin_packs" };
             }
 
             const copia = [...disponibles];

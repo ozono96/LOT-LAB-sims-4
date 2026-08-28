@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function sonarTicTac() {
+        if (window.SonidoGlobal?.silenciado) return;
         try {
             const ctx = obtenerAudioCtx();
             const esTic = tiempoRestanteEnSegundos % 2 === 0; // alterna tic/tac
@@ -210,6 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Genera la alarma de fin de tiempo con Web Audio API (sin archivos externos)
     function sonarAlarma() {
+        if (window.SonidoGlobal?.silenciado) return;
         try {
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
 

@@ -65,12 +65,155 @@ function calcularDificultadTotal(tipoRetoVal, categorias) {
 }
 window.calcularDificultadTotal = calcularDificultadTotal;
 
+/**
+ * Sistema Centralizado de Validación de Disponibilidad del Reto.
+ * Comprueba todos los recursos que dependen de packs según las opciones
+ * seleccionadas actualmente por el usuario.
+ *
+ * @returns {Array<{id: string, icono: string, nombre: string, detalle: string}>} - Lista de problemas detectados
+ */
+function validarDisponibilidadReto() {
+    const packsUsuario = typeof obtenerPacksSeleccionadosUsuario === "function" ? obtenerPacksSeleccionadosUsuario() : [];
+    const problemas = [];
+
+    // 1. Tipo de Reto: ¿Requiere solar?
+    const btnTipo = document.querySelector("#tipoRetoOpciones .opcionFiltro.seleccionada");
+    const tipoReto = btnTipo ? (btnTipo.getAttribute("data-tipo") || "con-solar") : "con-solar";
+
+    if (tipoReto === "con-solar") {
+        const haySolares = typeof haySolaresDisponibles === "function" ? haySolaresDisponibles(packsUsuario) : true;
+        if (!haySolares) {
+            problemas.push({
+                id: "solar",
+                icono: "🏡",
+                nombre: "Reto con solar",
+                detalle: "solares o mundos"
+            });
+        }
+    }
+
+    // 2. Tipo de Solar: ¿Está la opción activada?
+    const btnPadreTipoSolar = document.querySelector('#opcionesExtraRetos .opcionFiltro[data-opcion="tipo-solar"]');
+    const tipoSolarActivo = btnPadreTipoSolar ? btnPadreTipoSolar.classList.contains("seleccionada") : false;
+
+    if (tipoSolarActivo) {
+        const hayObjetivos = typeof hayObjetivosDisponibles === "function" ? hayObjetivosDisponibles(packsUsuario) : true;
+        if (!hayObjetivos) {
+            problemas.push({
+                id: "tipoSolar",
+                icono: "🎯",
+                nombre: "Tipo de solar",
+                detalle: "tipos de solar"
+            });
+        }
+    }
+
+    // 3. Habilidades: ¿Está la opción activada?
+    const btnHabilidades = document.querySelector('#opcionesExtraRetos .opcionFiltro[data-opcion="habilidades"]');
+    const habilidadesActivo = btnHabilidades ? btnHabilidades.classList.contains("seleccionada") : false;
+
+    if (habilidadesActivo) {
+        const hayHabilidades = typeof hayHabilidadesDisponibles === "function" ? hayHabilidadesDisponibles(packsUsuario) : true;
+        if (!hayHabilidades) {
+            problemas.push({
+                id: "habilidades",
+                icono: "🧠",
+                nombre: "Habilidades requeridas",
+                detalle: "habilidades"
+            });
+        }
+    }
+
+    return problemas;
+}
+window.validarDisponibilidadReto = validarDisponibilidadReto;
+
+/**
+ * Actualiza el CUADRO ÚNICO de advertencia de disponibilidad dinámicamente.
+ * Si todo está disponible, oculta el aviso y habilita los botones de generación.
+ * Si hay 1 o más problemas, muestra un único aviso agrupado y bloquea la generación.
+ */
+function actualizarAvisoDisponibilidadReto() {
+    const aviso = document.getElementById("avisoDisponibilidadReto") || document.getElementById("avisoSinObjetivosTipoSolar");
+    const btnGenerarReto = document.getElementById("generarRetoBtn");
+    const btnRetoAleatorio = document.getElementById("retoAleatorioBtn");
+    if (!aviso) return;
+
+    const problemas = validarDisponibilidadReto();
+
+    if (problemas.length === 0) {
+        aviso.style.display = "none";
+        if (btnGenerarReto) {
+            btnGenerarReto.disabled = false;
+            btnGenerarReto.classList.remove("deshabilitado");
+        }
+        if (btnRetoAleatorio) {
+            btnRetoAleatorio.disabled = false;
+            btnRetoAleatorio.classList.remove("deshabilitado");
+        }
+    } else {
+        aviso.style.display = "block";
+        if (btnGenerarReto) {
+            btnGenerarReto.disabled = true;
+            btnGenerarReto.classList.add("deshabilitado");
+        }
+        if (btnRetoAleatorio) {
+            btnRetoAleatorio.disabled = true;
+            btnRetoAleatorio.classList.add("deshabilitado");
+        }
+
+        // Construir el mensaje dinámico adaptado
+        if (problemas.length === 1) {
+            const p = problemas[0];
+            let explicacion = "";
+            if (p.id === "solar") {
+                explicacion = "No hay solares disponibles con los packs seleccionados. Activa el <strong>Juego Base</strong> o algún pack que incluya mundos/solares para poder generar un reto con solar (o cambia a <strong>Reto sin solar</strong>).";
+            } else if (p.id === "tipoSolar") {
+                explicacion = "No hay tipos de solar disponibles con los packs seleccionados. Activa el <strong>Juego Base</strong> o algún pack que proporcione tipos de solar para poder utilizar esta opción (o desmarca Tipo de solar).";
+            } else if (p.id === "habilidades") {
+                explicacion = "No hay habilidades disponibles con los packs seleccionados. Activa algún pack que incluya habilidades para poder utilizar esta opción (o desmarca Habilidades requeridas).";
+            } else {
+                explicacion = `No hay contenido disponible para <strong>${p.nombre}</strong> con los packs seleccionados.`;
+            }
+
+            aviso.innerHTML = `
+                <div style="font-size: 1.3rem; margin-bottom: 6px;">⚠️</div>
+                <strong style="font-size: 1.05rem;">No puedes generar este reto</strong>
+                <div style="margin-top: 6px; opacity: 0.88;">${explicacion}</div>
+            `;
+        } else {
+            // Múltiples problemas agrupados en una sola advertencia
+            const listaHtml = problemas.map(p => `<div>• ${p.icono} <strong>${p.nombre}</strong></div>`).join("");
+            aviso.innerHTML = `
+                <div style="font-size: 1.3rem; margin-bottom: 6px;">⚠️</div>
+                <strong style="font-size: 1.05rem;">No puedes generar este reto</strong>
+                <div style="margin-top: 6px; opacity: 0.9;">No hay contenido disponible para las opciones seleccionadas porque has desactivado todos los packs necesarios para:</div>
+                <div style="margin: 10px auto; text-align: left; display: inline-block; font-size: 0.95rem; line-height: 1.6;">
+                    ${listaHtml}
+                </div>
+                <div style="margin-top: 4px; opacity: 0.85;">Activa el <strong>Juego Base</strong> o algún pack compatible para poder generar el reto con estas opciones.</div>
+            `;
+        }
+    }
+}
+window.actualizarAvisoDisponibilidadReto = actualizarAvisoDisponibilidadReto;
+window.actualizarAvisoTipoSolar = actualizarAvisoDisponibilidadReto; // Alias de retrocompatibilidad
+
 function generarReto(esAleatorio = false) {
     const packsUsuario = obtenerPacksSeleccionadosUsuario();
 
     if (packsUsuario.length === 0) {
         alert("Debes tener al menos un pack seleccionado.");
         return;
+    }
+
+    // Validación preventiva obligatoria antes de generar
+    if (!esAleatorio) {
+        const problemas = validarDisponibilidadReto();
+        if (problemas.length > 0) {
+            actualizarAvisoDisponibilidadReto();
+            return;
+        }
     }
 
     let tipoReto = "con-solar";
@@ -101,10 +244,10 @@ function generarReto(esAleatorio = false) {
             tipoReto = btnTipo.getAttribute("data-tipo") || "con-solar";
         }
 
-        // Leer opciones extra seleccionadas por el usuario
+        // Leer opciones extra seleccionadas por el usuario (excluyendo el botón padre tipo-solar que se resuelve abajo)
         document.querySelectorAll("#opcionesExtraRetos .opcionFiltro.seleccionada").forEach(btn => {
             const op = btn.getAttribute("data-opcion");
-            if (op) opcionesActivas.push(op);
+            if (op && op !== "tipo-solar") opcionesActivas.push(op);
         });
 
         // Leer opciones de ayuda seleccionadas por el usuario
@@ -113,12 +256,17 @@ function generarReto(esAleatorio = false) {
             if (ayudaKey) opcionesActivas.push(ayudaKey);
         });
 
-        // Leer opción de tipo de solar (solo puede haber una)
-        const btnTipoSolar = document.querySelector("#tipoSolarOpciones .opcionFiltro.seleccionada");
-        if (btnTipoSolar) {
-            const op = btnTipoSolar.getAttribute("data-opcion");
-            if (op && op !== "sin-tipo-solar") {
-                opcionesActivas.push(op);
+        // Leer opción de tipo de solar (solo si el botón padre tipo-solar está seleccionado)
+        const btnPadreTipoSolar = document.querySelector('#opcionesExtraRetos .opcionFiltro[data-opcion="tipo-solar"]');
+        const tipoSolarActivado = btnPadreTipoSolar ? btnPadreTipoSolar.classList.contains("seleccionada") : true;
+
+        if (tipoSolarActivado) {
+            const btnTipoSolar = document.querySelector("#tipoSolarOpciones .opcionSubmenuTipoSolar.seleccionada, #tipoSolarOpciones .opcionFiltro.seleccionada");
+            if (btnTipoSolar) {
+                const op = btnTipoSolar.getAttribute("data-opcion");
+                if (op && op !== "sin-tipo-solar") {
+                    opcionesActivas.push(op);
+                }
             }
         }
 
@@ -234,21 +382,28 @@ function generarReto(esAleatorio = false) {
     };
     window.retoActual = retoActual;
 
-    sincronizarTemporizadorConReto();
-
-    // Renderizar resultado en UI y abrir ventana
-    if (typeof renderizarResultadoReto === "function") {
-        renderizarResultadoReto(retoActual);
-    }
+    // Construir secuencias de animación
+    const secuencias = typeof construirSecuenciasReto === "function"
+        ? construirSecuenciasReto(retoActual, contexto)
+        : {};
 
     if (typeof abrirVentana === "function") {
         abrirVentana("ventanaRetoResultado");
     }
 
-    // Emitir el evento completo a OBS (serializado sin funciones)
-    if (typeof window.emitirEventoOBS === 'function') {
+    // Ejecutar animación de ruleta vertical o renderizado directo
+    if (typeof animarGeneracionReto === "function" && Object.keys(secuencias).length > 0) {
+        animarGeneracionReto(retoActual, secuencias);
+    } else if (typeof renderizarResultadoReto === "function") {
+        renderizarResultadoReto(retoActual);
+    }
+
+    // Emitir el evento completo a OBS con secuencias para sincronización idéntica
+    if (typeof window.emitirEventoOBS === 'function' && !window.esSincronizacionOBS) {
         window.emitirEventoOBS("RETO_GENERADO", {
-            reto: serializarRetoParaOBS(retoActual)
+            reto: serializarRetoParaOBS(retoActual),
+            animar: true,
+            secuencias: secuencias
         });
     }
 }
@@ -330,18 +485,24 @@ function rerollCategoria(categoriaId) {
         tempCat.resultado = tempCat.modulo.generar(retoActual.contexto);
     }
 
-    // El reroll de limitePacks NO cambia el solar (el solar es independiente).
-
     sincronizarTemporizadorConReto();
 
-    // Volver a renderizar UI sin cambiar el resto del reto
-    if (typeof renderizarResultadoReto === "function") {
+    // Construir secuencia de animación de reroll
+    const secuencia = typeof construirSecuenciaCategoria === "function"
+        ? construirSecuenciaCategoria(categoriaId, retoActual, retoActual.contexto)
+        : [];
+
+    if (typeof animarRerollTarjeta === "function" && secuencia.length > 0) {
+        animarRerollTarjeta(categoriaId, retoActual, secuencia);
+    } else if (typeof renderizarResultadoReto === "function") {
         renderizarResultadoReto(retoActual);
     }
 
     if (typeof window.emitirEventoOBS === 'function' && !window.esSincronizacionOBS) {
-        window.emitirEventoOBS("RETO_GENERADO", {
-            reto: serializarRetoParaOBS(retoActual)
+        window.emitirEventoOBS("RETO_REROLL", {
+            categoriaId: categoriaId,
+            reto: serializarRetoParaOBS(retoActual),
+            secuencia: secuencia
         });
     }
 }
@@ -361,13 +522,21 @@ function rerollSolar() {
         recalcularComposicionVivienda(retoActual);
     }
 
-    if (typeof renderizarResultadoReto === "function") {
+    const secuencia = typeof construirSecuenciaCategoria === "function"
+        ? construirSecuenciaCategoria("solar", retoActual, retoActual.contexto)
+        : [];
+
+    if (typeof animarRerollTarjeta === "function" && secuencia.length > 0) {
+        animarRerollTarjeta("solar", retoActual, secuencia);
+    } else if (typeof renderizarResultadoReto === "function") {
         renderizarResultadoReto(retoActual);
     }
 
     if (typeof window.emitirEventoOBS === 'function' && !window.esSincronizacionOBS) {
-        window.emitirEventoOBS("RETO_GENERADO", {
-            reto: serializarRetoParaOBS(retoActual)
+        window.emitirEventoOBS("RETO_REROLL", {
+            categoriaId: "solar",
+            reto: serializarRetoParaOBS(retoActual),
+            secuencia: secuencia
         });
     }
 }

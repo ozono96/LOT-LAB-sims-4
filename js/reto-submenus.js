@@ -148,6 +148,40 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // Submenú Tipo de Solar
+    const btnTipoSolar = document.querySelector('#opcionesExtraRetos .opcionFiltro[data-opcion="tipo-solar"]');
+    const submenuTipoSolar = document.getElementById("submenuTipoSolar");
+
+    if (btnTipoSolar && submenuTipoSolar) {
+        btnTipoSolar.addEventListener("click", () => {
+            if (btnTipoSolar.classList.contains("seleccionada")) {
+                cerrarTodosSubmenusFlotantes(submenuTipoSolar);
+                submenuTipoSolar.style.display = "block";
+            } else {
+                submenuTipoSolar.style.display = "none";
+            }
+        });
+    }
+
+    // Opciones excluyentes dentro de Tipo de solar
+    const botonesTipoSolar = document.querySelectorAll("#tipoSolarOpciones .opcionSubmenuTipoSolar, #tipoSolarOpciones .opcionFiltro");
+    botonesTipoSolar.forEach(boton => {
+        boton.addEventListener("click", function (e) {
+            e.stopPropagation();
+            botonesTipoSolar.forEach(b => b.classList.remove("seleccionada"));
+            this.classList.add("seleccionada");
+            
+            // Al elegir una opción, marcar el botón padre
+            if (btnTipoSolar) {
+                btnTipoSolar.classList.add("seleccionada");
+            }
+
+            if (typeof window.actualizarDificultadUI === "function") {
+                window.actualizarDificultadUI();
+            }
+        });
+    });
+
     // Configuración de botones de popover (Aceptar / Desmarcar)
     function configurarBotonesPopover(btnAceptarId, btnDesmarcarId, btnFiltro, submenu) {
         const btnAceptar = document.getElementById(btnAceptarId);
@@ -158,6 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
             submenu.style.display = "none";
             btnFiltro?.classList.add("seleccionada");
             if (typeof window.actualizarDificultadUI === "function") window.actualizarDificultadUI();
+            if (typeof window.actualizarAvisoDisponibilidadReto === "function") window.actualizarAvisoDisponibilidadReto();
         });
 
         btnDesmarcar?.addEventListener("click", (e) => {
@@ -165,6 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
             submenu.style.display = "none";
             btnFiltro?.classList.remove("seleccionada");
             if (typeof window.actualizarDificultadUI === "function") window.actualizarDificultadUI();
+            if (typeof window.actualizarAvisoDisponibilidadReto === "function") window.actualizarAvisoDisponibilidadReto();
         });
     }
 
@@ -172,6 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
     configurarBotonesPopover("btnAceptarHabilidades", "btnDesmarcarHabilidades", btnHabilidades, submenuHabilidades);
     configurarBotonesPopover("btnAceptarLimitePacks", "btnDesmarcarLimitePacks", btnLimitePacks, submenuLimitePacks);
     configurarBotonesPopover("btnAceptarTamano", "btnDesmarcarTamano", btnTamanoSolar, submenuTamano);
+    configurarBotonesPopover("btnAceptarTipoSolar", "btnDesmarcarTipoSolar", btnTipoSolar, submenuTipoSolar);
 
     // Cerrar submenús al hacer clic fuera del contenedor flotante
     document.addEventListener("click", (e) => {
@@ -186,26 +223,25 @@ document.addEventListener("DOMContentLoaded", () => {
             const tamanoActual = arr[sliderTamano.value] || "-";
             valTamano.textContent = tamanoActual;
 
-            // Lógica para tamaño ND
-            const btnAleatorio = document.querySelector('#tipoSolarOpciones .opcionFiltro[data-opcion="tipo-solar-aleatorio"]');
-            const btnComunitario = document.querySelector('#tipoSolarOpciones .opcionFiltro[data-opcion="solo-comunitarios"]');
-            const btnSinTipo = document.querySelector('#tipoSolarOpciones .opcionFiltro[data-opcion="sin-tipo-solar"]');
+            // Lógica para tamaño ND (solo residenciales)
+            const btnAleatorio = document.querySelector('#tipoSolarOpciones [data-opcion="tipo-solar-aleatorio"]');
+            const btnComunitario = document.querySelector('#tipoSolarOpciones [data-opcion="solo-comunitarios"]');
+            const btnResidencial = document.querySelector('#tipoSolarOpciones [data-opcion="solo-residenciales"]');
 
-            if (btnAleatorio && btnComunitario && btnSinTipo) {
-                if (tamanoActual.trim().toUpperCase() === "ND") {
-                    btnAleatorio.classList.add('deshabilitado');
-                    btnComunitario.classList.add('deshabilitado');
+            if (tamanoActual.trim().toUpperCase() === "ND") {
+                if (btnAleatorio) btnAleatorio.classList.add('deshabilitado');
+                if (btnComunitario) btnComunitario.classList.add('deshabilitado');
 
-                    // Si estaban seleccionados, cambiamos a "Sin tipo de solar"
-                    if (btnAleatorio.classList.contains("seleccionada") || btnComunitario.classList.contains("seleccionada")) {
-                        btnAleatorio.classList.remove("seleccionada");
-                        btnComunitario.classList.remove("seleccionada");
-                        btnSinTipo.classList.add("seleccionada");
-                    }
-                } else {
-                    btnAleatorio.classList.remove('deshabilitado');
-                    btnComunitario.classList.remove('deshabilitado');
+                // Si estaban seleccionados aleatorio o comunitario, cambiar a solo residenciales
+                if ((btnAleatorio && btnAleatorio.classList.contains("seleccionada")) || 
+                    (btnComunitario && btnComunitario.classList.contains("seleccionada"))) {
+                    if (btnAleatorio) btnAleatorio.classList.remove("seleccionada");
+                    if (btnComunitario) btnComunitario.classList.remove("seleccionada");
+                    if (btnResidencial) btnResidencial.classList.add("seleccionada");
                 }
+            } else {
+                if (btnAleatorio) btnAleatorio.classList.remove('deshabilitado');
+                if (btnComunitario) btnComunitario.classList.remove('deshabilitado');
             }
 
             if (typeof window.actualizarDificultadUI === "function") {
@@ -309,12 +345,18 @@ function obtenerConfigSubmenus() {
     const sliderHabilidades = document.getElementById("sliderCantidadHabilidades");
     const cantidadHabilidades = sliderHabilidades ? parseInt(sliderHabilidades.value, 10) : 3;
 
+    // Configuración de Tipo de Solar
+    const btnTipoSolarSel = document.querySelector("#tipoSolarOpciones .opcionSubmenuTipoSolar.seleccionada, #tipoSolarOpciones .opcionFiltro.seleccionada");
+    const tipoSolarElegido = btnTipoSolarSel ? (btnTipoSolarSel.getAttribute("data-opcion") || "tipo-solar-aleatorio") : "tipo-solar-aleatorio";
+
     return {
         colores: { cantidad: cantidadColores },
         habilidades: { cantidad: cantidadHabilidades },
         limitePacks: { maxPacks: maxPacks, tiposPermitidos: tiposPermitidos, juegoBasePermitido: juegoBaseEnLimitePacks },
         tamanoSolar: { tamano: tamanoElegido },
+        tipoSolar: { tipo: tipoSolarElegido },
         limitantesConstruir: { cantidad: cantidadLimConstruir },
         limitantesComprar: { cantidad: cantidadLimComprar }
     };
 }
+

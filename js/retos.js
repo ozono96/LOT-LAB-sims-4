@@ -35,6 +35,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (typeof abrirVentana === "function") {
             abrirVentana(destino, true);
         }
+
+        // Comprobar disponibilidad de recursos al entrar a las opciones
+        setTimeout(() => {
+            if (typeof window.actualizarAvisoDisponibilidadReto === "function") window.actualizarAvisoDisponibilidadReto();
+        }, 100);
     });
 
     // Opciones excluyentes: Reto con solar / Reto sin solar
@@ -44,6 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
             botonesTipoReto.forEach(b => b.classList.remove("seleccionada"));
             this.classList.add("seleccionada");
             if (typeof actualizarDificultadUI === "function") actualizarDificultadUI();
+            if (typeof window.actualizarAvisoDisponibilidadReto === "function") window.actualizarAvisoDisponibilidadReto();
         });
     });
 
@@ -80,11 +86,15 @@ document.addEventListener("DOMContentLoaded", () => {
         const submenusConfig = typeof obtenerConfigSubmenus === "function" ? obtenerConfigSubmenus() : null;
         const dificultadText = document.getElementById("valDificultadUI")?.textContent || "0";
 
+        const btnTipoSolarSel = document.querySelector("#tipoSolarOpciones .opcionSubmenuTipoSolar.seleccionada, #tipoSolarOpciones .opcionFiltro.seleccionada");
+        const tipoSolar = btnTipoSolarSel ? (btnTipoSolarSel.getAttribute("data-opcion") || "tipo-solar-aleatorio") : "tipo-solar-aleatorio";
+
         return {
             tipoReto,
             opcionesExtra,
             limitantesExtra,
             submenusConfig,
+            tipoSolar,
             dificultadText
         };
     }
@@ -131,14 +141,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        // Opciones de tipo de solar: si hay una seleccionada y NO es "sin-tipo-solar", suma 1
-        const tipoSolarSel = document.querySelector("#tipoSolarOpciones .opcionFiltro.seleccionada");
-        if (tipoSolarSel) {
-            if (tipoSolarSel.getAttribute("data-opcion") !== "sin-tipo-solar") {
-                dificultad++;
-            }
-        }
-
         // Limitantes extra (Construir / Comprar): suman tantos puntos como limitantes se vayan a sacar
         const btnConstruir = document.querySelector('#limitantesExtraOpciones .opcionFiltro[data-limitante="construir"]');
         if (btnConstruir && btnConstruir.classList.contains("seleccionada")) {
@@ -172,6 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
         boton.addEventListener("click", function () {
             this.classList.toggle("seleccionada");
             actualizarDificultadUI();
+            if (typeof window.actualizarAvisoDisponibilidadReto === "function") window.actualizarAvisoDisponibilidadReto();
         });
     });
 
@@ -184,22 +187,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Opciones excluyentes: Tipo de solar (Aleatorio, Comunitarios, Residenciales, Sin tipo)
-    const botonesTipoSolar = document.querySelectorAll("#tipoSolarOpciones .opcionFiltro");
-    botonesTipoSolar.forEach(boton => {
-        boton.addEventListener("click", function () {
-            if (this.classList.contains("seleccionada")) {
-                this.classList.remove("seleccionada");
-            } else {
-                botonesTipoSolar.forEach(b => b.classList.remove("seleccionada"));
-                this.classList.add("seleccionada");
-            }
-            actualizarDificultadUI();
-        });
-    });
-
     // Actualizar nada más abrir la página por si hay algo marcado por defecto
     actualizarDificultadUI();
+    // Lanzar comprobación inicial de disponibilidad de recursos
+    setTimeout(() => {
+        if (typeof window.actualizarAvisoDisponibilidadReto === "function") window.actualizarAvisoDisponibilidadReto();
+    }, 200);
 
     // Lógica para el Tooltip Flotante
     const tooltip = document.getElementById("tooltipOpciones");
@@ -595,7 +588,10 @@ function renderizarPacksRetos() {
         contenedorId: "listaPacksRetos",
         setPacks: PACKS_SELECCIONADOS_SET,
         modoVista: MODO_VISTA_PACKS,
-        onChange: sincronizarPacksRetosOBS
+        onChange: () => {
+            sincronizarPacksRetosOBS();
+            if (typeof window.actualizarAvisoTipoSolar === "function") window.actualizarAvisoTipoSolar();
+        }
     });
 }
 
@@ -709,6 +705,15 @@ window.actualizarPacksRetosObs = function(payload) {
     }
 };
 
+// Re-check tipo solar availability whenever packs change via OBS
+const _origActualizarPacksRetosObs = window.actualizarPacksRetosObs;
+window.actualizarPacksRetosObs = function(payload) {
+    _origActualizarPacksRetosObs(payload);
+    if (typeof window.actualizarAvisoTipoSolar === "function") {
+        setTimeout(window.actualizarAvisoTipoSolar, 50);
+    }
+};
+
 window.actualizarOpcionesRetoObs = function(state) {
     if (!state) return;
     window.esSincronizacionOBS = true;
@@ -736,6 +741,15 @@ window.actualizarOpcionesRetoObs = function(state) {
             document.querySelectorAll("#limitantesExtraOpciones .opcionFiltro").forEach(b => {
                 const lim = b.getAttribute("data-limitante");
                 if (state.limitantesExtra.includes(lim)) {
+                    b.classList.add("seleccionada");
+                } else {
+                    b.classList.remove("seleccionada");
+                }
+            });
+        }
+        if (state.tipoSolar) {
+            document.querySelectorAll("#tipoSolarOpciones .opcionSubmenuTipoSolar, #tipoSolarOpciones .opcionFiltro").forEach(b => {
+                if (b.getAttribute("data-opcion") === state.tipoSolar) {
                     b.classList.add("seleccionada");
                 } else {
                     b.classList.remove("seleccionada");

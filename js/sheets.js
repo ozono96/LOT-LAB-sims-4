@@ -1,10 +1,17 @@
-async function cargarHoja(nombreHoja) {
+async function cargarHoja(nombreHoja, opciones = {}) {
 
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${encodeURIComponent(nombreHoja)}?key=${CONFIG.API_KEY}`;
+    // La API de Google Sheets v4 rechaza parámetros query no reconocidos (400).
+    // Para evitar caché del navegador es suficiente con cache: "no-store" en fetch.
+    // Si se especifica opciones.rango (ej: "A1:ZZ500"), se envuelve el nombre en comillas simples para soportar espacios.
+    const nombreLimpio = nombreHoja.replace(/^'+|'+$/g, '');
+    const rango = opciones.rango ? `'${nombreLimpio}'!${opciones.rango}` : nombreHoja;
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${encodeURIComponent(rango)}?key=${CONFIG.API_KEY}`;
 
     try {
 
-        const respuesta = await fetch(url);
+        const fetchOptions = opciones.nocache ? { cache: "no-store" } : {};
+
+        const respuesta = await fetch(url, fetchOptions);
 
         const datos = await respuesta.json();
 

@@ -687,6 +687,7 @@ function actualizarDisplayCuentaAtrasDesastres() {
 
 // Alarma sonora del desastre (Web Audio API)
 function sonarAlarmaDesastre() {
+    if (window.SonidoGlobal?.silenciado) return;
     try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const pitidos = [0, 0.35, 0.70];
@@ -714,6 +715,7 @@ function sonarAlarmaDesastre() {
 
 // Sonido especial DIFERENTE para indicar la finalización de todas las tiradas automáticas (Fanfarria arpegiada)
 function sonarFanfarriaFinTiradas() {
+    if (window.SonidoGlobal?.silenciado) return;
     try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         // 4 notas ascendentes (Do5, Mi5, Sol5, Do6)

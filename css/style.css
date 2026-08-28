@@ -179,7 +179,55 @@ body.modo-dia .submenuOpcion.popoverFlotante {
 
 .btnDesmarcarPopover:hover {
     transform: translateY(-1px);
-    background: rgba(229, 57, 53, 0.3);
+    background: rgba(229, 57, 53, 0.28);
+}
+
+/* Opciones de lista dentro del submenú Tipo de Solar */
+.opcionSubmenuTipoSolar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: var(--radio-pequeño, 8px);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1.5px solid var(--borde);
+    color: var(--color-texto);
+    cursor: pointer;
+    font-size: 0.92rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+body.modo-dia .opcionSubmenuTipoSolar {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.opcionSubmenuTipoSolar:hover:not(.deshabilitado) {
+    transform: translateY(-1px);
+    border-color: var(--color-secundario);
+}
+
+.opcionSubmenuTipoSolar.seleccionada {
+    background: rgba(46, 204, 113, 0.22) !important;
+    border-color: #2ecc71 !important;
+    color: inherit !important;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(46, 204, 113, 0.25);
+}
+
+body.modo-dia .opcionSubmenuTipoSolar.seleccionada {
+    background: rgba(46, 204, 113, 0.25) !important;
+    border-color: #27ae60 !important;
+    color: #1e8449 !important;
+}
+
+.opcionSubmenuTipoSolar.deshabilitado {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 body.modo-dia .btnDesmarcarPopover {
@@ -733,6 +781,7 @@ button:disabled {
     transform: scale(1.10);
 
 }
+
 
 /* Cabeceras de secciÃ³n con botÃ³n de compartir inline */
 .estatSeccionCabecera {
@@ -1569,6 +1618,13 @@ input[type="number"]:focus {
 }
 
 
+.icono-red.patreon {
+
+    background: #FF424D;
+
+}
+
+
 /* ==========================================================
    UTILIDADES
 ========================================================== */
@@ -1839,6 +1895,30 @@ body.modo-noche .toggleModo:hover {
 
     transform: scale(1.10);
 
+}
+
+/* ==========================================================
+   BOTÓN DE SILENCIO (#botonSonido)
+   Sigue el mismo estilo visual que .toggleModo
+   ========================================================== */
+
+/* Oculta/muestra el SVG correcto según el estado */
+.oculto-sonido {
+    display: none !important;
+}
+
+/* Cuando está silenciado: color rojo suave para avisar al usuario */
+#botonSonido.silenciado {
+    background: #c0392b !important;
+    color: #fff !important;
+}
+
+#botonSonido.silenciado:hover {
+    background: rgba(192, 57, 43, 0.80) !important;
+    box-shadow:
+        0 0 8px rgba(192, 57, 43, 0.60),
+        0 0 18px rgba(192, 57, 43, 0.45),
+        0 0 30px rgba(192, 57, 43, 0.25) !important;
 }
 
 /* ==========================================================
@@ -2427,21 +2507,19 @@ body.modo-dia .contadorBarrio {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 42px;
-    height: 42px;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid var(--borde);
+    width: 46px;
+    height: 46px;
+    background: transparent;
+    border: none;
     transition: transform 0.15s;
     cursor: default;
     position: relative;
 }
 
 .chipIconoPack img.iconoPack {
-    width: 34px;
-    height: 34px;
+    width: 44px;
+    height: 44px;
     object-fit: contain;
-    border-radius: 6px;
     display: block;
 }
 
@@ -2468,13 +2546,13 @@ body.modo-dia .contadorBarrio {
 }
 
 .chipIconoPack:hover {
-    transform: scale(1.12);
+    transform: scale(1.15);
 }
 
 .chipPackTexto {
     display: inline-flex;
     align-items: center;
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid var(--borde);
     border-radius: 8px;
@@ -2485,8 +2563,9 @@ body.modo-dia .contadorBarrio {
 .tiraIconosPacks {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 8px;
+    align-items: center;
+    gap: 10px;
+    margin-top: 4px;
 }
 
 /* ==========================================================
@@ -5373,17 +5452,24 @@ body.modo-noche #ventanaEstadisticas::-webkit-scrollbar-track {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 14px;
+    gap: 8px 18px;
 }
 
 .packFechaEstat {
     font-size: 0.84rem;
     opacity: 0.75;
+    min-width: 180px;
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .packPrecioWrap {
     display: flex;
     align-items: center;
+    min-width: 85px;
+    flex-shrink: 0;
 }
 
 .packPrecio {
@@ -5531,6 +5617,199 @@ body.modo-dia .estatInstruccionesGraficos kbd {
 
 .graficoBloque:hover {
     box-shadow: var(--sombra-normal);
+}
+
+/* ── Panel Desplegable de Detalle de Lanzamientos (Mes / Día) ── */
+.estatDetalleGraficoPanel {
+    margin-top: 14px;
+    padding: 16px;
+    background: var(--color-tarjeta);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-normal);
+    box-shadow: var(--sombra-suave);
+    animation: estatSlideDown 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+@keyframes estatSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.estatDetalleHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--borde);
+}
+
+.estatDetalleTituloWrap {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.estatDetalleTitulo {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--color-texto);
+}
+
+.estatDetalleBadgeCount {
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 100px;
+    background: rgba(37, 99, 235, 0.12);
+    color: var(--color-primario, #2563EB);
+    border: 1px solid rgba(37, 99, 235, 0.28);
+}
+
+body.modo-noche .estatDetalleBadgeCount {
+    background: rgba(58, 237, 237, 0.15);
+    color: #3aeded;
+    border-color: rgba(58, 237, 237, 0.35);
+}
+
+.estatDetalleBtnCerrar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid var(--borde);
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--color-texto);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+body.modo-noche .estatDetalleBtnCerrar {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.estatDetalleBtnCerrar:hover {
+    background: rgba(239, 68, 68, 0.18);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.4);
+    transform: scale(1.08);
+}
+
+.estatDetalleLista {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 440px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.estatDetallePackCard {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-pequeno);
+    transition: transform var(--transicion), box-shadow var(--transicion), background var(--transicion);
+    box-sizing: border-box;
+}
+
+body.modo-noche .estatDetallePackCard {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.estatDetallePackCard:hover {
+    transform: translateY(-2px);
+    background: rgba(0, 0, 0, 0.06);
+    box-shadow: var(--sombra-suave);
+}
+
+body.modo-noche .estatDetallePackCard:hover {
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.estatDetallePackImgWrap {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.estatDetallePackImg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.estatDetallePackInfo {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.estatDetallePackRowTop {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.estatDetallePackNombre {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-texto);
+}
+
+.estatDetallePackRowBottom {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+}
+
+.estatDetallePackFecha {
+    font-size: 0.82rem;
+    opacity: 0.75;
+    white-space: nowrap;
+}
+
+.estatDetalleVacio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 16px;
+    text-align: center;
+    gap: 6px;
+    opacity: 0.85;
+    font-size: 0.92rem;
 }
 
 .graficoCabecera {
@@ -8094,6 +8373,46 @@ body.modo-noche .botonOBSBtn:hover {
     box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
 }
 
+/* Control deslizante de Escala de ventanas OBS */
+.obsSliderContainer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    padding: 8px 14px;
+}
+
+.obsSliderInput {
+    flex: 1;
+    cursor: pointer;
+    accent-color: var(--color-resaltado, #2ECC71);
+}
+
+.obsValorEscala {
+    color: var(--color-resaltado, #2ECC71);
+    font-weight: bold;
+    font-size: 0.95rem;
+}
+
+.obsBtnResetEscala {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border-radius: 6px;
+    border: 1px solid var(--borde);
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-texto);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.obsBtnResetEscala:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
 .obsEnlaceBox {
     display: flex;
     flex-direction: column;
@@ -8211,6 +8530,23 @@ body.modo-obs .ventana {
     box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4) !important;
 }
 
+/* Escalado de ventanas directas de section#app según posición */
+body.modo-obs section#app > .ventana {
+    transform: scale(var(--escala-obs, 1)) !important;
+}
+
+body.modo-obs.obs-pos-left section#app > .ventana {
+    transform-origin: top left !important;
+}
+
+body.modo-obs.obs-pos-center section#app > .ventana {
+    transform-origin: top center !important;
+}
+
+body.modo-obs.obs-pos-right section#app > .ventana {
+    transform-origin: top right !important;
+}
+
 /* Fondo de ventanas según la configuración escogida */
 body.modo-obs.obs-bg-transparent .ventana {
     background: rgba(20, 25, 35, 0.88) !important;
@@ -8249,6 +8585,150 @@ body.modo-obs.modo-obs-noche {
     display: contents;
 }
 
+/* ─── Animación Ruleta / Slot para Modo Retos ────────────────────────── */
+.retoSlotViewport {
+    position: relative;
+    overflow: hidden;
+    mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+    border-radius: var(--radio-pequeno);
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.retoSlotTrack {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    will-change: transform;
+}
+
+.retoSlotItemVisual {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* Solar Slot Viewport */
+.retoSolarSlotViewport {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+    mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
+    border-radius: var(--radio-normal);
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 260px;
+    margin: 0 auto;
+}
+
+.retoSolarSlotTrack {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    will-change: transform;
+}
+
+.retoSolarSlotItemVisual {
+    height: 220px;
+    min-height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.retoSolarSlotItemVisual .tarjetaSolar {
+    margin: 0;
+    pointer-events: none;
+}
+
+/* ─── Ciclado Visual Rápido de Opciones (Solar, Habilidades, Colores, Packs, Limitantes) ── */
+@keyframes retoCicladoFlash {
+    0%   { opacity: 0; transform: scale(0.97); }
+    15%  { opacity: 1; transform: scale(1); }
+    85%  { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0.97); }
+}
+
+@keyframes retoCicladoAterrizaje {
+    0%   { opacity: 0; transform: scale(0.95); }
+    60%  { opacity: 1; transform: scale(1.02); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.catResultadoSlotWrap {
+    /* overflow se controla desde JS: hidden durante animación, vacío en estado normal */
+    min-height: 20px;
+    position: relative;
+}
+
+.solarCardSlotWrap {
+    position: relative;
+    min-height: 60px;
+}
+
+/* Capas de crossfade del ciclado visual */
+.retoCicladoCapa {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+}
+
+/* Texto del carrete vertical: idéntica alineación que el resultado final */
+.retoSlotItemVisual .textoResultadoCat {
+    text-align: left;
+    width: 100%;
+}
+
+/* Los chips de color NO deben quedar recortados por overflow del padre */
+/* Se garantiza porque .catResultadoSlotWrap no tiene overflow:hidden en estado normal */
+.muestrasColores {
+    overflow: visible;
+}
+.chipColor {
+    overflow: visible;
+}
+
+/* ─── Iconos de Tipo de Solar (Modo Día / Modo Noche reactivo) ─── */
+.iconoTipoSolarWrap {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.iconoTipoSolarReto {
+    width: 100%;
+    height: 100%;
+    max-width: 44px;
+    max-height: 44px;
+    object-fit: contain;
+    display: block;
+    transition: filter var(--transicion, 0.25s ease), transform var(--transicion, 0.25s ease);
+}
+
+/* Modo Día: Imagen original sin modificar colores ni filtros */
+body.modo-dia .iconoTipoSolarReto {
+    filter: none;
+}
+
+/* Modo Noche: Blanco luminoso sobre fondo oscuro */
+body.modo-noche .iconoTipoSolarReto {
+    filter: brightness(0) invert(1) drop-shadow(0 0 4px rgba(255, 255, 255, 0.35));
+}
+
+
+
 /* ─── Escalado y Posicionamiento de la Composición en OBS ───────────────
    Separación de responsabilidades:
    1. #wrapperPosicionOBS: Única responsabilidad -> POSICIONAMIENTO puro (left: 24px, right: 24px, 50% con transform: translateX(-50%)).
@@ -8286,9 +8766,15 @@ body.modo-obs.obs-pos-center #wrapperPosicionOBS:has(#ventanaTemporizador:not([s
 }
 
 body.modo-obs.obs-pos-center:has(#ventanaRuletaDesastres:not([style*="display: none"])) #wrapperPosicionOBS {
-    left: 50% !important;
+    left: calc(50% - 340px * var(--escala-obs, 1)) !important;
     right: auto !important;
-    transform: translateX(-50%) !important;
+    transform: none !important;
+}
+
+body.modo-obs.obs-pos-center:has(#ventanaRuletaDesastres:not([style*="display: none"])):has(#ventanaTemporizador:not([style*="display: none"])) #wrapperPosicionOBS {
+    left: calc(50% - (580px * var(--escala-obs, 1) + 10px)) !important;
+    right: auto !important;
+    transform: none !important;
 }
 
 body.modo-obs.obs-pos-right #wrapperPosicionOBS {
@@ -8305,7 +8791,13 @@ body.modo-obs.obs-pos-right #wrapperPosicionOBS:has(#ventanaTemporizador:not([st
 }
 
 body.modo-obs.obs-pos-right:has(#ventanaRuletaDesastres:not([style*="display: none"])) #wrapperPosicionOBS {
-    right: 24px !important;
+    right: calc(24px - 680px * (1 - var(--escala-obs, 1))) !important;
+    left: auto !important;
+    transform: none !important;
+}
+
+body.modo-obs.obs-pos-right:has(#ventanaRuletaDesastres:not([style*="display: none"])):has(#ventanaTemporizador:not([style*="display: none"])) #wrapperPosicionOBS {
+    right: calc(24px - 480px * (1 - var(--escala-obs, 1))) !important;
     left: auto !important;
     transform: none !important;
 }
@@ -8338,7 +8830,8 @@ body.modo-obs #ventanaRuletaDesastres {
     min-width: 680px !important;
     max-width: 680px !important;
     flex: 0 0 680px !important;
-    transform: none !important;
+    transform: scale(var(--escala-obs, 1)) !important;
+    transform-origin: top left !important;
 }
 
 body.modo-obs #ventanaTemporizador {
@@ -8351,11 +8844,12 @@ body.modo-obs #ventanaTemporizador {
     max-width: 480px !important;
     flex: 0 0 480px !important;
     transform-origin: top left !important;
+    transform: scale(var(--escala-obs, 1)) !important;
 }
 
-/* Separación fija de 20px sin escala para Ruleta Desastres + Temporizador en OBS */
+/* Separación y escala para Ruleta Desastres + Temporizador en OBS */
 body.modo-obs:has(#ventanaRuletaDesastres:not([style*="display: none"])) #ventanaTemporizador {
-    margin-left: 20px !important;
+    margin-left: calc(20px - 680px * (1 - var(--escala-obs, 1))) !important;
     margin-top: 0 !important;
     margin-right: 0 !important;
     margin-bottom: 0 !important;
@@ -8363,7 +8857,8 @@ body.modo-obs:has(#ventanaRuletaDesastres:not([style*="display: none"])) #ventan
     min-width: 480px !important;
     max-width: 480px !important;
     flex: 0 0 480px !important;
-    transform: none !important;
+    transform: scale(var(--escala-obs, 1)) !important;
+    transform-origin: top left !important;
 }
 
 /* Garantizar que los modales flotantes se muestren por encima de las ventanas en OBS */
@@ -8380,3 +8875,48 @@ body.modo-obs #bajarResultados {
     visibility: hidden !important;
     pointer-events: none !important;
 }
+
+/* ==========================================================
+   MARCA DE AGUA (WATERMARK / BRANDING) EN MODO OBS
+   Posicionada respecto a los límites de la ventana activa
+   ========================================================== */
+.obsBrandingLayer {
+    display: none;
+}
+
+body.modo-obs .obsBrandingLayer {
+    display: block !important;
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 0 !important;
+    pointer-events: none !important;
+    z-index: 99 !important;
+}
+
+body.modo-obs .obsBrandingTextoIzq {
+    position: absolute !important;
+    bottom: 12px !important;
+    left: 15px !important;
+    font-size: 0.9rem !important;
+    font-weight: bold !important;
+    opacity: 0.75 !important;
+    color: var(--color-texto) !important;
+    text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.5) !important;
+    pointer-events: none !important;
+    white-space: nowrap !important;
+}
+
+body.modo-obs .obsBrandingTextoDer {
+    position: absolute !important;
+    bottom: 12px !important;
+    right: 15px !important;
+    font-size: 0.9rem !important;
+    font-weight: bold !important;
+    opacity: 0.75 !important;
+    color: var(--color-texto) !important;
+    text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.5) !important;
+    pointer-events: none !important;
+    white-space: nowrap !important;
+}

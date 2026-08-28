@@ -1,15 +1,45 @@
+let _resolverAutorizacion = null;
+const _promesaAutorizacion = new Promise((resolve) => {
+    _resolverAutorizacion = resolve;
+});
+
+window.marcarAppAutorizada = function () {
+    if (typeof _resolverAutorizacion === "function") {
+        _resolverAutorizacion(true);
+        _resolverAutorizacion = null;
+    }
+};
+
 async function cargarHoja(nombreHoja, opciones = {}) {
+
+    // Esperar a que auth-prelaunch.js autorice realmente la aplicación.
+    // No usamos un timeout de 50 ms porque el servidor puede tardar
+    // más de 50 ms en responder.
+    const autorizada = await _promesaAutorizacion;
+
+    if (!autorizada) {
+        console.warn(
+            `[LOT-LAB Sheets] Acceso bloqueado a '${nombreHoja}': La aplicación no está autorizada.`
+        );
+        return [];
+    }
 
     // La API de Google Sheets v4 rechaza parámetros query no reconocidos (400).
     // Para evitar caché del navegador es suficiente con cache: "no-store" en fetch.
     // Si se especifica opciones.rango (ej: "A1:ZZ500"), se envuelve el nombre en comillas simples para soportar espacios.
     const nombreLimpio = nombreHoja.replace(/^'+|'+$/g, '');
-    const rango = opciones.rango ? `'${nombreLimpio}'!${opciones.rango}` : nombreHoja;
+
+    const rango = opciones.rango
+        ? `'${nombreLimpio}'!${opciones.rango}`
+        : nombreHoja;
+
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${encodeURIComponent(rango)}?key=${CONFIG.API_KEY}`;
 
     try {
 
-        const fetchOptions = opciones.nocache ? { cache: "no-store" } : {};
+        const fetchOptions = opciones.nocache
+            ? { cache: "no-store" }
+            : {};
 
         const respuesta = await fetch(url, fetchOptions);
 
@@ -17,16 +47,13 @@ async function cargarHoja(nombreHoja, opciones = {}) {
 
         return datos.values || [];
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error("Error cargando hoja:", nombreHoja, error);
 
         return [];
 
     }
-
 }
 
 
@@ -194,10 +221,7 @@ async function iniciarBaseDatos() {
     document.dispatchEvent(new Event("datosCargados"));
 
 }
-
-
-
-iniciarBaseDatos();
+window.iniciarBaseDatosSegura = iniciarBaseDatos;
 
 // ── Mapa de iconos de packs ──────────────────────────────────
 // Construye database.iconosPacks: { "nombre pack": { ruta, id } }

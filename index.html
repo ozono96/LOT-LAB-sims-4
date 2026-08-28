@@ -11,6 +11,7 @@
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
 
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/auth-prelaunch.css">
 
     <!-- Garantizar scroll = 0 en cada carga/recarga, antes de que cualquier otro JS se ejecute -->
     <script>history.scrollRestoration = 'manual'; window.scrollTo(0, 0);</script>
@@ -45,6 +46,87 @@
             </div>
         </div>
     </div>
+
+    <!-- ==================== PANTALLA DE PRE-LANZAMIENTO ==================== -->
+    <div id="pantallaPreLaunch" class="oculta" style="display:none;">
+        <div class="prelaunchOverlay"></div>
+
+        <div class="prelaunchCard">
+            <!-- Botón de cambio de tema -->
+            <button type="button" id="btnToggleTemaPrelaunch" class="btnToggleTemaPrelaunch" title="Cambiar modo día/noche">
+                <span class="iconoTemaPrelaunchSol">☀️</span>
+                <span class="iconoTemaPrelaunchLuna">🌙</span>
+            </button>
+
+            <!-- Cabecera -->
+            <div class="prelaunchHeader">
+                <div class="prelaunchLogos">
+                    <img src="img/logo/logo1.png" alt="Logo LOT-LAB Sims 4" class="prelaunchLogo1">
+                    <span class="prelaunchBy">By</span>
+                    <img src="img/logo/logo2.jpg" alt="Ozono96 Logo" class="prelaunchLogo2">
+                </div>
+                <h1>LOT-LAB Sims 4</h1>
+                <p class="prelaunchSubtitle">Encuentra cualquier solar del juego fácilmente<br>y crea retos divertidos para construir &amp; more...</p>
+            </div>
+
+            <!-- Cuenta Atrás -->
+            <div class="prelaunchCountdownWrapper">
+                <div class="prelaunchCountdownTitle">⏳ Lanzamiento Oficial</div>
+                <div class="prelaunchCountdownGrid">
+                    <div class="countdownBlock">
+                        <span class="countdownNum" id="prelaunchDias">00</span>
+                        <span class="countdownLabel">Días</span>
+                    </div>
+                    <div class="countdownBlock">
+                        <span class="countdownNum" id="prelaunchHoras">00</span>
+                        <span class="countdownLabel">Horas</span>
+                    </div>
+                    <div class="countdownBlock">
+                        <span class="countdownNum" id="prelaunchMinutos">00</span>
+                        <span class="countdownLabel">Min</span>
+                    </div>
+                    <div class="countdownBlock">
+                        <span class="countdownNum" id="prelaunchSegundos">00</span>
+                        <span class="countdownLabel">Seg</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario de Acceso Anticipado -->
+            <div class="prelaunchFormSection">
+                <div class="prelaunchFormTitle">
+                    <span>🔐</span> Acceso Anticipado
+                </div>
+
+                <form id="formAccesoPrelaunch" class="prelaunchForm" autocomplete="off">
+                    <div class="formGroup">
+                        <label for="inputPrelaunchUser">Usuario</label>
+                        <div class="inputWrapper">
+                            <span class="inputIcon">👤</span>
+                            <input type="text" id="inputPrelaunchUser" class="prelaunchInput" placeholder="Introduce tu nombre de usuario" required autocomplete="username">
+                        </div>
+                    </div>
+
+                    <div class="formGroup">
+                        <label for="inputPrelaunchPass">Contraseña</label>
+                        <div class="inputWrapper">
+                            <span class="inputIcon">🔑</span>
+                            <input type="password" id="inputPrelaunchPass" class="prelaunchInput" placeholder="Introduce tu contraseña de acceso" required autocomplete="current-password">
+                            <button type="button" id="btnTogglePasswordPrelaunch" class="btnTogglePassword" title="Mostrar/ocultar contraseña">👁️</button>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btnAccederPrelaunch" class="btnAccederPrelaunch">
+                        <span id="btnAccederTexto">🚀 Entrar a LOT-LAB</span>
+                        <span id="btnAccederSpinner" class="spinnerAcceso" style="display:none;"></span>
+                    </button>
+                </form>
+
+                <div id="prelaunchMensaje" class="prelaunchMensaje"></div>
+            </div>
+        </div>
+    </div>
+    <!-- ==================== FIN PANTALLA PRE-LANZAMIENTO ==================== -->
 
 
     <header>
@@ -3061,6 +3143,7 @@
 
     <script src="js/loading.js"></script>
     <script src="js/config.js"></script>
+    <script src="js/auth-prelaunch.js"></script>
     <script src="js/database.js"></script>
     <script src="js/sheets.js"></script>
     <script src="js/render.js"></script>

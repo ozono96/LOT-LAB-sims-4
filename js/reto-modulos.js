@@ -445,7 +445,7 @@ const RetoModulos = {
     // 🔨 Limitantes de Construir
     limitanteConstruir: {
         id: "limitanteConstruir",
-        titulo: "🔨 Limitantes: Construir",
+        titulo: "🔨 Limitantes (Elementos que no puedes usar en tus construcciones): Modo Construir",
         generar: function (contexto) {
             const cantidad = contexto.configLimitantesConstruir?.cantidad || 1;
             const seleccionados = typeof seleccionarLimitantesAleatorios === "function"
@@ -466,7 +466,7 @@ const RetoModulos = {
     // 🛒 Limitantes de Comprar
     limitanteComprar: {
         id: "limitanteComprar",
-        titulo: "🛒 Limitantes: Comprar",
+        titulo: "🛒 Limitantes (Elementos que no puedes usar en tus construcciones): Modo Comprar",
         generar: function (contexto) {
             const cantidad = contexto.configLimitantesComprar?.cantidad || 1;
             const seleccionados = typeof seleccionarLimitantesAleatorios === "function"

@@ -14,11 +14,12 @@ function abrirFichaSolar(idSolar){
 
     const rutaPack = typeof rutaIconoPack === "function" ? rutaIconoPack(solar.nombrePack) : null;
     const rutaMundo = typeof rutaIconoMundo === "function" ? rutaIconoMundo(solar.mundo) : null;
+    const rutaTipoSolar = typeof rutaIconoTipoSolar === "function" ? rutaIconoTipoSolar(solar.tipoSolar) : null;
 
-    function bloqueConIcono(ruta, fallbackEmoji, etiqueta, valor) {
+    function bloqueConIcono(ruta, fallbackEmoji, etiqueta, valor, claseImgExtra = "") {
         const iconoHtml = ruta
             ? `
-                <img src="${ruta}" alt="${etiqueta}" class="fichaSolarIcono" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <img src="${ruta}" alt="${etiqueta}" class="fichaSolarIcono ${claseImgExtra.trim()}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                 <span class="fichaSolarIconoFallback" style="display:none;">${fallbackEmoji}</span>
               `
             : `<span class="fichaSolarIconoFallback">${fallbackEmoji}</span>`;
@@ -79,8 +80,8 @@ function abrirFichaSolar(idSolar){
             </div>
 
             <div class="fichaSolarColumna fichaSolarColumnaDerecha">
+                ${bloqueConIcono(rutaTipoSolar, "🏡", "Tipo de solar", solar.tipoSolar, "fichaSolarIconoTipoSolar")}
                 ${bloqueSimple("🏠", "Tipo de lote", solar.tipoLote)}
-                ${bloqueSimple("🏡", "Tipo de solar", solar.tipoSolar)}
                 ${bloqueSimple("📐", "Tamaño", solar.tamaño)}
                 ${bloqueSimple("🧭", "Orientación", solar.orientacion)}
                 ${bloqueSimple("🚶", "Acera", solar.acera)}

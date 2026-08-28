@@ -1,6 +1,91 @@
-/* =========================================================
-   COMPARTIR (CAPTURA DE PANTALLA DE VENTANA O SECCIÓN)
-   ========================================================= */
+// ── Procesamiento de iconos con filtro para captura fiel ────────
+const _cacheIconosBlancos = new Map();
+
+function generarIconoBlancoDataURL(imgElemento) {
+    if (!imgElemento || !imgElemento.src) return null;
+    const src = imgElemento.src;
+
+    if (_cacheIconosBlancos.has(src)) {
+        return _cacheIconosBlancos.get(src);
+    }
+
+    try {
+        const canvas = document.createElement("canvas");
+        const w = imgElemento.naturalWidth || imgElemento.width || 64;
+        const h = imgElemento.naturalHeight || imgElemento.height || 64;
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return null;
+
+        ctx.drawImage(imgElemento, 0, 0, w, h);
+        const imgData = ctx.getImageData(0, 0, w, h);
+        const data = imgData.data;
+
+        // Convertir todos los píxeles visibles a blanco luminoso manteniendo la transparencia exacta
+        for (let i = 0; i < data.length; i += 4) {
+            if (data[i + 3] > 0) {
+                data[i] = 255;     // R
+                data[i + 1] = 255; // G
+                data[i + 2] = 255; // B
+            }
+        }
+
+        ctx.putImageData(imgData, 0, 0);
+        const dataURL = canvas.toDataURL("image/png");
+        _cacheIconosBlancos.set(src, dataURL);
+        return dataURL;
+    } catch (e) {
+        console.warn("No se pudo procesar icono para captura:", e);
+        return null;
+    }
+}
+
+function debeConvertirseABlanco(imgElemento) {
+    if (!imgElemento) return false;
+    const esModoNoche = document.body.classList.contains("modo-noche");
+    if (esModoNoche) return true;
+
+    // En modo día, si el botón padre está seleccionado (fondo verde), el icono se ve blanco
+    const btnSeleccionado = imgElemento.closest(".opcionFiltro.seleccionada, .tarjetaCategoriaReto.seleccionada");
+    if (btnSeleccionado) return true;
+
+    // Comprobar si el computedStyle de filter incluye invert o brightness
+    try {
+        const computedFilter = window.getComputedStyle(imgElemento).filter;
+        if (computedFilter && (computedFilter.includes("invert") || computedFilter.includes("brightness(0)"))) {
+            return true;
+        }
+    } catch (e) {}
+
+    return false;
+}
+
+function procesarIconosParaCaptura(elementoOriginal, elementoClonado) {
+    if (!elementoOriginal || !elementoClonado) return;
+
+    const imgsOriginales = Array.from(elementoOriginal.querySelectorAll("img"));
+    const imgsClonadas = Array.from(elementoClonado.querySelectorAll("img"));
+
+    imgsClonadas.forEach((imgClon, i) => {
+        // Encontrar la imagen original ya cargada
+        const imgOrig = imgsOriginales[i] || imgsOriginales.find(orig => orig.src === imgClon.src) || imgClon;
+
+        const esIconoTipoSolar = imgClon.classList.contains("iconoTipoSolarReto") ||
+                                imgClon.classList.contains("iconoTipoSolarFiltro") ||
+                                imgClon.classList.contains("fichaSolarIconoTipoSolar") ||
+                                (imgClon.src && imgClon.src.includes("iconos-tipo-solar"));
+
+        if (esIconoTipoSolar && debeConvertirseABlanco(imgOrig)) {
+            const dataURL = generarIconoBlancoDataURL(imgOrig);
+            if (dataURL) {
+                imgClon.src = dataURL;
+                imgClon.style.filter = "none";
+            }
+        }
+    });
+}
+window.procesarIconosParaCaptura = procesarIconosParaCaptura;
 
 async function capturarElemento(elemento, nombreArchivoBase = "LotLab_Captura") {
     if (!elemento) return;
@@ -66,7 +151,11 @@ async function capturarElemento(elemento, nombreArchivoBase = "LotLab_Captura") 
         const canvas = await html2canvas(elemento, {
             scale: 2,
             backgroundColor: null,
-            useCORS: true
+            useCORS: true,
+            onclone: (clonedDoc) => {
+                const elClonado = (elemento.id ? clonedDoc.getElementById(elemento.id) : null) || clonedDoc.body;
+                procesarIconosParaCaptura(elemento, elClonado);
+            }
         });
 
         const imageURL = canvas.toDataURL("image/png");

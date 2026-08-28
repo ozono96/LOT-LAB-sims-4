@@ -168,6 +168,13 @@ async function cargarListados() {
 
     console.log("Habilidades:", database.habilidades.length);
 
+
+    datos = await cargarHoja(CONFIG.SHEETS.TIPOS_SOLARES);
+
+    database.todosTiposSolares = datos.slice(1); // Fila 0 es cabecera
+
+    console.log("Todos los tipos de solares:", database.todosTiposSolares.length);
+
 }
 
 
@@ -180,6 +187,7 @@ async function iniciarBaseDatos() {
 
     construirMapaIconosPacks();
     construirMapaIconosMundos();
+    construirMapaIconosTiposSolares();
 
     mostrarSolares(database.solares);
 
@@ -411,3 +419,55 @@ function rutaBaseIconoLimitante(idFoto) {
     if (!id) return null;
     return `img/iconosbb/${id}`;
 }
+
+// ── Mapa de iconos de tipos de solares ────────────────────────
+// Construye database.iconosTiposSolares: { "nombre tipo solar": ruta }
+// Fuente: "Listado de todos los tipos de solares" (Columna B: nombre, Columna C: archivo imagen)
+function construirMapaIconosTiposSolares() {
+    database.iconosTiposSolares = {};
+    if (!database.todosTiposSolares || !Array.isArray(database.todosTiposSolares)) return;
+
+    database.todosTiposSolares.forEach(fila => {
+        if (!fila || fila.length === 0) return;
+        const nombre = (fila[1] || "").trim(); // Columna B: nombre del tipo de solar
+        const imagenRaw = (fila[2] || "").trim(); // Columna C: nombre del archivo de imagen
+
+        if (!nombre || !imagenRaw) return;
+
+        let archivo = imagenRaw;
+        // Evitar duplicar .png si ya lo incluye
+        if (!archivo.toLowerCase().endsWith(".png")) {
+            archivo += ".png";
+        }
+        const ruta = `img/iconos-tipo-solar/${archivo}`;
+        database.iconosTiposSolares[nombre.toLowerCase()] = ruta;
+    });
+
+    console.log("Mapa de iconos de tipos de solares:", Object.keys(database.iconosTiposSolares).length, "entradas");
+}
+
+// Devuelve la ruta del icono de un tipo de solar o null si no existe
+function rutaIconoTipoSolar(nombreTipoSolar) {
+    if (!database.iconosTiposSolares || !nombreTipoSolar) return null;
+    return database.iconosTiposSolares[nombreTipoSolar.trim().toLowerCase()] || null;
+}
+window.rutaIconoTipoSolar = rutaIconoTipoSolar;
+
+// Genera HTML de un botón de tipo de solar con icono para el filtrador de solares
+function htmlBotonTipoSolarFiltro(nombreTipoSolar, activo = false, extraData = "") {
+    const ruta = rutaIconoTipoSolar(nombreTipoSolar);
+    const claseSel = activo ? " seleccionada" : "";
+
+    if (ruta) {
+        return `<button class="opcionFiltro opcionFiltroConIcono${claseSel}" ${extraData} data-valor="${nombreTipoSolar}">
+            <div class="iconoTipoSolarFiltroWrap">
+                <img src="${ruta}" alt="${nombreTipoSolar}" class="iconoTipoSolarFiltro" onerror="this.parentElement.style.display='none';">
+            </div>
+            <span>${nombreTipoSolar}</span>
+        </button>`;
+    }
+
+    // Fallback sin icono
+    return `<button class="opcionFiltro${claseSel}" ${extraData} data-valor="${nombreTipoSolar}"><span>${nombreTipoSolar}</span></button>`;
+}
+window.htmlBotonTipoSolarFiltro = htmlBotonTipoSolarFiltro;

@@ -15,7 +15,8 @@ const CONFIG = {
         LIMITANTES_CONSTRUIR: "Listado de limitantes modo construir",
         LIMITANTES_COMPRAR: "Listado de limitantes modo comprar",
         ESTADISTICAS_SIMS4: "Estadísticas sims 4",
-        HABILIDADES: "Listado de habilidades"
+        HABILIDADES: "Listado de habilidades",
+        TIPOS_SOLARES: "Listado de todos los tipos de solares"
     },
 
     SHEET_ID: "1uGganU7wrnQQ0mHMMcKUg3HrRQUtEs73gTGd4NCIgvI",

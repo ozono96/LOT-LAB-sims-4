@@ -168,6 +168,12 @@ function mostrarPanelFiltro() {
                 const btn = tempDiv.firstElementChild;
                 if (!activo) btn.classList.remove("seleccionada");
                 lista.appendChild(btn);
+            } else if (nombre === "tipoSolar" && typeof htmlBotonTipoSolarFiltro === "function") {
+                const html = htmlBotonTipoSolarFiltro(opcion, activo, `data-valor="${opcion}"`);
+                const tempDiv = document.createElement("div");
+                tempDiv.innerHTML = html;
+                const btn = tempDiv.firstElementChild;
+                lista.appendChild(btn);
             } else {
 
                 const boton = document.createElement("button");

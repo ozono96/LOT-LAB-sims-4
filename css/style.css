@@ -4146,7 +4146,7 @@ html {
 }
 
 .fichaSolarColumnaDerecha {
-    margin-top: 45px;
+    margin-top: 2px;
 }
 
 .fichaSolarIconoWrapBarrio {
@@ -4157,6 +4157,22 @@ html {
 .fichaSolarIconoBarrio {
     width: 62px;
     height: 62px;
+}
+
+/* Icono de Tipo de solar en la Ficha del Solar (Modo Día / Modo Noche reactivo) */
+.fichaSolarIconoTipoSolar {
+    width: 46px;
+    height: 46px;
+    object-fit: contain;
+    transition: filter var(--transicion, 0.25s ease);
+}
+
+body.modo-dia .fichaSolarIconoTipoSolar {
+    filter: none;
+}
+
+body.modo-noche .fichaSolarIconoTipoSolar {
+    filter: brightness(0) invert(1) drop-shadow(0 0 4px rgba(255, 255, 255, 0.35));
 }
 
 
@@ -8725,6 +8741,56 @@ body.modo-dia .iconoTipoSolarReto {
 /* Modo Noche: Blanco luminoso sobre fondo oscuro */
 body.modo-noche .iconoTipoSolarReto {
     filter: brightness(0) invert(1) drop-shadow(0 0 4px rgba(255, 255, 255, 0.35));
+}
+
+/* ─── Botones de Tipo de Solar en el Filtrador de Solares ─── */
+.opcionFiltroConIcono {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    padding: 10px 16px !important;
+}
+
+.iconoTipoSolarFiltroWrap {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    pointer-events: none;
+}
+
+.iconoTipoSolarFiltro {
+    width: 100%;
+    height: 100%;
+    max-width: 32px;
+    max-height: 32px;
+    object-fit: contain;
+    display: block;
+    pointer-events: none;
+    transition: filter var(--transicion, 0.25s ease), transform var(--transicion, 0.25s ease);
+}
+
+/* Modo Día: Imagen original sin modificar */
+body.modo-dia .iconoTipoSolarFiltro {
+    filter: none;
+}
+
+/* Modo Día seleccionado: Blanco para resaltar sobre el fondo verde */
+body.modo-dia .opcionFiltro.seleccionada .iconoTipoSolarFiltro {
+    filter: brightness(0) invert(1);
+}
+
+/* Modo Noche: Blanco luminoso sobre fondo oscuro */
+body.modo-noche .iconoTipoSolarFiltro {
+    filter: brightness(0) invert(1) drop-shadow(0 0 4px rgba(255, 255, 255, 0.35));
+}
+
+/* Modo Noche seleccionado: Blanco */
+body.modo-noche .opcionFiltro.seleccionada .iconoTipoSolarFiltro {
+    filter: brightness(0) invert(1);
 }
 
 

@@ -1,0 +1,39 @@
+name: Actualizar Base de Datos desde Google Sheets
+
+on:
+  # Permite ejecutarlo manualmente desde la pestaña Actions de GitHub con un clic
+  workflow_dispatch:
+  # Se ejecuta automáticamente todos los días a las 06:00 UTC (8:00 AM Madrid)
+  schedule:
+    - cron: '0 6 * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  sync-database:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Descargar datos de Google Sheets y generar database.json
+        shell: pwsh
+        env:
+          GOOGLE_SHEETS_API_KEY: ${{ secrets.GOOGLE_SHEETS_API_KEY }}
+        run: |
+          ./generar-database.ps1
+
+      - name: Hacer commit y push si hay cambios en los datos
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/database.json
+          if git diff --staged --quiet; then
+            echo "No hay cambios nuevos en Google Sheets. database.json está al día."
+          else
+            git commit -m "Auto-sync: Actualizar database.json desde Google Sheets [skip ci]"
+            git push
+            echo "Cambios subidos a GitHub con éxito."
+          fi

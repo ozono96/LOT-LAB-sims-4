@@ -131,13 +131,12 @@
                 }
 
                 /*
-                 * IMPORTANTE:
-                 * La cuenta atrás es solamente visual.
-                 * Al llegar a 0 se realiza UNA verificación adicional
-                 * para que una persona que tenía la página abierta
-                 * durante el pre-lanzamiento pueda entrar automáticamente.
+                 * Al llegar a 0 (17/09/2026 18:00 Madrid o posterior),
+                 * desbloqueamos inmediatamente la aplicación para acceso público.
                  */
-                programarVerificacionDeLanzamiento();
+                console.log("[LOT-LAB Auth] Fecha de lanzamiento alcanzada — desbloqueando acceso público.");
+                verificacionCompletada = true;
+                autorizarYDesbloquearApp(true, "público");
 
                 return;
             }
@@ -259,6 +258,42 @@
     // ── 6. Verificación inicial del servidor ──
 
     async function verificarEstadoServidor(opciones = {}) {
+
+        // ── BYPASS TEMPORAL PARA OBS VIEWER (PRELANZAMIENTO) ──────────────────
+        // La Browser Source de OBS no comparte el localStorage del navegador
+        // normal, por lo que nunca tendría el token de autenticación.
+        // Si la URL indica modo OBS real (?obs=1) y contiene un room con el
+        // prefijo que genera obs.js ("lotlab_"), autorizamos directamente.
+        //
+        // ⚠️  ELIMINAR este bloque completo el 17/09/2026 cuando desaparezca
+        //     el sistema de prelanzamiento.
+        {
+            const p = new URLSearchParams(window.location.search);
+            const h = new URLSearchParams(window.location.hash.replace(/^#\/?/, ''));
+            const esObs = p.get('obs') === '1' || h.get('obs') === '1';
+            const room  = p.get('room') || h.get('room') || '';
+            if (esObs && room.startsWith('lotlab_')) {
+                console.log('[LOT-LAB Auth] Modo OBS Viewer detectado — bypass de prelanzamiento activo.');
+                verificacionCompletada = true;
+                autorizarYDesbloquearApp(false, 'obs-viewer');
+                return;   // ← no continuar hacia la verificación con el servidor
+            }
+        }
+        // ── FIN BYPASS OBS ─────────────────────────────────────────────────────
+
+        // ── ACCESO PÚBLICO AUTOMÁTICO TRAS EL LANZAMIENTO OFICIAL ─────────────
+        // Si la fecha actual ya es igual o posterior al lanzamiento oficial
+        // (17 de septiembre de 2026 a las 18:00:00 Madrid), se autoriza
+        // directamente el acceso público completo sin solicitar credenciales.
+        if (Date.now() >= FECHA_LANZAMIENTO_MADRID) {
+            console.log('[LOT-LAB Auth] Lanzamiento público activo — acceso autorizado.');
+            verificacionCompletada = true;
+            autorizarYDesbloquearApp(true, 'público');
+            return;
+        }
+        // ───────────────────────────────────────────────────────────────────────
+
+
 
         const esVerificacionDeLanzamiento =
             opciones.esVerificacionDeLanzamiento === true;

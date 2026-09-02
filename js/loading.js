@@ -58,9 +58,9 @@ function iniciarPantallaCarga() {
     // ── Imagen de fondo según modo día / noche ──
     if (fondo) {
         const modoTema = localStorage.getItem("modoTema");
-        const imgNoche = "img/pantalla%20carga/carga%20Noche.png";
-        const imgDia   = "img/pantalla%20carga/carga%20Dia.png";
-        const imgFallback = "img/pantalla%20carga/Pantalla%20carga%20inicio.png";
+        const imgNoche = "img/pantalla%20carga/carga%20Noche.webp";
+        const imgDia   = "img/pantalla%20carga/carga%20Dia.webp";
+        const imgFallback = "img/pantalla%20carga/Pantalla%20carga%20inicio.webp";
 
         const rutaElegida = (modoTema === "dia") ? imgDia : imgNoche;
 

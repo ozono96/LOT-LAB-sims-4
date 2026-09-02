@@ -87,7 +87,7 @@
 
 body.modo-dia {
 
-    --imagen-fondo: url('../img/fondos/Fondo_dia.jpg');
+    --imagen-fondo: url('../img/fondos/Fondo_dia.webp');
 
     --color-fondo: #F3EEE3;
 
@@ -239,7 +239,7 @@ body.modo-dia .btnDesmarcarPopover {
 
 body.modo-noche {
 
-    --imagen-fondo: url('../img/fondos/Fondo_noche.jpg');
+    --imagen-fondo: url('../img/fondos/Fondo_noche.webp');
 
     --color-fondo: #242868;
 
@@ -2856,7 +2856,7 @@ body.modo-dia .contadorBarrio {
 
     /* La imagen se aplica dinÃ¡micamente desde loading.js segÃºn el modo dÃ­a/noche.
        Esta URL actÃºa solo como fallback por si el JS aÃºn no ha actuado. */
-    background-image: url('../img/pantalla%20carga/Pantalla%20carga%20inicio.png');
+    background-image: url('../img/pantalla%20carga/Pantalla%20carga%20inicio.webp');
 
 
     background-size: cover;

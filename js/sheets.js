@@ -99,7 +99,7 @@ function construirMapaIconosPacks() {
 
             const prefijo = id.match(/^[A-Za-z]+/)?.[0]?.toUpperCase() || "";
             const subcarpeta = subcarpetaPorPrefijo[prefijo] || "expansiones";
-            const ruta = `img/icon-pack/${subcarpeta}/${id}.png`;
+            const ruta = `img/icon-pack/${subcarpeta}/${id}.webp`;
             const entrada = { ruta, id, nombre };
 
             database.iconosPacks[nombre.toLowerCase()] = entrada;
@@ -204,7 +204,7 @@ function htmlBotonMundoIcono(nombreMundo, extraClases = "", extraData = "") {
 
 
 // ── Iconos de barrios (fotos dentro de img/barrios/{mundo}/{barrio}/) ──
-const EXTENSIONES_FOTO_BARRIO = ["png", "jpg", "jpeg", "webp"];
+const EXTENSIONES_FOTO_BARRIO = ["webp"];
 
 function manejarErrorImagenBarrio(img) {
     const intento = parseInt(img.dataset.intento || "0", 10) + 1;
@@ -239,7 +239,7 @@ function htmlBotonBarrioIcono(nombreBarrio, nombreMundo, extraData = "") {
 }
 
 // ── Iconos de etapas de vida (fotos en img/iconosetapas/{idFoto}.*) ──
-const EXTENSIONES_ICONO_ETAPA = ["png", "jpg", "webp", "jpeg"];
+const EXTENSIONES_ICONO_ETAPA = ["webp"];
 
 function manejarErrorImagenEtapa(img) {
     const intento = parseInt(img.dataset.intento || "0", 10) + 1;
@@ -263,7 +263,7 @@ function rutaBaseIconoEtapa(idFoto) {
 }
 
 // ── Iconos de limitantes extra (fotos en img/iconosbb/{idFoto}.*) ──
-const EXTENSIONES_ICONO_LIMITANTE = ["png", "jpg", "webp", "jpeg"];
+const EXTENSIONES_ICONO_LIMITANTE = ["webp"];
 
 function manejarErrorImagenLimitante(img) {
     const intento = parseInt(img.dataset.intento || "0", 10) + 1;
@@ -301,10 +301,9 @@ function construirMapaIconosTiposSolares() {
         if (!nombre || !imagenRaw) return;
 
         let archivo = imagenRaw;
-        // Evitar duplicar .png si ya lo incluye
-        if (!archivo.toLowerCase().endsWith(".png")) {
-            archivo += ".png";
-        }
+        // Limpiar cualquier extensión previa (.png, .jpg, .jpeg, .webp) para evitar duplicados como .webp.webp
+        archivo = archivo.replace(/\.(png|jpg|jpeg|webp)$/i, "");
+        archivo += ".webp";
         const ruta = `img/iconos-tipo-solar/${archivo}`;
         database.iconosTiposSolares[nombre.toLowerCase()] = ruta;
     });

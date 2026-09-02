@@ -23,7 +23,7 @@ $carpetas = Get-ChildItem -Path $solaresDir -Directory | Sort-Object {
     if ($_.Name -match '^FS(\d+)$') { [int]$matches[1] } else { $_.Name }
 }
 
-$extensiones = @('.png', '.jpg', '.jpeg', '.webp')
+$extensiones = @('.webp')
 $totalFotos = 0
 $totalSolaresConFotos = 0
 

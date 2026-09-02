@@ -9,9 +9,8 @@ function normalizarRutaIconoTipoSolar(val) {
     if (limpio.startsWith("http://") || limpio.startsWith("https://") || limpio.startsWith("data:") || limpio.startsWith("img/")) {
         return limpio;
     }
-    if (!limpio.toLowerCase().endsWith(".png")) {
-        limpio += ".png";
-    }
+    limpio = limpio.replace(/\.(png|jpg|jpeg|webp)$/i, "");
+    limpio += ".webp";
     return `img/iconos-tipo-solar/${limpio}`;
 }
 window.normalizarRutaIconoTipoSolar = normalizarRutaIconoTipoSolar;

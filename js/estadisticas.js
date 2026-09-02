@@ -227,7 +227,7 @@ function parsearFilasEstadisticas(filas) {
             }
 
             const subcarpeta = SUBCARPETA_POR_PREFIJO[prefijo] || "expansiones";
-            const rutaImg = `img/icon-pack/${subcarpeta}/${id}.png`;
+            const rutaImg = `img/icon-pack/${subcarpeta}/${id}.webp`;
 
             const fechaISO = fecha ? parsearFechaAISO(fecha) : "";
             const anioLanzamiento = fechaISO ? fechaISO.substring(0, 4) : (fecha.match(/\d{4}/)?.[0] || "");

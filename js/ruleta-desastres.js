@@ -298,7 +298,7 @@ const ModulosDesastres = {
                 }
             }
 
-            const imgSrc = idImg ? "img/Habilidades/" + idImg + ".png" : "";
+            const imgSrc = idImg ? "img/Habilidades/" + idImg + ".webp" : "";
 
             return {
                 titulo: "Requisito de Habilidad",

@@ -342,7 +342,7 @@ function mostrarListadoCompleto() {
                     ? `img/barrios/${barrio.trim()}/foto`
                     : null;
                 const iconoBarrioHTML = rutaBaseBarrio
-                    ? `<img src="${rutaBaseBarrio}.png"
+                    ? `<img src="${rutaBaseBarrio}.webp"
                            data-ruta-base="${rutaBaseBarrio}" data-intento="0"
                            alt="${barrio}" class="iconoBarrio"
                            onerror="manejarErrorImagenBarrio(this)">`

@@ -5,8 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!logoImg || !logoContenedor) return;
 
-    const LOGO_1 = "img/logo/logo1.png";
-    const LOGO_2 = "img/logo/logo2.jpg";
+    const LOGO_1 = "img/logo/logo1.webp";
+    const LOGO_2 = "img/logo/logo2.webp";
 
     const soportaHover = window.matchMedia("(hover: hover)").matches;
 

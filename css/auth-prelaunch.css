@@ -27,11 +27,11 @@
 
 /* ── Fondo dinámico según tema ── */
 body.modo-noche #pantallaPreLaunch {
-    background-image: url('../img/pantalla%20carga/carga%20Noche.png');
+    background-image: url('../img/pantalla%20carga/carga%20Noche.webp');
 }
 
 body.modo-dia #pantallaPreLaunch {
-    background-image: url('../img/pantalla%20carga/carga%20Dia.png');
+    background-image: url('../img/pantalla%20carga/carga%20Dia.webp');
 }
 
 /* ── Overlay semitransparente para legibilidad ── */

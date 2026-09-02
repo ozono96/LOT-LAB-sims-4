@@ -32,7 +32,7 @@ function obtenerContenidoCategoriaHTML(catId, cat) {
                 const id = (fila[2] || "").trim();
                 const esBase = !packReq || packReq.toLowerCase() === "base" || packReq.toLowerCase() === "juego base";
                 const nombrePackNormalizado = esBase ? "Juego Base" : packReq;
-                const imgSrc = id ? "img/Habilidades/" + id + ".png" : "";
+                const imgSrc = id ? "img/Habilidades/" + id + ".webp" : "";
                 const rutaIcono = typeof rutaIconoPack === "function" ? rutaIconoPack(nombrePackNormalizado) : null;
 
                 let packBadgeHTML = "";

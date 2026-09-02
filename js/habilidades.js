@@ -224,7 +224,7 @@ function _habAnimarTirada(elegidas) {
             const nombre = (fila[0] || "").trim();
             const id = (fila[2] || "").trim();
             const imgHTML = id
-                ? "<img src='img/Habilidades/" + id + ".png' alt='" + nombre + "' loading='lazy' onerror=\"this.style.display='none';this.nextElementSibling.style.display='flex'\"><span class='habAnim-fallback' style='display:none;font-size:1.6rem;'>🧠</span>"
+                ? "<img src='img/Habilidades/" + id + ".webp' alt='" + nombre + "' loading='lazy' onerror=\"this.style.display='none';this.nextElementSibling.style.display='flex'\"><span class='habAnim-fallback' style='display:none;font-size:1.6rem;'>🧠</span>"
                 : "<span class='habAnim-fallback' style='font-size:1.6rem;'>🧠</span>";
             return "<div class='habAnim-item' data-idx='" + idx + "'>" +
                 imgHTML +
@@ -237,7 +237,7 @@ function _habAnimarTirada(elegidas) {
             const id = (fila[2] || "").trim();
             const esBase = !packReq || packReq.toLowerCase() === "base" || packReq.toLowerCase() === "juego base";
             const nombrePackNormalizado = esBase ? "Juego Base" : packReq;
-            const imgSrc = id ? "img/Habilidades/" + id + ".png" : "";
+            const imgSrc = id ? "img/Habilidades/" + id + ".webp" : "";
 
             const rutaIcono = typeof rutaIconoPack === "function" ? rutaIconoPack(nombrePackNormalizado) : null;
 
@@ -314,7 +314,7 @@ window.restaurarResultadoHabilidadesObs = function (data) {
         const id = (fila[2] || "").trim();
         const esBase = !packReq || packReq.toLowerCase() === "base" || packReq.toLowerCase() === "juego base";
         const nombrePackNormalizado = esBase ? "Juego Base" : packReq;
-        const imgSrc = id ? "img/Habilidades/" + id + ".png" : "";
+        const imgSrc = id ? "img/Habilidades/" + id + ".webp" : "";
         const rutaIcono = typeof rutaIconoPack === "function" ? rutaIconoPack(nombrePackNormalizado) : null;
 
         const card = document.createElement("div");

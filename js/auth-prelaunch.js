@@ -30,6 +30,11 @@
     let verificacionCompletada = false;
     let verificacionLanzamientoProgramada = false;
 
+    // Control de comprobación silenciosa en segundo plano
+    // (activa cuando el usuario entró con token pero checkStatus falló por red)
+    let intervaloSegundoPlano = null;
+    let entradaConFalloConexion = false;
+
     // ── 1. Desbloqueo seguro de la aplicación ──
 
     function autorizarYDesbloquearApp(esPublico = false, usuario = "") {
@@ -364,16 +369,39 @@
             }
 
             /*
-             * Si hubo un error de conexión:
-             * NO marcamos la verificación como completada.
+             * ERROR DE CONEXIÓN:
+             * El servidor no respondió (cold start, red caída, CORS, timeout).
              *
-             * Así se podrá volver a intentar.
+             * Si el usuario tiene un token previamente obtenido de forma legítima,
+             * NO lo tratamos como sesión revocada.
+             * Lo autorizamos provisionalmente y comprobamos en segundo plano.
+             *
+             * Si NO hay token, sí mostramos el login: no podemos asumir
+             * que un localStorage vacío represente una sesión válida.
              */
-            console.warn(
-                "[LOT-LAB Auth] No se pudo verificar el servidor."
-            );
+            if (tokenGuardado) {
 
-            mostrarPantallaPreLaunch();
+                console.warn(
+                    "[LOT-LAB Auth] Fallo de conexión con el servidor. " +
+                    "El usuario tiene token — acceso provisional concedido. " +
+                    "Se verificará en segundo plano."
+                );
+
+                verificacionCompletada = true;
+                entradaConFalloConexion = true;
+
+                autorizarYDesbloquearApp(false, "(sesión pendiente de verificar)");
+
+                reintentarCheckStatusEnSegundoPlano();
+
+            } else {
+
+                console.warn(
+                    "[LOT-LAB Auth] Fallo de conexión y sin token guardado — mostrando login."
+                );
+
+                mostrarPantallaPreLaunch();
+            }
 
         } finally {
 
@@ -382,7 +410,93 @@
     }
 
 
-    // ── 7. Verificación automática al llegar a la fecha oficial ──
+    // ── 7. Comprobación silenciosa en segundo plano ──
+    //
+    // Se activa únicamente cuando el usuario entró con token pero checkStatus
+    // falló por un error de conexión (cold start, red caída, etc.).
+    // Comprueba periódicamente si la sesión sigue siendo válida.
+    // Solo expulsa al usuario si el servidor confirma EXPLÍCITAMENTE la revocación.
+    // Los nuevos fallos de conexión NO expulsan: simplemente se sigue intentando.
+
+    function reintentarCheckStatusEnSegundoPlano() {
+
+        // Evitar múltiples intervalos duplicados
+        if (intervaloSegundoPlano !== null) {
+            return;
+        }
+
+        const INTERVALO_MS = 3 * 60 * 1000; // 3 minutos entre intentos
+
+        intervaloSegundoPlano = setInterval(async () => {
+
+            // Si el sistema ya no está en modo de fallo de conexión, detener
+            if (!entradaConFalloConexion) {
+                clearInterval(intervaloSegundoPlano);
+                intervaloSegundoPlano = null;
+                return;
+            }
+
+            // Fecha de lanzamiento alcanzada: acceso público, detener comprobación
+            if (Date.now() >= FECHA_LANZAMIENTO_MADRID) {
+                clearInterval(intervaloSegundoPlano);
+                intervaloSegundoPlano = null;
+                entradaConFalloConexion = false;
+                return;
+            }
+
+            const tokenActual = localStorage.getItem(STORAGE_TOKEN_KEY) || "";
+
+            console.log("[LOT-LAB Auth] Comprobación silenciosa en segundo plano...");
+
+            let data;
+            try {
+                data = await enviarPeticionAppsScript({
+                    action: "checkStatus",
+                    token: tokenActual
+                });
+            } catch (_) {
+                // enviarPeticionAppsScript nunca lanza; captura por seguridad
+                data = { success: false, error: "ERROR_CONEXION" };
+            }
+
+            // Nuevo error de conexión → seguir esperando, no expulsar
+            if (!data || data.error === "ERROR_CONEXION") {
+                console.warn(
+                    "[LOT-LAB Auth] Segundo plano: servidor aún inaccesible. Se reintentará."
+                );
+                return;
+            }
+
+            // El servidor respondió correctamente
+
+            if (data.isPublic === true || data.authorized === true) {
+
+                // Sesión confirmada: detener comprobación, todo en orden
+                console.log(
+                    "[LOT-LAB Auth] Segundo plano: sesión confirmada como válida."
+                );
+                clearInterval(intervaloSegundoPlano);
+                intervaloSegundoPlano = null;
+                entradaConFalloConexion = false;
+                return;
+            }
+
+            // El servidor indica explícitamente que la sesión está revocada
+            console.warn(
+                "[LOT-LAB Auth] Segundo plano: sesión revocada por el servidor — expulsando."
+            );
+
+            clearInterval(intervaloSegundoPlano);
+            intervaloSegundoPlano = null;
+            entradaConFalloConexion = false;
+
+            mostrarPantallaPreLaunch();
+
+        }, INTERVALO_MS);
+    }
+
+
+    // ── 8. Verificación automática al llegar a la fecha oficial ──
 
     function programarVerificacionDeLanzamiento() {
 
@@ -398,7 +512,7 @@
     }
 
 
-    // ── 8. Mensajes de interfaz ──
+    // ── 9. Mensajes de interfaz ──
 
     function mostrarMensaje(texto, tipo = "error") {
 
@@ -454,7 +568,7 @@
     }
 
 
-    // ── 9. Temporizador de bloqueo ──
+    // ── 10. Temporizador de bloqueo ──
 
     function iniciarTemporizadorBloqueo(segundosRestantes) {
 
@@ -517,7 +631,7 @@
     }
 
 
-    // ── 10. Procesamiento del login ──
+    // ── 11. Procesamiento del login ──
 
     async function procesarLogin(e) {
 
@@ -720,7 +834,7 @@
     }
 
 
-    // ── 11. Inicialización de eventos ──
+    // ── 12. Inicialización de eventos ──
 
     document.addEventListener("DOMContentLoaded", () => {
 

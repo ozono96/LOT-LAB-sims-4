@@ -220,6 +220,12 @@
             clientFingerprint: obtenerFingerprint()
         });
 
+        // Timeout de 15 segundos para evitar esperas indefinidas
+        // (especialmente en cold start de Google Apps Script).
+        // AbortError cae al catch existente y devuelve ERROR_CONEXION.
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+
         try {
 
             const res = await fetch(URL_WEB_APP, {
@@ -228,7 +234,8 @@
                 headers: {
                     "Content-Type": "text/plain;charset=utf-8"
                 },
-                body: JSON.stringify(datos)
+                body: JSON.stringify(datos),
+                signal: controller.signal
             });
 
             if (!res.ok) {
@@ -256,6 +263,12 @@
                 success: false,
                 error: "ERROR_CONEXION"
             };
+
+        } finally {
+
+            // Limpiar el timer siempre, tanto si la petición fue exitosa
+            // como si terminó por error o por abort, para evitar fugas.
+            clearTimeout(timeoutId);
         }
     }
 

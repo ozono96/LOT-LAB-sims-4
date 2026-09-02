@@ -1,0 +1,80 @@
+name: Convertir nuevas imágenes a WebP
+
+on:
+  push:
+    paths:
+      - 'img/**'
+      - '!img/**.webp'
+      - '!img/**.json'
+      - '!img/**.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  convertir-imagenes-webp:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Obtener imágenes añadidas o modificadas en el commit
+        id: imagenes-cambiadas
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            img/**.png
+            img/**.jpg
+            img/**.jpeg
+            img/**.bmp
+            img/**.tif
+            img/**.tiff
+            img/**.gif
+            img/**.PNG
+            img/**.JPG
+            img/**.JPEG
+            img/**.BMP
+            img/**.TIF
+            img/**.TIFF
+            img/**.GIF
+
+      - name: Configurar Python 3.11
+        if: steps.imagenes-cambiadas.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar Pillow
+        if: steps.imagenes-cambiadas.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
+        run: |
+          python -m pip install --upgrade pip
+          pip install Pillow
+
+      - name: Ejecutar conversión a WebP únicamente para las imágenes modificadas
+        if: steps.imagenes-cambiadas.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ steps.imagenes-cambiadas.outputs.any_changed }}" != "true" ]; then
+            echo "Ejecución manual: procesando carpeta img/"
+            python .github/scripts/convertir_webp.py img
+          else
+            echo "Imágenes a procesar: ${{ steps.imagenes-cambiadas.outputs.all_changed_files }}"
+            python .github/scripts/convertir_webp.py ${{ steps.imagenes-cambiadas.outputs.all_changed_files }}
+          fi
+
+      - name: Hacer commit y push si hay cambios generados
+        if: steps.imagenes-cambiadas.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add img/
+          if git diff --staged --quiet; then
+            echo "No hay nuevas imágenes convertidas. No se requiere ningún commit."
+          else
+            git commit -m "chore: convertir nuevas imágenes a WebP [skip ci]"
+            git push
+            echo "Nuevas imágenes en formato WebP subidas con éxito al repositorio."
+          fi

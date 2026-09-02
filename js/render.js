@@ -33,11 +33,11 @@ function crearFichaSolar(solar) {
     if (rutaPack) {
 
         const imgMundo = rutaMundo
-            ? `<img class="iconoMundoImg" src="${rutaMundo}" alt="${solar.mundo}" onerror="this.style.display='none'">`
+            ? `<img class="iconoMundoImg" src="${rutaMundo}" alt="${solar.mundo}" loading="lazy" decoding="async" onerror="this.style.display='none'">`
             : "";
 
         iconoHtml = `
-            <img class="iconoPackImg" src="${rutaPack}" alt="${solar.nombrePack}" onerror="this.style.display='none';this.parentElement.querySelector('.iconoTarjetaSolarFallback').style.display='flex'">
+            <img class="iconoPackImg" src="${rutaPack}" alt="${solar.nombrePack}" loading="lazy" decoding="async" onerror="this.style.display='none';this.parentElement.querySelector('.iconoTarjetaSolarFallback').style.display='flex'">
             ${imgMundo}
             <span class="iconoTarjetaSolarFallback" style="display:none;">📦</span>
         `;

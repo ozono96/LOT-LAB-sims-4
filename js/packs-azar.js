@@ -250,7 +250,7 @@ function _packsAnimarTirada(elegidas) {
             const nombre = item.nombre || "";
             const imgSrc = item.rutaIcono || (typeof rutaIconoPack === "function" ? rutaIconoPack(nombre) : "");
             return "<div class='habAnim-item' data-idx='" + idx + "'>" +
-                (imgSrc ? "<img src='" + imgSrc + "' alt='" + nombre + "' loading='lazy' onerror=\"this.style.display='none';this.nextElementSibling.style.display='flex'\">" : "") +
+                (imgSrc ? "<img src='" + imgSrc + "' alt='" + nombre + "' loading='lazy' decoding='async' onerror=\"this.style.display='none';this.nextElementSibling.style.display='flex'\">" : "") +
                 "<span class='habAnim-fallback' style='" + (imgSrc ? "display:none;" : "") + "font-size:1.6rem;'>📦</span>" +
                 "<span class='habAnim-nombre' title='" + nombre + "'>" + nombre + "</span>" +
             "</div>";
@@ -268,7 +268,7 @@ function _packsAnimarTirada(elegidas) {
             card.innerHTML =
                 "<div class='habResultadoCardImg'>" +
                     (imgSrc
-                        ? "<img src='" + imgSrc + "' alt='" + item.nombre + "' onerror=\"this.style.display='none';this.nextElementSibling.style.display='flex'\">"
+                        ? "<img src='" + imgSrc + "' alt='" + item.nombre + "' loading='lazy' decoding='async' onerror=\"this.style.display='none';this.nextElementSibling.style.display='flex'\">"
                         : "") +
                     "<div class='habResultadoCardFallback' style='" + (imgSrc ? "display:none" : "display:flex") + "'>📦</div>" +
                 "</div>" +
@@ -329,7 +329,7 @@ window.restaurarResultadoPacksObs = function (data) {
         card.innerHTML =
             "<div class='habResultadoCardImg'>" +
                 (imgSrc
-                    ? "<img src='" + imgSrc + "' alt='" + item.nombre + "' onerror=\"this.style.display='none';this.nextElementSibling.style.display='flex'\">"
+                    ? "<img src='" + imgSrc + "' alt='" + item.nombre + "' loading='lazy' decoding='async' onerror=\"this.style.display='none';this.nextElementSibling.style.display='flex'\">"
                     : "") +
                 "<div class='habResultadoCardFallback' style='" + (imgSrc ? "display:none" : "display:flex") + "'>📦</div>" +
             "</div>" +

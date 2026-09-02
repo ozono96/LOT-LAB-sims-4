@@ -259,7 +259,7 @@ function _mundosAnimarTirada(elegidas) {
             const nombre = item.nombre || "";
             const imgSrc = item.rutaIcono || (typeof rutaIconoMundo === "function" ? rutaIconoMundo(nombre) : "");
             return "<div class='habAnim-item' data-idx='" + idx + "'>" +
-                (imgSrc ? "<img src='" + imgSrc + "' alt='" + nombre + "' loading='lazy' onerror=\"this.style.display='none';this.nextElementSibling.style.display='flex'\">" : "") +
+                (imgSrc ? "<img src='" + imgSrc + "' alt='" + nombre + "' loading='lazy' decoding='async' onerror=\"this.style.display='none';this.nextElementSibling.style.display='flex'\">" : "") +
                 "<span class='habAnim-fallback' style='" + (imgSrc ? "display:none;" : "") + "font-size:1.6rem;'>🌎</span>" +
                 "<span class='habAnim-nombre' title='" + nombre + "'>" + nombre + "</span>" +
             "</div>";
@@ -276,7 +276,7 @@ function _mundosAnimarTirada(elegidas) {
             let packBadgeHTML = "";
             if (rutaIconoP) {
                 packBadgeHTML = "<div class='habResultadoCardPack" + (esBase ? " habResultadoCardPackBase" : "") + "'>" +
-                    "<img src='" + rutaIconoP + "' alt='" + nombrePackNormalizado + "' title='" + nombrePackNormalizado + "' class='iconoPackMini' style='width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:4px;' onerror=\"this.style.display='none'\">" +
+                    "<img src='" + rutaIconoP + "' alt='" + nombrePackNormalizado + "' title='" + nombrePackNormalizado + "' class='iconoPackMini' loading='lazy' decoding='async' style='width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:4px;' onerror=\"this.style.display='none'\">" +
                     "<span>" + nombrePackNormalizado + "</span>" +
                 "</div>";
             } else {
@@ -288,7 +288,7 @@ function _mundosAnimarTirada(elegidas) {
             card.innerHTML =
                 "<div class='habResultadoCardImg'>" +
                     (imgSrc
-                        ? "<img src='" + imgSrc + "' alt='" + item.nombre + "' onerror=\"this.style.display='none';this.nextElementSibling.style.display='flex'\">"
+                        ? "<img src='" + imgSrc + "' alt='" + item.nombre + "' loading='lazy' decoding='async' onerror=\"this.style.display='none';this.nextElementSibling.style.display='flex'\">"
                         : "") +
                     "<div class='habResultadoCardFallback' style='" + (imgSrc ? "display:none" : "display:flex") + "'>🌎</div>" +
                 "</div>" +
@@ -348,7 +348,7 @@ window.restaurarResultadoMundosObs = function (data) {
         let packBadgeHTML = "";
         if (rutaIconoP) {
             packBadgeHTML = "<div class='habResultadoCardPack" + (esBase ? " habResultadoCardPackBase" : "") + "'>" +
-                "<img src='" + rutaIconoP + "' alt='" + nombrePackNormalizado + "' title='" + nombrePackNormalizado + "' class='iconoPackMini' style='width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:4px;' onerror=\"this.style.display='none'\">" +
+                "<img src='" + rutaIconoP + "' alt='" + nombrePackNormalizado + "' title='" + nombrePackNormalizado + "' class='iconoPackMini' loading='lazy' decoding='async' style='width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:4px;' onerror=\"this.style.display='none'\">" +
                 "<span>" + nombrePackNormalizado + "</span>" +
             "</div>";
         } else {
@@ -360,7 +360,7 @@ window.restaurarResultadoMundosObs = function (data) {
         card.innerHTML =
             "<div class='habResultadoCardImg'>" +
                 (imgSrc
-                    ? "<img src='" + imgSrc + "' alt='" + item.nombre + "' onerror=\"this.style.display='none';this.nextElementSibling.style.display='flex'\">"
+                    ? "<img src='" + imgSrc + "' alt='" + item.nombre + "' loading='lazy' decoding='async' onerror=\"this.style.display='none';this.nextElementSibling.style.display='flex'\">"
                     : "") +
                 "<div class='habResultadoCardFallback' style='" + (imgSrc ? "display:none" : "display:flex") + "'>🌎</div>" +
             "</div>" +

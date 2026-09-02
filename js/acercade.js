@@ -48,6 +48,8 @@
             const img = document.createElement("img");
             img.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
             img.alt = "Vídeo de YouTube";
+            img.loading = "lazy";
+            img.decoding = "async";
 
             const playIcon = document.createElement("div");
             playIcon.className = "play-icon";
@@ -68,6 +70,8 @@
             const img = document.createElement("img");
             img.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
             img.alt = "Vídeo de YouTube";
+            img.loading = "lazy";
+            img.decoding = "async";
 
             const playIcon = document.createElement("div");
             playIcon.className = "play-icon";
@@ -88,6 +92,8 @@
             const img = document.createElement("img");
             img.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
             img.alt = "Vídeo de YouTube";
+            img.loading = "lazy";
+            img.decoding = "async";
 
             const playIcon = document.createElement("div");
             playIcon.className = "play-icon";

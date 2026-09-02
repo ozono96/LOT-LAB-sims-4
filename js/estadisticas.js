@@ -561,6 +561,8 @@ function renderizarLista(packs) {
                     src="${pack.rutaImg}"
                     alt="${pack.nombre}"
                     class="packIconoEstat"
+                    loading="lazy"
+                    decoding="async"
                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
                 >
                 <div class="packIconoFallback" style="display:none;">📦</div>
@@ -1313,6 +1315,8 @@ function mostrarDetalleLanzamientos(chartId, tipo, valor, titulo) {
                         src="${pack.rutaImg}"
                         alt="${pack.nombre}"
                         class="estatDetallePackImg"
+                        loading="lazy"
+                        decoding="async"
                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
                     >
                     <div class="packIconoFallback" style="display:none; font-size:1.3rem;">📦</div>

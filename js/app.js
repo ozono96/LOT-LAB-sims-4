@@ -322,7 +322,7 @@ function mostrarListadoCompleto() {
             // ── Icono del mundo ──────────────────────────────────────
             const rutaMundo = rutaIconoMundo(mundo);
             const iconoMundoHTML = rutaMundo
-                ? `<img src="${rutaMundo}" alt="${mundo}" class="iconoMundo"
+                ? `<img src="${rutaMundo}" alt="${mundo}" class="iconoMundo" loading="lazy" decoding="async"
                        onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">`
                 : "";
             const fallbackMundo = rutaMundo
@@ -345,6 +345,7 @@ function mostrarListadoCompleto() {
                     ? `<img src="${rutaBaseBarrio}.webp"
                            data-ruta-base="${rutaBaseBarrio}" data-intento="0"
                            alt="${barrio}" class="iconoBarrio"
+                           loading="lazy" decoding="async"
                            onerror="manejarErrorImagenBarrio(this)">`
                     : `<span class="iconoBarrioFallback">🏘️</span>`;
 

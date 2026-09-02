@@ -74,7 +74,7 @@ function iniciarPantallaCarga() {
         testImg.src = rutaElegida;
     }
 
-    let paginaCargada = (document.readyState === "complete");
+    let paginaCargada = (document.readyState !== "loading");
     let datosCargados = false;
     let progresoActual = 0;
     let intervaloBarra = null;
@@ -143,8 +143,8 @@ function iniciarPantallaCarga() {
                     desbloquearScrollCarga();
                     setTimeout(() => {
                         pantalla.style.display = "none";
-                    }, 600);
-                }, 700);
+                    }, 500);
+                }, 150);
 
             }, esperaRestante);
 
@@ -168,8 +168,8 @@ function iniciarPantallaCarga() {
                 desbloquearScrollCarga();
                 setTimeout(() => {
                     pantalla.style.display = "none";
-                }, 600);
-            }, 600);
+                }, 500);
+            }, 150);
         }, esperaRestante);
     }
     window.forzarFinCargaPreLaunch = forzarFinCargaPreLaunch;
@@ -185,6 +185,13 @@ function iniciarPantallaCarga() {
 
     // ── Frases rotativas ──
     programarSiguienteFrase();
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", () => {
+            paginaCargada = true;
+            comprobarFinCarga();
+        });
+    }
 
     window.addEventListener("load", () => {
         paginaCargada = true;

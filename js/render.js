@@ -2,20 +2,16 @@ function mostrarSolares(listaSolares) {
 
     const zona = document.getElementById("listaResultados");
 
-    if(!zona){
+    if (!zona) {
         return;
     }
 
+    if (!Array.isArray(listaSolares) || listaSolares.length === 0) {
+        zona.innerHTML = "";
+        return;
+    }
 
-    zona.innerHTML = "";
-
-
-    listaSolares.forEach(solar => {
-
-        zona.innerHTML += crearFichaSolar(solar);
-
-    });
-
+    zona.innerHTML = listaSolares.map(solar => crearFichaSolar(solar)).join("");
 
 }
 

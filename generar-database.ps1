@@ -92,7 +92,7 @@ foreach ($clave in $hojas.Keys) {
                         "nombre"      = if ($fila.Count -gt 5 -and $fila[5]) { [string]$fila[5] } else { "" }
                         "tipoLote"    = if ($fila.Count -gt 6 -and $fila[6]) { [string]$fila[6] } else { "" }
                         "tipoSolar"   = if ($fila.Count -gt 7 -and $fila[7]) { [string]$fila[7] } else { "" }
-                        "tamaño"      = if ($fila.Count -gt 8 -and $fila[8]) { [string]$fila[8] } else { "" }
+                        "tama$([char]0xF1)o" = if ($fila.Count -gt 8 -and $fila[8]) { [string]$fila[8] } else { "" }
                         "orientacion" = if ($fila.Count -gt 9 -and $fila[9]) { [string]$fila[9] } else { "" }
                         "acera"       = if ($fila.Count -gt 10 -and $fila[10]) { [string]$fila[10] } else { "" }
                         "imagen"      = if ($fila.Count -gt 11 -and $fila[11]) { [string]$fila[11] } else { "" }

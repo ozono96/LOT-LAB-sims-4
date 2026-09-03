@@ -63,7 +63,7 @@ function mostrarPanelFiltro() {
             };
             return parseArea(a) - parseArea(b);
         });
-        const valoresSeleccionados = (typeof filtrosActuales !== 'undefined' && filtrosActuales["tamaño"]) ? filtrosActuales["tamaño"] : [];
+        const valoresSeleccionados = (typeof obtenerFiltro === 'function') ? obtenerFiltro("tamaño") : [];
         const modoMultiple = valoresSeleccionados.length > 1;
 
         let valActualUnico = arrTamanos[0] || "-";

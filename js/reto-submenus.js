@@ -103,8 +103,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         database.solares.forEach(solar => {
             const packRequerido = (solar.nombrePack || "").trim().toLowerCase();
+            const tipoPack = (solar.tipoPack || "").trim().toLowerCase();
             let tienePack = false;
-            if (!packRequerido || packRequerido.includes("base") || packRequerido === "juego base") {
+            if (!packRequerido || tipoPack.includes("base") || packRequerido.includes("base") || packRequerido.includes("sims 4")) {
                 tienePack = true;
             } else {
                 tienePack = packsUsuario.some(p => p.toLowerCase().includes(packRequerido) || packRequerido.includes(p.toLowerCase()));
@@ -265,6 +266,18 @@ document.addEventListener("DOMContentLoaded", () => {
     if (sliderHab && valHab) {
         sliderHab.addEventListener("input", () => {
             valHab.textContent = sliderHab.value;
+        });
+    }
+
+    // Actualizar texto del slider de tamaño de solar
+    if (sliderTamano && valTamano) {
+        sliderTamano.addEventListener("input", () => {
+            if (sliderTamano.dataset.tamanos) {
+                try {
+                    const arr = JSON.parse(sliderTamano.dataset.tamanos);
+                    valTamano.textContent = arr[sliderTamano.value] || "-";
+                } catch (e) {}
+            }
         });
     }
 

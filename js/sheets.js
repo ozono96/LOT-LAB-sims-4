@@ -30,7 +30,15 @@ async function iniciarBaseDatos() {
 
         const data = await respuesta.json();
 
-        database.solares = data.solares || [];
+        database.solares = (data.solares || []).map(solar => {
+            if (solar.tamaño === undefined) {
+                const altKey = Object.keys(solar).find(k => k.startsWith("tam") && k.endsWith("o"));
+                if (altKey && solar[altKey] !== undefined) {
+                    solar.tamaño = solar[altKey];
+                }
+            }
+            return solar;
+        });
         database.mundos = data.mundos || [];
         database.packs = data.packs || [];
         database.objetivos = data.objetivos || [];

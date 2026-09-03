@@ -406,6 +406,14 @@ function generarReto(esAleatorio = false) {
             secuencias: secuencias
         });
     }
+
+    // Actualizar URL con el token v1 autosuficiente del reto generado
+    if (typeof serializarRetoAToken === "function" && typeof actualizarHashURL === "function") {
+        const token = serializarRetoAToken(retoActual);
+        if (token) {
+            actualizarHashURL("reto-generado/v1/" + token);
+        }
+    }
 }
 
 // Limpia el objeto retoActual de propiedades no serializables (funciones)
@@ -505,6 +513,14 @@ function rerollCategoria(categoriaId) {
             secuencia: secuencia
         });
     }
+
+    // Actualizar URL con el nuevo estado del reto post-reroll
+    if (typeof serializarRetoAToken === "function" && typeof actualizarHashURL === "function") {
+        const nuevoToken = serializarRetoAToken(retoActual);
+        if (nuevoToken) {
+            actualizarHashURL("reto-generado/v1/" + nuevoToken);
+        }
+    }
 }
 window.rerollCategoria = rerollCategoria;
 
@@ -539,5 +555,503 @@ function rerollSolar() {
             secuencia: secuencia
         });
     }
+
+    // Actualizar URL con el nuevo estado del reto post-reroll
+    if (typeof serializarRetoAToken === "function" && typeof actualizarHashURL === "function") {
+        const nuevoToken = serializarRetoAToken(retoActual);
+        if (nuevoToken) {
+            actualizarHashURL("reto-generado/v1/" + nuevoToken);
+        }
+    }
 }
 window.rerollSolar = rerollSolar;
+
+// =========================================================
+// SISTEMA DE TOKEN v1 PARA RETOS AUTOSUFICIENTES (#reto-generado/v1/<token>)
+// =========================================================
+
+const MAPA_CAT_A_CLAVE = {
+    estiloExterior: "ext",
+    estiloInterior: "int",
+    presupuesto: "pre",
+    colores: "col",
+    habilidades: "hab",
+    limiteAltura: "alt",
+    tamanoSolar: "tam",
+    objetivo: "obj",
+    limitePacks: "pck",
+    limitanteConstruir: "lc",
+    limitanteComprar: "lp",
+    ayudaCC: "acc",
+    ayudaTrucos: "at",
+    ayudaMods: "am",
+    temporizador: "temp"
+};
+
+const MAPA_CLAVE_A_CAT = {
+    ext: "estiloExterior",
+    int: "estiloInterior",
+    pre: "presupuesto",
+    col: "colores",
+    hab: "habilidades",
+    alt: "limiteAltura",
+    tam: "tamanoSolar",
+    obj: "objetivo",
+    pck: "limitePacks",
+    lc: "limitanteConstruir",
+    lp: "limitanteComprar",
+    acc: "ayudaCC",
+    at: "ayudaTrucos",
+    am: "ayudaMods",
+    temp: "temporizador"
+};
+
+function codificarBase64URL(cadena) {
+    const bytes = new TextEncoder().encode(cadena);
+    let binario = "";
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+        binario += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binario).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function decodificarBase64URL(base64url) {
+    let base64 = String(base64url || "").replace(/-/g, "+").replace(/_/g, "/");
+    while (base64.length % 4 !== 0) {
+        base64 += "=";
+    }
+    const binario = atob(base64);
+    const bytes = new Uint8Array(binario.length);
+    for (let i = 0; i < binario.length; i++) {
+        bytes[i] = binario.charCodeAt(i);
+    }
+    return new TextDecoder().decode(bytes);
+}
+
+function serializarRetoAToken(reto) {
+    if (!reto || typeof reto !== "object") return null;
+
+    try {
+        const payload = {
+            v: 1,
+            t: reto.tipo === "con-solar" ? "con" : "sin",
+            c: {}
+        };
+
+        if (reto.tipo === "con-solar" && reto.solar) {
+            payload.s = reto.solar.id;
+            payload.rs = typeof reto.rerollsSolar === "number" ? reto.rerollsSolar : 3;
+        }
+
+        if (reto.categorias && typeof reto.categorias === "object") {
+            Object.keys(reto.categorias).forEach(catId => {
+                const cat = reto.categorias[catId];
+                if (!cat || !cat.resultado) return;
+
+                const clave = MAPA_CAT_A_CLAVE[catId];
+                if (!clave) return;
+
+                const r = typeof cat.rerollsRestantes === "number" ? cat.rerollsRestantes : 3;
+                const res = cat.resultado;
+
+                switch (catId) {
+                    case "estiloExterior":
+                    case "estiloInterior":
+                        payload.c[clave] = [res.id || null, r];
+                        break;
+                    case "presupuesto":
+                        payload.c[clave] = [res.esIlimitado ? -1 : (res.valorNumerico || 0), r];
+                        break;
+                    case "colores": {
+                        const ids = (res.elementos || []).map(c => c.id).filter(Boolean);
+                        payload.c[clave] = [ids, r];
+                        break;
+                    }
+                    case "habilidades": {
+                        const ids = (res.elementos || []).map(h => Array.isArray(h) ? h[2] : (h.id || "")).filter(Boolean);
+                        payload.c[clave] = [ids, r];
+                        break;
+                    }
+                    case "limiteAltura": {
+                        const m = String(res.texto || "").match(/\d+/);
+                        const plantas = m ? parseInt(m[0], 10) : 1;
+                        payload.c[clave] = [plantas, r];
+                        break;
+                    }
+                    case "tamanoSolar":
+                        payload.c[clave] = [res.tamanoRequerido || "", r];
+                        break;
+                    case "objetivo": {
+                        const nombre = res.nombre || "Residencial";
+                        const esResidencial = (res.tipo === "residencial") || (res.composicion && res.composicion.length > 0);
+                        if (esResidencial) {
+                            const sims = res.sims || (res.composicion ? res.composicion.length : 1);
+                            const etapasIds = (res.composicion || []).map(e => e.idFoto).filter(Boolean);
+                            payload.c[clave] = [nombre, sims, etapasIds, r];
+                        } else {
+                            payload.c[clave] = [nombre, 0, [], r];
+                        }
+                        break;
+                    }
+                    case "limitePacks": {
+                        const packs = Array.isArray(res.packsPermitidos) ? res.packsPermitidos : [];
+                        payload.c[clave] = [packs, r];
+                        break;
+                    }
+                    case "limitanteConstruir":
+                    case "limitanteComprar": {
+                        const ids = (res.elementos || []).map(l => l.idFoto).filter(Boolean);
+                        payload.c[clave] = [ids, r];
+                        break;
+                    }
+                    case "ayudaCC":
+                    case "ayudaTrucos":
+                    case "ayudaMods":
+                        payload.c[clave] = [res.permitido ? 1 : 0, r];
+                        break;
+                    case "temporizador":
+                        payload.c[clave] = [res.minutos || parseInt(res.texto, 10) || 15, r];
+                        break;
+                }
+            });
+        }
+
+        const jsonStr = JSON.stringify(payload);
+        return codificarBase64URL(jsonStr);
+    } catch (e) {
+        console.error("Error al serializar reto a token:", e);
+        return null;
+    }
+}
+window.serializarRetoAToken = serializarRetoAToken;
+
+function deserializarRetoV1(token) {
+    if (!token || typeof token !== "string") return false;
+
+    try {
+        const jsonStr = decodificarBase64URL(token.trim());
+        const payload = JSON.parse(jsonStr);
+
+        if (!payload || payload.v !== 1 || !payload.t || !payload.c || typeof payload.c !== "object") {
+            return false;
+        }
+
+        const tipoReto = payload.t === "con" ? "con-solar" : "sin-solar";
+
+        // 1. Resolver solar si corresponde
+        let solarEncontrado = null;
+        let rerollsSolar = 0;
+        if (tipoReto === "con-solar") {
+            rerollsSolar = typeof payload.rs === "number" ? payload.rs : 3;
+            if (payload.s && database && database.solares) {
+                solarEncontrado = database.solares.find(s => s.id === payload.s) || null;
+            }
+            // Fallback defensivo si el solar ya no existiera
+            if (!solarEncontrado && payload.s) {
+                solarEncontrado = {
+                    id: payload.s,
+                    nombre: "Solar (" + payload.s + ")",
+                    mundo: "Mundo desconocido",
+                    barrio: "",
+                    tamaño: "30x20",
+                    tipoSolar: "Residencial",
+                    tipoLote: "Solar",
+                    orientacion: "",
+                    acera: ""
+                };
+            }
+        }
+
+        // 2. Resolver categorías activas
+        const categorias = {};
+        Object.keys(payload.c).forEach(clave => {
+            const catId = MAPA_CLAVE_A_CAT[clave];
+            if (!catId || !RetoModulos[catId]) return;
+
+            const datos = payload.c[clave];
+            if (!Array.isArray(datos)) return;
+
+            const modulo = RetoModulos[catId];
+            let resultado = null;
+            let rerollsRestantes = 3;
+
+            switch (catId) {
+                case "estiloExterior": {
+                    const id = datos[0] || null;
+                    rerollsRestantes = typeof datos[1] === "number" ? datos[1] : 3;
+                    const fila = (database.estilosArquitectonicos || []).find(f => (Array.isArray(f) && f[2]) === id);
+                    const nombre = fila ? (Array.isArray(fila) ? fila[0] : fila) : (id || "Cualquiera");
+                    resultado = { id: id, nombre: nombre, texto: nombre };
+                    break;
+                }
+                case "estiloInterior": {
+                    const id = datos[0] || null;
+                    rerollsRestantes = typeof datos[1] === "number" ? datos[1] : 3;
+                    const fila = (database.estilosDecoracion || []).find(f => (Array.isArray(f) && f[2]) === id);
+                    const nombre = fila ? (Array.isArray(fila) ? fila[0] : fila) : (id || "Cualquiera");
+                    resultado = { id: id, nombre: nombre, texto: nombre };
+                    break;
+                }
+                case "presupuesto": {
+                    const val = datos[0];
+                    rerollsRestantes = typeof datos[1] === "number" ? datos[1] : 3;
+                    const esIlimitado = val === -1 || val === Infinity;
+                    const valNum = esIlimitado ? Infinity : Number(val);
+                    const texto = esIlimitado ? "Presupuesto ILIMITADO" : (valNum.toLocaleString("es-ES") + " §");
+                    resultado = { texto: texto, valorNumerico: valNum, esIlimitado: esIlimitado };
+                    break;
+                }
+                case "colores": {
+                    const ids = Array.isArray(datos[0]) ? datos[0] : [];
+                    rerollsRestantes = typeof datos[1] === "number" ? datos[1] : 3;
+                    const elementos = ids.map(id => {
+                        const fila = (database.colores || []).find(c => (Array.isArray(c) && c[2]) === id);
+                        const nombre = fila ? (Array.isArray(fila) ? fila[0] : fila) : ("Color (" + id + ")");
+                        const hex = (fila && Array.isArray(fila) && fila[1]) ? fila[1].trim() : "#CCCCCC";
+                        return { id: id, nombre: nombre, hex: hex };
+                    });
+                    const nombres = elementos.map(c => c.nombre).join(", ");
+                    resultado = {
+                        texto: `${elementos.length} color(es): ${nombres}`,
+                        elementos: elementos
+                    };
+                    break;
+                }
+                case "habilidades": {
+                    const ids = Array.isArray(datos[0]) ? datos[0] : [];
+                    rerollsRestantes = typeof datos[1] === "number" ? datos[1] : 3;
+                    const elementos = ids.map(id => {
+                        const fila = (database.habilidades || []).find(h => (Array.isArray(h) && h[2]) === id);
+                        if (fila) return fila;
+                        return ["Habilidad (" + id + ")", "Los Sims 4", id];
+                    });
+                    const nombres = elementos.map(f => (f[0] || "").trim()).join(", ");
+                    resultado = {
+                        texto: `${elementos.length} habilidad(es): ${nombres}`,
+                        elementos: elementos
+                    };
+                    break;
+                }
+                case "limiteAltura": {
+                    const plantas = Number(datos[0]) || 1;
+                    rerollsRestantes = typeof datos[1] === "number" ? datos[1] : 3;
+                    resultado = { texto: `Mínimo ${plantas} ${plantas === 1 ? "planta" : "plantas"}` };
+                    break;
+                }
+                case "tamanoSolar": {
+                    const tam = String(datos[0] || "");
+                    rerollsRestantes = typeof datos[1] === "number" ? datos[1] : 3;
+                    resultado = { texto: `Obligatorio: ${tam}`, tamanoRequerido: tam };
+                    break;
+                }
+                case "objetivo": {
+                    const nombre = String(datos[0] || "Residencial");
+                    const sims = Number(datos[1]) || 0;
+                    const etapasIds = Array.isArray(datos[2]) ? datos[2] : [];
+                    rerollsRestantes = typeof datos[3] === "number" ? datos[3] : 3;
+
+                    const fila = (database.objetivos || []).find(f => (f[1] || "").trim().toLowerCase() === nombre.trim().toLowerCase());
+                    const tipoObj = fila && fila[0] ? fila[0].trim().toLowerCase() : (sims > 0 ? "residencial" : "comunitario");
+                    const imagenRaw = fila && fila[3] ? fila[3].trim() : "";
+                    const imagenObj = typeof normalizarRutaIconoTipoSolar === "function" ? normalizarRutaIconoTipoSolar(imagenRaw) : null;
+
+                    if (tipoObj.includes("residencial") || sims > 0) {
+                        const numSims = sims > 0 ? sims : Math.max(1, etapasIds.length);
+                        const composicion = etapasIds.map(id => {
+                            const filaEtapa = (database.etapasVida || []).find(e => (e[1] || "").trim() === id);
+                            return {
+                                etapa: filaEtapa ? filaEtapa[0].trim() : ("Etapa " + id),
+                                idFoto: id,
+                                packRequerido: filaEtapa && filaEtapa[2] ? filaEtapa[2].trim() : ""
+                            };
+                        });
+                        resultado = {
+                            nombre: nombre,
+                            texto: `${nombre} (Vivienda para ${numSims} ${numSims === 1 ? "Sim" : "Sims"})`,
+                            tipo: "residencial",
+                            sims: numSims,
+                            imagen: imagenObj || null,
+                            composicion: composicion
+                        };
+                    } else {
+                        resultado = {
+                            nombre: nombre,
+                            texto: `${nombre} (Solar comunitario)`,
+                            tipo: "comunitario",
+                            imagen: imagenObj || null
+                        };
+                    }
+                    break;
+                }
+                case "limitePacks": {
+                    const packs = Array.isArray(datos[0]) ? datos[0] : [];
+                    rerollsRestantes = typeof datos[1] === "number" ? datos[1] : 3;
+                    resultado = {
+                        texto: `Máximo ${packs.length} pack(s): ${packs.join(", ")}`,
+                        packsPermitidos: packs
+                    };
+                    break;
+                }
+                case "limitanteConstruir": {
+                    const ids = Array.isArray(datos[0]) ? datos[0] : [];
+                    rerollsRestantes = typeof datos[1] === "number" ? datos[1] : 3;
+                    const elementos = ids.map(id => {
+                        const fila = (database.limitantesConstruir || []).find(l => (l[1] || "").trim() === id);
+                        return {
+                            nombre: fila ? fila[0].trim() : ("Limitante (" + id + ")"),
+                            idFoto: id
+                        };
+                    });
+                    resultado = {
+                        texto: `${elementos.length} limitante${elementos.length === 1 ? "" : "s"} de construcción`,
+                        elementos: elementos
+                    };
+                    break;
+                }
+                case "limitanteComprar": {
+                    const ids = Array.isArray(datos[0]) ? datos[0] : [];
+                    rerollsRestantes = typeof datos[1] === "number" ? datos[1] : 3;
+                    const elementos = ids.map(id => {
+                        const fila = (database.limitantesComprar || []).find(l => (l[1] || "").trim() === id);
+                        return {
+                            nombre: fila ? fila[0].trim() : ("Limitante (" + id + ")"),
+                            idFoto: id
+                        };
+                    });
+                    resultado = {
+                        texto: `${elementos.length} limitante${elementos.length === 1 ? "" : "s"} de compra`,
+                        elementos: elementos
+                    };
+                    break;
+                }
+                case "ayudaCC": {
+                    const esPermitido = Boolean(datos[0]);
+                    rerollsRestantes = typeof datos[1] === "number" ? datos[1] : 3;
+                    resultado = {
+                        permitido: esPermitido,
+                        dificultadDelta: esPermitido ? -1 : 1,
+                        texto: esPermitido ? "✅ SÍ se puede usar CC (-1 Dificultad)" : "❌ NO se puede usar CC (+1 Dificultad)"
+                    };
+                    break;
+                }
+                case "ayudaTrucos": {
+                    const esPermitido = Boolean(datos[0]);
+                    rerollsRestantes = typeof datos[1] === "number" ? datos[1] : 3;
+                    resultado = {
+                        permitido: esPermitido,
+                        dificultadDelta: esPermitido ? -1 : 1,
+                        texto: esPermitido ? "✅ SÍ se pueden usar trucos (bb.moveobjects on...) (-1 Dificultad)" : "❌ NO se pueden usar trucos de construcción (+1 Dificultad)"
+                    };
+                    break;
+                }
+                case "ayudaMods": {
+                    const esPermitido = Boolean(datos[0]);
+                    rerollsRestantes = typeof datos[1] === "number" ? datos[1] : 3;
+                    resultado = {
+                        permitido: esPermitido,
+                        dificultadDelta: esPermitido ? -1 : 1,
+                        texto: esPermitido ? "✅ SÍ se pueden usar mods de ayuda (T.O.O.L...) (-1 Dificultad)" : "❌ NO se pueden usar mods de ayuda (+1 Dificultad)"
+                    };
+                    break;
+                }
+                case "temporizador": {
+                    const mins = Number(datos[0]) || 15;
+                    rerollsRestantes = typeof datos[1] === "number" ? datos[1] : 3;
+                    resultado = { texto: `${mins} minutos`, minutos: mins };
+                    break;
+                }
+            }
+
+            if (resultado) {
+                categorias[catId] = {
+                    modulo: modulo,
+                    resultado: resultado,
+                    rerollsRestantes: rerollsRestantes
+                };
+            }
+        });
+
+        // 3. Reconstruir contexto para permitir que futuros rerolls funcionen
+        const contexto = {
+            packsUsuario: typeof obtenerPacksSeleccionadosUsuario === "function" ? obtenerPacksSeleccionadosUsuario() : [],
+            configColores: {
+                cantidad: categorias.colores?.resultado?.elementos?.length || 3
+            },
+            configHabilidades: {
+                cantidad: categorias.habilidades?.resultado?.elementos?.length || 3
+            },
+            configLimitantesConstruir: {
+                cantidad: categorias.limitanteConstruir?.resultado?.elementos?.length || 1
+            },
+            configLimitantesComprar: {
+                cantidad: categorias.limitanteComprar?.resultado?.elementos?.length || 1
+            },
+            configTamano: {
+                tamano: categorias.tamanoSolar?.resultado?.tamanoRequerido || null
+            },
+            configPacks: {
+                maxPacks: categorias.limitePacks?.resultado?.packsPermitidos?.length || 3,
+                tiposPermitidos: ["Expansión", "Contenido", "Accesorios", "Kits"],
+                juegoBasePermitido: true
+            },
+            resultadosGenerados: {},
+            opcionesActivas: []
+        };
+
+        Object.keys(categorias).forEach(catId => {
+            contexto.resultadosGenerados[catId] = categorias[catId].resultado;
+            if (catId === "estiloExterior") contexto.opcionesActivas.push("estilo-exterior");
+            else if (catId === "estiloInterior") contexto.opcionesActivas.push("estilo-interior");
+            else if (catId === "limitePacks") contexto.opcionesActivas.push("limite-packs");
+            else if (catId === "limiteAltura") contexto.opcionesActivas.push("limite-altura");
+            else if (catId === "tamanoSolar") contexto.opcionesActivas.push("tamano-solar");
+            else if (catId === "presupuesto") contexto.opcionesActivas.push("presupuesto");
+            else if (catId === "colores") contexto.opcionesActivas.push("colores");
+            else if (catId === "habilidades") contexto.opcionesActivas.push("habilidades");
+            else if (catId === "temporizador") contexto.opcionesActivas.push("temporizador");
+            else if (catId === "limitanteConstruir") contexto.opcionesActivas.push("construir");
+            else if (catId === "limitanteComprar") contexto.opcionesActivas.push("comprar");
+            else if (catId === "ayudaCC") contexto.opcionesActivas.push("ayudaCC");
+            else if (catId === "ayudaTrucos") contexto.opcionesActivas.push("ayudaTrucos");
+            else if (catId === "ayudaMods") contexto.opcionesActivas.push("ayudaMods");
+            else if (catId === "objetivo") {
+                const esRes = categorias.objetivo.resultado?.tipo === "residencial";
+                contexto.opcionesActivas.push(esRes ? "solo-residenciales" : "solo-comunitarios");
+            }
+        });
+
+        // 4. Recalcular dificultad de forma determinista
+        const dif = typeof calcularDificultadTotal === "function" ? calcularDificultadTotal(tipoReto, categorias) : 0;
+        const difExtra = typeof calcularDificultadExtra === "function" ? calcularDificultadExtra(categorias) : 0;
+
+        // 5. Ensamblar retoActual
+        retoActual = {
+            tipo: tipoReto,
+            solar: tipoReto === "con-solar" ? solarEncontrado : null,
+            rerollsSolar: tipoReto === "con-solar" ? rerollsSolar : 0,
+            categorias: categorias,
+            dificultad: dif,
+            dificultadExtra: difExtra,
+            contexto: contexto
+        };
+        window.retoActual = retoActual;
+
+        // 6. Abrir ventana y renderizar sin animación ni sorteo
+        if (typeof abrirVentana === "function") {
+            abrirVentana("ventanaRetoResultado", false);
+        }
+        if (typeof renderizarResultadoReto === "function") {
+            renderizarResultadoReto(retoActual);
+        }
+        if (typeof sincronizarTemporizadorConReto === "function") {
+            sincronizarTemporizadorConReto();
+        }
+
+        return true;
+    } catch (e) {
+        console.error("Error al deserializar token de reto:", e);
+        return false;
+    }
+}
+window.deserializarRetoV1 = deserializarRetoV1;

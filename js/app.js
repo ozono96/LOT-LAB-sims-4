@@ -121,6 +121,11 @@ function buscarSolares() {
     abrirVentana("ventanaResultados");
     mostrarResultados();
 
+    // ── Actualizar URL con token v1 (búsqueda ejecutada) ──
+    if (!window._restaurandoFiltrador) {
+        actualizarURLFiltrador(true);
+    }
+
     // Sincronizar filtros y resultados con OBS
     if (!window.esSincronizacionOBS && typeof window.emitirEventoOBS === "function" && typeof window.obtenerEstadoFiltros === "function") {
         window.emitirEventoOBS("SYNC_ACCION", {
@@ -472,4 +477,138 @@ function vincularListenersListado() {
 window.mostrarResultados = mostrarResultados;
 window.mostrarListadoCompleto = mostrarListadoCompleto;
 window.vincularListenersListado = vincularListenersListado;
+
+// ─────────────────────────────────────────────────────────────────
+//  FILTRADOR DE SOLARES — Token v1 (persistencia URL/F5/compartir)
+// ─────────────────────────────────────────────────────────────────
+
+// Bandera de restauración para evitar bucles de hash
+window._restaurandoFiltrador = false;
+
+/**
+ * Serializa el estado actual del filtrador a un token Base64URL.
+ * Payload: { v:1, f:{...estadoFiltros}, n:"textoNombre", b:0|1 }
+ *   v  = versión
+ *   f  = estadoFiltros (copia del objeto)
+ *   n  = busquedaNombreSolar (string, omitido si vacío)
+ *   b  = 1 si la búsqueda fue ejecutada (ventanaResultados visible), 0 si no
+ */
+function serializarFiltradorV1(busquedaEjecutada) {
+    try {
+        const filtros = (typeof obtenerEstadoFiltros === "function") ? obtenerEstadoFiltros() : {};
+        const nombreBusqueda = (typeof busquedaNombreSolar !== "undefined") ? (busquedaNombreSolar || "") : "";
+
+        const payload = { v: 1, f: filtros };
+        if (nombreBusqueda) payload.n = nombreBusqueda;
+        if (busquedaEjecutada) payload.b = 1;
+
+        const json = JSON.stringify(payload);
+        return window.codificarBase64URL(json);
+    } catch (e) {
+        console.error("[FiltradorV1] Error al serializar:", e);
+        return null;
+    }
+}
+
+/**
+ * Actualiza el hash de la URL con el estado actual del filtrador.
+ * @param {boolean} busquedaEjecutada  true si acabamos de pulsar Buscar
+ */
+function actualizarURLFiltrador(busquedaEjecutada) {
+    if (window._restaurandoFiltrador) return;
+
+    // Solo serializar si hay algún filtro o búsqueda de nombre activa
+    const hayAlgo = (typeof hayFiltros === "function" && hayFiltros()) ||
+                    (typeof hayBusquedaNombreActiva === "function" && hayBusquedaNombreActiva());
+
+    if (!hayAlgo && !busquedaEjecutada) {
+        // Sin filtros: usar slug estático
+        if (typeof actualizarHashURL === "function") {
+            actualizarHashURL("filtrador");
+        }
+        return;
+    }
+
+    const token = serializarFiltradorV1(busquedaEjecutada || false);
+    if (token && typeof actualizarHashURL === "function") {
+        actualizarHashURL("filtrador/v1/" + token);
+    }
+}
+
+/**
+ * Restaura el estado del filtrador desde un token v1.
+ * @param {string} token  Token Base64URL
+ * @returns {boolean}  true si la restauración fue exitosa
+ */
+function restaurarFiltradorV1(token) {
+    try {
+        const json = window.decodificarBase64URL(token);
+        const payload = JSON.parse(json);
+
+        if (!payload || payload.v !== 1) return false;
+
+        window._restaurandoFiltrador = true;
+
+        // 1. Restaurar estadoFiltros
+        const filtros = payload.f || {};
+        if (typeof window.establecerEstadoFiltros === "function") {
+            window.establecerEstadoFiltros(filtros);
+        }
+
+        // 2. Restaurar búsqueda por nombre (si existía)
+        const nombreBusqueda = payload.n || "";
+        if (typeof busquedaNombreSolar !== "undefined") {
+            // busquedaNombreSolar es una variable de módulo en buscadorNombre.js
+            // La actualizamos y sincronizamos el input
+            busquedaNombreSolar = nombreBusqueda;
+        }
+
+        // 3. Abrir la ventana del filtrador
+        if (typeof abrirVentana === "function") {
+            abrirVentana("ventanaBuscador", false);
+        }
+
+        // 4. Sincronizar el input de búsqueda por nombre
+        const inputNombre = document.getElementById("inputBuscarNombreSolar");
+        if (inputNombre) {
+            inputNombre.value = nombreBusqueda;
+            // Bloquear/desbloquear visualmente los botones de filtro
+            const activa = nombreBusqueda.trim().length > 0;
+            document.querySelectorAll(".botonFiltro").forEach(b => {
+                b.classList.toggle("filtroBloqueado", activa);
+            });
+        }
+
+        // 5. Actualizar la UI de botones de filtro y contador
+        if (typeof actualizarBotonesFiltros === "function") {
+            actualizarBotonesFiltros();
+        }
+        if (typeof actualizarZonaBorrar === "function") {
+            actualizarZonaBorrar();
+        }
+
+        // 6. Si había una búsqueda ejecutada, mostrar resultados
+        if (payload.b === 1) {
+            if (typeof abrirVentana === "function") {
+                abrirVentana("ventanaResultados", false);
+            }
+            if (typeof mostrarResultados === "function") {
+                mostrarResultados();
+            }
+        }
+
+        window._restaurandoFiltrador = false;
+        return true;
+    } catch (e) {
+        console.error("[FiltradorV1] Error al restaurar:", e);
+        window._restaurandoFiltrador = false;
+        return false;
+    }
+}
+
+window.serializarFiltradorV1 = serializarFiltradorV1;
+window.restaurarFiltradorV1 = restaurarFiltradorV1;
+window.actualizarURLFiltrador = actualizarURLFiltrador;
+
+console.log("✔ app (filtrador token v1) cargado");
 

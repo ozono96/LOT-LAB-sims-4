@@ -11,6 +11,34 @@ window.addEventListener('load', () => {
     }, 150);
 });
 
+// ─── HELPERS GLOBALES DE BASE64URL SEGURO ──────────────────────────────
+if (typeof window.codificarBase64URL !== "function") {
+    window.codificarBase64URL = function(cadena) {
+        const bytes = new TextEncoder().encode(cadena);
+        let binario = "";
+        const len = bytes.byteLength;
+        for (let i = 0; i < len; i++) {
+            binario += String.fromCharCode(bytes[i]);
+        }
+        return btoa(binario).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    };
+}
+
+if (typeof window.decodificarBase64URL !== "function") {
+    window.decodificarBase64URL = function(base64url) {
+        let base64 = String(base64url || "").replace(/-/g, "+").replace(/_/g, "/");
+        while (base64.length % 4 !== 0) {
+            base64 += "=";
+        }
+        const binario = atob(base64);
+        const bytes = new Uint8Array(binario.length);
+        for (let i = 0; i < binario.length; i++) {
+            bytes[i] = binario.charCodeAt(i);
+        }
+        return new TextDecoder().decode(bytes);
+    };
+}
+
 // ─── DICCIONARIOS DE RUTAS Y SLUGS POR VENTANA ─────────────────────────
 const MAPA_RUTAS = {
     "acercade": "ventanaAcercaDe",
@@ -29,6 +57,7 @@ const MAPA_RUTAS = {
     "modo-reto": "ventanaRetos",
     "desafios": "ventanaRetos",
     "retos-opciones": "ventanaRetosOpciones",
+    "reto-generado": "ventanaRetoResultado",
     "retos-resultado": "ventanaRetoResultado",
 
     "ruleta-desastres": "ventanaRuletaDesastres",
@@ -73,10 +102,10 @@ const MAPA_RUTAS = {
 
 const VENTANA_A_SLUG = {
     "ventanaAcercaDe": "acercade",
-    "ventanaBuscador": "buscador",
+    "ventanaBuscador": "filtrador",
     "ventanaRetos": "retos",
     "ventanaRetosOpciones": "retos-opciones",
-    "ventanaRetoResultado": "retos-resultado",
+    "ventanaRetoResultado": "reto-generado",
     "ventanaRuletaDesastres": "ruleta-desastres",
     "ventanaRuletaColor": "ruleta-color",
     "ventanaTemporizador": "temporizador",
@@ -128,7 +157,8 @@ function procesarRutaURL() {
     if (estaNavegandoInternamente) return;
 
     let rawHash = window.location.hash || "";
-    let slug = rawHash.replace(/^[#/]+/, "").trim().toLowerCase();
+    let rawSlug = rawHash.replace(/^[#/]+/, "").trim();
+    let slug = rawSlug.toLowerCase();
 
     if (!slug) {
         let isObs = window.location.search.includes('obs=1') || window.location.hash.includes('obs=1');
@@ -148,6 +178,289 @@ function procesarRutaURL() {
         }
         
         abrirVentana(initialWindow, false);
+        return;
+    }
+
+    // ── Ruta dinámica para fichas de solares (#ficha-solar/<slug>) ──
+    if (slug.startsWith("ficha-solar/") || slug === "ficha-solar") {
+        const slugSolar = slug.startsWith("ficha-solar/")
+            ? slug.substring("ficha-solar/".length).trim()
+            : "";
+
+        if (slugSolar) {
+            const cargarFichaPorSlug = () => {
+                const solar = typeof buscarSolarPorSlug === "function" ? buscarSolarPorSlug(slugSolar) : null;
+                if (solar) {
+                    abrirFichaSolar(solar.id);
+                } else {
+                    mostrarError404(slug);
+                }
+            };
+
+            if (typeof database === "undefined" || !database.solares || database.solares.length === 0) {
+                document.addEventListener("datosCargados", cargarFichaPorSlug, { once: true });
+            } else {
+                cargarFichaPorSlug();
+            }
+            return;
+        } else {
+            // Si es solo #ficha-solar sin slug específico
+            if (window.solarFichaActual) {
+                abrirFichaSolar(window.solarFichaActual.id);
+            } else {
+                abrirVentana("ventanaBuscador", false);
+            }
+            return;
+        }
+    }
+
+    // ── Ruta dinámica para reto generado (#reto-generado/v1/<token>) ──
+    if (slug.startsWith("reto-generado/v1/")) {
+        const token = rawSlug.substring("reto-generado/v1/".length).trim();
+        const procesarTokenReto = () => {
+            if (typeof deserializarRetoV1 === "function") {
+                const exito = deserializarRetoV1(token);
+                if (!exito) {
+                    alert("El enlace del reto no es compatible o está dañado.");
+                    abrirVentana("ventanaRetosOpciones", false);
+                }
+            } else {
+                abrirVentana("ventanaRetosOpciones", false);
+            }
+        };
+
+        if (typeof database === "undefined" || !database.solares || database.solares.length === 0) {
+            document.addEventListener("datosCargados", procesarTokenReto, { once: true });
+        } else {
+            procesarTokenReto();
+        }
+        return;
+    }
+
+    if (slug.startsWith("reto-generado/") && !slug.startsWith("reto-generado/v1/")) {
+        alert("La versión de este reto no es compatible con esta versión de LOT-LAB.");
+        abrirVentana("ventanaRetosOpciones", false);
+        return;
+    }
+
+    if (slug === "reto-generado" || slug === "retos-resultado") {
+        if (window.retoActual) {
+            abrirVentana("ventanaRetoResultado", false);
+            if (typeof renderizarResultadoReto === "function") {
+                renderizarResultadoReto(window.retoActual);
+            }
+        } else {
+            abrirVentana("ventanaRetosOpciones", false);
+        }
+        return;
+    }
+
+    // ── Ruta dinámica para tirador de dados (#dados/v1/<token>) ──
+    if (slug.startsWith("dados/v1/")) {
+        const token = rawSlug.substring("dados/v1/".length).trim();
+        if (typeof restaurarDadosV1 === "function") {
+            const exito = restaurarDadosV1(token);
+            if (!exito) abrirVentana("ventanaDados", false);
+        } else {
+            abrirVentana("ventanaDados", false);
+        }
+        return;
+    }
+    if (slug.startsWith("dados/") && !slug.startsWith("dados/v1/")) {
+        abrirVentana("ventanaDados", false);
+        return;
+    }
+
+    // ── Ruta dinámica para ruleta de desastres (#ruleta-desastres/v1/<token>) ──
+    if (slug.startsWith("ruleta-desastres/v1/") || slug.startsWith("ruleta-desastre/v1/") || slug.startsWith("desastres/v1/")) {
+        let prefijo = "ruleta-desastres/v1/";
+        if (slug.startsWith("ruleta-desastre/v1/")) prefijo = "ruleta-desastre/v1/";
+        else if (slug.startsWith("desastres/v1/")) prefijo = "desastres/v1/";
+
+        const token = rawSlug.substring(prefijo.length).trim();
+        const procesarDesastres = () => {
+            if (typeof restaurarRuletaDesastresV1 === "function") {
+                const exito = restaurarRuletaDesastresV1(token);
+                if (!exito) abrirVentana("ventanaRuletaDesastres", false);
+            } else {
+                abrirVentana("ventanaRuletaDesastres", false);
+            }
+        };
+
+        if (typeof database === "undefined" || !Array.isArray(database.solares) || database.solares.length === 0) {
+            document.addEventListener("datosCargados", procesarDesastres, { once: true });
+        } else {
+            procesarDesastres();
+        }
+        return;
+    }
+    if ((slug.startsWith("ruleta-desastres/") || slug.startsWith("ruleta-desastre/") || slug.startsWith("desastres/")) &&
+        !slug.startsWith("ruleta-desastres/v1/") && !slug.startsWith("ruleta-desastre/v1/") && !slug.startsWith("desastres/v1/")) {
+        abrirVentana("ventanaRuletaDesastres", false);
+        return;
+    }
+
+    // ── Ruta dinámica para ruleta de colores (#ruleta-colores/v1/<token>) ──
+    if (slug.startsWith("ruleta-colores/v1/") || slug.startsWith("ruleta-color/v1/")) {
+        const prefijo = slug.startsWith("ruleta-colores/v1/") ? "ruleta-colores/v1/" : "ruleta-color/v1/";
+        const token = rawSlug.substring(prefijo.length).trim();
+        const procesarColor = () => {
+            if (typeof restaurarRuletaColoresV1 === "function") {
+                const exito = restaurarRuletaColoresV1(token);
+                if (!exito) abrirVentana("ventanaRuletaColor", false);
+            } else {
+                abrirVentana("ventanaRuletaColor", false);
+            }
+        };
+        if (typeof database === "undefined" || !Array.isArray(database.colores) || database.colores.length === 0) {
+            document.addEventListener("datosCargados", procesarColor, { once: true });
+        } else {
+            procesarColor();
+        }
+        return;
+    }
+    if ((slug.startsWith("ruleta-colores/") || slug.startsWith("ruleta-color/")) && !slug.startsWith("ruleta-colores/v1/") && !slug.startsWith("ruleta-color/v1/")) {
+        abrirVentana("ventanaRuletaColor", false);
+        return;
+    }
+
+    // ── Ruta dinámica para habilidades al azar (#habilidades-azar/v1/<token>) ──
+    if (slug.startsWith("habilidades-azar/v1/") || slug.startsWith("habilidades/v1/")) {
+        const prefijo = slug.startsWith("habilidades-azar/v1/") ? "habilidades-azar/v1/" : "habilidades/v1/";
+        const token = rawSlug.substring(prefijo.length).trim();
+        const procesarHab = () => {
+            if (typeof restaurarHabilidadesAzarV1 === "function") {
+                const exito = restaurarHabilidadesAzarV1(token);
+                if (!exito) abrirVentana("ventanaHabilidadesGenerador", false);
+            } else {
+                abrirVentana("ventanaHabilidadesGenerador", false);
+            }
+        };
+        if (typeof database === "undefined" || !Array.isArray(database.habilidades) || database.habilidades.length === 0) {
+            document.addEventListener("datosCargados", procesarHab, { once: true });
+        } else {
+            procesarHab();
+        }
+        return;
+    }
+    if ((slug.startsWith("habilidades-azar/") || slug.startsWith("habilidades/")) && !slug.startsWith("habilidades-azar/v1/") && !slug.startsWith("habilidades/v1/")) {
+        abrirVentana("ventanaHabilidadesGenerador", false);
+        return;
+    }
+
+    // ── Ruta dinámica para packs al azar (#packs-azar/v1/<token>) ──
+    if (slug.startsWith("packs-azar/v1/") || slug.startsWith("packs/v1/")) {
+        const prefijo = slug.startsWith("packs-azar/v1/") ? "packs-azar/v1/" : "packs/v1/";
+        const token = rawSlug.substring(prefijo.length).trim();
+        const procesarPacks = () => {
+            if (typeof restaurarPacksAzarV1 === "function") {
+                const exito = restaurarPacksAzarV1(token);
+                if (!exito) abrirVentana("ventanaPacksGenerador", false);
+            } else {
+                abrirVentana("ventanaPacksGenerador", false);
+            }
+        };
+        if (typeof database === "undefined" || !Array.isArray(database.packs) || database.packs.length === 0) {
+            document.addEventListener("datosCargados", procesarPacks, { once: true });
+        } else {
+            procesarPacks();
+        }
+        return;
+    }
+    if ((slug.startsWith("packs-azar/") || slug.startsWith("packs/")) && !slug.startsWith("packs-azar/v1/") && !slug.startsWith("packs/v1/")) {
+        abrirVentana("ventanaPacksGenerador", false);
+        return;
+    }
+
+    // ── Ruta dinámica para mundos al azar (#mundos-azar/v1/<token>) ──
+    if (slug.startsWith("mundos-azar/v1/") || slug.startsWith("mundos/v1/")) {
+        const prefijo = slug.startsWith("mundos-azar/v1/") ? "mundos-azar/v1/" : "mundos/v1/";
+        const token = rawSlug.substring(prefijo.length).trim();
+        const procesarMundos = () => {
+            if (typeof restaurarMundosAzarV1 === "function") {
+                const exito = restaurarMundosAzarV1(token);
+                if (!exito) abrirVentana("ventanaMundosGenerador", false);
+            } else {
+                abrirVentana("ventanaMundosGenerador", false);
+            }
+        };
+        if (typeof database === "undefined" || !Array.isArray(database.mundos) || database.mundos.length === 0) {
+            document.addEventListener("datosCargados", procesarMundos, { once: true });
+        } else {
+            procesarMundos();
+        }
+        return;
+    }
+    if ((slug.startsWith("mundos-azar/") || slug.startsWith("mundos/")) && !slug.startsWith("mundos-azar/v1/") && !slug.startsWith("mundos/v1/")) {
+        abrirVentana("ventanaMundosGenerador", false);
+        return;
+    }
+
+    // ── Ruta dinámica para temporizador (#temporizador/v1/<token>) ──
+    if (slug.startsWith("temporizador/v1/")) {
+        const token = rawSlug.substring("temporizador/v1/".length).trim();
+        if (typeof restaurarTemporizadorV1 === "function") {
+            const exito = restaurarTemporizadorV1(token);
+            if (!exito) abrirVentana("ventanaTemporizador", false);
+        } else {
+            abrirVentana("ventanaTemporizador", false);
+        }
+        return;
+    }
+    if (slug.startsWith("temporizador/") && !slug.startsWith("temporizador/v1/")) {
+        abrirVentana("ventanaTemporizador", false);
+        return;
+    }
+
+    // ── Ruta dinámica para estadísticas (#estadisticas/v1/<token>) ──
+    if (slug.startsWith("estadisticas/v1/")) {
+        const token = rawSlug.substring("estadisticas/v1/".length).trim();
+        if (typeof restaurarEstadisticasV1 === "function") {
+            restaurarEstadisticasV1(token);
+        } else {
+            abrirVentana("ventanaEstadisticas", false);
+        }
+        return;
+    }
+    if (slug.startsWith("estadisticas/") && !slug.startsWith("estadisticas/v1/")) {
+        abrirVentana("ventanaEstadisticas", false);
+        return;
+    }
+
+    // ── Ruta dinámica para filtrador de solares (#filtrador/v1/<token>) ──
+    if (slug.startsWith("filtrador/v1/") || slug.startsWith("buscador/v1/")) {
+        const prefijo = slug.startsWith("filtrador/v1/") ? "filtrador/v1/" : "buscador/v1/";
+        const token = rawSlug.substring(prefijo.length).trim();
+        const procesarFiltrador = () => {
+            if (typeof restaurarFiltradorV1 === "function") {
+                const exito = restaurarFiltradorV1(token);
+                if (!exito) abrirVentana("ventanaBuscador", false);
+            } else {
+                abrirVentana("ventanaBuscador", false);
+            }
+        };
+        if (typeof database === "undefined" || !Array.isArray(database.solares) || database.solares.length === 0) {
+            document.addEventListener("datosCargados", procesarFiltrador, { once: true });
+        } else {
+            procesarFiltrador();
+        }
+        return;
+    }
+    if ((slug.startsWith("filtrador/") || slug.startsWith("buscador/")) &&
+        !slug.startsWith("filtrador/v1/") && !slug.startsWith("buscador/v1/")) {
+        abrirVentana("ventanaBuscador", false);
+        return;
+    }
+
+    // ── Ruta dinámica para trucos (#trucos/v1/<token>) ──
+    if (slug.startsWith("trucos/v1/")) {
+        const param = rawSlug.substring("trucos/v1/".length).trim();
+        if (typeof restaurarTrucosV1 === "function") {
+            const exito = restaurarTrucosV1(param);
+            if (!exito) abrirVentana("ventanaTrucos", false);
+        } else {
+            abrirVentana("ventanaTrucos", false);
+        }
         return;
     }
 
@@ -224,8 +537,71 @@ function abrirVentana(id, esClickUsuario = false) {
     }
 
     // 2. Sincronizar URL hash de forma segura
-    if (id !== "ventana404" && VENTANA_A_SLUG[id]) {
-        actualizarHashURL(VENTANA_A_SLUG[id]);
+    if (id !== "ventana404") {
+        if (id === "ventanaFichaSolar") {
+            const slugSolar = (window.solarFichaActual && typeof obtenerSlugSolar === "function")
+                ? obtenerSlugSolar(window.solarFichaActual)
+                : "";
+            actualizarHashURL(slugSolar ? ("ficha-solar/" + slugSolar) : "ficha-solar");
+        } else if (id === "ventanaRetoResultado") {
+            const token = (window.retoActual && typeof serializarRetoAToken === "function")
+                ? serializarRetoAToken(window.retoActual)
+                : null;
+            actualizarHashURL(token ? ("reto-generado/v1/" + token) : (VENTANA_A_SLUG[id] || "reto-generado"));
+        } else if (id === "ventanaDados") {
+            // Preservar token si ya hay uno activo; si no, usar slug estático
+            const slugActual = (window.location.hash || "").replace(/^[#/]+/, "").trim().toLowerCase();
+            if (!slugActual.startsWith("dados/v1/")) {
+                actualizarHashURL(VENTANA_A_SLUG[id] || "dados");
+            }
+        } else if (id === "ventanaRuletaColor") {
+            const slugActual = (window.location.hash || "").replace(/^[#/]+/, "").trim().toLowerCase();
+            if (!slugActual.startsWith("ruleta-colores/v1/") && !slugActual.startsWith("ruleta-color/v1/")) {
+                actualizarHashURL(VENTANA_A_SLUG[id] || "ruleta-colores");
+            }
+        } else if (id === "ventanaHabilidadesGenerador") {
+            const slugActual = (window.location.hash || "").replace(/^[#/]+/, "").trim().toLowerCase();
+            if (!slugActual.startsWith("habilidades-azar/v1/") && !slugActual.startsWith("habilidades/v1/")) {
+                actualizarHashURL(VENTANA_A_SLUG[id] || "habilidades-azar");
+            }
+        } else if (id === "ventanaPacksGenerador") {
+            const slugActual = (window.location.hash || "").replace(/^[#/]+/, "").trim().toLowerCase();
+            if (!slugActual.startsWith("packs-azar/v1/") && !slugActual.startsWith("packs/v1/")) {
+                actualizarHashURL(VENTANA_A_SLUG[id] || "packs-azar");
+            }
+        } else if (id === "ventanaMundosGenerador") {
+            const slugActual = (window.location.hash || "").replace(/^[#/]+/, "").trim().toLowerCase();
+            if (!slugActual.startsWith("mundos-azar/v1/") && !slugActual.startsWith("mundos/v1/")) {
+                actualizarHashURL(VENTANA_A_SLUG[id] || "mundos-azar");
+            }
+        } else if (id === "ventanaTemporizador") {
+            const slugActual = (window.location.hash || "").replace(/^[#/]+/, "").trim().toLowerCase();
+            if (!slugActual.startsWith("temporizador/v1/")) {
+                actualizarHashURL(VENTANA_A_SLUG[id] || "temporizador");
+            }
+        } else if (id === "ventanaEstadisticas") {
+            const slugActual = (window.location.hash || "").replace(/^[#/]+/, "").trim().toLowerCase();
+            if (!slugActual.startsWith("estadisticas/v1/")) {
+                actualizarHashURL(VENTANA_A_SLUG[id] || "estadisticas");
+            }
+        } else if (id === "ventanaTrucos") {
+            const slugActual = (window.location.hash || "").replace(/^[#/]+/, "").trim().toLowerCase();
+            if (!slugActual.startsWith("trucos/v1/")) {
+                actualizarHashURL(VENTANA_A_SLUG[id] || "trucos");
+            }
+        } else if (id === "ventanaRuletaDesastres") {
+            const slugActual = (window.location.hash || "").replace(/^[#/]+/, "").trim().toLowerCase();
+            if (!slugActual.startsWith("ruleta-desastres/v1/") && !slugActual.startsWith("ruleta-desastre/v1/") && !slugActual.startsWith("desastres/v1/")) {
+                actualizarHashURL(VENTANA_A_SLUG[id] || "ruleta-desastres");
+            }
+        } else if (id === "ventanaBuscador") {
+            const slugActual = (window.location.hash || "").replace(/^[#/]+/, "").trim().toLowerCase();
+            if (!slugActual.startsWith("filtrador/v1/") && !slugActual.startsWith("buscador/v1/")) {
+                actualizarHashURL(VENTANA_A_SLUG[id] || "filtrador");
+            }
+        } else if (VENTANA_A_SLUG[id]) {
+            actualizarHashURL(VENTANA_A_SLUG[id]);
+        }
     }
 
     // 3. Ajuste visual de cabecera y posicionamiento del scroll
@@ -328,6 +704,9 @@ function cerrarVentana(id) {
     const ventana = document.getElementById(id);
 
     if (ventana) {
+        if (id === "ventanaFichaSolar") {
+            window.solarFichaActual = null;
+        }
         if (id === "ventanaTemporizador" && document.getElementById("app")?.classList.contains("modo-paralelo")) {
             cerrarTemporizadorAcoplado();
         } else {
@@ -432,6 +811,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                     if (ventana.id === "ventanaFichaSolar") {
                         const destino = window.ventanaOrigenFicha || window.ventanaAnterior || "ventanaBuscador";
+                        window.solarFichaActual = null;
                         cerrarVentana("ventanaFichaSolar");
                         abrirVentana(destino, true);
                         if (typeof window.emitirEventoOBS === "function" && !window.esSincronizacionOBS) {

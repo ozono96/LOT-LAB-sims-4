@@ -1165,7 +1165,7 @@
                 ⬆
             </button>
 
-            <div id="ventanaRuletaColor" class="ventana ventanaEstrecha">
+            <div id="ventanaRuletaColor" class="ventana ventanaEstrecha ventanaRuletaColorModerna">
 
                 <div class="cabeceraVentana">
 
@@ -1180,17 +1180,21 @@
 
                 </div>
 
-                <h2>🎨 Ruleta de colores</h2>
-
-                <div class="ruletaColorControles">
-                    <label for="inputTiradasRuleta">Nº de tiradas:</label>
-                    <input type="number" id="inputTiradasRuleta" min="1" max="10" value="1">
-                    <p class="ruletaColorAyuda">(Usa la rueda del ratón dentro del cuadro para subir o bajar el tiempo)
-                    </p>
+                <div class="ruletaColorHeader">
+                    <h2 class="ruletaColorTitulo"><span class="ruletaColorIcono">🎨</span> Ruleta de colores</h2>
                 </div>
 
-                <div class="ruletaColorWheelWrapper"
-                    style="position:relative; width:260px; height:260px; margin:10px auto 25px auto;">
+                <div class="ruletaColorControles ruletaColorControlesModerna">
+                    <div class="ruletaColorInputGroup">
+                        <label for="inputTiradasRuleta" class="ruletaColorLabel">Tiradas</label>
+                        <input type="number" id="inputTiradasRuleta" class="ruletaColorInput" min="1" max="10"
+                            value="1">
+                    </div>
+                    <p class="ruletaColorAyuda">Usa la rueda del ratón en el campo para cambiar el número.</p>
+                </div>
+
+                <div class="ruletaColorWheelWrapper ruletaColorWheelWrapperModerna"
+                    style="position:relative; width:260px; height:260px; margin:18px auto 25px auto;">
                     <div class="ruletaColorPuntero"></div>
                     <div id="ruletaColorWheel" class="ruletaColorWheel" style="width:100%; height:100%;"></div>
                     <button id="botonGirarRuleta" class="btnGirarRuleta">Girar</button>
@@ -1198,7 +1202,16 @@
 
                 <p id="mensajeRuletaColor" class="ruletaColorMensaje"></p>
 
-                <div id="resultadoRuletaColor" class="ruletaColorResultados"></div>
+                <!-- Botón para acelerar selección múltiple -->
+                <div id="ruletaColorAcelerarWrap" class="habAcelerarWrap" style="display:none;">
+                    <button id="ruletaColorBtnAcelerar" class="habBtnAcelerar" type="button"
+                        title="Acelerar tiradas de la ruleta">
+                        <span class="habIconoRayo">⚡</span>
+                        <span id="ruletaColorTextoAcelerar">Acelerar</span>
+                    </button>
+                </div>
+
+                <div id="resultadoRuletaColor" class="ruletaColorResultados ruletaColorResultadosModerna"></div>
 
             </div>
             <!-- ↑ ESTE cierre es el de ventanaRuletaColor -->
@@ -3291,7 +3304,7 @@
             </div>
 
             <p>
-                El unico buscador de Solares y generador de retos para construir en Los Sims 4 - Versión 1.2.1
+                El unico buscador de Solares y generador de retos para construir en Los Sims 4 - Versión 1.2.2
 
 
             </p>

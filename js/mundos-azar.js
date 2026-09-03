@@ -200,6 +200,13 @@ function _mundosTirar() {
 
     MUNDOS_AZAR.acelerado = false;
 
+    // Guardar resultado y actualizar URL
+    window.mundosUltimoResultado = { cantidad, elegidas };
+    if (typeof actualizarHashURL === "function" && typeof serializarMundosAzarV1 === "function") {
+        const token = serializarMundosAzarV1(window.mundosUltimoResultado);
+        if (token) actualizarHashURL("mundos-azar/v1/" + token);
+    }
+
     if (typeof window.emitirEventoOBS === 'function') {
         window.emitirEventoOBS('TIRAR_MUNDOS', {
             elegidas: elegidas,
@@ -375,3 +382,113 @@ window.restaurarResultadoMundosObs = function (data) {
 
 window._mundosFiltrarMundos = _mundosFiltrarMundos;
 window._mundosInicializarGenerador = _mundosInicializarGenerador;
+
+// =========================================================
+// SERIALIZACIÓN Y RESTAURACIÓN DE TOKEN v1 (#mundos-azar/v1/<token>)
+// =========================================================
+
+function serializarMundosAzarV1(estado) {
+    if (!estado || !estado.elegidas || !Array.isArray(estado.elegidas)) return null;
+    try {
+        const payload = {
+            v: 1,
+            c: estado.cantidad || estado.elegidas.length || 1,
+            ids: estado.elegidas.map(m => m.id || m.nombre)
+        };
+        const jsonStr = JSON.stringify(payload);
+        return typeof window.codificarBase64URL === "function"
+            ? window.codificarBase64URL(jsonStr)
+            : null;
+    } catch (e) {
+        console.error("Error al serializar mundos al azar:", e);
+        return null;
+    }
+}
+window.serializarMundosAzarV1 = serializarMundosAzarV1;
+
+function restaurarMundosAzarV1(token) {
+    if (!token || typeof token !== "string") return false;
+    try {
+        if (typeof window.decodificarBase64URL !== "function") return false;
+        const jsonStr = window.decodificarBase64URL(token.trim());
+        const payload = JSON.parse(jsonStr);
+
+        if (!payload || payload.v !== 1 || !Array.isArray(payload.ids)) return false;
+
+        const cantidad = payload.c || payload.ids.length;
+        const ids = payload.ids;
+
+        if (typeof abrirVentana === "function") {
+            abrirVentana("ventanaMundosGenerador", false);
+        }
+
+        // 1. Ajustar cantidad en input
+        const input = document.getElementById("mundosCantidad");
+        if (input) input.value = cantidad;
+        MUNDOS_AZAR.cantidad = cantidad;
+
+        // 2. Construir mapa de mundos a partir de database.mundos y database.solares
+        const mundoToPack = new Map();
+        if (Array.isArray(database?.solares)) {
+            database.solares.forEach(solar => {
+                const m = (solar.mundo || "").trim().toLowerCase();
+                const np = (solar.nombrePack || "").trim();
+                if (m && np && !mundoToPack.has(m)) {
+                    mundoToPack.set(m, np);
+                }
+            });
+        }
+
+        const mapMundos = new Map();
+        if (Array.isArray(database?.mundos)) {
+            database.mundos.forEach(fila => {
+                const nombre = (fila[0] || "").trim();
+                const id = (fila[1] || "").trim();
+                if (!nombre) return;
+                const nombreLower = nombre.toLowerCase();
+                let nombrePack = mundoToPack.get(nombreLower) || "Juego Base";
+                if (nombreLower === "willow creek" || nombreLower === "oasis springs" || nombreLower === "newcrest") {
+                    nombrePack = "Juego Base";
+                }
+                const esBase = !nombrePack || nombrePack.toLowerCase() === "base" || nombrePack.toLowerCase() === "juego base";
+                const rutaIconoDirecta = id ? `img/mundos-con-solares/${id}/icono.webp` : null;
+                const rutaIcono = (typeof rutaIconoMundo === "function" ? rutaIconoMundo(nombre) : null) || rutaIconoDirecta;
+                const mundoObj = { nombre, id, nombrePack, rutaIcono, esBase };
+                if (id) mapMundos.set(id.toLowerCase(), mundoObj);
+                mapMundos.set(nombreLower, mundoObj);
+            });
+        }
+
+        // 3. Resolver mundos por ID o nombre
+        const elegidosRecuperados = ids.map(identificador => {
+            const idKey = String(identificador || "").toLowerCase().trim();
+            if (mapMundos.has(idKey)) return mapMundos.get(idKey);
+            const rutaDirecta = identificador ? `img/mundos-con-solares/${identificador}/icono.webp` : null;
+            return {
+                nombre: identificador,
+                id: identificador,
+                nombrePack: "Juego Base",
+                rutaIcono: (typeof rutaIconoMundo === "function" ? rutaIconoMundo(identificador) : null) || rutaDirecta,
+                esBase: true
+            };
+        });
+
+        // 4. Renderizar vista final estática sin animación usando la función oficial existente
+        if (typeof window.restaurarResultadoMundosObs === "function") {
+            window.restaurarResultadoMundosObs({ elegidas: elegidosRecuperados });
+        }
+
+        const btnTirar = document.getElementById("mundosBtnTirar");
+        if (btnTirar) {
+            btnTirar.disabled = false;
+            btnTirar.innerHTML = "<span class='habBtnIcono'>🎲</span><span>¡Tirar!</span>";
+        }
+
+        window.mundosUltimoResultado = { cantidad, elegidas: elegidosRecuperados };
+        return true;
+    } catch (e) {
+        console.error("Error al restaurar mundos al azar:", e);
+        return false;
+    }
+}
+window.restaurarMundosAzarV1 = restaurarMundosAzarV1;

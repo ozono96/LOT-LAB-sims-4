@@ -191,6 +191,13 @@ function _packsTirar() {
 
     PACKS_AZAR.acelerado = false;
 
+    // Guardar resultado y actualizar URL
+    window.packsUltimoResultado = { cantidad, elegidas };
+    if (typeof actualizarHashURL === "function" && typeof serializarPacksAzarV1 === "function") {
+        const token = serializarPacksAzarV1(window.packsUltimoResultado);
+        if (token) actualizarHashURL("packs-azar/v1/" + token);
+    }
+
     if (typeof window.emitirEventoOBS === 'function') {
         window.emitirEventoOBS('TIRAR_PACKS', {
             elegidas: elegidas,
@@ -344,3 +351,130 @@ window.restaurarResultadoPacksObs = function (data) {
 
 window._packsFiltrarPacks = _packsFiltrarPacks;
 window._packsInicializarGenerador = _packsInicializarGenerador;
+
+// =========================================================
+// SERIALIZACIÓN Y RESTAURACIÓN DE TOKEN v1 (#packs-azar/v1/<token>)
+// =========================================================
+
+function serializarPacksAzarV1(estado) {
+    if (!estado || !estado.elegidas || !Array.isArray(estado.elegidas)) return null;
+    try {
+        const payload = {
+            v: 1,
+            c: estado.cantidad || estado.elegidas.length || 1,
+            ids: estado.elegidas.map(p => p.id || p.nombre)
+        };
+        const jsonStr = JSON.stringify(payload);
+        return typeof window.codificarBase64URL === "function"
+            ? window.codificarBase64URL(jsonStr)
+            : null;
+    } catch (e) {
+        console.error("Error al serializar packs al azar:", e);
+        return null;
+    }
+}
+window.serializarPacksAzarV1 = serializarPacksAzarV1;
+
+function restaurarPacksAzarV1(token) {
+    if (!token || typeof token !== "string") return false;
+    try {
+        if (typeof window.decodificarBase64URL !== "function") return false;
+        const jsonStr = window.decodificarBase64URL(token.trim());
+        const payload = JSON.parse(jsonStr);
+
+        if (!payload || payload.v !== 1 || !Array.isArray(payload.ids)) return false;
+
+        const cantidad = payload.c || payload.ids.length;
+        const ids = payload.ids;
+
+        if (typeof abrirVentana === "function") {
+            abrirVentana("ventanaPacksGenerador", false);
+        }
+
+        // 1. Ajustar cantidad en input
+        const input = document.getElementById("packsCantidad");
+        if (input) input.value = cantidad;
+        PACKS_AZAR.cantidad = cantidad;
+
+        // 2. Construir mapa completo de packs desde database.packs
+        const subcarpetaPorPrefijo = {
+            "EP": "expansiones",
+            "GP": "contenido",
+            "SP": "accesorios",
+            "TK": "kits",
+            "FR": "packs gratuitos",
+            "BG": "juego base"
+        };
+        const pares = [
+            [0, 1, "Expansión"],
+            [2, 3, "Contenido"],
+            [4, 5, "Accesorios"],
+            [6, 7, "Kits"],
+            [8, 9, "Gratis"],
+            [10, 11, "Juego Base"]
+        ];
+        const mapTodosPacks = new Map();
+        if (Array.isArray(database?.packs)) {
+            database.packs.forEach(fila => {
+                pares.forEach(([colNombre, colId, tipoNombre]) => {
+                    const nombre = (fila[colNombre] || "").trim();
+                    const id = (fila[colId] || "").trim();
+                    if (!nombre) return;
+                    const prefijo = id.match(/^[A-Za-z]+/)?.[0]?.toUpperCase() || "";
+                    const subcarpeta = subcarpetaPorPrefijo[prefijo] || "expansiones";
+                    const rutaIconoDirecta = id ? `img/icon-pack/${subcarpeta}/${id}.webp` : null;
+                    const rutaIcono = (typeof rutaIconoPack === "function" ? rutaIconoPack(nombre) : null) || rutaIconoDirecta;
+                    const esBase = tipoNombre === "Juego Base" || nombre.toLowerCase() === "base" || nombre.toLowerCase() === "juego base";
+                    const packObj = { nombre, id, tipo: tipoNombre, rutaIcono, esBase };
+                    if (id) {
+                        mapTodosPacks.set(id.toLowerCase(), packObj);
+                        // Normalizar variaciones con cero como EP01 -> EP1
+                        const idNormalizada = id.replace(/([A-Za-z]+)0+(\d+)/, "$1$2").toLowerCase();
+                        mapTodosPacks.set(idNormalizada, packObj);
+                    }
+                    mapTodosPacks.set(nombre.toLowerCase(), packObj);
+                });
+            });
+        }
+
+        // 3. Resolver packs por ID o nombre
+        const elegidosRecuperados = ids.map(identificador => {
+            const rawId = String(identificador || "").trim();
+            const idKey = rawId.toLowerCase();
+            const idNorm = idKey.replace(/([a-z]+)0+(\d+)/, "$1$2");
+
+            if (mapTodosPacks.has(idKey)) return mapTodosPacks.get(idKey);
+            if (mapTodosPacks.has(idNorm)) return mapTodosPacks.get(idNorm);
+
+            const prefijo = rawId.match(/^[A-Za-z]+/)?.[0]?.toUpperCase() || "";
+            const subcarpeta = subcarpetaPorPrefijo[prefijo] || "expansiones";
+            const rutaIconoDirecta = rawId ? `img/icon-pack/${subcarpeta}/${rawId}.webp` : null;
+            const esBase = idKey.includes("base") || idKey === "bg";
+            return {
+                nombre: rawId,
+                id: rawId,
+                tipo: esBase ? "Juego Base" : "Pack",
+                rutaIcono: (typeof rutaIconoPack === "function" ? rutaIconoPack(rawId) : null) || rutaIconoDirecta,
+                esBase: esBase
+            };
+        });
+
+        // 4. Renderizar vista final estática sin animación usando la función oficial existente
+        if (typeof window.restaurarResultadoPacksObs === "function") {
+            window.restaurarResultadoPacksObs({ elegidas: elegidosRecuperados });
+        }
+
+        const btnTirar = document.getElementById("packsBtnTirar");
+        if (btnTirar) {
+            btnTirar.disabled = false;
+            btnTirar.innerHTML = "<span class='habBtnIcono'>🎲</span><span>¡Tirar!</span>";
+        }
+
+        window.packsUltimoResultado = { cantidad, elegidas: elegidosRecuperados };
+        return true;
+    } catch (e) {
+        console.error("Error al restaurar packs al azar:", e);
+        return false;
+    }
+}
+window.restaurarPacksAzarV1 = restaurarPacksAzarV1;

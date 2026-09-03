@@ -275,6 +275,11 @@ function confirmarFiltroUI() {
 
     actualizarZonaBorrar();
 
+    // Actualizar URL con el estado de filtros (sin búsqueda ejecutada)
+    if (!window._restaurandoFiltrador && typeof actualizarURLFiltrador === "function") {
+        actualizarURLFiltrador(false);
+    }
+
     if (!window.esSincronizacionOBS && typeof window.emitirEventoOBS === "function") {
         window.emitirEventoOBS("SYNC_ACCION", {
             accion: "FILTROS_SOLARES_STATE",
@@ -301,6 +306,11 @@ function eliminarFiltroUI() {
     actualizarBotonesFiltros();
 
     actualizarZonaBorrar();
+
+    // Actualizar URL con el estado de filtros (sin búsqueda ejecutada)
+    if (!window._restaurandoFiltrador && typeof actualizarURLFiltrador === "function") {
+        actualizarURLFiltrador(false);
+    }
 
     if (!window.esSincronizacionOBS && typeof window.emitirEventoOBS === "function") {
         window.emitirEventoOBS("SYNC_ACCION", {

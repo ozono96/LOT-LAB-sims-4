@@ -52,6 +52,11 @@ function iniciarFiltros() {
 
         abrirVentana("ventanaBuscador");
 
+        // Limpiar la URL (sin filtros, volver al slug estático)
+        if (!window._restaurandoFiltrador && typeof actualizarURLFiltrador === "function") {
+            actualizarURLFiltrador(false);
+        }
+
         if (!window.esSincronizacionOBS && typeof window.emitirEventoOBS === "function") {
             window.emitirEventoOBS("SYNC_ACCION", {
                 accion: "FILTROS_SOLARES_STATE",

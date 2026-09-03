@@ -392,4 +392,73 @@ function mostrarTooltipCopiado(event, mensaje) {
     }, 1400);
 }
 
-console.log("✔ trucos cargado con buscador inteligente");
+console.log("✔ trucos cargado con buscador inteligente");
+
+// =========================================================
+// SERIALIZACIÓN Y RESTAURACIÓN DE TOKEN v1 (#trucos/v1/<token>)
+// =========================================================
+
+function serializarTrucosV1(categoria, query) {
+    try {
+        const cat = categoria || "general";
+        const q = query || "";
+        const payload = { v: 1, cat: cat };
+        if (q.trim()) payload.q = q.trim();
+        const jsonStr = JSON.stringify(payload);
+        return typeof window.codificarBase64URL === "function"
+            ? window.codificarBase64URL(jsonStr)
+            : cat;
+    } catch (e) {
+        return categoria || "general";
+    }
+}
+window.serializarTrucosV1 = serializarTrucosV1;
+
+function restaurarTrucosV1(param) {
+    if (!param || typeof param !== "string") return false;
+    try {
+        let cat = "general";
+        let query = "";
+
+        const paramLimpio = param.trim();
+        const slugDirecto = paramLimpio.toLowerCase();
+        if (slugDirecto === "construir" || slugDirecto === "cas" || slugDirecto === "vivir" || slugDirecto === "packs" || slugDirecto === "general") {
+            cat = slugDirecto;
+        } else if (typeof window.decodificarBase64URL === "function") {
+            try {
+                const jsonStr = window.decodificarBase64URL(paramLimpio);
+                const payload = JSON.parse(jsonStr);
+                if (payload && payload.v === 1) {
+                    if (payload.cat) cat = String(payload.cat).toLowerCase();
+                    if (payload.q) query = String(payload.q);
+                }
+            } catch (errJson) {
+                cat = "general";
+            }
+        }
+
+        let idVentana = "ventanaTrucos";
+        if (cat === "construir") idVentana = "ventanaTrucosConstruir";
+        else if (cat === "cas") idVentana = "ventanaTrucosCAS";
+        else if (cat === "vivir") idVentana = "ventanaTrucosVivir";
+        else if (cat === "packs") idVentana = "ventanaTrucosPacks";
+
+        if (typeof abrirVentana === "function") {
+            abrirVentana(idVentana, false);
+        }
+
+        if (query) {
+            const inputs = document.querySelectorAll(".inputBuscadorTrucos, .contenedorBuscadorTrucos input");
+            inputs.forEach(input => {
+                input.value = query;
+                input.dispatchEvent(new Event("input", { bubbles: true }));
+            });
+        }
+
+        return true;
+    } catch (e) {
+        console.error("Error al restaurar trucos:", e);
+        return false;
+    }
+}
+window.restaurarTrucosV1 = restaurarTrucosV1;

@@ -6643,167 +6643,253 @@
                   ],
     "estilosArquitectonicos":  [
                                    [
-                                       "Moderno"
+                                       "Moderno",
+                                       "",
+                                       "EA001"
                                    ],
                                    [
-                                       "Contemporáneo"
+                                       "Contemporáneo",
+                                       "",
+                                       "EA002"
                                    ],
                                    [
-                                       "Minimalista"
+                                       "Minimalista",
+                                       "",
+                                       "EA003"
                                    ],
                                    [
-                                       "Victoriano"
+                                       "Victoriano",
+                                       "",
+                                       "EA004"
                                    ],
                                    [
-                                       "Colonial"
+                                       "Colonial",
+                                       "",
+                                       "EA005"
                                    ],
                                    [
-                                       "Mediterráneo"
+                                       "Mediterráneo",
+                                       "",
+                                       "EA006"
                                    ],
                                    [
-                                       "Oriental"
+                                       "Oriental",
+                                       "",
+                                       "EA007"
                                    ],
                                    [
-                                       "Industrial"
+                                       "Industrial",
+                                       "",
+                                       "EA008"
                                    ],
                                    [
-                                       "Rústico"
+                                       "Rústico",
+                                       "",
+                                       "EA009"
                                    ],
                                    [
-                                       "Futurista"
+                                       "Futurista",
+                                       "",
+                                       "EA010"
                                    ],
                                    [
-                                       "Isleño"
+                                       "Isleño",
+                                       "",
+                                       "EA011"
                                    ],
                                    [
-                                       "Costero"
+                                       "Costero",
+                                       "",
+                                       "EA012"
                                    ],
                                    [
-                                       "Cottage"
+                                       "Cottage",
+                                       "",
+                                       "EA013"
                                    ],
                                    [
-                                       "Granja"
+                                       "Granja",
+                                       "",
+                                       "EA014"
                                    ],
                                    [
-                                       "Gótico"
+                                       "Gótico",
+                                       "",
+                                       "EA015"
                                    ],
                                    [
-                                       "Art Déco"
+                                       "Art Déco",
+                                       "",
+                                       "EA016"
                                    ],
                                    [
-                                       "Africano"
+                                       "Africano",
+                                       "",
+                                       "EA017"
                                    ],
                                    [
-                                       "Descuidado"
+                                       "Descuidado",
+                                       "",
+                                       "EA018"
                                    ]
                                ],
     "estilosDecoracion":  [
                               [
-                                  "Moderno"
+                                  "Moderno",
+                                  "",
+                                  "EI001"
                               ],
                               [
-                                  "Minimalista"
+                                  "Minimalista",
+                                  "",
+                                  "EI002"
                               ],
                               [
-                                  "Industrial"
+                                  "Industrial",
+                                  "",
+                                  "EI003"
                               ],
                               [
-                                  "Nórdico"
+                                  "Nórdico",
+                                  "",
+                                  "EI004"
                               ],
                               [
-                                  "Boho"
+                                  "Boho",
+                                  "",
+                                  "EI005"
                               ],
                               [
-                                  "Vintage"
+                                  "Vintage",
+                                  "",
+                                  "EI006"
                               ],
                               [
-                                  "Clásico"
+                                  "Clásico",
+                                  "",
+                                  "EI007"
                               ],
                               [
-                                  "Ecléctico"
+                                  "Ecléctico",
+                                  "",
+                                  "EI008"
                               ],
                               [
-                                  "Rústico"
+                                  "Rústico",
+                                  "",
+                                  "EI009"
                               ],
                               [
-                                  "Glam/Lujoso"
+                                  "Glam/Lujoso",
+                                  "",
+                                  "EI010"
                               ],
                               [
-                                  "Retro"
+                                  "Retro",
+                                  "",
+                                  "EI011"
                               ],
                               [
-                                  "Oriental"
+                                  "Oriental",
+                                  "",
+                                  "EI012"
                               ],
                               [
-                                  "Mediterráneo"
+                                  "Mediterráneo",
+                                  "",
+                                  "EI013"
                               ],
                               [
-                                  "Infantil"
+                                  "Infantil",
+                                  "",
+                                  "EI014"
                               ],
                               [
-                                  "Futurista"
+                                  "Futurista",
+                                  "",
+                                  "EI015"
                               ],
                               [
-                                  "Africano"
+                                  "Africano",
+                                  "",
+                                  "EI016"
                               ],
                               [
-                                  "Cosmolux"
+                                  "Cosmolux",
+                                  "",
+                                  "EI017"
                               ],
                               [
-                                  "Isleño"
+                                  "Isleño",
+                                  "",
+                                  "EI018"
                               ],
                               [
-                                  "Descuidado"
+                                  "Descuidado",
+                                  "",
+                                  "EI019"
                               ]
                           ],
     "colores":  [
                     [
                         "Rojo",
-                        "#FF0000"
+                        "#FF0000",
+                        "C001"
                     ],
                     [
                         "Rosa",
-                        "#FF69B4"
+                        "#FF69B4",
+                        "C002"
                     ],
                     [
                         "Naranja",
-                        "#FF8C00"
+                        "#FF8C00",
+                        "C003"
                     ],
                     [
                         "Amarillo",
-                        "#FFD700"
+                        "#FFD700",
+                        "C004"
                     ],
                     [
                         "Verde",
-                        "#008000"
+                        "#008000",
+                        "C005"
                     ],
                     [
                         "Azul",
-                        "#0066FF"
+                        "#0066FF",
+                        "C006"
                     ],
                     [
                         "Morado",
-                        "#8000FF"
+                        "#8000FF",
+                        "C007"
                     ],
                     [
                         "Blanco",
-                        "#FFFFFF"
+                        "#FFFFFF",
+                        "C008"
                     ],
                     [
                         "Gris",
-                        "#808080"
+                        "#808080",
+                        "C009"
                     ],
                     [
                         "Negro",
-                        "#000000"
+                        "#000000",
+                        "C010"
                     ],
                     [
                         "Marrón claro",
-                        "#B87333"
+                        "#B87333",
+                        "C011"
                     ],
                     [
                         "Marrón oscuro",
-                        "#5C4033"
+                        "#5C4033",
+                        "C012"
                     ]
                 ],
     "etapasVida":  [
@@ -9491,5 +9577,5 @@
                                   "TK62"
                               ]
                           ],
-    "actualizadoEn":  "2026-09-01T14:58:25+02:00"
+    "actualizadoEn":  "2026-09-03T20:08:38+02:00"
 }

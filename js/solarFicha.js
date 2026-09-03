@@ -1,3 +1,65 @@
+// ─── NORMALIZACIÓN Y RESOLUCIÓN DE SLUGS PARA FICHAS DE SOLARES ────────
+function normalizarSlug(texto) {
+    if (!texto) return "";
+    return texto
+        .toString()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-+|-+$/g, "");
+}
+
+function obtenerSlugSolar(solar) {
+    if (!solar) return "";
+    const slugBase = normalizarSlug(solar.nombre);
+    if (!slugBase) return "";
+
+    if (typeof database !== "undefined" && Array.isArray(database.solares)) {
+        const duplicados = database.solares.filter(
+            s => s.id !== solar.id && normalizarSlug(s.nombre) === slugBase
+        );
+        if (duplicados.length > 0) {
+            const slugMundo = normalizarSlug(solar.mundo);
+            if (slugMundo) {
+                return `${slugBase}-${slugMundo}`;
+            }
+            return `${slugBase}-${normalizarSlug(solar.id)}`;
+        }
+    }
+    return slugBase;
+}
+
+function buscarSolarPorSlug(slugBuscado) {
+    if (!slugBuscado || typeof database === "undefined" || !Array.isArray(database.solares)) return null;
+    const slugNorm = normalizarSlug(slugBuscado);
+    if (!slugNorm) return null;
+
+    // 1. Coincidencia exacta con el slug identificador generado
+    let encontrado = database.solares.find(s => obtenerSlugSolar(s) === slugNorm);
+    if (encontrado) return encontrado;
+
+    // 2. Coincidencia con slug(nombre) + "-" + slug(mundo)
+    encontrado = database.solares.find(s => `${normalizarSlug(s.nombre)}-${normalizarSlug(s.mundo)}` === slugNorm);
+    if (encontrado) return encontrado;
+
+    // 3. Coincidencia con slug(nombre) + "-" + slug(id)
+    encontrado = database.solares.find(s => `${normalizarSlug(s.nombre)}-${normalizarSlug(s.id)}` === slugNorm);
+    if (encontrado) return encontrado;
+
+    // 4. Coincidencia básica por slug del nombre
+    encontrado = database.solares.find(s => normalizarSlug(s.nombre) === slugNorm);
+    if (encontrado) return encontrado;
+
+    return null;
+}
+
+window.normalizarSlug = normalizarSlug;
+window.obtenerSlugSolar = obtenerSlugSolar;
+window.buscarSolarPorSlug = buscarSolarPorSlug;
+
 function abrirFichaSolar(idSolar){
     if (!database || !database.solares || database.solares.length === 0) {
         document.addEventListener("datosCargados", () => abrirFichaSolar(idSolar), { once: true });
@@ -11,6 +73,8 @@ function abrirFichaSolar(idSolar){
     if(!solar){
         return;
     }
+
+    window.solarFichaActual = solar;
 
     const rutaPack = typeof rutaIconoPack === "function" ? rutaIconoPack(solar.nombrePack) : null;
     const rutaMundo = typeof rutaIconoMundo === "function" ? rutaIconoMundo(solar.mundo) : null;
@@ -101,6 +165,11 @@ function abrirFichaSolar(idSolar){
     abrirVentana(
         "ventanaFichaSolar"
     );
+
+    const slugSolar = typeof obtenerSlugSolar === "function" ? obtenerSlugSolar(solar) : "";
+    if (slugSolar && typeof actualizarHashURL === "function") {
+        actualizarHashURL("ficha-solar/" + slugSolar);
+    }
 
     if (typeof window.emitirEventoOBS === 'function' && !window.esSincronizacionOBS) {
         window.emitirEventoOBS("SYNC_FICHA_SOLAR", {

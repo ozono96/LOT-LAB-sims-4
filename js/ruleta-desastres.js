@@ -45,26 +45,42 @@ const ModulosDesastres = {
         nombre: "🎨 Cambiar colores permitidos",
         icono: "🎨",
         generar: function () {
-            const colores = (typeof obtenerColoresRuleta === "function") 
+            const catalogo = (typeof obtenerColoresRuleta === "function") 
                 ? obtenerColoresRuleta() 
-                : ["Blanco", "Negro", "Gris", "Marrón", "Rojo", "Azul", "Verde", "Amarillo", "Rosa", "Morado", "Naranja", "Turquesa", "Madera clara", "Madera oscura"];
+                : [
+                    { id: "C001", nombre: "Rojo", hex: "#FF0000" },
+                    { id: "C002", nombre: "Rosa", hex: "#FF69B4" },
+                    { id: "C003", nombre: "Naranja", hex: "#FF8C00" },
+                    { id: "C004", nombre: "Amarillo", hex: "#FFD700" },
+                    { id: "C005", nombre: "Verde", hex: "#008000" },
+                    { id: "C006", nombre: "Azul", hex: "#0066FF" },
+                    { id: "C007", nombre: "Morado", hex: "#800080" },
+                    { id: "C008", nombre: "Marrón", hex: "#8B4513" },
+                    { id: "C009", nombre: "Negro", hex: "#000000" },
+                    { id: "C010", nombre: "Blanco", hex: "#FFFFFF" }
+                ];
             
-            const colorElegido = colores[Math.floor(Math.random() * colores.length)];
-            const modoAccion = Math.random() > 0.5 ? "sustituir" : "añadir";
-
-            if (modoAccion === "sustituir") {
-                return {
-                    titulo: "Cambio de Paleta",
-                    descripcion: `Sustituye uno de tus colores actuales por: ${colorElegido}.`,
-                    detalle: "Elige uno de tus colores previos y cámbialo obligatoriamente por este."
-                };
+            // Probabilidad sesgada: 1 color (70%), 2 colores (22%), 3 colores (8%)
+            const r = Math.random();
+            let cantidad = 1;
+            if (r < 0.70) {
+                cantidad = 1;
+            } else if (r < 0.92) {
+                cantidad = 2;
             } else {
-                return {
-                    titulo: "Nuevo Color Añadido",
-                    descripcion: `Añade un nuevo color a tu paleta: ${colorElegido}.`,
-                    detalle: "A partir de ahora debes incorporar este color en la construcción."
-                };
+                cantidad = 3;
             }
+
+            // Seleccionar sin repetición
+            const bolsa = [...catalogo];
+            const elegidos = [];
+            const num = Math.min(cantidad, bolsa.length);
+            for (let i = 0; i < num; i++) {
+                const idx = Math.floor(Math.random() * bolsa.length);
+                elegidos.push(bolsa.splice(idx, 1)[0]);
+            }
+
+            return construirResultadoCambiarColor(elegidos);
         }
     },
 
@@ -317,6 +333,8 @@ let enPeriodoPausa = false;
 let temporizadorPausado = false;
 let tiradasRealizadas = 0;
 let ruletaDesastresHistorial = [];
+let ultimoDesastre = null;
+window._restaurandoRuletaDesastres = false;
 
 const EstadoRuletaDesastres = {
     modo: "manual", // "manual" | "auto"
@@ -420,6 +438,9 @@ function sincronizarConfigRuletaDesastresOBS() {
             accion: "RULETA_DESASTRES_CONFIG_STATE",
             payload
         });
+    }
+    if (!window._restaurandoRuletaDesastres && typeof actualizarURLRuletaDesastres === "function") {
+        actualizarURLRuletaDesastres();
     }
 }
 window.sincronizarConfigRuletaDesastresOBS = sincronizarConfigRuletaDesastresOBS;
@@ -573,6 +594,10 @@ function comenzarRuletaDesastres() {
         if (divCuentaAtras) divCuentaAtras.style.display = "none";
         if (btnPausarReanudar) btnPausarReanudar.style.display = "none";
     }
+
+    if (!window._restaurandoRuletaDesastres && typeof actualizarURLRuletaDesastres === "function") {
+        actualizarURLRuletaDesastres();
+    }
 }
 
 function mostrarPantallaConfiguracionDesastres() {
@@ -588,6 +613,10 @@ function mostrarPantallaConfiguracionDesastres() {
 
     if (typeof window.emitirEventoOBS === "function" && !window.esSincronizacionOBS) {
         window.emitirEventoOBS("SYNC_ACCION", { accion: "RULETA_DESASTRES_SUBPANTALLA", payload: { subpantalla: "config" } });
+    }
+
+    if (!window._restaurandoRuletaDesastres && typeof actualizarURLRuletaDesastres === "function") {
+        actualizarURLRuletaDesastres();
     }
 }
 
@@ -613,10 +642,12 @@ function togglePausaReanudarRuletaDesastres() {
     }
 }
 
-function iniciarTemporizadorAutoDesastres() {
+function iniciarTemporizadorAutoDesastres(preservarTiradas = false) {
     enPeriodoPausa = false;
     temporizadorPausado = false;
-    tiradasRealizadas = 0;
+    if (!preservarTiradas) {
+        tiradasRealizadas = 0;
+    }
     ruletaDesastresTiempoRestante = EstadoRuletaDesastres.intervaloMinutos * 60;
     
     const btnPausarReanudar = document.getElementById("btnPausarReanudarRuleta");
@@ -858,12 +889,17 @@ function animarGiroRuletaDesastres(targetDesastre) {
                     hora: horaFmt,
                     icono: targetDesastre.moduloIcono || targetDesastre.resultado.icono || "🎡",
                     iconoHTML: targetDesastre.resultado.iconoHTML || null,
-                    descripcion: targetDesastre.resultado.descripcion
+                    descripcion: targetDesastre.resultado.descripcion,
+                    coloresProhibidos: targetDesastre.resultado.coloresProhibidos || null
                 });
 
                 renderizarHistorialDesastres();
                 ruletaDesastresAnimando = false;
                 if (btnGirar) btnGirar.disabled = false;
+
+                if (!window._restaurandoRuletaDesastres && typeof actualizarURLRuletaDesastres === "function") {
+                    actualizarURLRuletaDesastres();
+                }
             }, duracionMs + 40);
         });
     });
@@ -886,6 +922,8 @@ function ejecutarGiroDesastre(esManual) {
         moduloIcono: modulo.icono,
         resultado
     };
+
+    ultimoDesastre = targetDesastre;
 
     // Emitir a OBS (Master)
     if (typeof window.emitirEventoOBS === "function" && !window.esSincronizacionOBS) {
@@ -916,6 +954,10 @@ function renderizarHistorialDesastres() {
 function limpiarHistorialDesastres() {
     ruletaDesastresHistorial = [];
     renderizarHistorialDesastres();
+
+    if (!window._restaurandoRuletaDesastres && typeof actualizarURLRuletaDesastres === "function") {
+        actualizarURLRuletaDesastres();
+    }
 }
 
 // Función ejecutada remotamente por OBS Viewer
@@ -947,3 +989,373 @@ window.ejecutarSubpantallaRuletaDesastresObs = function(payload) {
         if (btnPausarReanudar) btnPausarReanudar.style.display = "none";
     }
 };
+
+// ─────────────────────────────────────────────────────────────────
+//  RULETA DE DESASTRES — Token v1 (persistencia URL/F5/compartir)
+// ─────────────────────────────────────────────────────────────────
+
+const IDS_MODULOS_DESASTRES = [
+    "perdidaDinero",
+    "gananciaDinero",
+    "cambiarColor",
+    "estiloArquitectonico",
+    "estiloInterior",
+    "anadirHabitacion",
+    "eliminarHabitacion",
+    "restringirPacks",
+    "reducirTiempo",
+    "cambiarObjetivo",
+    "eventosEspeciales",
+    "habilidadRequerida"
+];
+
+function extraerImgDeIconoHTML(iconoHTML) {
+    if (!iconoHTML || typeof iconoHTML !== "string") return null;
+    const match = iconoHTML.match(/src=["']([^"']+)["']/i);
+    return match ? match[1] : null;
+}
+
+function reconstruirIconoHTML(modId, imgSrc) {
+    if (!imgSrc) return null;
+    if (modId === "restringirPacks") {
+        return `<img src="${imgSrc}" alt="Pack" class="iconoPackResultado" style="width: 64px; height: 64px; object-fit: contain;">`;
+    }
+    return `<img src="${imgSrc}" alt="Habilidad" style="width:52px;height:52px;object-fit:contain;">`;
+}
+
+function codificarCategoriasActivas() {
+    return IDS_MODULOS_DESASTRES.map(id => EstadoRuletaDesastres.categoriasActivas[id] !== false ? "1" : "0").join("");
+}
+
+function decodificarCategoriasActivas(bits) {
+    if (typeof bits === "string" && bits.length === IDS_MODULOS_DESASTRES.length) {
+        IDS_MODULOS_DESASTRES.forEach((id, idx) => {
+            EstadoRuletaDesastres.categoriasActivas[id] = bits[idx] === "1";
+        });
+    } else if (Array.isArray(bits)) {
+        IDS_MODULOS_DESASTRES.forEach(id => {
+            EstadoRuletaDesastres.categoriasActivas[id] = bits.includes(id);
+        });
+    }
+}
+
+function formatearListaNombresColores(nombres) {
+    if (!nombres || nombres.length === 0) return "";
+    if (nombres.length === 1) return nombres[0];
+    if (nombres.length === 2) {
+        const segundo = String(nombres[1] || "").trim();
+        const nexo = (/^(i|hi|í|hí)/i.test(segundo)) ? "e" : "y";
+        return `${nombres[0]} ${nexo} ${segundo}`;
+    }
+    const primeros = nombres.slice(0, -1).join(", ");
+    const ultimo = String(nombres[nombres.length - 1] || "").trim();
+    const nexo = (/^(i|hi|í|hí)/i.test(ultimo)) ? "e" : "y";
+    return `${primeros} ${nexo} ${ultimo}`;
+}
+
+function construirResultadoCambiarColor(coloresElegidos) {
+    if (!Array.isArray(coloresElegidos) || coloresElegidos.length === 0) return null;
+    const esUno = coloresElegidos.length === 1;
+    const ids = coloresElegidos.map(c => typeof c === "string" ? c : (c.id || c.nombre));
+
+    // Construir swatches visuales reutilizando la clase de la Ruleta de Colores
+    const swatchesHTML = coloresElegidos.map(c => {
+        const nombre = typeof c === "string" ? c : (c.nombre || c.id);
+        const hex    = (typeof c === "object" && c.hex) ? c.hex : "#CCCCCC";
+        return `<span class="chipColorRuleta__muestra" style="background:${hex};width:18px;height:18px;vertical-align:middle;display:inline-block;margin-right:3px;" title="${nombre}"></span>${nombre}`;
+    }).join("&nbsp;&nbsp;");
+
+    const prefijo = esUno ? "Color prohibido:" : "Colores prohibidos:";
+    const descripcion = `${prefijo} ${swatchesHTML}`;
+    const detalle = esUno
+        ? "No puedes utilizar este color hasta el siguiente desastre."
+        : "No puedes utilizar estos colores hasta el siguiente desastre.";
+
+    return {
+        titulo: esUno ? "Color Prohibido" : "Colores Prohibidos",
+        descripcion,
+        detalle,
+        coloresProhibidos: ids
+    };
+}
+
+function construirResultadoCambiarColorDesdeIds(coloresIds) {
+    if (!Array.isArray(coloresIds) || coloresIds.length === 0) return null;
+    const catalogo = (typeof obtenerColoresRuleta === "function") ? obtenerColoresRuleta() : [];
+    const mapa = new Map(catalogo.map(c => [c.id, c]));
+    const objetos = coloresIds.map(id => {
+        const entrada = mapa.get(id);
+        return entrada ? { id: entrada.id, nombre: entrada.nombre, hex: entrada.hex } : { id, nombre: id, hex: "#CCCCCC" };
+    });
+    return construirResultadoCambiarColor(objetos);
+}
+
+/**
+ * Renderiza de forma inmediata y estática el desastre en el visor central,
+ * sin animación de 2,8s, sin sonidos y sin emitir eventos OBS.
+ */
+function fijarDesastreVisible(targetDesastre) {
+    if (!targetDesastre || !targetDesastre.resultado) return;
+
+    ultimoDesastre = targetDesastre;
+
+    const bienvenida = document.getElementById("desastreBienvenida");
+    const animacion = document.getElementById("desastreAnimacion");
+    const pista = document.getElementById("desastreAnimacionPista");
+
+    if (bienvenida) bienvenida.style.display = "none";
+    if (animacion) animacion.style.display = "block";
+
+    if (!pista) return;
+
+    pista.innerHTML = crearItemDesastreHTML(targetDesastre, 0, true);
+
+    const animHeight = animacion.getBoundingClientRect().height || 270;
+    const itemHeight = 124;
+    const startY = (animHeight - itemHeight) / 2;
+
+    pista.style.transition = "none";
+    pista.style.transform = "translateY(" + startY + "px)";
+
+    const itemLanded = pista.querySelector(".desastreAnim-item");
+    if (itemLanded) {
+        itemLanded.classList.add("desastreAnim-item--elegida");
+    }
+}
+
+/**
+ * Serializa el estado completo de la Ruleta de Desastres a un token Base64URL.
+ */
+function serializarRuletaDesastresV1() {
+    try {
+        const pantallaJuego = document.getElementById("pantallaJuegoRuletaDesastres");
+        const enJuego = pantallaJuego && pantallaJuego.style.display !== "none";
+
+        const payload = {
+            v: 1,
+            s: enJuego ? 1 : 0,
+            c: {
+                m: EstadoRuletaDesastres.modo === "auto" ? "a" : "m",
+                min: EstadoRuletaDesastres.dineroMin,
+                max: EstadoRuletaDesastres.dineroMax,
+                int: EstadoRuletaDesastres.intervaloMinutos,
+                pau: EstadoRuletaDesastres.pausaMinutos,
+                tir: EstadoRuletaDesastres.tiradasAutoMax,
+                cats: codificarCategoriasActivas()
+            },
+            t: tiradasRealizadas
+        };
+
+        // Último desastre visible en el visor
+        if (ultimoDesastre && ultimoDesastre.resultado) {
+            const res = ultimoDesastre.resultado;
+            const imgSrc = extraerImgDeIconoHTML(res.iconoHTML);
+            payload.d = {
+                m: ultimoDesastre.modId,
+                t: res.titulo || "",
+                desc: res.descripcion || "",
+                det: res.detalle || "",
+                ...(res.coloresProhibidos ? { cp: res.coloresProhibidos } : {}),
+                ...(imgSrc ? { img: imgSrc } : {})
+            };
+        }
+
+        // Historial completo
+        if (Array.isArray(ruletaDesastresHistorial) && ruletaDesastresHistorial.length > 0) {
+            payload.h = ruletaDesastresHistorial.map(item => {
+                const imgSrc = extraerImgDeIconoHTML(item.iconoHTML);
+                return {
+                    hora: item.hora || "",
+                    desc: item.descripcion || "",
+                    ic: item.icono || "🎡",
+                    ...(item.coloresProhibidos ? { cp: item.coloresProhibidos } : {}),
+                    ...(imgSrc ? { img: imgSrc } : {})
+                };
+            });
+        }
+
+        const json = JSON.stringify(payload);
+        return window.codificarBase64URL(json);
+    } catch (e) {
+        console.error("[RuletaDesastresV1] Error al serializar:", e);
+        return null;
+    }
+}
+
+/**
+ * Actualiza la URL del navegador con el token v1 sin recargar ni alterar el histórico.
+ */
+function actualizarURLRuletaDesastres() {
+    if (window._restaurandoRuletaDesastres) return;
+
+    const token = serializarRuletaDesastresV1();
+    if (token && typeof actualizarHashURL === "function") {
+        actualizarHashURL("ruleta-desastres/v1/" + token);
+    }
+}
+
+/**
+ * Restaura el estado de la Ruleta de Desastres a partir de un token v1.
+ * @param {string} token
+ * @returns {boolean} true si la restauración tuvo éxito
+ */
+function restaurarRuletaDesastresV1(token) {
+    try {
+        const json = window.decodificarBase64URL(token);
+        const payload = JSON.parse(json);
+
+        if (!payload || payload.v !== 1) return false;
+
+        window._restaurandoRuletaDesastres = true;
+
+        // 1. Detener cualquier intervalo que pudiera estar corriendo
+        if (ruletaDesastresInterval) {
+            clearInterval(ruletaDesastresInterval);
+            ruletaDesastresInterval = null;
+        }
+
+        // 2. Restaurar configuración
+        const cfg = payload.c || {};
+        EstadoRuletaDesastres.modo = cfg.m === "a" ? "auto" : "manual";
+        EstadoRuletaDesastres.dineroMin = typeof cfg.min === "number" ? cfg.min : 5000;
+        EstadoRuletaDesastres.dineroMax = typeof cfg.max === "number" ? cfg.max : 25000;
+        EstadoRuletaDesastres.intervaloMinutos = typeof cfg.int === "number" ? cfg.int : 5;
+        EstadoRuletaDesastres.pausaMinutos = typeof cfg.pau === "number" ? cfg.pau : 1;
+        EstadoRuletaDesastres.tiradasAutoMax = typeof cfg.tir === "number" ? cfg.tir : 0;
+
+        if (cfg.cats) {
+            decodificarCategoriasActivas(cfg.cats);
+        }
+
+        // Sincronizar inputs del DOM
+        const radioManual = document.getElementById("modoManualRuletaDesastres");
+        const radioAuto = document.getElementById("modoAutoRuletaDesastres");
+        if (EstadoRuletaDesastres.modo === "auto") {
+            if (radioAuto) radioAuto.checked = true;
+        } else {
+            if (radioManual) radioManual.checked = true;
+        }
+
+        const setVal = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = val; };
+        setVal("inputDesastreDineroMin", EstadoRuletaDesastres.dineroMin);
+        setVal("inputDesastreDineroMax", EstadoRuletaDesastres.dineroMax);
+        setVal("inputDesastreIntervalo", EstadoRuletaDesastres.intervaloMinutos);
+        setVal("inputDesastrePausa", EstadoRuletaDesastres.pausaMinutos);
+        setVal("inputDesastreTiradasAuto", EstadoRuletaDesastres.tiradasAutoMax);
+
+        actualizarVisibilidadModoAuto();
+        actualizarVisibilidadSeccionDinero();
+        renderizarBotonesCategorias();
+
+        // 3. Tiradas realizadas
+        tiradasRealizadas = typeof payload.t === "number" ? payload.t : 0;
+
+        // 4. Reconstruir historial completo
+        if (Array.isArray(payload.h)) {
+            ruletaDesastresHistorial = payload.h.map(item => {
+                const iconoHTML = item.img ? `<img src="${item.img}" style="width:52px;height:52px;object-fit:contain;">` : null;
+                return {
+                    hora: item.hora || "",
+                    icono: item.ic || "🎡",
+                    iconoHTML: iconoHTML,
+                    descripcion: item.desc || "",
+                    coloresProhibidos: item.cp || null
+                };
+            });
+        } else {
+            ruletaDesastresHistorial = [];
+        }
+        renderizarHistorialDesastres();
+
+        // 5. Abrir la ventana
+        if (typeof abrirVentana === "function") {
+            abrirVentana("ventanaRuletaDesastres", false);
+        }
+
+        const pantallaConfig = document.getElementById("pantallaConfigRuletaDesastres");
+        const pantallaJuego = document.getElementById("pantallaJuegoRuletaDesastres");
+        const divCuentaAtras = document.getElementById("divCuentaAtrasRuletaDesastres");
+        const btnPausarReanudar = document.getElementById("btnPausarReanudarRuleta");
+
+        // 6. Subpantalla: 0 = config, 1 = juego
+        const enJuego = payload.s === 1;
+        if (enJuego) {
+            if (pantallaConfig) pantallaConfig.style.display = "none";
+            if (pantallaJuego) pantallaJuego.style.display = "block";
+
+            // Si hay desastre actual congelado, renderizarlo directamente
+            if (payload.d) {
+                const dData = payload.d;
+                const modulo = ModulosDesastres[dData.m];
+                const iconoHTML = dData.img ? reconstruirIconoHTML(dData.m, dData.img) : null;
+                let resObj = {
+                    titulo: dData.t || "",
+                    descripcion: dData.desc || "",
+                    detalle: dData.det || "",
+                    coloresProhibidos: dData.cp || null,
+                    iconoHTML: iconoHTML
+                };
+
+                // Si es cambiarColor y tiene cp pero no desc o det, reconstruir sin Math.random()
+                if (dData.m === "cambiarColor" && dData.cp && (!dData.desc || !dData.det)) {
+                    const reconstruido = construirResultadoCambiarColorDesdeIds(dData.cp);
+                    if (reconstruido) {
+                        resObj = { ...resObj, ...reconstruido };
+                    }
+                }
+
+                const targetDesastre = {
+                    modId: dData.m,
+                    moduloIcono: modulo ? modulo.icono : "🎡",
+                    resultado: resObj
+                };
+                fijarDesastreVisible(targetDesastre);
+            } else {
+                ultimoDesastre = null;
+                const bienvenida = document.getElementById("desastreBienvenida");
+                const animacion = document.getElementById("desastreAnimacion");
+                if (bienvenida) bienvenida.style.display = "block";
+                if (animacion) animacion.style.display = "none";
+            }
+
+            // Modo automático o manual en pantalla de juego
+            if (EstadoRuletaDesastres.modo === "auto") {
+                if (divCuentaAtras) divCuentaAtras.style.display = "flex";
+
+                // Si ya se completaron las tiradas máximas:
+                if (EstadoRuletaDesastres.tiradasAutoMax > 0 && tiradasRealizadas >= EstadoRuletaDesastres.tiradasAutoMax) {
+                    actualizarLabelEstadoTimer("✅ Tiradas completadas");
+                    const display = document.getElementById("displayCuentaAtrasDesastres");
+                    if (display) display.textContent = "FIN";
+                    if (btnPausarReanudar) btnPausarReanudar.style.display = "none";
+                } else {
+                    if (btnPausarReanudar) btnPausarReanudar.style.display = "inline-block";
+                    // Iniciar temporizador con el intervalo completo respetando tiradasRealizadas
+                    iniciarTemporizadorAutoDesastres(true);
+                }
+            } else {
+                if (divCuentaAtras) divCuentaAtras.style.display = "none";
+                if (btnPausarReanudar) btnPausarReanudar.style.display = "none";
+            }
+        } else {
+            if (pantallaConfig) pantallaConfig.style.display = "block";
+            if (pantallaJuego) pantallaJuego.style.display = "none";
+            if (btnPausarReanudar) btnPausarReanudar.style.display = "none";
+        }
+
+        window._restaurandoRuletaDesastres = false;
+        return true;
+    } catch (e) {
+        console.error("[RuletaDesastresV1] Error al restaurar:", e);
+        window._restaurandoRuletaDesastres = false;
+        return false;
+    }
+}
+
+window.fijarDesastreVisible = fijarDesastreVisible;
+window.serializarRuletaDesastresV1 = serializarRuletaDesastresV1;
+window.actualizarURLRuletaDesastres = actualizarURLRuletaDesastres;
+window.restaurarRuletaDesastresV1 = restaurarRuletaDesastresV1;
+
+console.log("✔ ruleta-desastres (token v1) cargado");
+

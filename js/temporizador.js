@@ -74,6 +74,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 payload: { minutos: val }
             });
         }
+
+        if (window.ventanaActual === "ventanaTemporizador" && typeof actualizarHashURL === "function" && typeof serializarTemporizadorV1 === "function") {
+            const token = serializarTemporizadorV1({ minutos: val });
+            if (token) actualizarHashURL("temporizador/v1/" + token);
+        }
     }
 
     // Exponer para que OBS pueda sincronizar el valor del selector
@@ -348,4 +353,64 @@ document.addEventListener("DOMContentLoaded", () => {
             if (botonDetener) botonDetener.click();
         }
     };
+
+    window.reiniciarTemporizadorUI = reiniciarUI;
 });
+
+// =========================================================
+// SERIALIZACIÓN Y RESTAURACIÓN DE TOKEN v1 (#temporizador/v1/<token>)
+// =========================================================
+
+function serializarTemporizadorV1(estado) {
+    let mins = 15;
+    if (estado && typeof estado.minutos === "number") {
+        mins = estado.minutos;
+    } else {
+        const input = document.getElementById("inputMinutosTemporizador");
+        if (input) mins = parseInt(input.value, 10) || 15;
+    }
+    try {
+        const payload = { v: 1, m: mins };
+        const jsonStr = JSON.stringify(payload);
+        return typeof window.codificarBase64URL === "function"
+            ? window.codificarBase64URL(jsonStr)
+            : null;
+    } catch (e) {
+        console.error("Error al serializar temporizador:", e);
+        return null;
+    }
+}
+window.serializarTemporizadorV1 = serializarTemporizadorV1;
+
+function restaurarTemporizadorV1(token) {
+    if (!token || typeof token !== "string") return false;
+    try {
+        if (typeof window.decodificarBase64URL !== "function") return false;
+        const jsonStr = window.decodificarBase64URL(token.trim());
+        const payload = JSON.parse(jsonStr);
+
+        if (!payload || payload.v !== 1 || typeof payload.m !== "number") return false;
+
+        const minutos = payload.m;
+
+        if (typeof abrirVentana === "function") {
+            abrirVentana("ventanaTemporizador", false);
+        }
+
+        // Restablecer interfaz a modo configuración
+        if (typeof window.reiniciarTemporizadorUI === "function") {
+            window.reiniciarTemporizadorUI();
+        }
+
+        const inputMinutos = document.getElementById("inputMinutosTemporizador");
+        if (inputMinutos) {
+            inputMinutos.value = minutos;
+        }
+
+        return true;
+    } catch (e) {
+        console.error("Error al restaurar temporizador:", e);
+        return false;
+    }
+}
+window.restaurarTemporizadorV1 = restaurarTemporizadorV1;

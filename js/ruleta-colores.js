@@ -1,18 +1,28 @@
+// Estado global del módulo (mismo patrón que habilidades.js / packs-azar.js)
+const RULETA_COLOR = {
+    acelerado: false
+};
+
 document.addEventListener("DOMContentLoaded", () => {
     const botonRuleta = document.getElementById("botonRuletaColor");
     if (botonRuleta) {
         botonRuleta.addEventListener("click", () => {
             abrirVentana("ventanaRuletaColor");
-            inicializarRuletaColor();
+            inicializarRuletaColor(true);
         });
     }
 
+    // Botón Acelerar (igual que habBtnAcelerar en habilidades.js)
+    document.getElementById("ruletaColorBtnAcelerar")?.addEventListener("click", () => {
+        _ruletaColorAlternarAcelerar();
+    });
+
     document.addEventListener("datosCargados", () => {
-        inicializarRuletaColor();
+        inicializarRuletaColor(false);
     });
 });
 
-function inicializarRuletaColor() {
+function inicializarRuletaColor(forzarLimpieza = false) {
     const wheel = document.getElementById("ruletaColorWheel");
     const mensaje = document.getElementById("mensajeRuletaColor");
     const resultados = document.getElementById("resultadoRuletaColor");
@@ -60,11 +70,19 @@ function inicializarRuletaColor() {
     }
 
     wheel.innerHTML = construirSVGRuleta(colores);
-    mensaje.textContent = `Listo para girar con ${colores.length} colores disponibles.`;
-    resultados.innerHTML = "";
     botonGirar.disabled = false;
-
     botonGirar.onclick = () => girarRuletaColor(colores, inputTiradas, mensaje, resultados, botonGirar, wheel);
+
+    const wrapper = wheel.closest(".ruletaColorWheelWrapper") || wheel.parentElement;
+    if (wrapper) {
+        wrapper.classList.remove("ruletaColorWheelWrapper--girando", "ruletaColorWheelWrapper--acelerado");
+    }
+
+    const hayResultado = resultados.children.length > 0 || (window.coloresUltimoResultado && window.coloresUltimoResultado.colores && window.coloresUltimoResultado.colores.length > 0);
+    if (forzarLimpieza || !hayResultado) {
+        mensaje.textContent = `Listo para girar con ${colores.length} colores disponibles.`;
+        resultados.innerHTML = "";
+    }
 }
 
 function girarRuletaColor(colores, inputTiradas, mensaje, resultados, botonGirar, wheel) {
@@ -95,16 +113,32 @@ function girarRuletaColor(colores, inputTiradas, mensaje, resultados, botonGirar
 
 function animarRuletaColor(tiradas, cantidad, mensaje, resultados, botonGirar, wheel) {
     if (!mensaje || !resultados || !botonGirar || !wheel) return;
-    
+
     mensaje.textContent = "Girando...";
     resultados.innerHTML = "";
     botonGirar.disabled = true;
+
+    // Resetear acelerador al comenzar cada secuencia de tiradas
+    RULETA_COLOR.acelerado = false;
+    _ruletaColorActualizarUIAcelerar(false);
+
+    // Activar halo verde de giro en el wrapper de la rueda
+    const wrapper = wheel.closest(".ruletaColorWheelWrapper") || wheel.parentElement;
+    if (wrapper) {
+        wrapper.classList.add("ruletaColorWheelWrapper--girando");
+        wrapper.classList.remove("ruletaColorWheelWrapper--acelerado");
+    }
+
+    // Mostrar botón Acelerar si hay más de una tirada (igual que habilidades.js)
+    const acelerarWrap = document.getElementById("ruletaColorAcelerarWrap");
+    if (acelerarWrap) acelerarWrap.style.display = cantidad > 1 ? "flex" : "none";
 
     let indice = 0;
     let rotacionActual = parseFloat(wheel.dataset.rotacion || "0");
 
     function siguienteTirada() {
         if (indice >= tiradas.length) {
+            if (wrapper) wrapper.classList.remove("ruletaColorWheelWrapper--girando", "ruletaColorWheelWrapper--acelerado");
             botonGirar.disabled = false;
             mensaje.textContent = `¡Listo! Has tirado ${cantidad} vez/veces.`;
             return;
@@ -127,8 +161,14 @@ function animarRuletaColor(tiradas, cantidad, mensaje, resultados, botonGirar, w
         const deltaToTarget = (targetRotation - currentNormalized + 360) % 360;
         const rotacionObjetivo = rotacionActual + (360 * 6) + deltaToTarget;
 
+        // Duración condicionada por el flag acelerado (mismo criterio que carrusel-random.js)
+        const esAcel = RULETA_COLOR.acelerado;
+        const duracionCss  = esAcel ? "0.6s" : "4.2s";
+        const duracionMs   = esAcel ? 650   : 4300;
+        const pausaEntreMs = esAcel ? 220   : 900;
+
         wheel.innerHTML = construirSVGRuleta(wheelColors);
-        wheel.style.transition = "transform 4.2s cubic-bezier(0.22, 1, 0.36, 1)";
+        wheel.style.transition = `transform ${duracionCss} cubic-bezier(0.22, 1, 0.36, 1)`;
         wheel.style.transform = `rotate(${rotacionObjetivo}deg)`;
         rotacionActual = rotacionObjetivo;
         wheel.dataset.rotacion = String(rotacionActual);
@@ -145,25 +185,58 @@ function animarRuletaColor(tiradas, cantidad, mensaje, resultados, botonGirar, w
             indice += 1;
 
             if (indice < tiradas.length) {
-                window.setTimeout(siguienteTirada, 900);
+                window.setTimeout(siguienteTirada, pausaEntreMs);
             } else {
+                // Desactivar halo al finalizar todas las tiradas
+                if (wrapper) wrapper.classList.remove("ruletaColorWheelWrapper--girando", "ruletaColorWheelWrapper--acelerado");
+                // Ocultar botón Acelerar al terminar
+                if (acelerarWrap) acelerarWrap.style.display = "none";
                 botonGirar.disabled = false;
                 mensaje.textContent = `¡Resultados listos!`;
+
+                // Guardar resultado y actualizar URL
+                const coloresElegidos = tiradas.map(t => t.resultado);
+                window.coloresUltimoResultado = { cantidad, colores: coloresElegidos };
+                if (typeof actualizarHashURL === "function" && typeof serializarRuletaColoresV1 === "function") {
+                    const token = serializarRuletaColoresV1(window.coloresUltimoResultado);
+                    if (token) actualizarHashURL("ruleta-colores/v1/" + token);
+                }
             }
-        }, 4300);
+        }, duracionMs);
     }
 
     siguienteTirada();
 }
 
+// ── Control de Aceleración (mismo patrón que habilidades.js) ──────────────
+function _ruletaColorAlternarAcelerar() {
+    RULETA_COLOR.acelerado = true;
+    _ruletaColorActualizarUIAcelerar(true);
+    // Cambiar halo de verde a naranja inmediatamente
+    const wrapper = document.querySelector(".ruletaColorWheelWrapper");
+    if (wrapper) {
+        wrapper.classList.remove("ruletaColorWheelWrapper--girando");
+        wrapper.classList.add("ruletaColorWheelWrapper--acelerado");
+    }
+    // El botón es puramente local: no emite evento OBS adicional.
+    // Los resultados ya fueron precalculados y emitidos en girarRuletaColor.
+}
+
+function _ruletaColorActualizarUIAcelerar(activo) {
+    const btn = document.getElementById("ruletaColorBtnAcelerar");
+    const txt = document.getElementById("ruletaColorTextoAcelerar");
+    if (btn) btn.classList.toggle("habBtnAcelerar--activo", !!activo);
+    if (txt) txt.textContent = activo ? "Acelerado" : "Acelerar";
+}
+
 function obtenerColoresRuleta() {
     const fallback = [
-        { nombre: "Azul", hex: "#2E86DE" },
-        { nombre: "Rojo", hex: "#E74C3C" },
-        { nombre: "Verde", hex: "#2ECC71" },
-        { nombre: "Amarillo", hex: "#F1C40F" },
-        { nombre: "Morado", hex: "#9B59B6" },
-        { nombre: "Naranja", hex: "#E67E22" }
+        { id: "C001", nombre: "Azul", hex: "#2E86DE" },
+        { id: "C002", nombre: "Rojo", hex: "#E74C3C" },
+        { id: "C003", nombre: "Verde", hex: "#2ECC71" },
+        { id: "C004", nombre: "Amarillo", hex: "#F1C40F" },
+        { id: "C005", nombre: "Morado", hex: "#9B59B6" },
+        { id: "C006", nombre: "Naranja", hex: "#E67E22" }
     ];
 
     const filas = Array.isArray(database?.colores) ? database.colores : [];
@@ -180,7 +253,9 @@ function normalizarColor(fila, index) {
     if (Array.isArray(fila)) {
         const nombre = (fila[0] || "").toString().trim();
         const hex = (fila[1] || "").toString().trim();
+        const id = (fila[2] || "").toString().trim() || `C${index + 1}`;
         return {
+            id: id,
             nombre: nombre || `Color ${index + 1}`,
             hex: normalizarHex(hex) || "#CCCCCC",
             index
@@ -189,8 +264,9 @@ function normalizarColor(fila, index) {
 
     const texto = fila.toString().trim();
     return {
+        id: fila.id || `C${index + 1}`,
         nombre: texto || `Color ${index + 1}`,
-        hex: "#CCCCCC",
+        hex: normalizarHex(fila.hex) || "#CCCCCC",
         index
     };
 }
@@ -229,7 +305,7 @@ function construirSVGRuleta(colores) {
 }
 
 function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
-    const angleInRadians = (angleInDegrees - 90) * Math.PI / 180;
+    const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
     return {
         x: centerX + (radius * Math.cos(angleInRadians)),
         y: centerY + (radius * Math.sin(angleInRadians))
@@ -270,3 +346,101 @@ window.ejecutarGiroRuletaColorObs = function(payload) {
     
     animarRuletaColor(payload.tiradas, payload.cantidad, mensaje, resultados, botonGirar, wheel);
 };
+
+// =========================================================
+// SERIALIZACIÓN Y RESTAURACIÓN DE TOKEN v1 (#ruleta-colores/v1/<token>)
+// =========================================================
+
+function serializarRuletaColoresV1(estado) {
+    if (!estado || !estado.colores || !Array.isArray(estado.colores)) return null;
+    try {
+        const payload = {
+            v: 1,
+            c: estado.cantidad || estado.colores.length || 1,
+            ids: estado.colores.map(col => col.id || col.nombre)
+        };
+        const jsonStr = JSON.stringify(payload);
+        return typeof window.codificarBase64URL === "function"
+            ? window.codificarBase64URL(jsonStr)
+            : null;
+    } catch (e) {
+        console.error("Error al serializar ruleta de colores a token:", e);
+        return null;
+    }
+}
+window.serializarRuletaColoresV1 = serializarRuletaColoresV1;
+
+function restaurarRuletaColoresV1(token) {
+    if (!token || typeof token !== "string") return false;
+    try {
+        if (typeof window.decodificarBase64URL !== "function") return false;
+        const jsonStr = window.decodificarBase64URL(token.trim());
+        const payload = JSON.parse(jsonStr);
+
+        if (!payload || payload.v !== 1 || !Array.isArray(payload.ids)) return false;
+
+        const cantidad = payload.c || payload.ids.length;
+        const ids = payload.ids;
+
+        if (typeof abrirVentana === "function") {
+            abrirVentana("ventanaRuletaColor", false);
+        }
+
+        // Inicializar ruleta SVG y botón sin limpiar resultados
+        inicializarRuletaColor(false);
+
+        // 1. Ajustar input de tiradas
+        actualizarTiradasRuletaColor(cantidad, false);
+
+        // 2. Resolver colores desde database.colores
+        const coloresDisponibles = obtenerColoresRuleta();
+        const coloresRecuperados = ids.map((id, idx) => {
+            const encontrado = coloresDisponibles.find(c => c.id === id || c.nombre.toLowerCase() === id.toLowerCase());
+            if (encontrado) return encontrado;
+            // Buscar en filas crudas de database.colores si existiera
+            const fila = (database?.colores || []).find(f => (Array.isArray(f) && (f[2] === id || f[0] === id)));
+            if (fila && Array.isArray(fila)) {
+                return {
+                    id: fila[2] || id,
+                    nombre: fila[0] || `Color ${idx + 1}`,
+                    hex: normalizarHex(fila[1]) || "#CCCCCC"
+                };
+            }
+            return {
+                id: id,
+                nombre: `Color (${id})`,
+                hex: "#CCCCCC"
+            };
+        });
+
+        // 3. Renderizar resultado estático en el DOM sin animación
+        const resultados = document.getElementById("resultadoRuletaColor");
+        const mensaje = document.getElementById("mensajeRuletaColor");
+        const botonGirar = document.getElementById("botonGirarRuleta");
+
+        if (resultados) {
+            resultados.innerHTML = "";
+            coloresRecuperados.forEach(col => {
+                const chip = document.createElement("div");
+                chip.className = "chipColorRuleta";
+                chip.innerHTML = `<span class="chipColorRuleta__muestra" style="background:${col.hex}" data-tooltip="${col.nombre}"></span>`;
+                resultados.appendChild(chip);
+            });
+        }
+
+        if (mensaje) {
+            mensaje.textContent = `¡Resultados listos!`;
+        }
+
+        if (botonGirar) {
+            botonGirar.disabled = false;
+        }
+
+        window.coloresUltimoResultado = { cantidad, colores: coloresRecuperados };
+        return true;
+    } catch (e) {
+        console.error("Error al restaurar ruleta de colores:", e);
+        return false;
+    }
+}
+window.restaurarRuletaColoresV1 = restaurarRuletaColoresV1;

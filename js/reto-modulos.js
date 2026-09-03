@@ -165,10 +165,11 @@ const RetoModulos = {
         titulo: "🏛 Estilo Exterior",
         generar: function (contexto) {
             const lista = database.estilosArquitectonicos || [];
-            if (lista.length === 0) return { texto: "Cualquiera" };
+            if (lista.length === 0) return { id: null, nombre: "Cualquiera", texto: "Cualquiera" };
             const fila = lista[Math.floor(Math.random() * lista.length)];
             const nombre = (Array.isArray(fila) ? fila[0] : fila) || "Cualquiera";
-            return { texto: nombre };
+            const id = (Array.isArray(fila) && fila[2]) ? String(fila[2]).trim() : null;
+            return { id: id, nombre: nombre, texto: nombre };
         }
     },
 
@@ -178,10 +179,11 @@ const RetoModulos = {
         titulo: "🛋 Estilo Interior",
         generar: function (contexto) {
             const lista = database.estilosDecoracion || [];
-            if (lista.length === 0) return { texto: "Cualquiera" };
+            if (lista.length === 0) return { id: null, nombre: "Cualquiera", texto: "Cualquiera" };
             const fila = lista[Math.floor(Math.random() * lista.length)];
             const nombre = (Array.isArray(fila) ? fila[0] : fila) || "Cualquiera";
-            return { texto: nombre };
+            const id = (Array.isArray(fila) && fila[2]) ? String(fila[2]).trim() : null;
+            return { id: id, nombre: nombre, texto: nombre };
         }
     },
 
@@ -405,7 +407,8 @@ const RetoModulos = {
                 const fila = copia.splice(idx, 1)[0];
                 const nombre = (Array.isArray(fila) ? fila[0] : fila) || "Color";
                 const hex = (Array.isArray(fila) && fila[1]) ? fila[1].trim() : "#CCCCCC";
-                seleccionados.push({ nombre, hex });
+                const id = (Array.isArray(fila) && fila[2]) ? String(fila[2]).trim() : null;
+                seleccionados.push({ id: id, nombre: nombre, hex: hex });
             }
 
             const nombres = seleccionados.map(c => c.nombre).join(", ");

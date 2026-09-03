@@ -165,6 +165,13 @@ function _habTirar() {
 
     HAB.acelerado = false;
 
+    // Guardar resultado y actualizar URL
+    window.habUltimoResultado = { cantidad, elegidas };
+    if (typeof actualizarHashURL === "function" && typeof serializarHabilidadesAzarV1 === "function") {
+        const token = serializarHabilidadesAzarV1(window.habUltimoResultado);
+        if (token) actualizarHashURL("habilidades-azar/v1/" + token);
+    }
+
     if (typeof window.emitirEventoOBS === 'function') {
         window.emitirEventoOBS('TIRAR_HABILIDADES', {
             elegidas: elegidas,
@@ -351,3 +358,69 @@ window.restaurarResultadoHabilidadesObs = function (data) {
 
 window._habFiltrarHabilidades = _habFiltrarHabilidades;
 window._habInicializarGenerador = _habInicializarGenerador;
+
+// =========================================================
+// SERIALIZACIÓN Y RESTAURACIÓN DE TOKEN v1 (#habilidades-azar/v1/<token>)
+// =========================================================
+
+function serializarHabilidadesAzarV1(estado) {
+    if (!estado || !estado.elegidas || !Array.isArray(estado.elegidas)) return null;
+    try {
+        const payload = {
+            v: 1,
+            c: estado.cantidad || estado.elegidas.length || 1,
+            ids: estado.elegidas.map(f => (Array.isArray(f) ? (f[2] || f[0]) : (f.id || f.nombre)))
+        };
+        const jsonStr = JSON.stringify(payload);
+        return typeof window.codificarBase64URL === "function"
+            ? window.codificarBase64URL(jsonStr)
+            : null;
+    } catch (e) {
+        console.error("Error al serializar habilidades al azar:", e);
+        return null;
+    }
+}
+window.serializarHabilidadesAzarV1 = serializarHabilidadesAzarV1;
+
+function restaurarHabilidadesAzarV1(token) {
+    if (!token || typeof token !== "string") return false;
+    try {
+        if (typeof window.decodificarBase64URL !== "function") return false;
+        const jsonStr = window.decodificarBase64URL(token.trim());
+        const payload = JSON.parse(jsonStr);
+
+        if (!payload || payload.v !== 1 || !Array.isArray(payload.ids)) return false;
+
+        const cantidad = payload.c || payload.ids.length;
+        const ids = payload.ids;
+
+        if (typeof abrirVentana === "function") {
+            abrirVentana("ventanaHabilidadesGenerador", false);
+        }
+
+        // 1. Ajustar cantidad en input
+        const input = document.getElementById("habCantidad");
+        if (input) input.value = cantidad;
+        HAB.cantidad = cantidad;
+
+        // 2. Resolver habilidades desde database.habilidades por ID estable
+        const filas = Array.isArray(database?.habilidades) ? database.habilidades : [];
+        const elegidasRecuperadas = ids.map(id => {
+            const encontrada = filas.find(f => Array.isArray(f) && ((f[2] || "").trim() === id || (f[0] || "").trim() === id));
+            if (encontrada) return encontrada;
+            return [id, "Juego Base", id];
+        });
+
+        // 3. Renderizar vista final estática sin animación usando la función oficial existente
+        if (typeof window.restaurarResultadoHabilidadesObs === "function") {
+            window.restaurarResultadoHabilidadesObs({ elegidas: elegidasRecuperadas });
+        }
+
+        window.habUltimoResultado = { cantidad, elegidas: elegidasRecuperadas };
+        return true;
+    } catch (e) {
+        console.error("Error al restaurar habilidades al azar:", e);
+        return false;
+    }
+}
+window.restaurarHabilidadesAzarV1 = restaurarHabilidadesAzarV1;

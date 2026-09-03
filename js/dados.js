@@ -117,6 +117,13 @@ function animarTiradaDados(valoresTotales, numDados, numTiradas, mensaje, result
         if (tiradaActual >= numTiradas) {
             botonTirar.disabled = false;
             mensaje.textContent = `¡Listo! Has tirado ${numTiradas} vez/veces.`;
+
+            // Guardar resultado y actualizar URL
+            window.dadosUltimoResultado = { numDados, numTiradas, valoresTotales };
+            if (typeof actualizarHashURL === "function" && typeof serializarDadosV1 === "function") {
+                const token = serializarDadosV1(window.dadosUltimoResultado);
+                if (token) actualizarHashURL("dados/v1/" + token);
+            }
             return;
         }
 
@@ -209,5 +216,103 @@ window.ejecutarTiradaDadosObs = function(payload) {
     
     animarTiradaDados(payload.valoresTotales, payload.numDados, payload.numTiradas, mensaje, resultado, botonTirar);
 };
+
+// =========================================================
+// SERIALIZACIÓN Y RESTAURACIÓN DE TOKEN v1 (#dados/v1/<token>)
+// =========================================================
+
+function serializarDadosV1(estado) {
+    if (!estado || !estado.valoresTotales || !Array.isArray(estado.valoresTotales)) return null;
+    try {
+        const payload = {
+            v: 1,
+            d: estado.numDados || 1,
+            t: estado.numTiradas || 1,
+            r: estado.valoresTotales
+        };
+        const jsonStr = JSON.stringify(payload);
+        return typeof window.codificarBase64URL === "function"
+            ? window.codificarBase64URL(jsonStr)
+            : null;
+    } catch (e) {
+        console.error("Error al serializar dados a token:", e);
+        return null;
+    }
+}
+window.serializarDadosV1 = serializarDadosV1;
+
+function restaurarDadosV1(token) {
+    if (!token || typeof token !== "string") return false;
+    try {
+        if (typeof window.decodificarBase64URL !== "function") return false;
+        const jsonStr = window.decodificarBase64URL(token.trim());
+        const payload = JSON.parse(jsonStr);
+
+        if (!payload || payload.v !== 1 || !Array.isArray(payload.r)) return false;
+
+        const numDados = payload.d || 1;
+        const numTiradas = payload.t || payload.r.length;
+        const valoresTotales = payload.r;
+
+        if (typeof abrirVentana === "function") {
+            abrirVentana("ventanaDados", false);
+        }
+
+        // 1. Ajustar selector de dados en la UI
+        const botonesCantidad = document.querySelectorAll("#cantidadDadosOpciones .opcionFiltro");
+        botonesCantidad.forEach(btn => {
+            const esSeleccionado = parseInt(btn.dataset.dados, 10) === numDados;
+            btn.classList.toggle("seleccionada", esSeleccionado);
+        });
+
+        // 2. Ajustar input de tiradas
+        actualizarTiradasDados(numTiradas, false);
+
+        // 3. Renderizar resultado estático inmediatamente sin animación
+        const mensaje = document.getElementById("mensajeDados");
+        const resultado = document.getElementById("resultadoDados");
+        const botonTirar = document.getElementById("botonTirarDados");
+
+        if (resultado && mensaje) {
+            resultado.innerHTML = "";
+            resultado.classList.toggle("dosColumnas", numTiradas > 1);
+
+            valoresTotales.forEach((valores, idx) => {
+                const fila = document.createElement("div");
+                fila.className = "filaTiradaDados";
+
+                const dadosEnFila = document.createElement("div");
+                dadosEnFila.className = "dadosEnFila";
+
+                valores.forEach(valor => {
+                    const dado = document.createElement("div");
+                    dado.className = "dadoCara";
+                    dado.textContent = CARAS_DADO_UNICODE[valor] || String(valor);
+                    dadosEnFila.appendChild(dado);
+                });
+
+                fila.appendChild(dadosEnFila);
+
+                const suma = valores.reduce((a, b) => a + b, 0);
+                const etiqueta = document.createElement("div");
+                etiqueta.className = "etiquetaTiradaDados";
+                etiqueta.textContent = numDados > 1 ? `Total: ${suma}` : `Resultado: ${suma}`;
+                fila.appendChild(etiqueta);
+
+                resultado.appendChild(fila);
+            });
+
+            if (botonTirar) botonTirar.disabled = false;
+            mensaje.textContent = `¡Listo! Has tirado ${numTiradas} vez/veces.`;
+        }
+
+        window.dadosUltimoResultado = { numDados, numTiradas, valoresTotales };
+        return true;
+    } catch (e) {
+        console.error("Error al restaurar dados:", e);
+        return false;
+    }
+}
+window.restaurarDadosV1 = restaurarDadosV1;
 
 console.log("✔ dados cargado");

@@ -388,6 +388,11 @@ function aplicarFiltrosEstadisticas() {
     }
 
     sincronizarEstadisticasOBS();
+
+    if (!window._restaurandoEstadisticas && window.ventanaActual === "ventanaEstadisticas" && typeof actualizarHashURL === "function" && typeof serializarEstadisticasV1 === "function") {
+        const token = serializarEstadisticasV1();
+        if (token) actualizarHashURL("estadisticas/v1/" + token);
+    }
 }
 
 // ── Resumen dinámico (cards superiores) ──────────────────
@@ -2200,6 +2205,11 @@ function toggleVistaEstadisticas(vista) {
     }
 
     sincronizarEstadisticasOBS();
+
+    if (!window._restaurandoEstadisticas && window.ventanaActual === "ventanaEstadisticas" && typeof actualizarHashURL === "function" && typeof serializarEstadisticasV1 === "function") {
+        const token = serializarEstadisticasV1();
+        if (token) actualizarHashURL("estadisticas/v1/" + token);
+    }
 }
 
 // ── State para el Selector de Fecha Personalizado ─────────
@@ -2919,3 +2929,136 @@ window.aplicarFiltrosEstadisticas = aplicarFiltrosEstadisticas;
 window.mostrarDetalleLanzamientos = mostrarDetalleLanzamientos;
 window.cerrarDetalleLanzamientos = cerrarDetalleLanzamientos;
 window.ESTAD = ESTAD;
+
+// =========================================================
+// SERIALIZACIÓN Y RESTAURACIÓN DE TOKEN v1 (#estadisticas/v1/<token>)
+// =========================================================
+
+function serializarEstadisticasV1() {
+    try {
+        const textoInput = document.getElementById("estatBuscarTexto")?.value || "";
+        const fechaDesde = document.getElementById("estatFechaDesde")?.value || "";
+        const fechaHasta = document.getElementById("estatFechaHasta")?.value || "";
+        const precioMinV = document.getElementById("estatPrecioMin")?.value || "";
+        const precioMaxV = document.getElementById("estatPrecioMax")?.value || "";
+        const tipoPack = document.getElementById("estatTipoPack")?.value || "";
+
+        const payload = {
+            v: 1,
+            vt: ESTAD.vistaActual || "lista"
+        };
+        if (textoInput.trim()) payload.q = textoInput.trim();
+        if (fechaDesde) payload.d = fechaDesde;
+        if (fechaHasta) payload.h = fechaHasta;
+        if (precioMinV !== "") payload.pmin = parseFloat(precioMinV);
+        if (precioMaxV !== "") payload.pmax = parseFloat(precioMaxV);
+        if (tipoPack) payload.tipo = tipoPack;
+
+        const jsonStr = JSON.stringify(payload);
+        return typeof window.codificarBase64URL === "function"
+            ? window.codificarBase64URL(jsonStr)
+            : null;
+    } catch (e) {
+        console.error("Error al serializar estadísticas a token:", e);
+        return null;
+    }
+}
+window.serializarEstadisticasV1 = serializarEstadisticasV1;
+
+async function restaurarEstadisticasV1(token) {
+    if (!token || typeof token !== "string") return false;
+    window._restaurandoEstadisticas = true;
+    try {
+        if (typeof window.decodificarBase64URL !== "function") return false;
+        const jsonStr = window.decodificarBase64URL(token.trim());
+        const payload = JSON.parse(jsonStr);
+
+        if (!payload || payload.v !== 1) return false;
+
+        if (typeof abrirVentana === "function") {
+            abrirVentana("ventanaEstadisticas", false);
+        }
+
+        // 1. Inicializar eventos de controles si no se han conectado aún
+        if (!ESTAD._eventosInit && typeof inicializarEventosEstadisticas === "function") {
+            inicializarEventosEstadisticas();
+            ESTAD._eventosInit = true;
+        }
+
+        // 2. Asegurar que las estadísticas estén cargadas desde database
+        if (!ESTAD.cargado) {
+            await cargarEstadisticasSims4();
+        }
+
+        // 3. Asignar filtros en la UI y sincronizar representaciones visuales
+        const inputTexto = document.getElementById("estatBuscarTexto");
+        const inputDesde = document.getElementById("estatFechaDesde");
+        const valDesde = document.getElementById("estatFechaDesdeVal");
+        const inputHasta = document.getElementById("estatFechaHasta");
+        const valHasta = document.getElementById("estatFechaHastaVal");
+        const inputPmin = document.getElementById("estatPrecioMin");
+        const inputPmax = document.getElementById("estatPrecioMax");
+        const inputTipo = document.getElementById("estatTipoPack");
+        const valTipo = document.getElementById("estatTipoPackVal");
+        const dropTipo = document.getElementById("estatTipoPackDropdown");
+
+        if (inputTexto) inputTexto.value = payload.q || "";
+
+        // Helper para convertir formato ISO (YYYY-MM-DD) al formato visual de la UI (DD/MM/YYYY)
+        const formatearFechaVisual = (iso) => {
+            if (!iso || typeof iso !== "string") return "Seleccionar";
+            const partes = iso.trim().split("-");
+            if (partes.length === 3) {
+                return `${partes[2].padStart(2, "0")}/${partes[1].padStart(2, "0")}/${partes[0]}`;
+            }
+            return iso;
+        };
+
+        // Fecha Desde
+        const fDesde = payload.d || "";
+        if (inputDesde) inputDesde.value = fDesde;
+        if (valDesde) valDesde.textContent = formatearFechaVisual(fDesde);
+
+        // Fecha Hasta
+        const fHasta = payload.h || "";
+        if (inputHasta) inputHasta.value = fHasta;
+        if (valHasta) valHasta.textContent = formatearFechaVisual(fHasta);
+
+        // Precios
+        if (inputPmin) inputPmin.value = payload.pmin !== undefined ? payload.pmin : "";
+        if (inputPmax) inputPmax.value = payload.pmax !== undefined ? payload.pmax : "";
+
+        // Tipo de pack
+        const tipoVal = payload.tipo || "";
+        if (inputTipo) inputTipo.value = tipoVal;
+        if (dropTipo) {
+            let textoEncontrado = "🏷️ Todos los tipos";
+            dropTipo.querySelectorAll(".estatDropdownItem").forEach(item => {
+                const itemVal = item.getAttribute("data-value") || "";
+                const coincide = itemVal === tipoVal;
+                item.classList.toggle("activa", coincide);
+                if (coincide) {
+                    textoEncontrado = item.textContent;
+                }
+            });
+            if (valTipo) valTipo.textContent = textoEncontrado;
+        } else if (valTipo) {
+            valTipo.textContent = tipoVal ? `🏷️ ${tipoVal}` : "🏷️ Todos los tipos";
+        }
+
+        // 4. Establecer vista (lista o gráficos)
+        const vista = payload.vt === "graficos" ? "graficos" : "lista";
+        toggleVistaEstadisticas(vista);
+
+        // 5. Aplicar filtros resultantes
+        aplicarFiltrosEstadisticas();
+
+        return true;
+    } catch (e) {
+        console.error("Error al restaurar estadísticas:", e);
+        return false;
+    } finally {
+        window._restaurandoEstadisticas = false;
+    }
+}
+window.restaurarEstadisticasV1 = restaurarEstadisticasV1;

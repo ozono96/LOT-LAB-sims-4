@@ -604,51 +604,36 @@ function abrirVentana(id, esClickUsuario = false) {
         }
     }
 
-    // 3. Ajuste visual de cabecera y posicionamiento del scroll
-    if (!cargaInicialCompleta && !esClickUsuario) {
+    // 3. Reset limpio de scroll y formato de barra al abrir cualquier ventana (REGLA 1)
+    window.scrollTo(0, 0);
+
+    if (ventanaEl) {
+        ventanaEl.scrollTop = 0;
+        // Reset de scroll interno de cualquier contenedor hijo si lo tuviera
+        ventanaEl.querySelectorAll("*").forEach(el => {
+            if (el.scrollTop > 0) el.scrollTop = 0;
+        });
+    }
+
+    // Restablecer obligatoriamente la barra a FORMATO COMPLETO
+    if (typeof window.resetearBarraMenuPrincipal === "function") {
+        window.resetearBarraMenuPrincipal();
+    } else {
         const headerEl = document.querySelector("header");
-        const menuEl = document.getElementById("menuPrincipal");
+        const menuEl   = document.getElementById("menuPrincipal");
+        const placeholder = document.getElementById("placeholderMenuPrincipal");
         if (headerEl) headerEl.classList.remove("headerCompacto");
-        if (menuEl) menuEl.classList.remove("menuFlotante");
-        window.scrollTo(0, 0);
-        return;
-    }
-
-    const headerEl = document.querySelector("header");
-    const menuEl   = document.getElementById("menuPrincipal");
-    const placeholder = document.getElementById("placeholderMenuPrincipal");
-
-    if (!headerEl || !menuEl || !placeholder) {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        return;
-    }
-
-    document.body.classList.add("sin-transicion-nav");
-
-    const estabaFlotante = menuEl.classList.contains("menuFlotante");
-    if (!estabaFlotante) {
-        const alturaMenuNormal = menuEl.offsetHeight;
-        placeholder.style.height = alturaMenuNormal + "px";
-        menuEl.classList.add("menuFlotante");
-    }
-    headerEl.classList.add("headerCompacto");
-
-    void headerEl.offsetHeight;
-
-    const SEPARACION = 10;
-    menuEl.style.top = (headerEl.offsetHeight + SEPARACION) + "px";
-
-    requestAnimationFrame(() => {
-        document.body.classList.remove("sin-transicion-nav");
-
-        if (ventanaEl) {
-            const menuBCR    = menuEl.getBoundingClientRect();
-            const ventanaBCR = ventanaEl.getBoundingClientRect();
-            const GAP_PX = 20;
-            const scrollAjuste = ventanaBCR.top - (menuBCR.bottom + GAP_PX);
-            window.scrollBy({ top: scrollAjuste, behavior: "smooth" });
+        if (menuEl) {
+            menuEl.classList.remove("menuFlotante");
+            menuEl.style.top = "";
         }
-    });
+        if (placeholder) placeholder.style.height = "0px";
+    }
+
+    // Reevaluar estado según la jerarquía de prioridades tras abrir
+    if (typeof window.actualizarEstadoBarraMenu === "function") {
+        window.actualizarEstadoBarraMenu();
+    }
 }
 
 function toggleTemporizadorReto() {

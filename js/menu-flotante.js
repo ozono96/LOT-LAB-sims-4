@@ -16,11 +16,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!header || !menu || !track) return;
 
-    // Sentinel invisible que marca la posición original del menú,
-    // para saber exactamente cuándo el scroll lo tapa con la cabecera.
+    // Sentinel invisible que marca el final de la sección de botones original,
+    // para saber con precisión cuándo dicha sección queda completamente fuera de la zona visible.
     const sentinel = document.createElement("div");
     sentinel.id = "sentinelMenuPrincipal";
-    menu.parentNode.insertBefore(sentinel, menu);
+    sentinel.style.cssText = "width: 100%; height: 1px; pointer-events: none; visibility: hidden;";
+    menu.parentNode.insertBefore(sentinel, menu.nextSibling);
 
     // Placeholder que reserva SIEMPRE la misma altura (la que el menú
     // ocupa en su estado normal). Al activar el modo flotante, el menú
@@ -32,22 +33,44 @@ document.addEventListener("DOMContentLoaded", () => {
     placeholder.style.height = "0px";
     menu.parentNode.insertBefore(placeholder, menu);
 
-    // La altura normal del menú se mide UNA SOLA VEZ (y se recalcula
-    // solo en resize), nunca en el momento del toggle. Esto evita medir
-    // el menú en un estado intermedio o incorrecto, que era la causa
-    // del rebote al desactivar el modo flotante (scroll hacia arriba).
+    // La altura normal del menú y cabecera se miden una sola vez (y se recalculan
+    // en resize). Esto evita mediciones en estados transitorios o incorrectos.
     let alturaMenuNormal = 0;
+    let alturaCabeceraNormal = 172;
+    let offsetPrimerBoton = 26;
 
-    function medirAlturaMenuNormal() {
+    function medirAlturasNormales() {
         const estabaFlotante = menu.classList.contains("menuFlotante");
+        const estabaCompacto = header.classList.contains("headerCompacto");
         if (estabaFlotante) {
             menu.classList.remove("menuFlotante");
             menu.style.top = "";
         }
+        if (estabaCompacto) {
+            header.classList.remove("headerCompacto");
+        }
+        alturaCabeceraNormal = header.offsetHeight || 172;
         alturaMenuNormal = menu.offsetHeight;
+        if (track && track.firstElementChild) {
+            offsetPrimerBoton = Math.round(track.firstElementChild.getBoundingClientRect().top - menu.getBoundingClientRect().top);
+        }
+        if (estabaCompacto) {
+            header.classList.add("headerCompacto");
+        }
         if (estabaFlotante) {
             menu.classList.add("menuFlotante");
+            actualizarPosicionMenuFlotante();
         }
+    }
+
+    function actualizarPosicionMenuFlotante() {
+        if (!menu.classList.contains("menuFlotante")) {
+            menu.style.top = "";
+            return;
+        }
+        const GAP = 6;
+        const alturaCompacta = window.innerWidth <= 700 ? 52 : 72;
+        menu.style.top = (alturaCompacta + GAP) + "px";
     }
 
     function comprobarFlechasMenu() {
@@ -64,59 +87,162 @@ document.addEventListener("DOMContentLoaded", () => {
         flechaDer.style.display = (hayOverflow && track.scrollLeft < (track.scrollWidth - track.clientWidth - 5)) ? "flex" : "none";
     }
 
+    // Determina de forma estable y responsive si la ventana actual es "corta"
+    // (poco contenido / pequeño excedente de scroll) o "realmente larga / desplazable".
+    // Evita la compactación y los rebotes visuales cuando el usuario solo necesita
+    // un pequeño desplazamiento para ver el final del contenido o la tarjeta.
+    function esVentanaCorta() {
+        const ventanaActualEl = window.ventanaActual ? document.getElementById(window.ventanaActual) : null;
+
+        const alturaCabeceraCompacta = window.innerWidth <= 700 ? 52 : 72;
+        const deltaHeader = alturaCabeceraNormal - alturaCabeceraCompacta;
+
+        // 1. Altura total descompactada estable (invariante ante si el header está o no compactado)
+        const alturaTotalDesplazable = document.documentElement.scrollHeight +
+            (header.classList.contains("headerCompacto") ? deltaHeader : 0);
+        const alturaVisible = window.innerHeight;
+        const scrollMaximo = Math.max(0, alturaTotalDesplazable - alturaVisible);
+
+        // Si no hay scroll o el scroll máximo total es insignificante (< 40px)
+        if (scrollMaximo <= 40) return true;
+
+        // 2. Distancia requerida desde reposo para que los botones alcancen la cabecera
+        const scrollYActual = window.scrollY || document.documentElement.scrollTop || 0;
+        const placeholderTopDoc = placeholder.getBoundingClientRect().top + scrollYActual;
+        const distanciaAlTrigger = Math.max(0, (placeholderTopDoc + offsetPrimerBoton) - alturaCabeceraNormal);
+        const scrollRestante = scrollMaximo - distanciaAlTrigger;
+
+        // 3. Regla física anti-rebote:
+        // Si el scroll restante tras el trigger no supera con holgura la contracción de la cabecera (deltaHeader * 1.5),
+        // contraer la cabecera consumiría todo el scroll restante forzando al navegador a reajustar y rebotar.
+        if (scrollRestante <= deltaHeader * 1.5) {
+            return true;
+        }
+
+        // 4. Si la ventana tiene scroll interno propio significativo (> 100px), es larga
+        const scrollInterno = (ventanaActualEl && ventanaActualEl.scrollHeight > ventanaActualEl.clientHeight)
+            ? (ventanaActualEl.scrollHeight - ventanaActualEl.clientHeight)
+            : 0;
+        if (scrollInterno > 100) return false;
+
+        // 5. Análisis del contenido real de la ventana activa:
+        // Si la ventana activa tiene un contenido compacto (< 650px):
+        // Ejemplos: Timer (~417px), Buscador sin menús desplegados (~400px), Dados (~463px).
+        // En estas ventanas el contenido es una tarjeta o herramienta breve y el poco scroll
+        // existente es solo para llegar al final de la tarjeta o footer.
+        const alturaContenido = ventanaActualEl ? ventanaActualEl.offsetHeight : 0;
+        const esContenidoCompacto = (alturaContenido > 0 && alturaContenido < 650);
+
+        if (esContenidoCompacto) {
+            return true;
+        }
+
+        // 6. Criterio proporcional de recorrido disponible:
+        // Si el scroll máximo total de la página no supera un recorrido significativo
+        // respecto a la altura visible (al menos 35% del viewport)
+        if (scrollMaximo < alturaVisible * 0.35) {
+            return true;
+        }
+
+        return false;
+    }
+
     function activarFlotante() {
+        // Doble salvaguarda: nunca activar si el scroll está arriba del todo o es ventana corta
+        const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+        if (scrollY <= 5) return;
+        if (esVentanaCorta()) return;
+
         if (menu.classList.contains("menuFlotante")) return;
         header.classList.add("headerCompacto");
         placeholder.style.height = alturaMenuNormal + "px";
         menu.classList.add("menuFlotante");
+        actualizarPosicionMenuFlotante();
+        comprobarFlechasMenu();
     }
 
     function desactivarFlotante() {
-        if (!menu.classList.contains("menuFlotante")) return;
+        if (!menu.classList.contains("menuFlotante") && !header.classList.contains("headerCompacto")) return;
         header.classList.remove("headerCompacto");
         menu.classList.remove("menuFlotante");
         menu.style.top = "";
         placeholder.style.height = "0px";
-    }
-
-    function comprobarPosicionMenu() {
-
-        const alturaCabecera = header.offsetHeight;
-        const SEPARACION_FLOTANTE = 10; // px de hueco fijo, siempre igual en todas las ventanas
-        const HISTERESIS = 6; // px de margen para evitar parpadeos justo en el límite
-
-        const rectSentinel = sentinel.getBoundingClientRect();
-        const yaFlotante = menu.classList.contains("menuFlotante");
-
-        if (!yaFlotante && rectSentinel.top <= alturaCabecera) {
-            activarFlotante();
-        } else if (yaFlotante && rectSentinel.top > alturaCabecera + HISTERESIS) {
-            desactivarFlotante();
-        }
-
-        if (menu.classList.contains("menuFlotante")) {
-            menu.style.top = (header.offsetHeight + SEPARACION_FLOTANTE) + "px";
-        }
-
         comprobarFlechasMenu();
     }
 
-    // Optimización con requestAnimationFrame para no recalcular en cada píxel de scroll
+    // Jerarquía estricta de prioridades según especificación:
+    // PRIORIDAD 2: Ventana corta con poco scroll o recorrido insuficiente -> barra completa obligatoria
+    // PRIORIDAD 3: Scroll arriba del todo (scrollTop <= 5) -> barra completa obligatoria
+    // PRIORIDAD 4: Sección original todavía visible en pantalla -> barra completa
+    // PRIORIDAD 5: Primera fila empieza a ocultarse tras cabecera -> barra compacta
+    function actualizarEstadoBarra() {
+        const ventanaActualEl = window.ventanaActual ? document.getElementById(window.ventanaActual) : null;
+
+        // PRIORIDAD 2: Ventana corta con poco scroll o recorrido insuficiente
+        if (esVentanaCorta()) {
+            desactivarFlotante();
+            return;
+        }
+
+        // PRIORIDAD 3: El scroll está arriba del todo
+        const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+        const scrollTopVentana = ventanaActualEl ? ventanaActualEl.scrollTop : 0;
+
+        if (scrollY <= 5 && scrollTopVentana <= 5) {
+            desactivarFlotante();
+            return;
+        }
+
+        // PRIORIDAD 4 y 5: Según la visibilidad real de la primera fila de botones.
+        // Mientras los botones quepan enteros debajo de la cabecera normal -> Formato completo.
+        // En cuanto la primera fila empieza a deslizarse tras la cabecera -> Formato compacto.
+        const topPrimeraFila = placeholder.getBoundingClientRect().top + offsetPrimerBoton;
+
+        if (topPrimeraFila <= alturaCabeceraNormal) {
+            activarFlotante();
+        } else if (topPrimeraFila > alturaCabeceraNormal + 4) {
+            desactivarFlotante();
+        }
+    }
+
+    // Funciones globales para garantizar reset limpio desde la navegación entre ventanas
+    window.resetearBarraMenuPrincipal = function() {
+        desactivarFlotante();
+    };
+
+    window.actualizarEstadoBarraMenu = function() {
+        actualizarEstadoBarra();
+    };
+
+    // Observer nativo para supervisar el paso de la sección original por el umbral de pantalla
+    const observer = new IntersectionObserver(() => {
+        actualizarEstadoBarra();
+    }, {
+        root: null,
+        threshold: 0
+    });
+
+    observer.observe(sentinel);
+
+    // Listener de scroll (con capture para detectar tanto scroll de window como cualquier scroll interno)
     let scrollProgramado = false;
     window.addEventListener("scroll", () => {
         if (!scrollProgramado) {
             window.requestAnimationFrame(() => {
-                comprobarPosicionMenu();
+                actualizarEstadoBarra();
                 scrollProgramado = false;
             });
             scrollProgramado = true;
         }
-    }, { passive: true });
+    }, { passive: true, capture: true });
 
     window.addEventListener("resize", () => {
-        desactivarFlotante();
-        medirAlturaMenuNormal();
-        comprobarPosicionMenu();
+        medirAlturasNormales();
+        if (menu.classList.contains("menuFlotante")) {
+            actualizarPosicionMenuFlotante();
+        }
+        comprobarFlechasMenu();
+        actualizarEstadoBarra();
     }, { passive: true });
 
     track.addEventListener("scroll", comprobarFlechasMenu, { passive: true });
@@ -147,8 +273,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Al inicializar, garantizar siempre la vista completa (título normal + botones normales)
     header.classList.remove("headerCompacto");
     desactivarFlotante();
-    medirAlturaMenuNormal();
-    comprobarPosicionMenu();
+    medirAlturasNormales();
+    actualizarEstadoBarra();
 
 });
 

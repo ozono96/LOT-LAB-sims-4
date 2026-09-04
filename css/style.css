@@ -440,6 +440,7 @@ header p {
 
 .menu-principal.menuFlotante {
     position: fixed;
+    top: 78px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 850;
@@ -449,6 +450,7 @@ header p {
     padding: clamp(8px, 2vw, 12px) clamp(38px, 10vw, 50px);
     border-radius: var(--radio-normal);
     box-shadow: var(--sombra-fuerte);
+    transition: top 0.2s ease, padding .25s ease, border-radius .25s ease, box-shadow .25s ease, max-width .25s ease;
 }
 
 .menu-principal.menuFlotante .menu-principal-track {
@@ -3532,6 +3534,10 @@ header.headerCompacto .header-contenido {
     header.headerCompacto .header-logo {
         width: 38px;
         height: 38px;
+    }
+
+    .menu-principal.menuFlotante {
+        top: 58px;
     }
 
 }

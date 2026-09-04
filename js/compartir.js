@@ -90,8 +90,8 @@ window.procesarIconosParaCaptura = procesarIconosParaCaptura;
 async function capturarElemento(elemento, nombreArchivoBase = "LotLab_Captura") {
     if (!elemento) return;
 
-    // Ocultar botones de compartir/cerrar internos durante la captura
-    const botonesOcultar = elemento.querySelectorAll(".compartir, .compartirSeccion, .cabeceraVentana");
+    // Ocultar botones de compartir/captura/cerrar internos durante la captura
+    const botonesOcultar = elemento.querySelectorAll(".compartir, .captura, .compartirSeccion, .cabeceraVentana");
     const estadosOriginales = [];
     botonesOcultar.forEach(btn => {
         estadosOriginales.push({ el: btn, display: btn.style.display });
@@ -106,6 +106,21 @@ async function capturarElemento(elemento, nombreArchivoBase = "LotLab_Captura") 
 
     const boxshadowOriginal = elemento.style.boxShadow;
     elemento.style.boxShadow = "none";
+
+    // Para tarjetas modales con scroll o max-height, permitir expansión completa durante captura
+    const maxHeightOriginal = elemento.style.maxHeight;
+    const overflowOriginal = elemento.style.overflow;
+    const scrollablesInternos = elemento.querySelectorAll(".cuerpoModalAgradecimientos, [style*='overflow']");
+    const scrollablesEstados = [];
+    if (window.getComputedStyle(elemento).maxHeight !== "none") {
+        elemento.style.maxHeight = "none";
+        elemento.style.overflow = "visible";
+    }
+    scrollablesInternos.forEach(s => {
+        scrollablesEstados.push({ el: s, mh: s.style.maxHeight, ov: s.style.overflow });
+        s.style.maxHeight = "none";
+        s.style.overflow = "visible";
+    });
 
     const paddingBottomOriginal = elemento.style.paddingBottom;
     const computedPadBottom = parseFloat(window.getComputedStyle(elemento).paddingBottom) || 0;
@@ -179,21 +194,110 @@ async function capturarElemento(elemento, nombreArchivoBase = "LotLab_Captura") 
         elemento.style.position = posOriginal;
         elemento.style.boxShadow = boxshadowOriginal;
         elemento.style.paddingBottom = paddingBottomOriginal;
+        elemento.style.maxHeight = maxHeightOriginal;
+        elemento.style.overflow = overflowOriginal;
+        scrollablesEstados.forEach(item => {
+            item.el.style.maxHeight = item.mh;
+            item.el.style.overflow = item.ov;
+        });
         if (marcaAguaDerecha.parentNode) marcaAguaDerecha.parentNode.removeChild(marcaAguaDerecha);
         if (marcaAguaIzquierda.parentNode) marcaAguaIzquierda.parentNode.removeChild(marcaAguaIzquierda);
     }
 }
 
+// ── Feedback visual con Tooltip de LOT-LAB ──────────────────────
+function mostrarTooltipFeedback(event, elemento, mensaje = "Enlace copiado") {
+    const tooltip = document.getElementById("tooltipOpciones");
+    if (!tooltip) return;
+
+    let x = 0;
+    let y = 0;
+
+    if (event && typeof event.clientX === "number" && event.clientX > 0) {
+        x = event.clientX;
+        y = event.clientY;
+    } else if (elemento && typeof elemento.getBoundingClientRect === "function") {
+        const rect = elemento.getBoundingClientRect();
+        x = rect.left + rect.width / 2;
+        y = rect.top;
+    } else {
+        x = window.innerWidth / 2;
+        y = window.innerHeight / 2;
+    }
+
+    tooltip.textContent = mensaje;
+    tooltip.style.left = x + "px";
+    tooltip.style.top = (y - 10) + "px";
+    tooltip.style.display = "block";
+
+    clearTimeout(window._tooltipCopiadoTimeout);
+    window._tooltipCopiadoTimeout = setTimeout(() => {
+        window._tooltipCopiadoTimeout = null;
+        tooltip.style.display = "none";
+    }, 1400);
+}
+
+// ── Copiar enlace actual al portapapeles ─────────────────────────
+function copiarEnlaceCompartir(btn, event) {
+    const url = window.location.href;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url)
+            .then(() => {
+                mostrarTooltipFeedback(event, btn, "Enlace copiado");
+            })
+            .catch(() => {
+                copiarEnlaceFallback(url, btn, event);
+            });
+    } else {
+        copiarEnlaceFallback(url, btn, event);
+    }
+}
+
+function copiarEnlaceFallback(texto, btn, event) {
+    try {
+        const textarea = document.createElement("textarea");
+        textarea.value = texto;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        const ok = document.execCommand("copy");
+        document.body.removeChild(textarea);
+        if (ok) {
+            mostrarTooltipFeedback(event, btn, "Enlace copiado");
+        } else {
+            mostrarTooltipFeedback(event, btn, "No se pudo copiar");
+        }
+    } catch (err) {
+        mostrarTooltipFeedback(event, btn, "No se pudo copiar");
+    }
+}
+
+window.copiarEnlaceCompartir = copiarEnlaceCompartir;
+window.capturarElemento = capturarElemento;
+
 document.addEventListener("DOMContentLoaded", () => {
-    // Delegación global de eventos para botones de compartir (.compartir y .compartirSeccion)
+    // Delegación global de eventos para captura (.captura, .compartirSeccion) y compartir enlace (.compartir)
     document.addEventListener("click", (e) => {
-        const btnCompartir = e.target.closest(".compartir");
-        if (btnCompartir) {
-            const ventana = btnCompartir.closest(".ventana");
-            if (ventana) capturarElemento(ventana, "LotLab_Captura");
+        // 1. Botón Captura (.captura) -> Captura de pantalla de la ventana/tarjeta
+        const btnCaptura = e.target.closest(".captura");
+        if (btnCaptura) {
+            const ventana = btnCaptura.closest(".ventana");
+            if (ventana) {
+                capturarElemento(ventana, "LotLab_Captura");
+                return;
+            }
+            // Si no está dentro de .ventana, comprobar si tiene data-captura o pertenece a modal flotante
+            const targetId = btnCaptura.getAttribute("data-captura");
+            const targetEl = targetId ? document.getElementById(targetId) : btnCaptura.closest(".cardPacksFlotante");
+            if (targetEl) {
+                capturarElemento(targetEl, targetId ? `LotLab_${targetId}` : "LotLab_Captura");
+                return;
+            }
             return;
         }
 
+        // 2. Botón Compartir Sección (.compartirSeccion) -> Captura de la sección específica
         const btnSeccion = e.target.closest(".compartirSeccion");
         if (btnSeccion) {
             const targetId = btnSeccion.getAttribute("data-captura");
@@ -206,6 +310,14 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             return;
         }
+
+        // 3. Botón Compartir (.compartir) -> Copiar enlace actual al portapapeles
+        const btnCompartir = e.target.closest(".compartir");
+        if (btnCompartir) {
+            copiarEnlaceCompartir(btnCompartir, e);
+            return;
+        }
     });
 });
+
 

@@ -51,12 +51,14 @@ async function iniciarBaseDatos() {
         database.habilidades = data.habilidades || [];
         database.todosTiposSolares = data.todosTiposSolares || [];
         database.estadisticasSims4 = data.estadisticasSims4 || [];
+        database.agradecimientos = data.agradecimientos || [];
 
         console.log("[LOT-LAB] Base de datos cargada desde database.json:", {
             solares: database.solares.length,
             mundos: database.mundos.length,
             packs: database.packs.length,
-            estadisticas: database.estadisticasSims4.length
+            estadisticas: database.estadisticasSims4.length,
+            agradecimientos: database.agradecimientos.length
         });
 
     } catch (error) {

@@ -570,10 +570,10 @@ header p {
 
 
 .ventanaPequena {
-    max-width: 500px;
+    max-width: 600px;
 }
 
-/* Estas ventanas se muestran con display: flex desde JS, asÃ­ que podemos usar flex layout directamente */
+/* Estas ventanas se muestran con display: flex desde JS, así que podemos usar flex layout directamente */
 #ventanaTemporizador,
 #ventanaTiempoAgotado {
     flex-direction: column;
@@ -584,6 +584,22 @@ header p {
 #ventanaTiempoAgotado>* {
     width: 100%;
     box-sizing: border-box;
+}
+
+/* La cabecera en el temporizador debe cuadrar con el marco completo de la ventana */
+#ventanaTemporizador > .cabeceraVentana,
+#ventanaTiempoAgotado > .cabeceraVentana {
+    width: calc(100% + 50px);
+    align-self: stretch;
+    margin: -25px -25px 20px -25px;
+}
+
+@media (max-width: 700px) {
+    #ventanaTemporizador > .cabeceraVentana,
+    #ventanaTiempoAgotado > .cabeceraVentana {
+        width: calc(100% + 36px);
+        margin: -18px -18px 18px -18px;
+    }
 }
 
 #ventanaBuscador {
@@ -690,8 +706,100 @@ button:disabled {
 
     position: relative;
 
-    margin-bottom: 15px;
+    /* Extend full-width by compensating ventana padding (25px) */
+    margin: -25px -25px 20px -25px;
 
+    padding: 14px 20px;
+
+    border-bottom: 1px solid var(--borde);
+
+    background: rgba(0, 0, 0, 0.15);
+
+    border-radius: var(--radio-grande) var(--radio-grande) 0 0;
+
+    flex-shrink: 0;
+
+    min-height: 42px;
+
+    box-sizing: border-box;
+
+}
+
+body.modo-dia .cabeceraVentana {
+    background: rgba(0, 0, 0, 0.04);
+    border-bottom-color: rgba(0, 0, 0, 0.12);
+}
+
+/* Proteger cabeceraAgradecimientos para que permanezca idéntica */
+.cabeceraAgradecimientos .cabeceraVentana {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    min-height: auto !important;
+}
+
+/* Título centrado dentro de cabeceraVentana (mismo concepto visual que Agradecimientos) */
+.cabeceraVentana > h2,
+.cabeceraVentana > h3 {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: bold;
+    color: var(--color-titulo, var(--color-texto));
+    text-align: center;
+    white-space: nowrap;
+    max-width: calc(100% - 200px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: none;
+    user-select: none;
+    line-height: 1.2;
+}
+
+/* Responsive: móvil y tablet */
+@media (max-width: 768px) {
+    .cabeceraVentana > h2,
+    .cabeceraVentana > h3 {
+        font-size: 1.15rem;
+        max-width: calc(100% - 180px);
+    }
+}
+
+/* Fix: título de ruletaColorTitulo dentro de cabeceraVentana usa la variable de color estándar */
+.cabeceraVentana > h2.ruletaColorTitulo {
+    color: var(--color-titulo, var(--color-texto));
+    font-size: 1.35rem;
+    font-weight: bold;
+    display: flex;
+    gap: 8px;
+}
+
+@media (max-width: 700px) {
+    .cabeceraVentana {
+        margin: -18px -18px 18px -18px;
+        padding: 12px 16px;
+    }
+}
+
+@media (max-width: 500px) {
+    .cabeceraVentana {
+        gap: 8px;
+        padding: 10px 14px;
+    }
+
+    .cabeceraVentana > h2,
+    .cabeceraVentana > h3 {
+        font-size: 0.95rem;
+        left: 14px;
+        transform: translateY(-50%);
+        text-align: left;
+        max-width: calc(100% - 150px);
+    }
 }
 
 .cabeceraVentana button {
@@ -716,9 +824,12 @@ button:disabled {
 
     align-items: center;
 
+    flex-shrink: 0;
+
 }
 
 .compartir,
+.captura,
 .compartirSeccion {
 
     width: 42px !important;
@@ -756,6 +867,7 @@ button:disabled {
 }
 
 .compartir svg,
+.captura svg,
 .compartirSeccion svg {
     width: 22px !important;
     height: 22px !important;
@@ -763,24 +875,43 @@ button:disabled {
     display: block;
 }
 
-.compartir:hover,
-.compartirSeccion:hover {
+.compartir:hover {
 
-    background: rgba(111, 186, 247, 0.747);
+    background: rgba(46, 204, 113, 0.85) !important;
 
-    color: white;
+    color: white !important;
 
     box-shadow:
 
-        0 0 8px rgba(33, 150, 243, .60),
+        0 0 8px rgba(46, 204, 113, .65),
 
-        0 0 18px rgba(33, 150, 243, .45),
+        0 0 18px rgba(46, 204, 113, .45),
 
-        0 0 30px rgba(33, 150, 243, .25);
+        0 0 30px rgba(46, 204, 113, .25) !important;
 
     transform: scale(1.10);
 
 }
+
+.captura:hover,
+.compartirSeccion:hover {
+
+    background: rgba(33, 150, 243, 0.85) !important;
+
+    color: white !important;
+
+    box-shadow:
+
+        0 0 8px rgba(33, 150, 243, .65),
+
+        0 0 18px rgba(33, 150, 243, .45),
+
+        0 0 30px rgba(33, 150, 243, .25) !important;
+
+    transform: scale(1.10);
+
+}
+
 
 
 /* Cabeceras de secciÃ³n con botÃ³n de compartir inline */
@@ -824,29 +955,43 @@ button:disabled {
 
     left: auto;
 
-    width: 40px;
+    width: 42px !important;
 
-    height: 40px;
+    height: 42px !important;
 
-    display: flex;
+    min-width: 42px !important;
 
-    justify-content: center;
+    min-height: 42px !important;
 
-    align-items: center;
+    padding: 0 !important;
 
-    border: none;
+    display: inline-flex !important;
 
-    border-radius: 50%;
+    justify-content: center !important;
+
+    align-items: center !important;
+
+    border: none !important;
+
+    border-radius: 50% !important;
+
+    aspect-ratio: 1 / 1 !important;
 
     background: transparent;
 
     color: var(--color-texto);
 
-    font-size: 24px;
+    font-size: 22px;
+
+    line-height: 1;
 
     cursor: pointer;
 
     transition: all .25s;
+
+    flex-shrink: 0;
+
+    user-select: none;
 
     z-index: 100;
 
@@ -854,17 +999,17 @@ button:disabled {
 
 .cerrar:hover {
 
-    background: rgba(229, 57, 53, .25);
+    background: rgba(229, 57, 53, 0.85) !important;
 
-    color: white;
+    color: white !important;
 
     box-shadow:
 
-        0 0 8px rgba(229, 57, 53, .60),
+        0 0 8px rgba(229, 57, 53, .65),
 
         0 0 18px rgba(229, 57, 53, .45),
 
-        0 0 30px rgba(229, 57, 53, .25);
+        0 0 30px rgba(229, 57, 53, .25) !important;
 
     transform: scale(1.10);
 
@@ -1755,7 +1900,8 @@ input[type="number"]:focus {
 
 }
 
-.compartir svg {
+.compartir svg,
+.captura svg {
 
     width: 22px;
 
@@ -3830,7 +3976,7 @@ body>.skiptranslate {
 }
 
 .ventanaEstrecha {
-    max-width: 480px;
+    max-width: 640px;
 }
 
 .ruletaColorControles {
@@ -6048,12 +6194,12 @@ body.modo-noche .estatDetallePackCard:hover {
 }
 
 .graficoBtnCompartir:hover {
-    background: rgba(111, 186, 247, 0.747);
-    color: white;
+    background: rgba(33, 150, 243, 0.85) !important;
+    color: white !important;
     box-shadow:
-        0 0 8px rgba(33, 150, 243, .60),
+        0 0 8px rgba(33, 150, 243, .65),
         0 0 18px rgba(33, 150, 243, .45),
-        0 0 30px rgba(33, 150, 243, .25);
+        0 0 30px rgba(33, 150, 243, .25) !important;
     transform: scale(1.10);
 }
 
@@ -6323,26 +6469,37 @@ body.modo-dia .headerPacksFlotante {
 }
 
 .headerPacksFlotante .cerrar {
-    font-size: 1.2rem;
     cursor: pointer;
     background: transparent;
     border: none;
     color: var(--color-texto);
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s ease;
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    min-height: 42px !important;
+    border-radius: 50% !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 22px;
+    line-height: 1;
+    transition: all 0.25s ease;
+    user-select: none;
 }
 
 .headerPacksFlotante .cerrar:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(229, 57, 53, 0.85) !important;
+    color: white !important;
+    box-shadow:
+        0 0 8px rgba(229, 57, 53, .65),
+        0 0 18px rgba(229, 57, 53, .45),
+        0 0 30px rgba(229, 57, 53, .25) !important;
+    transform: scale(1.10);
 }
 
 body.modo-dia .headerPacksFlotante .cerrar:hover {
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(229, 57, 53, 0.85) !important;
+    color: white !important;
 }
 
 .accionesPacksFlotante {
@@ -9160,4 +9317,348 @@ body.modo-obs .obsBrandingTextoDer {
     text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.5) !important;
     pointer-events: none !important;
     white-space: nowrap !important;
-}
+}
+
+/* ==========================================================
+   ESTILOS VENTANA MODAL Y BOTÓN DE AGRADECIMIENTOS
+   ========================================================== */
+
+/* Botón en barra inferior (.footer-controles) */
+.botonAgradecimientosBtn .icono-corazon {
+    width: 26px;
+    height: 26px;
+    fill: #ffffff;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
+    display: block;
+}
+
+/* Tarjeta del modal */
+.modalAgradecimientosCard {
+    max-width: 720px !important;
+    width: 92% !important;
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Cabecera y controles */
+.cabeceraAgradecimientos {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--borde);
+    background: rgba(0, 0, 0, 0.15);
+    flex-shrink: 0;
+}
+
+body.modo-dia .cabeceraAgradecimientos {
+    background: rgba(0, 0, 0, 0.04);
+    border-bottom-color: rgba(0, 0, 0, 0.12);
+}
+
+.cabeceraAgradecimientos h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: var(--color-titulo);
+}
+
+.controlesModalAgradecimientos {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Botón Saltar animación */
+.btnSaltarAnimacion {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    min-height: 42px !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    border: none !important;
+    border-radius: 50% !important;
+    aspect-ratio: 1 / 1 !important;
+    background: transparent;
+    color: var(--color-texto);
+    cursor: pointer;
+    transition: all .25s;
+    flex-shrink: 0;
+    user-select: none;
+}
+
+.btnSaltarAnimacion svg {
+    width: 24px !important;
+    height: 24px !important;
+    fill: currentColor;
+    display: block;
+}
+
+.btnSaltarAnimacion:hover {
+    background: rgba(46, 204, 113, 0.85) !important;
+    color: white !important;
+    box-shadow:
+        0 0 8px rgba(46, 204, 113, .65),
+        0 0 18px rgba(46, 204, 113, .45),
+        0 0 30px rgba(46, 204, 113, .25) !important;
+    transform: scale(1.10);
+}
+
+body.modo-dia .btnSaltarAnimacion:hover {
+    background: rgba(46, 204, 113, 0.85) !important;
+    color: white !important;
+    box-shadow:
+        0 0 8px rgba(46, 204, 113, .65),
+        0 0 18px rgba(46, 204, 113, .45),
+        0 0 30px rgba(46, 204, 113, .25) !important;
+}
+
+/* Cuerpo con scroll independiente */
+.cuerpoModalAgradecimientos {
+    padding: 24px 28px 40px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: calc(88vh - 72px);
+    scrollbar-width: thin;
+    scrollbar-color: var(--borde) transparent;
+}
+
+/* Animación cinematográfica de créditos */
+.creditosContenido.creditos-animando {
+    animation: animacionCreditos 3.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    will-change: transform, opacity;
+}
+
+@keyframes animacionCreditos {
+    0% {
+        transform: translateY(120px);
+        opacity: 0;
+    }
+    12% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.creditosContenido.creditos-estaticos {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+}
+
+/* Texto introductorio */
+.agradecimientosIntro {
+    font-size: 0.96rem;
+    line-height: 1.6;
+    text-align: center;
+    max-width: 620px;
+    margin: 0 auto 28px auto;
+    opacity: 0.92;
+    font-style: italic;
+    color: var(--color-texto);
+}
+
+/* Títulos de sección */
+.tituloSeccionAgradecimientos {
+    font-size: 1.15rem;
+    font-weight: 700;
+    text-align: center;
+    margin: 24px 0 16px;
+    color: var(--color-titulo);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.tituloSeccionAgradecimientos::before,
+.tituloSeccionAgradecimientos::after {
+    content: "";
+    height: 1px;
+    background: var(--borde);
+    flex: 1;
+    max-width: 80px;
+    opacity: 0.6;
+}
+
+/* Categoría: Aportación especial */
+.contenedorAportacion {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.tarjetaAportacion {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 16px 20px;
+    border-radius: var(--radio-normal, 12px);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--borde);
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+body.modo-dia .tarjetaAportacion {
+    background: rgba(0, 0, 0, 0.03);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.tarjetaAportacion:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.tarjetaAportacion .fotoColaborador {
+    width: 104px;
+    height: 104px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #6A5ACD;
+    box-shadow: 0 4px 14px rgba(106, 90, 205, 0.35);
+    display: block;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+body.modo-dia .tarjetaAportacion .fotoColaborador {
+    border-color: var(--color-primario, #27ae60);
+    box-shadow: 0 4px 14px rgba(39, 174, 96, 0.35);
+}
+
+.tarjetaAportacion .enlaceFotoColaborador:hover .fotoColaborador {
+    transform: scale(1.06);
+}
+
+.textoAportacion {
+    font-size: 0.88rem;
+    margin: 8px 0 0 0;
+    opacity: 0.85;
+    color: var(--color-texto);
+    font-weight: 500;
+}
+
+/* Categoría: Pioneros */
+.gridPioneros {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 20px 16px;
+    justify-items: center;
+    margin-top: 12px;
+}
+
+.tarjetaPionero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    max-width: 150px;
+    transition: transform 0.25s ease;
+}
+
+.tarjetaPionero:hover {
+    transform: translateY(-3px);
+}
+
+.tarjetaPionero .fotoColaborador {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2.5px solid var(--borde);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+    display: block;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.tarjetaPionero .enlaceFotoColaborador:hover .fotoColaborador {
+    transform: scale(1.08);
+    border-color: #6A5ACD;
+    box-shadow: 0 0 14px rgba(106, 90, 205, 0.45);
+}
+
+body.modo-dia .tarjetaPionero .enlaceFotoColaborador:hover .fotoColaborador {
+    border-color: var(--color-primario, #27ae60);
+    box-shadow: 0 0 14px rgba(39, 174, 96, 0.45);
+}
+
+/* Nombres y enlaces */
+.nombreColaborador {
+    font-size: 0.92rem;
+    font-weight: 600;
+    margin-top: 8px;
+    color: var(--color-texto);
+    word-break: break-word;
+    line-height: 1.3;
+}
+
+.enlaceTexto {
+    color: var(--color-texto);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.enlaceTexto:hover {
+    color: #6A5ACD;
+    text-decoration: underline;
+}
+
+body.modo-dia .enlaceTexto:hover {
+    color: var(--color-primario, #27ae60);
+}
+
+.enlaceFotoColaborador {
+    display: inline-block;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.wrapperFotoColaborador {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fotoFallback {
+    opacity: 0.65;
+    background: rgba(128, 128, 128, 0.2);
+}
+
+/* Adaptación responsive */
+@media (max-width: 600px) {
+    .cuerpoModalAgradecimientos {
+        padding: 18px 16px 30px;
+    }
+    .modalAgradecimientosCard {
+        width: 95% !important;
+        max-height: 92vh;
+    }
+    .gridPioneros {
+        grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+        gap: 16px 12px;
+    }
+    .tarjetaPionero .fotoColaborador {
+        width: 70px;
+        height: 70px;
+    }
+    .tarjetaAportacion .fotoColaborador {
+        width: 88px;
+        height: 88px;
+    }
+}
+

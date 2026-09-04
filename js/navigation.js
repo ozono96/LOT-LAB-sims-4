@@ -829,6 +829,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const tooltipGlobal = document.getElementById("tooltipOpciones");
     if (tooltipGlobal) {
         document.body.addEventListener("mouseenter", (e) => {
+            if (window._tooltipCopiadoTimeout) return;
             const el = e.target.closest("[data-tooltip]");
             if (el) {
                 tooltipGlobal.textContent = el.getAttribute("data-tooltip");
@@ -836,6 +837,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }, true);
         document.body.addEventListener("mousemove", (e) => {
+            if (window._tooltipCopiadoTimeout) return;
             const el = e.target.closest("[data-tooltip]");
             if (el) {
                 const text = el.getAttribute("data-tooltip");
@@ -853,6 +855,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }, true);
         document.body.addEventListener("mouseleave", (e) => {
+            if (window._tooltipCopiadoTimeout) return;
             const el = e.target.closest("[data-tooltip]");
             if (el) {
                 tooltipGlobal.style.display = "none";

@@ -16,7 +16,9 @@ const database = {
 
     colores: [],
 
-    etapasVida: []
+    etapasVida: [],
+
+    agradecimientos: []
 
 };
 

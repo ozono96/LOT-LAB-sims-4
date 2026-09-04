@@ -48,6 +48,7 @@ $hojas = [ordered]@{
     "habilidades"           = "Listado de habilidades"
     "todosTiposSolares"     = "Listado de todos los tipos de solares"
     "estadisticasSims4"     = "Estad$([char]0xED)sticas sims 4"
+    "agradecimientos"       = "Agradecimientos"
 }
 
 $dataDir = Join-Path $ScriptDir "data"

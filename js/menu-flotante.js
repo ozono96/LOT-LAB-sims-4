@@ -38,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let alturaMenuNormal = 0;
     let alturaCabeceraNormal = 172;
     let offsetPrimerBoton = 26;
+    let alturaPrimerBoton = 50;
 
     function medirAlturasNormales() {
         const estabaFlotante = menu.classList.contains("menuFlotante");
@@ -52,6 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
         alturaCabeceraNormal = header.offsetHeight || 172;
         alturaMenuNormal = menu.offsetHeight;
         if (track && track.firstElementChild) {
+            alturaPrimerBoton = track.firstElementChild.offsetHeight || 50;
             offsetPrimerBoton = Math.round(track.firstElementChild.getBoundingClientRect().top - menu.getBoundingClientRect().top);
         }
         if (estabaCompacto) {
@@ -109,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // 2. Distancia requerida desde reposo para que los botones alcancen la cabecera
         const scrollYActual = window.scrollY || document.documentElement.scrollTop || 0;
         const placeholderTopDoc = placeholder.getBoundingClientRect().top + scrollYActual;
-        const distanciaAlTrigger = Math.max(0, (placeholderTopDoc + offsetPrimerBoton) - alturaCabeceraNormal);
+        const distanciaAlTrigger = Math.max(0, (placeholderTopDoc + offsetPrimerBoton + (alturaPrimerBoton * 0.5)) - alturaCabeceraNormal);
         const scrollRestante = scrollMaximo - distanciaAlTrigger;
 
         // 3. Regla física anti-rebote:
@@ -194,13 +196,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // PRIORIDAD 4 y 5: Según la visibilidad real de la primera fila de botones.
-        // Mientras los botones quepan enteros debajo de la cabecera normal -> Formato completo.
-        // En cuanto la primera fila empieza a deslizarse tras la cabecera -> Formato compacto.
+        // Mientras la primera fila esté mayoritariamente visible -> Formato completo.
+        // Cuando aproximadamente el 50% de la primera fila queda cubierta por la cabecera -> Formato compacto flotante.
         const topPrimeraFila = placeholder.getBoundingClientRect().top + offsetPrimerBoton;
+        const umbralTrigger = alturaCabeceraNormal - Math.round(alturaPrimerBoton * 0.5);
 
-        if (topPrimeraFila <= alturaCabeceraNormal) {
+        if (topPrimeraFila <= umbralTrigger) {
             activarFlotante();
-        } else if (topPrimeraFila > alturaCabeceraNormal + 4) {
+        } else if (topPrimeraFila > umbralTrigger + 6) {
             desactivarFlotante();
         }
     }

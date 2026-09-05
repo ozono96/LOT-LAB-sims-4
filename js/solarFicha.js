@@ -61,6 +61,8 @@ window.obtenerSlugSolar = obtenerSlugSolar;
 window.buscarSolarPorSlug = buscarSolarPorSlug;
 
 function abrirFichaSolar(idSolar){
+    ocultarResumenSolar();
+
     if (!database || !database.solares || database.solares.length === 0) {
         document.addEventListener("datosCargados", () => abrirFichaSolar(idSolar), { once: true });
         return;
@@ -288,3 +290,24 @@ function ocultarResumenSolar(){
     }
 
 }
+
+window.ocultarResumenSolar = ocultarResumenSolar;
+
+// En pantallas táctiles, ocultar tooltip al tocar fuera o al hacer scroll
+document.addEventListener("touchstart", (e) => {
+    if (!e.target || typeof e.target.closest !== "function" || !e.target.closest(".tarjetaSolar")) {
+        ocultarResumenSolar();
+    }
+}, { passive: true });
+
+document.addEventListener("pointerdown", (e) => {
+    if (e.pointerType === "touch" || e.pointerType === "pen") {
+        if (!e.target || typeof e.target.closest !== "function" || !e.target.closest(".tarjetaSolar")) {
+            ocultarResumenSolar();
+        }
+    }
+}, { passive: true });
+
+document.addEventListener("scroll", () => {
+    ocultarResumenSolar();
+}, { passive: true });

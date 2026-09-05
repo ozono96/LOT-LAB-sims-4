@@ -424,8 +424,22 @@ header p {
 }
 
 @media (max-width: 480px) {
+    .menu-principal {
+        padding: 16px 12px;
+    }
+
     .menu-principal-track {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .menu-principal button {
+        font-size: 0.95rem;
+        padding: 14px 10px;
+    }
+
+    .menu-principal.menuFlotante {
+        padding: 8px clamp(28px, 7vw, 34px);
     }
 }
 
@@ -436,6 +450,17 @@ header p {
 #sentinelMenuPrincipal {
     width: 100%;
     height: 1px;
+}
+
+@keyframes animEntradaMenuFlotante {
+    from {
+        opacity: 0.88;
+        transform: translate(-50%, -6px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
 }
 
 .menu-principal.menuFlotante {
@@ -450,6 +475,7 @@ header p {
     padding: clamp(8px, 2vw, 12px) clamp(38px, 10vw, 50px);
     border-radius: var(--radio-normal);
     box-shadow: var(--sombra-fuerte);
+    animation: animEntradaMenuFlotante 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     transition: top 0.2s ease, padding .25s ease, border-radius .25s ease, box-shadow .25s ease, max-width .25s ease;
 }
 
@@ -942,9 +968,15 @@ body.modo-dia .cabeceraVentana {
     margin: 16px 0;
 }
 
+.estatToggleVistaWrap .estatToggleVista {
+    margin-bottom: 0;
+}
+
 .estatToggleVistaWrap .compartirSeccion {
     position: absolute;
     right: 0;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 
@@ -3887,7 +3919,7 @@ body.galeria-ampliada .ventana {
     bottom: calc(100% + 12px);
     left: 50%;
     transform: translateX(-50%) translateY(8px);
-    display: flex;
+    display: none;
     flex-direction: row;
     flex-wrap: nowrap;
     gap: 8px;
@@ -3906,9 +3938,22 @@ body.galeria-ampliada .ventana {
 }
 
 .listaIdiomas.abierta {
+    display: flex;
     opacity: 1;
     pointer-events: auto;
     transform: translateX(-50%) translateY(0);
+}
+
+@media (max-width: 600px) {
+    .listaIdiomas {
+        left: auto;
+        right: 0;
+        transform: translateY(8px);
+    }
+
+    .listaIdiomas.abierta {
+        transform: translateY(0);
+    }
 }
 
 .opcionIdioma {
@@ -4212,15 +4257,15 @@ body>.skiptranslate {
     transition: filter var(--transicion);
 }
 
-/* Halo luminoso circular detrás de la rueda (z-index 0) */
+/* Halo luminoso circular detrás de la rueda (z-index 0) — tamaño proporcional al disco SVG (89.5%) */
 .ruletaColorWheelWrapperModerna::before {
     content: "";
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 232px;
-    height: 232px;
+    width: 89.5%;
+    height: 89.5%;
     border-radius: 50%;
     pointer-events: none;
     z-index: 0;
@@ -5778,7 +5823,13 @@ body.modo-noche #ventanaEstadisticas::-webkit-scrollbar-track {
     border-radius: 100px;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    white-space: nowrap;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    text-align: center;
+    max-width: 100%;
+    box-sizing: border-box;
+    display: inline-block;
 }
 
 .packNotaGratis {
@@ -5806,6 +5857,14 @@ body.modo-noche #ventanaEstadisticas::-webkit-scrollbar-track {
     align-items: center;
     flex-shrink: 0;
     white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+    .packFechaEstat {
+        min-width: 0;
+        white-space: normal;
+        flex-shrink: 1;
+    }
 }
 
 .packPrecioWrap {
@@ -6583,6 +6642,24 @@ body.modo-dia .footerPacksFlotante {
     margin: 25px 0;
 }
 
+@media (max-width: 480px) {
+    .gridCategoriasDesplegables {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .btnCategoriaDesplegable {
+        padding: 16px 10px;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 340px) {
+    .gridCategoriasDesplegables {
+        grid-template-columns: 1fr;
+    }
+}
+
 .btnCategoriaDesplegable {
     display: flex;
     flex-direction: column;
@@ -7102,6 +7179,12 @@ body.modo-dia .seccionConfigDesastres {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 12px;
+}
+
+@media (max-width: 520px) {
+    .gridCheckboxesDesastres {
+        grid-template-columns: 1fr;
+    }
 }
 
 .botonDesastreToggle {
@@ -7743,6 +7826,19 @@ body.modo-dia .displayTemporizadorDigital {
     transition: var(--transicion);
     box-shadow: var(--sombra-suave);
     min-width: 135px;
+}
+
+@media (max-width: 360px) {
+    .accionesTemporizadorGrid {
+        gap: 10px;
+    }
+
+    .btnTimerAction {
+        min-width: 0;
+        flex: 1;
+        padding: 10px 12px;
+        font-size: 0.92rem;
+    }
 }
 
 /* BotÃ³n Pausar / Reanudar */
@@ -9665,6 +9761,263 @@ body.modo-dia .enlaceTexto:hover {
     .tarjetaAportacion .fotoColaborador {
         width: 88px;
         height: 88px;
+    }
+}
+
+/* ==========================================================
+   CORRECCIONES MÓVIL — TANDA 2
+   Problema A: desastreBienvenida — texto desborda en móvil
+   Problema B: modalPacksFlotante — botones sobresalen
+   Problema C/D: cabeceraVentana — título se superpone con botones
+========================================================== */
+
+/* --- PROBLEMA A: Mensaje inicial de la Ruleta de Desastres --- */
+/* El texto descriptivo tiene max-width:480px inline; en pantallas
+   más estrechas el contenedor lo desborda si no se permite wrapping */
+.desastreBienvenida .desastreItemDesc {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100% !important; /* anula el inline max-width:480px */
+    box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+    .desastreBienvenida {
+        padding: 16px 14px;
+    }
+    .desastreBienvenida .desastreItemDesc {
+        font-size: 0.88rem;
+    }
+}
+
+/* --- PROBLEMA B: Selector de Packs — ventana y categorías desplegables --- */
+.btnCategoriaDesplegable {
+    width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
+}
+.btnCategoriaDesplegable span {
+    max-width: 100%;
+    word-break: break-word;
+    text-align: center;
+}
+.btnCategoriaDesplegable .badgeConteoPacks {
+    max-width: 100%;
+    box-sizing: border-box;
+    white-space: normal;
+    text-align: center;
+}
+
+@media (max-width: 480px) {
+    .gridCategoriasDesplegables {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    .btnCategoriaDesplegable {
+        padding: 12px 6px;
+        font-size: 0.88rem;
+    }
+    .btnCategoriaDesplegable .badgeConteoPacks {
+        font-size: 0.78rem;
+        padding: 3px 8px;
+    }
+    .accionesPacksFlotante {
+        padding: 10px 14px;
+    }
+    .accionesPacksFlotante .botonReto {
+        max-width: 100%;
+        box-sizing: border-box;
+        word-break: break-word;
+        text-align: center;
+        white-space: normal;
+    }
+    #cuerpoModalPacks {
+        padding: 10px 8px;
+        gap: 8px;
+    }
+    #cuerpoModalPacks .btnPackIcono {
+        width: 70px;
+        height: 70px;
+    }
+    #cuerpoModalPacks .btnPackIcono img.iconoPack {
+        width: 64px;
+        height: 64px;
+    }
+    #cuerpoModalPacks .opcionFiltro:not(.btnPackIcono) {
+        max-width: 100%;
+        box-sizing: border-box;
+        font-size: 0.85rem;
+        min-height: 46px;
+        padding: 8px 10px;
+    }
+    .footerPacksFlotante {
+        padding: 12px 14px;
+    }
+}
+
+@media (max-width: 360px) {
+    .gridCategoriasDesplegables {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --- ESTADÍSTICAS SIMS 4: Botones Lista / Gráficos / Capturar en la misma fila superior --- */
+@media (max-width: 600px) {
+    .estatToggleVistaWrap {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        gap: 8px;
+        width: 100%;
+        margin: 12px 0;
+    }
+    .estatToggleVistaWrap .estatToggleVista {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        margin-bottom: 0;
+        width: auto;
+        justify-content: flex-start;
+        flex-shrink: 1;
+    }
+    .estatToggleVistaWrap .compartirSeccion {
+        position: static;
+        margin: 0 0 0 auto;
+        top: auto;
+        transform: none;
+        flex-shrink: 0;
+        width: 38px !important;
+        height: 38px !important;
+        min-width: 38px !important;
+        min-height: 38px !important;
+    }
+    .estatBtnVista {
+        padding: 7px 12px;
+        font-size: 0.82rem;
+        white-space: nowrap;
+    }
+}
+@media (max-width: 360px) {
+    .estatToggleVistaWrap .estatToggleVista {
+        gap: 4px;
+    }
+    .estatBtnVista {
+        padding: 6px 8px;
+        font-size: 0.76rem;
+    }
+    .estatToggleVistaWrap .compartirSeccion {
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        min-height: 36px !important;
+    }
+}
+
+/* --- ESTADÍSTICAS SIMS 4: Contención de texto/etiqueta 'Packs gratuitos' en móvil --- */
+@media (max-width: 480px) {
+    .packBadgeTipo {
+        font-size: 0.65rem;
+        padding: 2px 6px;
+        letter-spacing: 0.02em;
+        line-height: 1.2;
+    }
+    .estatBtnLinea {
+        padding: 3px 8px;
+        font-size: 0.72rem;
+        white-space: normal;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        text-align: center;
+        max-width: 100%;
+    }
+    .estatTipoGrupoHeader {
+        min-width: 0;
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+    .estatTipoGrupoHeader > span:first-child {
+        min-width: 0;
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+    .estatCustomTriggerBtn {
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+    .estatCustomTriggerBtn span {
+        min-width: 0;
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+}
+
+/* --- PROBLEMA C/D: Cabecera de las ventanas en móvil --- */
+/* En móvil:
+   Fila 1: Botones arriba alineados a la derecha.
+   Fila 2: Título debajo de los botones en línea propia, sin ellipsis, sin solapar.
+   Escritorio permanece intacto (>600px). */
+@media (max-width: 600px) {
+    .cabeceraVentana {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    /* Los botones quedan arriba a la derecha (order: 0) */
+    .cabeceraVentana button {
+        order: 0;
+        flex-shrink: 0;
+    }
+
+    /* El título pasa a una segunda fila independiente debajo de los botones */
+    .cabeceraVentana > h2,
+    .cabeceraVentana > h3 {
+        position: static;
+        transform: none;
+        left: auto;
+        top: auto;
+        white-space: normal;
+        word-break: break-word;
+        overflow: visible;
+        text-overflow: clip;
+        text-align: left;
+        max-width: 100%;
+        width: 100%;
+        font-size: 0.95rem;
+        line-height: 1.3;
+        order: 1;
+        padding: 0 2px;
+        margin-top: 4px;
+        margin-bottom: 2px;
+        pointer-events: auto;
+        user-select: auto;
+    }
+
+    /* Excepción: ventanas pequeñas con un solo botón (cerrar) y título corto
+       — ventanaPequena (temporizador, confirmación borrado, avisos) — */
+    .ventanaPequena .cabeceraVentana {
+        flex-wrap: nowrap;
+        justify-content: flex-end;
+    }
+    .ventanaPequena .cabeceraVentana > h2,
+    .ventanaPequena .cabeceraVentana > h3 {
+        position: absolute;
+        left: calc(50% - 16px);
+        top: 50%;
+        transform: translate(-50%, -50%);
+        white-space: nowrap;
+        width: auto;
+        order: 0;
+        font-size: 0.82rem;
+        max-width: calc(100% - 60px);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        pointer-events: none;
+        user-select: none;
+        margin: 0;
+        padding: 0;
     }
 }
 

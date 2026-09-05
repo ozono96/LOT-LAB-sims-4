@@ -331,6 +331,7 @@ let ruletaDesastresInterval = null;
 let ruletaDesastresTiempoRestante = 0;
 let enPeriodoPausa = false;
 let temporizadorPausado = false;
+let ruletaPausadaPorNavegacion = false;
 let tiradasRealizadas = 0;
 let ruletaDesastresHistorial = [];
 let ultimoDesastre = null;
@@ -582,6 +583,8 @@ function comenzarRuletaDesastres() {
     }
 
     if (ruletaDesastresInterval) clearInterval(ruletaDesastresInterval);
+    ruletaDesastresInterval = null;
+    ruletaPausadaPorNavegacion = false;
 
     const divCuentaAtras = document.getElementById("divCuentaAtrasRuletaDesastres");
     const btnPausarReanudar = document.getElementById("btnPausarReanudarRuleta");
@@ -602,6 +605,8 @@ function comenzarRuletaDesastres() {
 
 function mostrarPantallaConfiguracionDesastres() {
     if (ruletaDesastresInterval) clearInterval(ruletaDesastresInterval);
+    ruletaDesastresInterval = null;
+    ruletaPausadaPorNavegacion = false;
 
     const pantallaConfig = document.getElementById("pantallaConfigRuletaDesastres");
     const pantallaJuego = document.getElementById("pantallaJuegoRuletaDesastres");
@@ -626,6 +631,7 @@ function togglePausaReanudarRuletaDesastres() {
     const divTimer = document.getElementById("divCuentaAtrasRuletaDesastres");
     if (!btn) return;
 
+    ruletaPausadaPorNavegacion = false;
     temporizadorPausado = !temporizadorPausado;
     if (temporizadorPausado) {
         btn.innerHTML = "▶️ Reanudar";
@@ -642,9 +648,49 @@ function togglePausaReanudarRuletaDesastres() {
     }
 }
 
+function tickAutoDesastres() {
+    if (temporizadorPausado) return;
+
+    ruletaDesastresTiempoRestante--;
+    actualizarDisplayCuentaAtrasDesastres();
+
+    if (ruletaDesastresTiempoRestante <= 0) {
+        if (!enPeriodoPausa) {
+            // 1. Ejecutar desastre y reproducir alarma sonora
+            sonarAlarmaDesastre();
+            ejecutarGiroDesastre(false);
+            tiradasRealizadas++;
+
+            // 2. Comprobar si se ha alcanzado el límite de tiradas automáticas
+            if (EstadoRuletaDesastres.tiradasAutoMax > 0 && tiradasRealizadas >= EstadoRuletaDesastres.tiradasAutoMax) {
+                if (ruletaDesastresInterval) clearInterval(ruletaDesastresInterval);
+                ruletaDesastresInterval = null;
+                sonarFanfarriaFinTiradas();
+                actualizarLabelEstadoTimer("✅ Tiradas completadas");
+                const display = document.getElementById("displayCuentaAtrasDesastres");
+                if (display) display.textContent = "FIN";
+                const btnPausarReanudar = document.getElementById("btnPausarReanudarRuleta");
+                if (btnPausarReanudar) btnPausarReanudar.style.display = "none";
+                return;
+            }
+
+            // 3. Entrar en TIEMPO DE PAUSA CONFIGURADO (de 1 a 5 min) antes del siguiente ciclo
+            enPeriodoPausa = true;
+            ruletaDesastresTiempoRestante = EstadoRuletaDesastres.pausaMinutos * 60;
+            actualizarLabelEstadoTimer(`⏳ Margen de pausa (${EstadoRuletaDesastres.pausaMinutos} min):`);
+        } else {
+            // 4. Finalizar tiempo de pausa -> arrancar nuevo ciclo de intervalo
+            enPeriodoPausa = false;
+            ruletaDesastresTiempoRestante = EstadoRuletaDesastres.intervaloMinutos * 60;
+            actualizarLabelEstadoTimer("Siguiente desastre en:");
+        }
+    }
+}
+
 function iniciarTemporizadorAutoDesastres(preservarTiradas = false) {
     enPeriodoPausa = false;
     temporizadorPausado = false;
+    ruletaPausadaPorNavegacion = false;
     if (!preservarTiradas) {
         tiradasRealizadas = 0;
     }
@@ -663,43 +709,47 @@ function iniciarTemporizadorAutoDesastres(preservarTiradas = false) {
     actualizarLabelEstadoTimer("Siguiente desastre en:");
     actualizarDisplayCuentaAtrasDesastres();
 
-    ruletaDesastresInterval = setInterval(() => {
-        if (temporizadorPausado) return;
+    if (ruletaDesastresInterval) clearInterval(ruletaDesastresInterval);
 
-        ruletaDesastresTiempoRestante--;
-        actualizarDisplayCuentaAtrasDesastres();
-
-        if (ruletaDesastresTiempoRestante <= 0) {
-            if (!enPeriodoPausa) {
-                // 1. Ejecutar desastre y reproducir alarma sonora
-                sonarAlarmaDesastre();
-                ejecutarGiroDesastre(false);
-                tiradasRealizadas++;
-
-                // 2. Comprobar si se ha alcanzado el límite de tiradas automáticas
-                if (EstadoRuletaDesastres.tiradasAutoMax > 0 && tiradasRealizadas >= EstadoRuletaDesastres.tiradasAutoMax) {
-                    clearInterval(ruletaDesastresInterval);
-                    sonarFanfarriaFinTiradas();
-                    actualizarLabelEstadoTimer("✅ Tiradas completadas");
-                    const display = document.getElementById("displayCuentaAtrasDesastres");
-                    if (display) display.textContent = "FIN";
-                    if (btnPausarReanudar) btnPausarReanudar.style.display = "none";
-                    return;
-                }
-
-                // 3. Entrar en TIEMPO DE PAUSA CONFIGURADO (de 1 a 5 min) antes del siguiente ciclo
-                enPeriodoPausa = true;
-                ruletaDesastresTiempoRestante = EstadoRuletaDesastres.pausaMinutos * 60;
-                actualizarLabelEstadoTimer(`⏳ Margen de pausa (${EstadoRuletaDesastres.pausaMinutos} min):`);
-            } else {
-                // 4. Finalizar tiempo de pausa -> arrancar nuevo ciclo de intervalo
-                enPeriodoPausa = false;
-                ruletaDesastresTiempoRestante = EstadoRuletaDesastres.intervaloMinutos * 60;
-                actualizarLabelEstadoTimer("Siguiente desastre en:");
-            }
-        }
-    }, 1000);
+    ruletaDesastresInterval = setInterval(tickAutoDesastres, 1000);
 }
+
+function pausarRuletaDesastresPorNavegacion() {
+    const pantallaJuego = document.getElementById("pantallaJuegoRuletaDesastres");
+    const enJuego = pantallaJuego && pantallaJuego.style.display === "block";
+
+    if (EstadoRuletaDesastres.modo === "auto" && ruletaDesastresInterval && !temporizadorPausado && ruletaDesastresTiempoRestante > 0 && enJuego) {
+        ruletaPausadaPorNavegacion = true;
+        clearInterval(ruletaDesastresInterval);
+        ruletaDesastresInterval = null;
+    }
+}
+window.pausarRuletaDesastresPorNavegacion = pausarRuletaDesastresPorNavegacion;
+
+function reanudarRuletaDesastresPorNavegacion() {
+    const pantallaJuego = document.getElementById("pantallaJuegoRuletaDesastres");
+    const enJuego = pantallaJuego && pantallaJuego.style.display === "block";
+
+    if (ruletaPausadaPorNavegacion && !temporizadorPausado && ruletaDesastresTiempoRestante > 0 && EstadoRuletaDesastres.modo === "auto" && enJuego) {
+        ruletaPausadaPorNavegacion = false;
+        if (ruletaDesastresInterval) clearInterval(ruletaDesastresInterval);
+        ruletaDesastresInterval = setInterval(tickAutoDesastres, 1000);
+
+        const btnPausarReanudar = document.getElementById("btnPausarReanudarRuleta");
+        const displayTimer = document.getElementById("displayCuentaAtrasDesastres");
+        const divTimer = document.getElementById("divCuentaAtrasRuletaDesastres");
+        if (btnPausarReanudar) {
+            btnPausarReanudar.innerHTML = "⏸️ Pausar";
+            btnPausarReanudar.style.background = "";
+        }
+        if (displayTimer) displayTimer.style.color = "";
+        if (divTimer) divTimer.classList.remove("pausado");
+
+        actualizarLabelEstadoTimer(enPeriodoPausa ? `⏳ Margen de pausa (${EstadoRuletaDesastres.pausaMinutos} min):` : "Siguiente desastre en:");
+        actualizarDisplayCuentaAtrasDesastres();
+    }
+}
+window.reanudarRuletaDesastresPorNavegacion = reanudarRuletaDesastresPorNavegacion;
 
 function actualizarLabelEstadoTimer(texto) {
     const lbl = document.getElementById("labelEstadoCuentaAtrasDesastres");

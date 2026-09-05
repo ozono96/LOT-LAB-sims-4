@@ -488,7 +488,41 @@ function mostrarError404(slugInvalido) {
     abrirVentana("ventana404", false);
 }
 
+function gestionarPausaNavegacionTemporizadores() {
+    const ventanaTemp = document.getElementById("ventanaTemporizador");
+    const esTempVisible = ventanaTemp && (ventanaTemp.style.display === "block" || ventanaTemp.style.display === "flex");
+
+    if (esTempVisible) {
+        if (typeof window.reanudarTemporizadorPorNavegacion === "function") {
+            window.reanudarTemporizadorPorNavegacion();
+        }
+    } else {
+        if (typeof window.pausarTemporizadorPorNavegacion === "function") {
+            window.pausarTemporizadorPorNavegacion();
+        }
+    }
+
+    const ventanaRuleta = document.getElementById("pantallaJuegoRuletaDesastres");
+    const ventanaRuletaPadre = document.getElementById("ventanaRuletaDesastres");
+    const esRuletaVisible = ventanaRuletaPadre && (ventanaRuletaPadre.style.display === "block" || ventanaRuletaPadre.style.display === "flex") &&
+        ventanaRuleta && ventanaRuleta.style.display === "block";
+
+    if (esRuletaVisible) {
+        if (typeof window.reanudarRuletaDesastresPorNavegacion === "function") {
+            window.reanudarRuletaDesastresPorNavegacion();
+        }
+    } else {
+        if (typeof window.pausarRuletaDesastresPorNavegacion === "function") {
+            window.pausarRuletaDesastresPorNavegacion();
+        }
+    }
+}
+window.gestionarPausaNavegacionTemporizadores = gestionarPausaNavegacionTemporizadores;
+
 function abrirVentana(id, esClickUsuario = false) {
+    if (typeof ocultarResumenSolar === "function") {
+        ocultarResumenSolar();
+    }
     const ventanaEl = document.getElementById(id);
 
     if (window.ventanaActual !== id) {
@@ -519,6 +553,9 @@ function abrirVentana(id, esClickUsuario = false) {
         const VENTANAS_FLEX = ["ventanaTemporizador", "ventanaTiempoAgotado"];
         ventanaEl.style.display = VENTANAS_FLEX.includes(id) ? "flex" : "block";
     }
+
+    // Pausar o reanudar automáticamente los temporizadores según visibilidad de su sección
+    gestionarPausaNavegacionTemporizadores();
 
     if (typeof window.emitirEventoOBS === "function") {
         window.emitirEventoOBS("SYNC_ABRIR_VENTANA", { idVentana: id });
@@ -677,6 +714,10 @@ function cerrarTemporizadorAcoplado() {
     if (btnToggleReto) btnToggleReto.innerHTML = "⏱️ Abrir temporizador";
     if (btnToggleRuleta) btnToggleRuleta.innerHTML = "⏱️ Abrir temporizador";
 
+    if (typeof window.pausarTemporizadorPorNavegacion === "function") {
+        window.pausarTemporizadorPorNavegacion();
+    }
+
     if (!window.esSincronizacionOBS && typeof window.emitirEventoOBS === "function") {
         window.emitirEventoOBS("SYNC_ACCION", {
             accion: "TEMPORIZADOR_ACOPLADO_STATE",
@@ -697,6 +738,7 @@ function cerrarVentana(id) {
         } else {
             ventana.style.display = "none";
         }
+        gestionarPausaNavegacionTemporizadores();
         comprobarVentanaVisible();
         if (typeof window.emitirEventoOBS === "function") {
             window.emitirEventoOBS("SYNC_CERRAR_VENTANA", { idVentana: id });

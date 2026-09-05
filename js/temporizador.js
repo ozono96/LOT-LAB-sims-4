@@ -5,6 +5,7 @@
 let temporizadorInterval = null;
 let tiempoRestanteEnSegundos = 0;
 let estaPausado = false;
+let pausadoPorNavegacion = false;
 
 document.addEventListener("DOMContentLoaded", () => {
     const botonTemporizadorMenu = document.getElementById("botonTemporizador");
@@ -101,7 +102,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Abrir ventana desde el menú
     if (botonTemporizadorMenu) {
         botonTemporizadorMenu.addEventListener("click", () => {
-            reiniciarUI();
+            if (tiempoRestanteEnSegundos <= 0 && !temporizadorInterval && !pausadoPorNavegacion) {
+                reiniciarUI();
+            }
             abrirVentana("ventanaTemporizador");
         });
     }
@@ -126,6 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             tiempoRestanteEnSegundos = minutos * 60;
             estaPausado = false;
+            pausadoPorNavegacion = false;
             
             if (botonPausar) {
                 botonPausar.innerHTML = '<span class="iconoTimerAction">⏸️</span><span class="textoTimerAction">Pausar</span>';
@@ -156,6 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Pausar / Reanudar temporizador
     if (botonPausar) {
         botonPausar.addEventListener("click", () => {
+            pausadoPorNavegacion = false;
             if (estaPausado) {
                 // Reanudar -> Verde
                 estaPausado = false;
@@ -178,6 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 displayTemporizador.classList.remove("enMarcha", "tiempoAgotado");
                 displayTemporizador.classList.add("pausado");
                 if (temporizadorInterval) clearInterval(temporizadorInterval);
+                temporizadorInterval = null;
                 
                 if (typeof window.emitirEventoOBS === "function" && !window.esSincronizacionOBS) {
                     window.emitirEventoOBS("SYNC_ACCION", { accion: "TEMPORIZADOR", payload: { action: "PAUSE", tiempoRestante: tiempoRestanteEnSegundos } });
@@ -189,7 +195,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Detener temporizador manualmente
     if (botonDetener) {
         botonDetener.addEventListener("click", () => {
+            pausadoPorNavegacion = false;
             if (temporizadorInterval) clearInterval(temporizadorInterval);
+            temporizadorInterval = null;
             reiniciarUI();
             
             if (typeof window.emitirEventoOBS === "function" && !window.esSincronizacionOBS) {
@@ -298,8 +306,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function reiniciarUI() {
         if (temporizadorInterval) clearInterval(temporizadorInterval);
+        temporizadorInterval = null;
         tiempoRestanteEnSegundos = 0;
         estaPausado = false;
+        pausadoPorNavegacion = false;
 
         if (botonPausar) {
             botonPausar.innerHTML = '<span class="iconoTimerAction">⏸️</span><span class="textoTimerAction">Pausar</span>';
@@ -331,6 +341,37 @@ document.addEventListener("DOMContentLoaded", () => {
             displayTemporizador.textContent = "00:00";
         }
     }
+
+    // Funciones de pausa y reanudación automática por navegación interna
+    function pausarTemporizadorPorNavegacion() {
+        if (temporizadorInterval && !estaPausado && tiempoRestanteEnSegundos > 0) {
+            pausadoPorNavegacion = true;
+            clearInterval(temporizadorInterval);
+            temporizadorInterval = null;
+        }
+    }
+
+    function reanudarTemporizadorPorNavegacion() {
+        if (pausadoPorNavegacion && !estaPausado && tiempoRestanteEnSegundos > 0) {
+            pausadoPorNavegacion = false;
+            if (temporizadorInterval) clearInterval(temporizadorInterval);
+            temporizadorInterval = setInterval(tick, 1000);
+
+            if (displayTemporizador) {
+                displayTemporizador.classList.remove("pausado", "tiempoAgotado");
+                displayTemporizador.classList.add("enMarcha");
+            }
+            if (botonPausar) {
+                botonPausar.innerHTML = '<span class="iconoTimerAction">⏸️</span><span class="textoTimerAction">Pausar</span>';
+                botonPausar.setAttribute("data-tooltip", "Pausar temporizador");
+                botonPausar.classList.remove("enPausa");
+            }
+            actualizarDisplay();
+        }
+    }
+
+    window.pausarTemporizadorPorNavegacion = pausarTemporizadorPorNavegacion;
+    window.reanudarTemporizadorPorNavegacion = reanudarTemporizadorPorNavegacion;
 
     // Exponer la función para que OBS la llame
     window.ejecutarTemporizadorObs = function (payload) {

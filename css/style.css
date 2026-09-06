@@ -6950,6 +6950,11 @@ body.modo-dia .codigoResultadoTruco {
     transition: all 0.25s ease;
     display: inline-block;
     user-select: all;
+    max-width: 100%;
+    box-sizing: border-box;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .truco-copiable:hover {

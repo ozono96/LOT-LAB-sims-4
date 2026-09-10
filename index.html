@@ -167,71 +167,48 @@
 
         <div class="menu-principal" id="menuPrincipal">
 
-            <button class="flechaMenu flechaMenuIzq" id="flechaMenuIzq" title="Ver botones anteriores">‹</button>
-
-            <div class="menu-principal-track" id="menuPrincipalTrack">
-
-                <button id="botonBuscador">
-                    🔍 Filtrador de solares
-                </button>
-
-                <button id="botonListado">
-                    📋 Listado de solares
-                </button>
-
-                <button id="botonRetos">
-                    🏆 Modo retos
-                </button>
-
-                <button id="botonRuletaDesastres">
-                    🎡 Ruleta de desastres
-                </button>
-
-                <button id="botonTemporizador">
-                    ⌛ Temporizador retos
-                </button>
-
-                <button id="botonRuletaColor">
-                    🎨 Ruleta de colores
-                </button>
-
-                <button id="botonDados">
-                    🎲 Tirador de dados
-                </button>
-
-                <button id="botonHabilidades">
-                    🧠 Habilidades al azar
-                </button>
-
-                <button id="botonPacks">
-                    🎁 Packs al azar
-                </button>
-
-                <button id="botonMundos">
-                    🌍 Mundos al azar
-                </button>
-
-                <button id="botonEstadisticas">
-                    📊 Estadísticas Sims 4
-                </button>
-
-                <button id="botonTrucos">
-                    🕹️ Trucos
-                </button>
-
-                <button id="botonModsSimfile" class="deshabilitado" data-tooltip="🏗️Próximamente">
-                    📦 CC y Save Files
-                </button>
-
-                <button id="botonAcercaDe">
-                    👋 Acerca de...
-                </button>
-
-
-
+            <!-- ==================== NAVEGACIÓN CLÁSICA ==================== -->
+            <div class="barra-navegacion-clasica" id="barraNavegacionClasica">
+                <div class="categorias-nav-clasica" id="categoriasNavClasica">
+                    <!-- Categorías inyectadas dinámicamente desde REGISTRO_NAVEGACION -->
+                </div>
+                <div class="dropdown-nav-clasica" id="dropdownNavClasica" style="display: none;">
+                    <div class="dropdown-nav-contenido" id="dropdownNavContenido">
+                        <!-- Herramientas de la categoría activa -->
+                    </div>
+                </div>
             </div>
 
-            <button class="flechaMenu flechaMenuDer" id="flechaMenuDer" title="Ver más botones">›</button>
+            <!-- ==================== NAVEGACIÓN EXPERIMENTAL ==================== -->
+            <div class="launcher-experimental" id="launcherExperimental" style="display: none;">
+                <!-- Nivel 1: ¿QUÉ QUIERES HACER? y Círculos flotantes -->
+                <div class="exp-nivel exp-nivel-1" id="expNivel1">
+                    <h2 class="exp-titulo-principal">¿QUÉ QUIERES HACER?</h2>
+                    <div class="exp-circulos-grid" id="expCirculosGrid">
+                        <!-- Círculos flotantes inyectados dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Nivel 2: Vista de herramientas de categoría -->
+                <div class="exp-nivel exp-nivel-2" id="expNivel2" style="display: none;">
+                    <div class="exp-nivel2-header">
+                        <button type="button" class="exp-btn-volver" id="expBtnVolverInicio">
+                            ← Volver al inicio
+                        </button>
+                        <h3 class="exp-categoria-titulo" id="expCategoriaTitulo"></h3>
+                    </div>
+                    <div class="exp-herramientas-grid" id="expHerramientasGrid">
+                        <!-- Herramientas inyectadas dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Nivel 3: Barra superior de retorno en herramienta abierta -->
+                <div class="exp-nivel exp-nivel-3" id="expNivel3" style="display: none;">
+                    <button type="button" class="exp-btn-volver exp-btn-volver-categoria" id="expBtnVolverCategoria">
+                        <!-- Texto dinámico: ← Volver a [Categoría] -->
+                    </button>
+                </div>
+            </div>
 
         </div>
 
@@ -1117,6 +1094,9 @@
             <div id="ventanaAcercaDe" class="ventana">
 
                 <div class="cabeceraVentana">
+                    <button class="cerrar">
+                        ✕
+                    </button>
                     <h2>👋 ¡Bienvenido a LOT-LAB Sims 4!</h2>
                 </div>
 
@@ -2857,10 +2837,11 @@
                                 <div class="graficoCabecera">
                                     <h3 class="graficoTitulo">📊 Lanzamientos ordenados por fecha y precio</h3>
                                     <button type="button" class="graficoBtnCompartir" data-canvas="graficoPorTipo"
-                                        title="Descargar captura del gráfico">
+                                        data-tooltip="Capturar gráfico" aria-label="Capturar gráfico">
                                         <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" />
                                             <path
-                                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                                                d="M9 3 7.17 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.17L15 3H9zm3 14a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" />
                                         </svg>
                                     </button>
                                 </div>
@@ -2880,10 +2861,11 @@
                                         seleccionado
                                     </h3>
                                     <button type="button" class="graficoBtnCompartir" data-canvas="graficoPorMeses"
-                                        title="Descargar captura del gráfico">
+                                        data-tooltip="Capturar gráfico" aria-label="Capturar gráfico">
                                         <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" />
                                             <path
-                                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                                                d="M9 3 7.17 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.17L15 3H9zm3 14a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" />
                                         </svg>
                                     </button>
                                 </div>
@@ -2897,10 +2879,11 @@
                                 <div class="graficoCabecera">
                                     <h3 class="graficoTitulo">📅 Lanzamientos por mes del año (estacionalidad)</h3>
                                     <button type="button" class="graficoBtnCompartir" data-canvas="graficoMesesAno"
-                                        title="Descargar captura del gráfico">
+                                        data-tooltip="Capturar gráfico" aria-label="Capturar gráfico">
                                         <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" />
                                             <path
-                                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                                                d="M9 3 7.17 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.17L15 3H9zm3 14a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" />
                                         </svg>
                                     </button>
                                 </div>
@@ -2916,10 +2899,11 @@
                                 <div class="graficoCabecera">
                                     <h3 class="graficoTitulo">📆 Lanzamientos por día de la semana</h3>
                                     <button type="button" class="graficoBtnCompartir" data-canvas="graficoDiasSemana"
-                                        title="Descargar captura del gráfico">
+                                        data-tooltip="Capturar gráfico" aria-label="Capturar gráfico">
                                         <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" />
                                             <path
-                                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                                                d="M9 3 7.17 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.17L15 3H9zm3 14a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" />
                                         </svg>
                                     </button>
                                 </div>
@@ -2936,10 +2920,11 @@
                                     <div class="graficoCabecera" style="width:100%;">
                                         <h3 class="graficoTitulo">📈 Lanzamientos a lo largo del tiempo por tipo</h3>
                                         <button type="button" class="graficoBtnCompartir" data-canvas="graficoTemporal"
-                                            title="Descargar captura del gráfico">
+                                            data-tooltip="Capturar gráfico" aria-label="Capturar gráfico">
                                             <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                <path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" />
                                                 <path
-                                                    d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                                                    d="M9 3 7.17 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.17L15 3H9zm3 14a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" />
                                             </svg>
                                         </button>
                                     </div>
@@ -2955,10 +2940,11 @@
                                 <div class="graficoCabecera">
                                     <h3 class="graficoTitulo">🥧 Distribución por categoría</h3>
                                     <button type="button" class="graficoBtnCompartir" data-canvas="graficoPastel"
-                                        title="Descargar captura del gráfico">
+                                        data-tooltip="Capturar gráfico" aria-label="Capturar gráfico">
                                         <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" />
                                             <path
-                                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                                                d="M9 3 7.17 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.17L15 3H9zm3 14a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" />
                                         </svg>
                                     </button>
                                 </div>
@@ -2972,10 +2958,11 @@
                                 <div class="graficoCabecera">
                                     <h3 class="graficoTitulo">💰 Distribución por precio</h3>
                                     <button type="button" class="graficoBtnCompartir" data-canvas="graficoPrecio"
-                                        title="Descargar captura del gráfico">
+                                        data-tooltip="Capturar gráfico" aria-label="Capturar gráfico">
                                         <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" />
                                             <path
-                                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                                                d="M9 3 7.17 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.17L15 3H9zm3 14a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" />
                                         </svg>
                                     </button>
                                 </div>
@@ -2989,10 +2976,11 @@
                                 <div class="graficoCabecera">
                                     <h3 class="graficoTitulo">🏡 Solares por pack con mundo</h3>
                                     <button type="button" class="graficoBtnCompartir" data-canvas="graficoSolaresMundos"
-                                        title="Descargar captura del gráfico">
+                                        data-tooltip="Capturar gráfico" aria-label="Capturar gráfico">
                                         <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" />
                                             <path
-                                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                                                d="M9 3 7.17 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.17L15 3H9zm3 14a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" />
                                         </svg>
                                     </button>
                                 </div>
@@ -3006,10 +2994,11 @@
                                 <div class="graficoCabecera">
                                     <h3 class="graficoTitulo">🏠 Objetos nuevos por pack</h3>
                                     <button type="button" class="graficoBtnCompartir" data-canvas="graficoObjetos"
-                                        title="Descargar captura del gráfico">
+                                        data-tooltip="Capturar gráfico" aria-label="Capturar gráfico">
                                         <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" />
                                             <path
-                                                d="M18 16.08c-.76 0-1.44.30-1.96.77L8.91 12.7a2.48 2.48 0 0 0 0-1.39l7-4.11A2.99 2.99 0 1 0 15 5a2.9 2.9 0 0 0 .04.49l-7.03 4.13a3 3 0 1 0 0 4.76l7.03 4.13A2.9 2.9 0 0 0 15 19a3 3 0 1 0 3-2.92z" />
+                                                d="M9 3 7.17 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.17L15 3H9zm3 14a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" />
                                         </svg>
                                     </button>
                                 </div>
@@ -3316,6 +3305,7 @@
     <script src="js/buscadorNombre.js"></script>
     <script src="js/filters.js"></script>
     <script src="js/ruleta-desastres.js"></script>
+    <script src="js/navigation-config.js"></script>
     <script src="js/navigation.js"></script>
     <script src="js/retos.js"></script>
     <script src="js/reto-modulos.js"></script>
@@ -3347,7 +3337,8 @@
 
             <div class="footer-controles">
 
-                <button id="botonModo" class="toggleModo" title="Cambiar modo día/noche">
+                <button id="botonModo" class="toggleModo" data-tooltip="Cambiar modo día/noche"
+                    aria-label="Cambiar modo día/noche">
 
                     <svg class="icono-sol" viewBox="0 0 24 24" aria-hidden="true">
                         <path
@@ -3361,28 +3352,99 @@
 
                 </button>
 
-                <button id="botonSonido" class="toggleModo" title="Silenciar">
+                <div class="controlSonidoWrapper" id="controlSonidoWrapper">
+                    <button id="botonSonido" class="toggleModo botonSonidoBtn" data-tooltip="Ajustes de sonido"
+                        aria-label="Ajustes de sonido">
+                        <!-- Altavoz con sonido -->
+                        <svg class="icono-sonido-on" viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+                        </svg>
+                        <!-- Altavoz silenciado -->
+                        <svg class="icono-sonido-off oculto-sonido" viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" />
+                        </svg>
+                    </button>
 
-                    <!-- Altavoz con sonido -->
-                    <svg class="icono-sonido-on" viewBox="0 0 24 24" aria-hidden="true">
-                        <path
-                            d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
-                    </svg>
+                    <div id="popoverSonido" class="popoverSonido">
+                        <div class="popoverSonidoHeader">
+                            <span>🔊 Ajustes de Sonido</span>
+                            <button type="button" id="cerrarPopoverSonido" class="cerrarPequeno"
+                                title="Cerrar">✕</button>
+                        </div>
+                        <div class="popoverSonidoFila filaMaestro">
+                            <div class="popoverSonidoInfo">
+                                <span class="popoverSonidoIcono">🔊</span>
+                                <div class="popoverSonidoTexto">
+                                    <span class="popoverSonidoTitulo">Sonido maestro</span>
+                                    <span class="popoverSonidoDesc">Silencia todo LOT-LAB</span>
+                                </div>
+                            </div>
+                            <label class="switchSonido" title="Activar/desactivar sonido maestro">
+                                <input type="checkbox" id="switchSonidoMaestro" checked>
+                                <span class="sliderSwitch"></span>
+                            </label>
+                        </div>
+                        <div class="popoverSonidoSeparador"></div>
+                        <div class="popoverSonidoFila filaSecundaria" id="filaSonidoInterfaz">
+                            <div class="popoverSonidoInfo">
+                                <span class="popoverSonidoIcono">🖱️</span>
+                                <div class="popoverSonidoTexto">
+                                    <span class="popoverSonidoTitulo">Sonidos de interfaz</span>
+                                    <span class="popoverSonidoDesc">Hover, clics y navegación</span>
+                                </div>
+                            </div>
+                            <label class="switchSonido" title="Activar/desactivar sonidos de interfaz">
+                                <input type="checkbox" id="switchSonidoInterfaz" checked>
+                                <span class="sliderSwitch"></span>
+                            </label>
+                        </div>
+                        <div class="popoverSonidoFila filaSecundaria" id="filaSonidoAlertas">
+                            <div class="popoverSonidoInfo">
+                                <span class="popoverSonidoIcono">⏰</span>
+                                <div class="popoverSonidoTexto">
+                                    <span class="popoverSonidoTitulo">Sonidos de alertas</span>
+                                    <span class="popoverSonidoDesc">Temporizador y ruletas</span>
+                                </div>
+                            </div>
+                            <label class="switchSonido" title="Activar/desactivar sonidos de alertas">
+                                <input type="checkbox" id="switchSonidoAlertas" checked>
+                                <span class="sliderSwitch"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
 
-                    <!-- Altavoz silenciado -->
-                    <svg class="icono-sonido-off oculto-sonido" viewBox="0 0 24 24" aria-hidden="true">
-                        <path
-                            d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" />
-                    </svg>
+                <div class="selectorModoNavWrapper" id="selectorModoNavWrapper">
+                    <button id="botonSelectorModoNav" class="toggleModo botonModoNavBtn"
+                        data-tooltip="Cambiar modo de navegación" aria-label="Cambiar modo de navegación">
+                        <svg class="icono-modo-nav" viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 4.2v9.8h16V8.2H4zm2-2.7h1.6v1.6H6V5.5zm3.2 0h1.6v1.6H9.2V5.5zm3.2 0H14v1.6h-1.6V5.5z" />
+                        </svg>
+                    </button>
+                    <div id="popoverModoNav" class="popoverModoNav">
+                        <div class="popoverModoNavHeader">Navegación</div>
+                        <button type="button" class="opcionModoNav activa" data-modo="clasica" id="opcionModoClasica">
+                            <span class="opcionModoIcono">🧭</span>
+                            <span class="opcionModoTexto">Clásica</span>
+                        </button>
+                        <button type="button" class="opcionModoNav" data-modo="experimental"
+                            id="opcionModoExperimental">
+                            <span class="opcionModoIcono">🧪</span>
+                            <span class="opcionModoTexto">Experimental</span>
+                        </button>
+                    </div>
+                </div>
 
+                <button id="botonOBS" class="toggleModo botonOBSBtn" data-tooltip="Configurar OBS Overlay"
+                    aria-label="Configurar OBS Overlay">
+                    OBS
                 </button>
 
-                <button id="botonOBS" class="toggleModo botonOBSBtn" title="Configurar OBS Overlay">
-                    📹 OBS
-                </button>
-
-                <button id="botonAgradecimientos" class="toggleModo botonAgradecimientosBtn" title="Agradecimientos"
-                    aria-label="Agradecimientos">
+                <button id="botonAgradecimientos" class="toggleModo botonAgradecimientosBtn"
+                    data-tooltip="Agradecimientos" aria-label="Agradecimientos">
                     <svg class="icono-corazon" viewBox="0 0 24 24" aria-hidden="true">
                         <path
                             d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
@@ -3391,7 +3453,8 @@
 
                 <div class="selectorIdioma">
 
-                    <button id="botonIdioma" class="toggleModo botonIdiomaBtn" title="Cambiar idioma">
+                    <button id="botonIdioma" class="toggleModo botonIdiomaBtn" data-tooltip="Cambiar idioma"
+                        aria-label="Cambiar idioma">
                         <img id="banderaActual" src="https://flagcdn.com/24x18/es.png" alt="Idioma actual"
                             class="banderaImg">
                     </button>
@@ -3419,7 +3482,7 @@
             </div>
 
             <p>
-                El unico buscador de Solares y generador de retos para construir en Los Sims 4 - Versión 1.2.3
+                El unico buscador de Solares y generador de retos para construir en Los Sims 4 - Versión 1.2.4
 
 
             </p>
@@ -3611,8 +3674,8 @@
                                 d="M5.59 7.41L10.18 12l-4.59 4.59L7 18l6-6-6-6-1.41 1.41zM11.59 7.41L16.18 12l-4.59 4.59L13 18l6-6-6-6-1.41 1.41z" />
                         </svg>
                     </button>
-                    <button type="button" id="btnCapturaAgradecimientos" class="captura compartirSeccion" data-tooltip="Capturar"
-                        data-captura="cardAgradecimientos" aria-label="Capturar">
+                    <button type="button" id="btnCapturaAgradecimientos" class="captura compartirSeccion"
+                        data-tooltip="Capturar" data-captura="cardAgradecimientos" aria-label="Capturar">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
                             <path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" />
                             <path

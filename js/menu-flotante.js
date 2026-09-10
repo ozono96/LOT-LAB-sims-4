@@ -150,6 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function activarFlotante() {
+        if (window.modoNavegacionActual === 'experimental') return;
         // Doble salvaguarda: nunca activar si el scroll está arriba del todo o es ventana corta
         const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
         if (scrollY <= 5) return;

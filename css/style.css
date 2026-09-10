@@ -359,10 +359,9 @@ header {
     text-align: center;
     box-shadow: var(--sombra-normal);
 
-    /* Cabecera fija: siempre visible y en primer plano al hacer scroll */
-    position: sticky;
-    top: 0;
-    z-index: 900;
+    /* Cabecera general de LOT-LAB */
+    position: relative;
+    z-index: 50;
     transition: padding 0.3s ease, margin 0.3s ease;
 }
 
@@ -385,61 +384,691 @@ header p {
 }
 
 /* ==========================================================
-   MENÃš PRINCIPAL
+   NUEVO SISTEMA DE NAVEGACIÓN (CLÁSICA Y EXPERIMENTAL)
 ========================================================== */
 
 .menu-principal {
-    max-width: 900px;
-    margin: 0 auto 20px auto;
-    position: relative;
-
-    /* Estilos de ventana */
-    padding: 25px;
+    max-width: 1260px;
+    margin: 0 auto 25px auto;
+    position: sticky;
+    top: 10px;
+    z-index: 900;
+    padding: 14px 20px;
     border-radius: var(--radio-grande);
     background: var(--color-tarjeta);
     backdrop-filter: blur(var(--blur));
     -webkit-backdrop-filter: blur(var(--blur));
     border: 1px solid var(--borde);
     box-shadow: var(--sombra-normal);
-
     transition: padding .25s ease, border-radius .25s ease, box-shadow .25s ease, max-width .25s ease;
 }
 
-.menu-principal-track {
+/* ─── NAVEGACIÓN CLÁSICA ────────────────────────────────── */
+.barra-navegacion-clasica {
+    width: 100%;
+    position: relative;
+}
+
+.categorias-nav-clasica {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: clamp(6px, 0.8vw, 10px);
+    justify-content: center;
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+    padding: 4px 2px;
+}
+
+.categorias-nav-clasica::-webkit-scrollbar {
+    display: none;
+}
+
+.btn-categoria-nav {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    border-radius: var(--radio-normal);
+    background: var(--color-principal);
+    color: var(--color-texto);
+    border: 1px solid var(--borde);
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: var(--sombra-suave);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    font-family: inherit;
+}
+
+.btn-categoria-nav:hover {
+    background: var(--color-secundario);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-categoria-nav.activa {
+    background: var(--color-resaltado) !important;
+    color: #ffffff !important;
+    border-color: var(--color-resaltado) !important;
+    box-shadow: 0 4px 14px rgba(46, 204, 113, 0.4) !important;
+    transform: translateY(-2px);
+}
+
+.icono-cat-nav {
+    font-size: 1.15rem;
+    line-height: 1;
+}
+
+/* Dropdown aero/glass inmediatamente asociado */
+.dropdown-nav-clasica {
+    margin-top: 14px;
+    background: var(--color-tarjeta);
+    border: 1.5px solid var(--borde);
+    border-radius: var(--radio-normal);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    box-shadow: var(--sombra-fuerte);
+    padding: 16px;
+    animation: animEntradaDropdown 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes animEntradaDropdown {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-header-categoria {
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-resaltado);
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--borde);
+}
+
+.dropdown-herramientas-lista {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+}
+
+.btn-dropdown-tool {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: var(--radio-pequeno);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--color-texto);
+    border: 1px solid var(--borde);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+body.modo-dia .btn-dropdown-tool {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.btn-dropdown-tool:hover:not(.deshabilitado) {
+    background: rgba(46, 204, 113, 0.18);
+    border-color: var(--color-resaltado);
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
+}
+
+.btn-dropdown-tool.deshabilitado {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(0.6);
+}
+
+.dropdown-tool-icono {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.dropdown-tool-texto {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.dropdown-tool-nombre {
+    font-size: 0.92rem;
+    font-weight: 700;
+}
+
+.dropdown-tool-desc {
+    font-size: 0.76rem;
+    opacity: 0.75;
+    line-height: 1.25;
+}
+
+/* ─── NAVEGACIÓN EXPERIMENTAL (LAUNCHER) ─────────────────── */
+/* ─── NAVEGACIÓN EXPERIMENTAL (LAUNCHER HERO) ─────────────────── */
+body.modo-nav-experimental .menu-principal {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    max-width: 1280px;
+    padding: 0;
+    margin: 0 auto;
+}
+
+.launcher-experimental {
+    width: 100%;
+    min-height: calc(100vh - 270px);
+    min-height: 520px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 14px 40px 14px;
+    box-sizing: border-box;
+}
+
+.exp-nivel {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
 }
 
-.menu-principal button {
-    font-size: 1.2rem;
-    padding: 18px 24px;
+/* Nivel 1: Cuadrícula principal 2 x 4 */
+.exp-titulo-principal {
+    text-align: center;
+    font-size: clamp(2.1rem, 3.8vw, 3rem);
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    margin: 0 0 36px 0;
+    color: var(--color-titulo);
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.25);
+}
+
+.exp-circulos-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    max-width: 1180px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+.exp-categoria-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    min-height: 160px;
+    padding: 28px 16px;
+    border-radius: var(--radio-grande, 16px);
+    background: var(--color-tarjeta);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    border: 1.5px solid var(--borde);
+    box-shadow: var(--sombra-normal);
+    color: var(--color-texto);
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+    box-sizing: border-box;
+}
+
+.exp-categoria-card:hover {
+    background: var(--color-secundario);
+    border-color: var(--color-resaltado);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22), 0 0 18px rgba(46, 204, 113, 0.22);
+}
+
+.exp-cat-card-icono {
+    font-size: 3.5rem;
+    line-height: 1;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+}
+
+.exp-cat-card-nombre {
+    font-size: 1.18rem;
+    font-weight: 800;
+    text-align: center;
+    letter-spacing: 0.03em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .exp-categoria-card:hover {
+        transform: none !important;
+    }
+}
+
+/* Nivel 2: Vista de Categoría más grande y centrada */
+.exp-nivel2-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 1140px;
+    margin: 0 auto 36px auto;
+    padding: 0 12px;
+    box-sizing: border-box;
+    gap: 20px;
+}
+
+.exp-btn-volver {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 22px;
+    border-radius: var(--radio-normal);
+    background: var(--color-principal);
+    color: var(--color-texto);
+    border: 1.5px solid var(--borde);
+    font-weight: 700;
+    font-size: 0.96rem;
+    cursor: pointer;
+    box-shadow: var(--sombra-suave);
+    transition: all var(--transicion);
+    font-family: inherit;
+}
+
+.exp-btn-volver:hover {
+    background: var(--color-secundario);
+    border-color: var(--color-resaltado);
+    transform: translateY(-2px);
+}
+
+.exp-categoria-titulo {
+    margin: 0;
+    font-size: clamp(1.5rem, 2.6vw, 2rem);
+    font-weight: 800;
+    color: var(--color-titulo);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+}
+
+.exp-herramientas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 350px));
+    justify-content: center;
+    gap: 24px;
+    max-width: 1140px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+.exp-herramienta-card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 22px 24px;
+    min-height: 100px;
+    border-radius: var(--radio-grande, 14px);
+    background: var(--color-tarjeta);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    color: var(--color-texto);
+    border: 1.5px solid var(--borde);
+    cursor: pointer;
+    transition: all 0.22s ease;
+    text-align: left;
+    box-shadow: var(--sombra-suave);
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.exp-herramienta-card:hover:not(.deshabilitada) {
+    border-color: var(--color-resaltado);
+    background: var(--color-secundario);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(46, 204, 113, 0.25);
+}
+
+.exp-herramienta-card.deshabilitada {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(0.5);
+}
+
+.exp-herramienta-icono {
+    font-size: 2.6rem;
+    flex-shrink: 0;
+}
+
+.exp-herramienta-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.exp-herramienta-nombre {
+    font-size: 1.12rem;
+    font-weight: 800;
+}
+
+.exp-herramienta-desc {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    line-height: 1.35;
+}
+
+/* En modo normal (no experimental), el botón cerrar de Acerca de se mantiene oculto */
+body:not(.modo-nav-experimental) #ventanaAcercaDe .cerrar {
+    display: none !important;
+}
+
+/* ─── POPOVERS DEL FOOTER (SONIDO Y SELECTOR DE MODO) ───── */
+.controlSonidoWrapper,
+.selectorModoNavWrapper {
+    position: relative;
+    display: inline-flex;
+}
+
+.botonModoNavBtn {
+    /* Mantiene las dimensiones circulares de .toggleModo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.botonModoNavBtn .icono-modo-nav {
+    width: 28px;
+    height: 28px;
+    fill: currentColor;
+}
+
+.botonModoNavBtn:hover .icono-modo-nav {
+    transform: none;
+}
+
+.popoverSonido,
+.popoverModoNav {
+    position: absolute;
+    bottom: calc(100% + 12px);
+    left: 50%;
+    transform: translateX(-50%) translateY(8px);
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px 16px;
+    width: max-content;
+    min-width: 260px;
+    border-radius: var(--radio-normal);
+    background: var(--color-tarjeta);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    border: 1.5px solid var(--borde);
+    box-shadow: var(--sombra-fuerte);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 950;
+}
+
+.popoverSonido.abierto,
+.popoverModoNav.abierto {
+    display: flex;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
 }
 
 @media (max-width: 768px) {
-    .menu-principal-track {
-        grid-template-columns: repeat(2, 1fr);
+    .controlSonidoWrapper,
+    .selectorModoNavWrapper {
+        position: static;
+    }
+
+    .popoverSonido,
+    .popoverModoNav {
+        position: fixed;
+        left: 50%;
+        right: auto;
+        bottom: 84px;
+        transform: translateX(-50%) translateY(12px);
+        width: min(calc(100vw - 32px), 340px);
+        max-width: calc(100vw - 32px);
+        box-sizing: border-box;
+        z-index: 10002;
+        margin: 0;
+    }
+
+    .popoverSonido.abierto,
+    .popoverModoNav.abierto {
+        transform: translateX(-50%) translateY(0);
     }
 }
 
-@media (max-width: 480px) {
+.popoverModoNavHeader,
+.popoverSonidoHeader {
+    font-size: 0.88rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--borde);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.popoverModoNav {
+    min-width: 200px;
+}
+
+.opcionModoNav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: var(--radio-pequeño);
+    border: 1.5px solid transparent;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--color-texto);
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    text-align: left;
+    width: 100%;
+}
+
+body.modo-dia .opcionModoNav {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.opcionModoNav:hover:not(.activa) {
+    background: rgba(46, 204, 113, 0.15);
+    color: var(--color-resaltado);
+    transform: translateX(3px);
+}
+
+.opcionModoNav.activa {
+    color: #ffffff !important;
+    font-weight: 700;
+    background: var(--color-resaltado) !important;
+    box-shadow: 0 4px 14px rgba(46, 204, 113, 0.45);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.opcionModoIcono {
+    font-size: 1.15rem;
+    line-height: 1;
+}
+
+.opcionModoTexto {
+    flex: 1;
+}
+
+/* Filas e interruptores de Sonido */
+.popoverSonidoFila {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.popoverSonidoInfo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.popoverSonidoIcono {
+    font-size: 1.25rem;
+}
+
+.popoverSonidoTexto {
+    display: flex;
+    flex-direction: column;
+}
+
+.popoverSonidoTitulo {
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+.popoverSonidoDesc {
+    font-size: 0.72rem;
+    opacity: 0.75;
+}
+
+.popoverSonidoSeparador {
+    height: 1px;
+    background: var(--borde);
+    margin: 2px 0;
+}
+
+/* Estado visual atenuado con Maestro OFF: 100% interactivo (sin pointer-events: none) */
+.popoverSonido.maestro-apagado .filaSecundaria {
+    opacity: 0.65;
+    transition: opacity 0.2s ease;
+}
+
+/* Switch toggle styling */
+.switchSonido {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.switchSonido input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.sliderSwitch {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.25);
+    border: 1px solid var(--borde);
+    border-radius: 24px;
+    transition: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body.modo-dia .sliderSwitch {
+    background-color: rgba(0, 0, 0, 0.18);
+}
+
+.sliderSwitch:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    transition: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.switchSonido input:checked + .sliderSwitch {
+    background-color: var(--color-resaltado);
+    border-color: var(--color-resaltado);
+}
+
+.switchSonido input:checked + .sliderSwitch:before {
+    transform: translateX(20px);
+}
+
+.cerrarPequeno {
+    background: transparent;
+    border: none;
+    color: var(--color-texto);
+    font-size: 0.95rem;
+    cursor: pointer;
+    padding: 2px 6px;
+    opacity: 0.75;
+    transition: opacity 0.2s;
+}
+
+.cerrarPequeno:hover {
+    opacity: 1;
+}
+
+/* Adaptación responsive para móvil */
+@media (max-width: 768px) {
     .menu-principal {
-        padding: 16px 12px;
+        padding: 14px 12px;
+        margin-bottom: 18px;
     }
-
-    .menu-principal-track {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
+    .categorias-nav-clasica {
+        justify-content: flex-start;
+        gap: 8px;
     }
-
-    .menu-principal button {
-        font-size: 0.95rem;
-        padding: 14px 10px;
+    .btn-categoria-nav {
+        padding: 9px 14px;
+        font-size: 0.88rem;
     }
-
-    .menu-principal.menuFlotante {
-        padding: 8px clamp(28px, 7vw, 34px);
+    .dropdown-herramientas-lista {
+        grid-template-columns: 1fr;
+    }
+    .exp-circulos-grid {
+        gap: 16px 12px;
+    }
+    .exp-circulo {
+        width: 82px;
+    }
+    .exp-circulo-burbuja {
+        width: 68px;
+        height: 68px;
+    }
+    .exp-herramientas-grid {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -811,6 +1440,14 @@ body.modo-dia .cabeceraVentana {
     .cabeceraVentana {
         margin: -18px -18px 18px -18px;
         padding: 12px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .cabeceraVentana {
+        /* Sincronizado con ventana padding: 14px en ≤480px */
+        margin: -14px -14px 16px -14px;
+        padding: 10px 12px;
     }
 }
 
@@ -1678,7 +2315,8 @@ input[type="number"]:focus {
 ========================================================== */
 
 .footer {
-
+    position: relative;
+    z-index: 920;
     width: 100%;
 
     margin-top: auto;
@@ -1975,13 +2613,13 @@ input[type="number"]:focus {
 
 .toggleModo {
 
-    width: 48px;
+    width: 56px;
 
-    height: 48px;
+    height: 56px;
 
-    min-width: 48px;
+    min-width: 56px;
 
-    min-height: 48px;
+    min-height: 56px;
 
     display: flex;
 
@@ -2005,15 +2643,19 @@ input[type="number"]:focus {
 
     cursor: pointer;
 
+    font-size: 0.95rem;
+
+    font-weight: 700;
+
     transition: all .25s;
 
 }
 
 .toggleModo svg {
 
-    width: 28px;
+    width: 30px;
 
-    height: 28px;
+    height: 30px;
 
     fill: currentColor;
 
@@ -3906,8 +4548,8 @@ body.galeria-ampliada .ventana {
 }
 
 .banderaImg {
-    width: 24px;
-    height: 18px;
+    width: 28px;
+    height: 21px;
     object-fit: cover;
     border-radius: 4px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, .35);
@@ -7325,6 +7967,42 @@ body.modo-dia .formCampo input {
     box-shadow: 0 8px 25px rgba(46, 204, 113, 0.5) !important;
 }
 
+/* Adaptación responsive para los botones de Opciones de Reto en móvil */
+@media (max-width: 700px) {
+    #ventanaRetosOpciones .accionesRuletaDesastres {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        margin-top: 20px;
+        width: 100%;
+        max-width: 360px;
+        margin-left: auto;
+        margin-right: auto;
+        box-sizing: border-box;
+    }
+
+    #ventanaRetosOpciones .accionesRuletaDesastres .botonReto {
+        width: 100%;
+        margin: 0;
+        box-sizing: border-box;
+        text-align: center;
+        font-size: 0.95rem;
+        padding: 12px 18px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Generar Reto en posición destacada */
+    #ventanaRetosOpciones #generarRetoBtn {
+        font-size: 1.15rem !important;
+        padding: 14px 22px !important;
+        border-radius: 30px !important;
+    }
+}
+
 /* Pantalla de Juego y Resultado (Centrada) */
 .cabeceraJuegoDesastres {
     display: flex;
@@ -7585,6 +8263,7 @@ body.modo-dia .desastreItemTitulo {
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
 }
 
@@ -8626,16 +9305,21 @@ body.modo-dia .habAnim-item {
 
 .botonOBSBtn {
     display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 8px 14px !important;
-    font-weight: 700;
-    font-size: 0.9rem;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 56px !important;
+    height: 56px !important;
+    min-width: 56px !important;
+    min-height: 56px !important;
+    padding: 0 !important;
+    aspect-ratio: 1 / 1 !important;
+    border-radius: 50% !important;
+    font-weight: 800;
+    font-size: 0.88rem;
+    letter-spacing: 0.04em;
     cursor: pointer;
     background: rgba(255, 255, 255, 0.15);
     border: 1.5px solid var(--borde);
-    border-radius: var(--radio-pequeño, 10px);
     color: var(--color-texto);
     transition: all var(--transicion);
 }
@@ -10023,6 +10707,379 @@ body.modo-dia .enlaceTexto:hover {
         user-select: none;
         margin: 0;
         padding: 0;
+    }
+}
+
+
+/* ==========================================================
+   CORRECCIONES MÓVIL — TANDA FINAL
+   Scope: dispositivos ≤ 768px
+   Reglas:
+     - NO modifica comportamiento de PC (> 768px)
+     - NO toca OBS, sonido, ni herramientas internas
+     - Cambios quirúrgicos y contenidos
+   ========================================================== */
+
+/* ── 1. CONTENCIÓN DE OVERFLOW HORIZONTAL ─────────────────
+   Raíz del problema: elementos más anchos que el viewport.
+   Se aplica overflow-x: clip al nivel raíz y se garantiza
+   que html/body no causen desplazamiento horizontal ni
+   rompan el posicionamiento sticky de la navegación.           */
+html {
+    overflow-x: clip;
+    max-width: 100%;
+}
+
+body {
+    overflow-x: clip;
+    max-width: 100%;
+}
+
+/* ── 2. MAIN — REDUCIR PADDING LATERAL EN MÓVIL ─────────── */
+@media (max-width: 700px) {
+    main {
+        padding: 12px 10px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    main {
+        padding: 8px 8px 16px;
+    }
+}
+
+/* ── 3. HEADER — AJUSTES ADICIONALES EN PANTALLAS MUY PEQUEÑAS ─ */
+@media (max-width: 480px) {
+    header {
+        padding: 12px 10px;
+        margin-bottom: 16px;
+    }
+
+    header h1 {
+        font-size: 1.4rem;
+        margin-bottom: 4px;
+    }
+
+    header p {
+        font-size: 0.78rem;
+    }
+
+    .header-logo {
+        width: 44px;
+        height: 44px;
+    }
+
+    .header-contenido {
+        gap: 8px;
+    }
+}
+
+/* ── 4. MENÚ PRINCIPAL — CONTENCIÓN Y SCROLL ─────────────── */
+@media (max-width: 700px) {
+    .menu-principal {
+        padding: 10px 10px;
+        /* Menú sticky permanente sobre las ventanas */
+        position: sticky;
+        top: 8px;
+        z-index: 900;
+        max-width: calc(100vw - 20px);
+        box-sizing: border-box;
+    }
+
+    .menu-principal.menuFlotante {
+        width: calc(100% - 16px);
+        padding: 8px 10px;
+    }
+}
+
+/* ── 5. NAV CLÁSICA — BOTONES EN FILA CON SCROLL HORIZONTAL  */
+@media (max-width: 700px) {
+    .categorias-nav-clasica {
+        /* Ya tiene overflow-x: auto, garantizamos que no desborde */
+        max-width: 100%;
+        box-sizing: border-box;
+        padding-bottom: 6px;   /* espacio para el scrollbar invisible */
+    }
+
+    .btn-categoria-nav {
+        font-size: 0.82rem;
+        padding: 8px 12px;
+    }
+
+    .dropdown-nav-clasica {
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden;
+    }
+
+    .dropdown-herramientas-lista {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Clones de navegación clásica (exclusivos para carrusel infinito en móvil) */
+@media (min-width: 769px) {
+    .cat-nav-clon {
+        display: none !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .cat-nav-clon {
+        display: inline-flex !important;
+    }
+}
+
+/* ── 6. LAUNCHER EXPERIMENTAL — GRID DE CATEGORÍAS ────────
+   En escritorio: 4 columnas. En móvil: 2 columnas.           */
+@media (max-width: 700px) {
+    .exp-circulos-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+        padding: 0 6px;
+    }
+
+    .exp-categoria-card {
+        padding: 20px 10px;
+        min-height: 130px;
+        gap: 12px;
+    }
+
+    .exp-cat-card-icono {
+        font-size: 2.6rem;
+    }
+
+    .exp-cat-card-nombre {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .exp-circulos-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 0 4px;
+    }
+
+    .exp-categoria-card {
+        padding: 16px 8px;
+        min-height: 110px;
+    }
+
+    .exp-cat-card-icono {
+        font-size: 2.2rem;
+    }
+
+    .exp-cat-card-nombre {
+        font-size: 0.88rem;
+    }
+}
+
+/* ── 7. LAUNCHER EXPERIMENTAL — NIVEL 2 (herramientas) ──── */
+@media (max-width: 700px) {
+    .exp-herramientas-grid {
+        grid-template-columns: 1fr;
+        padding: 0 4px;
+        gap: 14px;
+    }
+
+    .exp-herramienta-card {
+        padding: 16px 16px;
+        min-height: 80px;
+    }
+
+    .exp-nivel2-header {
+        padding: 0 6px;
+        gap: 14px;
+        margin-bottom: 22px;
+    }
+
+    .exp-btn-volver {
+        padding: 9px 16px;
+        font-size: 0.88rem;
+    }
+
+    .exp-categoria-titulo {
+        font-size: 1.35rem;
+        text-align: center;
+    }
+}
+
+/* ── 8. LAUNCHER EXPERIMENTAL — NIVEL 3 (barra retorno) ─── */
+@media (max-width: 700px) {
+    .exp-btn-volver-categoria {
+        padding: 9px 14px;
+        font-size: 0.85rem;
+        max-width: 100%;
+        white-space: normal;
+        text-align: left;
+    }
+}
+
+/* ── 9. VENTANAS — PADDING REDUCIDO EN MÓVIL ─────────────── */
+@media (max-width: 700px) {
+    .ventana {
+        padding: 18px 18px 40px 18px;
+        margin: 18px auto 50px auto;
+        width: min(96%, 1150px);
+    }
+}
+
+@media (max-width: 480px) {
+    .ventana {
+        padding: 14px 14px 36px 14px;
+        margin: 12px auto 40px auto;
+    }
+}
+
+/* ── 10. FOOTER — CONTROLES EN 2 FILAS PROPORCIONALES (3 + 3) ──
+   En móvil los 6 botones se distribuyen de forma simétrica:
+   Fila 1: Modo tema, Sonido, Modo navegación
+   Fila 2: OBS, Agradecimientos, Selector de idioma             */
+@media (max-width: 650px) {
+    .footer-controles {
+        display: grid;
+        grid-template-columns: repeat(3, auto);
+        justify-content: center;
+        justify-items: center;
+        align-items: center;
+        gap: 14px 24px;
+        margin: 0 auto 18px auto;
+        padding: 0 10px;
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 360px) {
+    .footer-controles {
+        gap: 12px 18px;
+    }
+}
+
+/* ── 11. FOOTER — LISTA DE IDIOMAS NO DESBORDA ───────────── */
+@media (max-width: 600px) {
+    .listaIdiomas {
+        /* En pantallas pequeñas anclar a la derecha del botón */
+        left: auto;
+        right: 0;
+        transform: translateY(8px);
+        max-width: calc(100vw - 24px);
+    }
+
+    .listaIdiomas.abierta {
+        transform: translateY(0);
+    }
+}
+
+/* ── 12. FOOTER — POPOVERS DE SONIDO Y MODO NAV CENTRADOS ── */
+.controlSonidoWrapper:has(.abierto),
+.selectorModoNavWrapper:has(.abierto),
+.controlSonidoWrapper.popover-abierto,
+.selectorModoNavWrapper.popover-abierto {
+    z-index: 10001;
+}
+
+@media (max-width: 768px) {
+    .controlSonidoWrapper:has(.abierto),
+    .selectorModoNavWrapper:has(.abierto),
+    .controlSonidoWrapper.popover-abierto,
+    .selectorModoNavWrapper.popover-abierto {
+        z-index: 10001;
+    }
+
+    .popoverSonido,
+    .popoverModoNav {
+        position: fixed;
+        left: 50%;
+        right: auto;
+        bottom: 84px;
+        transform: translateX(-50%) translateY(12px);
+        width: min(calc(100vw - 32px), 340px);
+        max-width: calc(100vw - 32px);
+        box-sizing: border-box;
+        z-index: 10002;
+        margin: 0;
+    }
+
+    .popoverSonido.abierto,
+    .popoverModoNav.abierto {
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+/* ── 13. FOOTER — TEXTO Y REDES SOCIALES ─────────────────── */
+@media (max-width: 480px) {
+    .footer {
+        padding: 20px 14px;
+    }
+
+    .footer-contenido p {
+        font-size: 0.82rem;
+    }
+
+    .redes {
+        gap: 14px;
+    }
+
+    .icono-red {
+        width: 44px;
+        height: 44px;
+    }
+
+    .icono-red svg {
+        width: 22px;
+        height: 22px;
+    }
+}
+
+/* ── 14. BARRA SUPERIOR COMPACTA (headerCompacto) EN MÓVIL ─ */
+@media (max-width: 480px) {
+    header.headerCompacto {
+        padding: 4px 10px;
+    }
+
+    header.headerCompacto h1 {
+        font-size: 1.05rem;
+    }
+
+    header.headerCompacto .header-logo {
+        width: 30px;
+        height: 30px;
+    }
+
+    .menu-principal.menuFlotante {
+        top: 48px;
+    }
+}
+
+/* ── 15. BOTÓN OBS — CONTENCIÓN ──────────────────────────── */
+@media (max-width: 480px) {
+    .botonOBSBtn {
+        font-size: 0.82rem;
+        padding: 0 10px;
+    }
+}
+
+/* ── 16. GARANTÍA GLOBAL — ningún elemento directo del body
+   supera el ancho del viewport                               */
+@media (max-width: 768px) {
+    *,
+    *::before,
+    *::after {
+        max-width: 100vw;
+        /* solo limitar el box, no el layout interno */
+        box-sizing: border-box;
+    }
+
+    /* Excepciones: elementos que legítimamente usan posición
+       absoluta o fija y pueden superar el viewport */
+    .popoverSonido,
+    .popoverModoNav,
+    .listaIdiomas,
+    .submenuOpcion.popoverFlotante,
+    .tooltipFlotante,
+    #tooltipOpciones {
+        max-width: calc(100vw - 16px) !important;
     }
 }
 

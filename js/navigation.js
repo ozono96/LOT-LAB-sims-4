@@ -128,15 +128,55 @@ window.ventanaAnterior = "ventanaAcercaDe";
 window.ventanaActual = "ventanaAcercaDe";
 let estaNavegandoInternamente = false;
 
+// Protege contra sobrescritura de URL durante la carga inicial.
+// Se activa a true justo antes de que procesarRutaURL() se ejecute por primera vez.
+let _urlInicialProcesada = false;
+
+// ─── HELPERS PARA EL PARÁMETRO DE MODO EN LA URL (?nav=exp) ────────────
+// Usa history.replaceState para añadir/eliminar ?nav=exp sin tocar el hash.
+function leerModoDesdeURL() {
+    try {
+        const params = new URLSearchParams(window.location.search);
+        const nav = params.get("nav");
+        if (nav === "exp" || nav === "experimental") return "experimental";
+        if (nav === "clasica" || nav === "clasico" || nav === "classic") return "clasica";
+    } catch (e) {}
+    return null; // No hay parámetro → usar valor por defecto (Clásica)
+}
+
+function actualizarParamNavURL(modo) {
+    try {
+        if (window.location.protocol === "file:") return; // file:// no admite search params
+        const url = new URL(window.location.href);
+        // URLs nuevas son siempre explícitas: ?nav=classic o ?nav=exp
+        url.searchParams.set("nav", modo === "experimental" ? "exp" : "classic");
+        const nuevaURL = url.pathname + (url.search || "") + (url.hash || "");
+        if (window.location.pathname + window.location.search !== url.pathname + url.search) {
+            history.replaceState(null, "", nuevaURL);
+        }
+    } catch (e) {}
+}
+
+// Devuelve el search string correcto para el modo actual (?nav=exp o ?nav=classic).
+// En entornos file:// devuelve cadena vacía para no romper.
+function obtenerSearchConModo() {
+    if (window.location.protocol === "file:") return "";
+    const modo = window.modoNavegacionActual || "clasica";
+    return modo === "experimental" ? "?nav=exp" : "?nav=classic";
+}
+
 function actualizarHashURL(slug) {
     if (!slug) return;
+    const search = obtenerSearchConModo();
     const hashDeseado = "#" + slug;
-    if (window.location.hash === hashDeseado) return;
+    // Evitar replaceState redundante
+    if (window.location.hash === hashDeseado && window.location.search === search) return;
 
     estaNavegandoInternamente = true;
     try {
         if (window.location.protocol !== "file:" && history.replaceState) {
-            history.replaceState(null, "", hashDeseado);
+            // Siempre escribe el modo explícito junto al hash
+            history.replaceState(null, "", search + hashDeseado);
         } else {
             window.location.hash = hashDeseado;
         }
@@ -159,6 +199,41 @@ function procesarRutaURL() {
     let rawHash = window.location.hash || "";
     let rawSlug = rawHash.replace(/^[#/]+/, "").trim();
     let slug = rawSlug.toLowerCase();
+
+    // ── MODO EXPERIMENTAL: reconstruir el estado correcto desde la URL ────
+    // Esto ocurre antes de cualquier routing normal para evitar que el
+    // launcher y una ventana de herramienta aparezcan simultáneamente.
+    if (window.modoNavegacionActual === "experimental") {
+        if (!slug) {
+            // ?nav=exp (sin hash) → solo el launcher (nivel 1)
+            EstadoExperimental.nivel = 1;
+            EstadoExperimental.categoriaId = null;
+            EstadoExperimental.herramientaId = null;
+            renderizarNavegacionExperimental();
+            return;
+        }
+        if (slug.startsWith("exp-cat/")) {
+            // ?nav=exp#exp-cat/solares → mostrar categoría (nivel 2)
+            const catId = rawSlug.substring("exp-cat/".length).trim().toLowerCase();
+            EstadoExperimental.nivel = 2;
+            EstadoExperimental.categoriaId = catId;
+            EstadoExperimental.herramientaId = null;
+            renderizarNavegacionExperimental();
+            return;
+        }
+        // ?nav=exp#<tool-hash> → herramienta (nivel 3)
+        // Configurar nivel 3 y ocultar el launcher ANTES de que el routing
+        // normal abra la ventana para evitar que ambos aparezcan a la vez.
+        EstadoExperimental.nivel = 3;
+        EstadoExperimental.herramientaId = null; // Se conocerá al abrir la ventana
+        const _menuExp = document.getElementById("menuPrincipal");
+        const _n1 = document.getElementById("expNivel1");
+        const _n2 = document.getElementById("expNivel2");
+        if (_menuExp) _menuExp.style.display = "none";
+        if (_n1) _n1.style.display = "none";
+        if (_n2) _n2.style.display = "none";
+        // Continúa al routing normal (sin return) para abrir la ventana correcta
+    }
 
     if (!slug) {
         let isObs = window.location.search.includes('obs=1') || window.location.hash.includes('obs=1');
@@ -552,6 +627,12 @@ function abrirVentana(id, esClickUsuario = false) {
     if (ventanaEl) {
         const VENTANAS_FLEX = ["ventanaTemporizador", "ventanaTiempoAgotado"];
         ventanaEl.style.display = VENTANAS_FLEX.includes(id) ? "flex" : "block";
+
+        if (window.modoNavegacionActual !== "experimental") {
+            if (typeof actualizarCategoriaClasicaActiva === "function") {
+                actualizarCategoriaClasicaActiva(obtenerCategoriaPorVentana(id));
+            }
+        }
     }
 
     // Pausar o reanudar automáticamente los temporizadores según visibilidad de su sección
@@ -747,6 +828,8 @@ function cerrarVentana(id) {
 }
 
 function comprobarVentanaVisible() {
+    if (window.modoNavegacionActual === "experimental") return;
+
     const hayAlgunaVisible = Array.from(document.querySelectorAll(".ventana"))
         .some(v => (v.style.display === "block" || v.style.display === "flex") && v.id !== "ventanaAcercaDe");
 
@@ -764,38 +847,793 @@ window.toggleTemporizadorReto = toggleTemporizadorReto;
 window.cerrarTemporizadorAcoplado = cerrarTemporizadorAcoplado;
 window.comprobarVentanaVisible = comprobarVentanaVisible;
 
-document.addEventListener("DOMContentLoaded", function () {
-    // Botones principales del menú
-    document.getElementById("botonBuscador")
-        ?.addEventListener("click", function () {
+// ─── DESPACHADOR DE ACCIONES REALES DE HERRAMIENTAS ──────────────────
+function ejecutarAccionHerramienta(idHerramienta) {
+    switch (idHerramienta) {
+        case "acerca-de":
+            abrirVentana("ventanaAcercaDe", true);
+            break;
+        case "buscador":
             abrirVentana("ventanaBuscador", true);
-        });
-
-    document.getElementById("botonModsSimfile")
-        ?.addEventListener("click", function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-        });
-
-    document.getElementById("botonEstadisticas")
-        ?.addEventListener("click", function () {
+            break;
+        case "listado":
+            abrirVentana("ventanaListado", true);
+            break;
+        case "dados":
+            abrirVentana("ventanaDados", true);
+            break;
+        case "ruleta-colores":
+            abrirVentana("ventanaRuletaColor", true);
+            break;
+        case "habilidades-azar":
+            window.proximaVentanaTrasPacks = "ventanaHabilidadesGenerador";
+            abrirVentana("ventanaRetos", true);
+            break;
+        case "packs-azar":
+            window.proximaVentanaTrasPacks = "ventanaPacksGenerador";
+            abrirVentana("ventanaRetos", true);
+            break;
+        case "mundos-azar":
+            window.proximaVentanaTrasPacks = "ventanaMundosGenerador";
+            abrirVentana("ventanaRetos", true);
+            break;
+        case "modo-retos":
+            window.proximaVentanaTrasPacks = "ventanaRetosOpciones";
+            abrirVentana("ventanaRetos", true);
+            break;
+        case "ruleta-desastres":
+            window.proximaVentanaTrasPacks = "ventanaRuletaDesastres";
+            abrirVentana("ventanaRetos", true);
+            break;
+        case "temporizador":
+            abrirVentana("ventanaTemporizador", true);
+            break;
+        case "trucos":
+            abrirVentana("ventanaTrucos", true);
+            break;
+        case "estadisticas":
             abrirVentana("ventanaEstadisticas", true);
             if (typeof abrirEstadisticas === "function") {
                 abrirEstadisticas();
             }
+            break;
+        default:
+            console.warn("Herramienta no implementada o desconocida:", idHerramienta);
+    }
+}
+window.ejecutarAccionHerramienta = ejecutarAccionHerramienta;
+
+// ─── ESTADO Y CONTROLADOR DE NAVEGACIÓN (CLÁSICA Y EXPERIMENTAL) ──────
+// El parámetro ?nav= de la URL tiene prioridad sobre localStorage
+// (permite que una URL compartida restaure el modo correcto).
+{
+    const _modoURL = leerModoDesdeURL();
+    const _modoGuardado = localStorage.getItem("lotlab_nav_mode") || "clasica";
+    window.modoNavegacionActual = _modoURL !== null ? _modoURL : _modoGuardado;
+}
+
+const EstadoExperimental = {
+    nivel: 1, // 1: Círculos | 2: Categoría | 3: Herramienta abierta
+    categoriaId: null,
+    herramientaId: null
+};
+window.EstadoExperimental = EstadoExperimental;
+
+function obtenerRegistro() {
+    return Array.isArray(window.REGISTRO_NAVEGACION) ? window.REGISTRO_NAVEGACION : [];
+}
+
+// ─── GESTIÓN DE CATEGORÍA ACTIVA EN NAVEGACIÓN CLÁSICA ─────────────────
+let categoriaClasicaActiva = "inicio";
+
+function obtenerCategoriaPorVentana(idVentana) {
+    if (!idVentana) return "inicio";
+    switch (idVentana) {
+        case "ventanaAcercaDe":
+            return "inicio";
+        case "ventanaBuscador":
+        case "ventanaResultados":
+        case "ventanaListado":
+        case "ventanaFichaSolar":
+            return "solares";
+        case "ventanaDados":
+        case "ventanaRuletaColor":
+        case "ventanaHabilidadesGenerador":
+        case "ventanaPacksGenerador":
+        case "ventanaMundosGenerador":
+            return "generadores";
+        case "ventanaRetos":
+        case "ventanaRetosOpciones":
+        case "ventanaRetoResultado":
+        case "ventanaRuletaDesastres":
+            if (window.proximaVentanaTrasPacks && (
+                window.proximaVentanaTrasPacks === "ventanaHabilidadesGenerador" ||
+                window.proximaVentanaTrasPacks === "ventanaPacksGenerador" ||
+                window.proximaVentanaTrasPacks === "ventanaMundosGenerador"
+            )) {
+                return "generadores";
+            }
+            return "retos";
+        case "ventanaTemporizador":
+        case "ventanaTiempoAgotado":
+        case "ventanaTrucos":
+        case "ventanaTrucosConstruir":
+        case "ventanaTrucosCAS":
+        case "ventanaTrucosVivir":
+        case "ventanaTrucosPacks":
+            return "herramientas";
+        case "ventanaEstadisticas":
+            return "datos";
+        default:
+            return "inicio";
+    }
+}
+window.obtenerCategoriaPorVentana = obtenerCategoriaPorVentana;
+
+function actualizarCategoriaClasicaActiva(catId) {
+    if (catId) {
+        categoriaClasicaActiva = catId;
+    } else if (window.ventanaActual) {
+        categoriaClasicaActiva = obtenerCategoriaPorVentana(window.ventanaActual);
+    }
+    document.querySelectorAll(".btn-categoria-nav").forEach(b => {
+        b.classList.toggle("activa", b.dataset.catId === categoriaClasicaActiva);
+    });
+}
+window.actualizarCategoriaClasicaActiva = actualizarCategoriaClasicaActiva;
+
+function cambiarModoNavegacion(nuevoModo, actualizarURL = true) {
+    window.modoNavegacionActual = nuevoModo;
+    try {
+        localStorage.setItem("lotlab_nav_mode", nuevoModo);
+    } catch (e) {}
+
+    // Sincronizar el parámetro ?nav= en la URL (solo cambia ?nav=, NO el hash)
+    if (actualizarURL) {
+        actualizarParamNavURL(nuevoModo);
+    }
+
+    document.body.classList.toggle("modo-nav-experimental", nuevoModo === "experimental");
+    actualizarSelectorModoNavUI();
+
+    const barraClasica = document.getElementById("barraNavegacionClasica");
+    const launcherExp  = document.getElementById("launcherExperimental");
+    const menuPrincipal = document.getElementById("menuPrincipal");
+
+    // Detectar si hay una ventana/herramienta actualmente visible.
+    // Determina si el usuario está en una herramienta (nivel 3) o en el launcher/inicio.
+    const hayVentanaVisible = Array.from(document.querySelectorAll(".ventana"))
+        .some(v => v.style.display === "block" || v.style.display === "flex");
+
+    if (nuevoModo === "clasica") {
+        // ── Cambio a Clásico ────────────────────────────────────────────
+        document.querySelectorAll(".btnVolverExperimental").forEach(b => b.remove());
+        if (menuPrincipal) menuPrincipal.style.display = "block";
+        if (barraClasica) barraClasica.style.display = "block";
+        if (launcherExp)  launcherExp.style.display  = "none";
+        cerrarDropdownClasica();
+        actualizarCategoriaClasicaActiva();
+
+        if (hayVentanaVisible) {
+            // Hay herramienta abierta: conservarla tal cual, solo cambiar el chrome de navegación.
+            // No llamar a comprobarVentanaVisible() ni a ningún abrirVentana.
+        } else if (_urlInicialProcesada) {
+            // No hay herramienta (venía del launcher Experimental): mostrar inicio.
+            comprobarVentanaVisible();
+        }
+
+        if (typeof inicializarCarruselMovilClasica === "function") {
+            inicializarCarruselMovilClasica();
+        }
+    } else {
+        // ── Cambio a Experimental ────────────────────────────────────────
+        if (typeof detenerCarruselMovilClasica === "function") {
+            detenerCarruselMovilClasica();
+        }
+        if (barraClasica) barraClasica.style.display = "none";
+        if (launcherExp)  launcherExp.style.display  = "block";
+        document.querySelectorAll(".btnVolverExperimental").forEach(b => b.remove());
+
+        if (hayVentanaVisible) {
+            // Hay herramienta abierta: entrar directamente en Experimental nivel 3.
+            // La ventana sigue visible; solo ocultamos el chrome de Classic y los paneles del launcher.
+            if (menuPrincipal) menuPrincipal.style.display = "none";
+            EstadoExperimental.nivel = 3;
+            EstadoExperimental.categoriaId = obtenerCategoriaPorVentana(window.ventanaActual);
+            EstadoExperimental.herramientaId = null;
+            // renderizarNavegacionExperimental en nivel 3 solo oculta los paneles (n1, n2, n3)
+            renderizarNavegacionExperimental();
+        } else {
+            // No hay herramienta: mostrar launcher Experimental desde cero.
+            if (menuPrincipal) menuPrincipal.style.display = "block";
+            document.querySelectorAll(".ventana").forEach(v => { v.style.display = "none"; });
+            EstadoExperimental.nivel = 1;
+            EstadoExperimental.categoriaId = null;
+            EstadoExperimental.herramientaId = null;
+            renderizarNavegacionExperimental();
+        }
+    }
+
+    if (typeof window.resetearBarraMenuPrincipal === "function") {
+        window.resetearBarraMenuPrincipal();
+    }
+}
+window.cambiarModoNavegacion = cambiarModoNavegacion;
+
+function actualizarSelectorModoNavUI() {
+    const modo = window.modoNavegacionActual;
+    const opcionClasica = document.getElementById("opcionModoClasica");
+    const opcionExp = document.getElementById("opcionModoExperimental");
+
+    if (opcionClasica) {
+        opcionClasica.classList.toggle("activa", modo === "clasica");
+    }
+    if (opcionExp) {
+        opcionExp.classList.toggle("activa", modo === "experimental");
+    }
+}
+
+// ─── NAVEGACIÓN CLÁSICA: RENDERIZADO Y DROPDOWNS ──────────────────────
+let categoriaClasicaAbierta = null;
+
+function renderizarNavegacionClasica() {
+    const contenedor = document.getElementById("categoriasNavClasica");
+    if (!contenedor) return;
+
+    const registro = obtenerRegistro();
+    contenedor.innerHTML = "";
+
+    // 1. Botones originales (8 categorías principales)
+    registro.forEach(cat => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "btn-categoria-nav";
+        btn.dataset.catId = cat.id;
+        btn.innerHTML = `<span class="icono-cat-nav">${cat.icono}</span><span class="nombre-cat-nav">${cat.nombre}</span>`;
+
+        btn.addEventListener("mouseenter", () => {
+            if (typeof reproducirSonidoUI === "function") reproducirSonidoUI("hover");
         });
 
-    document.getElementById("botonRetos")
-        ?.addEventListener("click", function () {
-            window.proximaVentanaTrasPacks = "ventanaRetosOpciones";
-            abrirVentana("ventanaRetos", true);
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            alternarDropdownClasica(cat.id, btn);
         });
 
-    document.getElementById("botonRuletaDesastres")
-        ?.addEventListener("click", function () {
-            window.proximaVentanaTrasPacks = "ventanaRuletaDesastres";
-            abrirVentana("ventanaRetos", true);
+        contenedor.appendChild(btn);
+    });
+
+    // 2. Clones para conseguir bucle continuo e infinito exclusivo en móvil
+    registro.forEach(cat => {
+        const clone = document.createElement("button");
+        clone.type = "button";
+        clone.className = "btn-categoria-nav cat-nav-clon";
+        clone.dataset.catId = cat.id;
+        clone.setAttribute("aria-hidden", "true");
+        clone.tabIndex = -1;
+        clone.innerHTML = `<span class="icono-cat-nav">${cat.icono}</span><span class="nombre-cat-nav">${cat.nombre}</span>`;
+
+        clone.addEventListener("mouseenter", () => {
+            if (typeof reproducirSonidoUI === "function") reproducirSonidoUI("hover");
         });
+
+        clone.addEventListener("click", (e) => {
+            e.stopPropagation();
+            alternarDropdownClasica(cat.id, clone);
+        });
+
+        contenedor.appendChild(clone);
+    });
+
+    actualizarCategoriaClasicaActiva();
+    inicializarCarruselMovilClasica();
+}
+
+function alternarDropdownClasica(catId, btnEl) {
+    const dropdown = document.getElementById("dropdownNavClasica");
+    const contenido = document.getElementById("dropdownNavContenido");
+    if (!dropdown || !contenido) return;
+
+    // Pausar carrusel mientras se interactúa con el menú
+    pausarCarruselMovilClasica();
+
+    // Si es Inicio, abre directamente Acerca de y marca Inicio como activa
+    if (catId === "inicio") {
+        cerrarDropdownClasica();
+        actualizarCategoriaClasicaActiva("inicio");
+        if (typeof reproducirSonidoUI === "function") reproducirSonidoUI("click");
+        ejecutarAccionHerramienta("acerca-de");
+        return;
+    }
+
+    if (categoriaClasicaAbierta === catId && dropdown.style.display !== "none") {
+        cerrarDropdownClasica();
+        return;
+    }
+
+    categoriaClasicaAbierta = catId;
+    const registro = obtenerRegistro();
+    const cat = registro.find(c => c.id === catId);
+    if (!cat) return;
+
+    // Destacar únicamente la categoría seleccionada en verde (siempre única categoría activa)
+    actualizarCategoriaClasicaActiva(catId);
+
+    // Renderizar herramientas dentro del dropdown
+    let html = `<div class="dropdown-header-categoria"><span>${cat.icono} ${cat.nombre}</span></div><div class="dropdown-herramientas-lista">`;
+
+    cat.herramientas.forEach(tool => {
+        const deshab = !tool.disponible;
+        const tooltipAttr = tool.tooltip ? `data-tooltip="${tool.tooltip}"` : "";
+        html += `
+            <button type="button" class="btn-dropdown-tool ${deshab ? "deshabilitado" : ""}" data-tool-id="${tool.id}" ${tooltipAttr}>
+                <span class="dropdown-tool-icono">${tool.icono}</span>
+                <div class="dropdown-tool-texto">
+                    <span class="dropdown-tool-nombre">${tool.nombre}</span>
+                    ${tool.descripcion ? `<span class="dropdown-tool-desc">${tool.descripcion}</span>` : ""}
+                </div>
+            </button>
+        `;
+    });
+
+    html += `</div>`;
+    contenido.innerHTML = html;
+
+    // Escuchadores para cada herramienta
+    contenido.querySelectorAll(".btn-dropdown-tool").forEach(toolBtn => {
+        toolBtn.addEventListener("mouseenter", () => {
+            const toolId = toolBtn.dataset.toolId;
+            const tool = cat.herramientas.find(t => t.id === toolId);
+            if (tool && tool.disponible && typeof reproducirSonidoUI === "function") {
+                reproducirSonidoUI("hover");
+            }
+        });
+
+        toolBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const toolId = toolBtn.dataset.toolId;
+            const tool = cat.herramientas.find(t => t.id === toolId);
+            if (!tool || !tool.disponible) return;
+
+            if (typeof reproducirSonidoUI === "function") reproducirSonidoUI("click");
+            actualizarCategoriaClasicaActiva(catId);
+            cerrarDropdownClasica();
+            ejecutarAccionHerramienta(tool.id);
+        });
+    });
+
+    dropdown.style.display = "block";
+    if (typeof reproducirSonidoUI === "function") reproducirSonidoUI("apertura");
+}
+
+function cerrarDropdownClasica() {
+    categoriaClasicaAbierta = null;
+    const dropdown = document.getElementById("dropdownNavClasica");
+    if (dropdown) dropdown.style.display = "none";
+    // Mantiene la categoría de la sección activa actual según la ventana visible
+    const catActual = obtenerCategoriaPorVentana(window.ventanaActual);
+    actualizarCategoriaClasicaActiva(catActual);
+    reanudarCarruselMovilClasica(2000);
+}
+
+// ─── CARRUSEL AUTOMÁTICO E INFINITO — MÓVIL Y CLÁSICA ─────────────────
+let carruselMovilAnimId = null;
+let carruselMovilPausado = false;
+let carruselMovilTimeoutReanudar = null;
+let carruselMovilEventosIniciados = false;
+
+function esDispositivoMovilParaCarrusel() {
+    return window.innerWidth <= 768;
+}
+
+function inicializarCarruselMovilClasica() {
+    const contenedor = document.getElementById("categoriasNavClasica");
+    if (!contenedor) return;
+
+    detenerCarruselMovilClasica();
+
+    // Solo móvil, solo clásica, y respetando prefers-reduced-motion
+    if (!esDispositivoMovilParaCarrusel()) {
+        contenedor.scrollLeft = 0;
+        return;
+    }
+    if (window.modoNavegacionActual !== "clasica") return;
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    iniciarLoopCarruselMovil();
+
+    if (!carruselMovilEventosIniciados) {
+        carruselMovilEventosIniciados = true;
+
+        const pausar = () => {
+            carruselMovilPausado = true;
+            if (carruselMovilTimeoutReanudar) {
+                clearTimeout(carruselMovilTimeoutReanudar);
+                carruselMovilTimeoutReanudar = null;
+            }
+        };
+
+        const programarReanudacion = () => {
+            if (carruselMovilTimeoutReanudar) clearTimeout(carruselMovilTimeoutReanudar);
+            carruselMovilTimeoutReanudar = setTimeout(() => {
+                const dropdown = document.getElementById("dropdownNavClasica");
+                if (dropdown && dropdown.style.display !== "none") return;
+                carruselMovilPausado = false;
+            }, 2500);
+        };
+
+        contenedor.addEventListener("touchstart", pausar, { passive: true });
+        contenedor.addEventListener("touchmove", pausar, { passive: true });
+        contenedor.addEventListener("touchend", programarReanudacion, { passive: true });
+        contenedor.addEventListener("touchcancel", programarReanudacion, { passive: true });
+        contenedor.addEventListener("pointerdown", pausar, { passive: true });
+
+        // Scroll manual con swipe continuo infinito
+        contenedor.addEventListener("scroll", () => {
+            const primerClon = contenedor.querySelector(".cat-nav-clon");
+            if (primerClon) {
+                const loopWidth = primerClon.offsetLeft;
+                if (loopWidth > 0) {
+                    if (contenedor.scrollLeft >= loopWidth * 1.8) {
+                        contenedor.scrollLeft -= loopWidth;
+                    } else if (contenedor.scrollLeft <= 0) {
+                        contenedor.scrollLeft += loopWidth;
+                    }
+                }
+            }
+            if (carruselMovilPausado) {
+                programarReanudacion();
+            }
+        }, { passive: true });
+
+        // Listener de redimensión
+        window.addEventListener("resize", () => {
+            if (!esDispositivoMovilParaCarrusel() || window.modoNavegacionActual !== "clasica") {
+                detenerCarruselMovilClasica();
+                contenedor.scrollLeft = 0;
+            } else if (!carruselMovilAnimId && (!window.matchMedia || !window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {
+                iniciarLoopCarruselMovil();
+            }
+        }, { passive: true });
+
+        // Listener de accesibilidad reducida
+        try {
+            if (window.matchMedia) {
+                window.matchMedia("(prefers-reduced-motion: reduce)").addEventListener("change", (e) => {
+                    if (e.matches) {
+                        detenerCarruselMovilClasica();
+                    } else if (esDispositivoMovilParaCarrusel() && window.modoNavegacionActual === "clasica") {
+                        iniciarLoopCarruselMovil();
+                    }
+                });
+            }
+        } catch (_) {}
+    }
+}
+
+function iniciarLoopCarruselMovil() {
+    const contenedor = document.getElementById("categoriasNavClasica");
+    if (!contenedor) return;
+
+    if (carruselMovilAnimId) cancelAnimationFrame(carruselMovilAnimId);
+    carruselMovilPausado = false;
+
+    // Velocidad de avance continuo: lenta y suave (~0.35px por frame ≈ 21px/s)
+    const VELOCIDAD = 0.35;
+    let acumulador = 0;
+
+    function paso() {
+        if (!esDispositivoMovilParaCarrusel() || window.modoNavegacionActual !== "clasica") {
+            detenerCarruselMovilClasica();
+            return;
+        }
+
+        if (!carruselMovilPausado) {
+            const primerClon = contenedor.querySelector(".cat-nav-clon");
+            if (primerClon) {
+                const loopWidth = primerClon.offsetLeft;
+                if (loopWidth > 0) {
+                    acumulador += VELOCIDAD;
+                    if (acumulador >= 1) {
+                        const px = Math.floor(acumulador);
+                        acumulador -= px;
+                        contenedor.scrollLeft += px;
+
+                        // Salto imperceptible al inicio al alcanzar el set de clones
+                        if (contenedor.scrollLeft >= loopWidth) {
+                            contenedor.scrollLeft -= loopWidth;
+                        }
+                    }
+                }
+            }
+        }
+
+        carruselMovilAnimId = requestAnimationFrame(paso);
+    }
+
+    carruselMovilAnimId = requestAnimationFrame(paso);
+}
+
+function pausarCarruselMovilClasica() {
+    carruselMovilPausado = true;
+    if (carruselMovilTimeoutReanudar) {
+        clearTimeout(carruselMovilTimeoutReanudar);
+        carruselMovilTimeoutReanudar = null;
+    }
+}
+
+function reanudarCarruselMovilClasica(demoraMs = 2500) {
+    if (carruselMovilTimeoutReanudar) clearTimeout(carruselMovilTimeoutReanudar);
+    carruselMovilTimeoutReanudar = setTimeout(() => {
+        const dropdown = document.getElementById("dropdownNavClasica");
+        if (dropdown && dropdown.style.display !== "none") return;
+        carruselMovilPausado = false;
+    }, demoraMs);
+}
+
+function detenerCarruselMovilClasica() {
+    if (carruselMovilAnimId) {
+        cancelAnimationFrame(carruselMovilAnimId);
+        carruselMovilAnimId = null;
+    }
+    if (carruselMovilTimeoutReanudar) {
+        clearTimeout(carruselMovilTimeoutReanudar);
+        carruselMovilTimeoutReanudar = null;
+    }
+    carruselMovilPausado = false;
+}
+window.detenerCarruselMovilClasica = detenerCarruselMovilClasica;
+window.inicializarCarruselMovilClasica = inicializarCarruselMovilClasica;
+
+// ─── NAVEGACIÓN EXPERIMENTAL: 2 FILAS × 4 BOTONES Y BOTÓN VOLVER ──────
+function renderizarNavegacionExperimental() {
+    const launcher = document.getElementById("launcherExperimental");
+    if (!launcher) return;
+
+    const n1 = document.getElementById("expNivel1");
+    const n2 = document.getElementById("expNivel2");
+    const n3 = document.getElementById("expNivel3");
+    const registro = obtenerRegistro();
+
+    if (EstadoExperimental.nivel === 1) {
+        if (n1) n1.style.display = "block";
+        if (n2) n2.style.display = "none";
+        if (n3) n3.style.display = "none";
+
+        // Pantalla limpia: ninguna ventana visible detrás de Nivel 1
+        document.querySelectorAll(".ventana").forEach(v => { v.style.display = "none"; });
+        document.querySelectorAll(".btnVolverExperimental").forEach(b => b.remove());
+
+        // URL del launcher: ?nav=exp (sin hash)
+        // Solo actualizar la URL durante la navegación del usuario, NO durante la
+        // carga inicial (evita que se borre el hash original antes de que procesarRutaURL lo lea).
+        if (_urlInicialProcesada) {
+            try {
+                if (window.location.protocol !== "file:") {
+                    const search = obtenerSearchConModo();
+                    if (window.location.search !== search || window.location.hash) {
+                        history.replaceState(null, "", search);
+                    }
+                }
+            } catch (_) {}
+        }
+
+        const grid = document.getElementById("expCirculosGrid");
+        if (grid) {
+            grid.innerHTML = "";
+            registro.forEach(cat => {
+                const card = document.createElement("button");
+                card.type = "button";
+                card.className = "exp-categoria-card";
+                card.dataset.catId = cat.id;
+
+                card.innerHTML = `
+                    <span class="exp-cat-card-icono">${cat.icono}</span>
+                    <span class="exp-cat-card-nombre">${cat.nombre}</span>
+                `;
+
+                card.addEventListener("mouseenter", () => {
+                    if (typeof reproducirSonidoUI === "function") reproducirSonidoUI("hover");
+                });
+
+                card.addEventListener("click", () => {
+                    if (typeof reproducirSonidoUI === "function") reproducirSonidoUI("click");
+                    if (cat.id === "inicio") {
+                        EstadoExperimental.categoriaId = "inicio";
+                        EstadoExperimental.herramientaId = "acerca-de";
+                        const menu = document.getElementById("menuPrincipal");
+                        if (menu) menu.style.display = "none";
+                        ejecutarAccionHerramienta("acerca-de");
+                        return;
+                    }
+                    EstadoExperimental.nivel = 2;
+                    EstadoExperimental.categoriaId = cat.id;
+                    renderizarNavegacionExperimental();
+                });
+
+                grid.appendChild(card);
+            });
+        }
+    } else if (EstadoExperimental.nivel === 2) {
+        if (n1) n1.style.display = "none";
+        if (n2) n2.style.display = "block";
+        if (n3) n3.style.display = "none";
+
+        // Pantalla limpia: ninguna ventana visible detrás de Nivel 2
+        document.querySelectorAll(".ventana").forEach(v => { v.style.display = "none"; });
+        document.querySelectorAll(".btnVolverExperimental").forEach(b => b.remove());
+
+        // URL de categoría: ?nav=exp#exp-cat/{catId}
+        try {
+            if (window.location.protocol !== "file:" && EstadoExperimental.categoriaId) {
+                const search = obtenerSearchConModo();
+                const hashCat = "#exp-cat/" + EstadoExperimental.categoriaId;
+                if (window.location.search !== search || window.location.hash !== hashCat) {
+                    history.replaceState(null, "", search + hashCat);
+                }
+            }
+        } catch (_) {}
+
+        const cat = registro.find(c => c.id === EstadoExperimental.categoriaId);
+        const titulo = document.getElementById("expCategoriaTitulo");
+        if (titulo && cat) {
+            titulo.innerHTML = `<span>${cat.icono}</span> ${cat.nombre.toUpperCase()}`;
+        }
+
+        const grid = document.getElementById("expHerramientasGrid");
+        if (grid && cat) {
+            grid.innerHTML = "";
+            cat.herramientas.forEach(tool => {
+                const card = document.createElement("button");
+                card.type = "button";
+                card.className = `exp-herramienta-card ${!tool.disponible ? "deshabilitada" : ""}`;
+                card.dataset.toolId = tool.id;
+                if (!tool.disponible && tool.tooltip) {
+                    card.setAttribute("data-tooltip", tool.tooltip);
+                }
+
+                card.innerHTML = `
+                    <span class="exp-herramienta-icono">${tool.icono}</span>
+                    <div class="exp-herramienta-info">
+                        <span class="exp-herramienta-nombre">${tool.nombre}</span>
+                        ${tool.descripcion ? `<span class="exp-herramienta-desc">${tool.descripcion}</span>` : ""}
+                    </div>
+                `;
+
+                card.addEventListener("mouseenter", () => {
+                    if (tool.disponible && typeof reproducirSonidoUI === "function") reproducirSonidoUI("hover");
+                });
+
+                card.addEventListener("click", () => {
+                    if (!tool.disponible) return;
+                    if (typeof reproducirSonidoUI === "function") reproducirSonidoUI("click");
+                    EstadoExperimental.nivel = 3;
+                    EstadoExperimental.herramientaId = tool.id;
+
+                    // Ocultar menú principal para que la ventana real sea la protagonista
+                    const menu = document.getElementById("menuPrincipal");
+                    if (menu) menu.style.display = "none";
+
+                    ejecutarAccionHerramienta(tool.id);
+                });
+
+                grid.appendChild(card);
+            });
+        }
+    } else if (EstadoExperimental.nivel === 3) {
+        if (n1) n1.style.display = "none";
+        if (n2) n2.style.display = "none";
+        if (n3) n3.style.display = "none";
+    }
+}
+
+function adjuntarBotonVolverExperimental(idVentana) {
+    // Las ventanas conservan exactamente su cabecera nativa; se asegura que no queden botones residuales
+    document.querySelectorAll(".btnVolverExperimental").forEach(b => b.remove());
+}
+window.adjuntarBotonVolverExperimental = adjuntarBotonVolverExperimental;
+
+function volverANivelExperimental() {
+    document.querySelectorAll(".btnVolverExperimental").forEach(b => b.remove());
+    const menu = document.getElementById("menuPrincipal");
+    const launcher = document.getElementById("launcherExperimental");
+    if (menu) menu.style.display = "block";
+    if (launcher) launcher.style.display = "block";
+
+    // Si la categoría era 'inicio' o no hay categoría, regresar directamente al launcher Nivel 1
+    if (EstadoExperimental.categoriaId === "inicio" || !EstadoExperimental.categoriaId) {
+        EstadoExperimental.nivel = 1;
+        EstadoExperimental.categoriaId = null;
+    } else {
+        EstadoExperimental.nivel = 2;
+    }
+    EstadoExperimental.herramientaId = null;
+    renderizarNavegacionExperimental();
+}
+window.volverANivelExperimental = volverANivelExperimental;
+
+function sincronizarCierreVentanaExperimental(idVentana) {
+    if (window.modoNavegacionActual !== "experimental") return;
+    volverANivelExperimental();
+}
+window.sincronizarCierreVentanaExperimental = sincronizarCierreVentanaExperimental;
+
+// ─── INICIALIZACIÓN GENERAL DEL SISTEMA DE NAVEGACIÓN ─────────────────
+function inicializarNuevoSistemaNavegacion() {
+    renderizarNavegacionClasica();
+    actualizarSelectorModoNavUI();
+
+    // Selector de modo en el footer
+    const btnSelector = document.getElementById("botonSelectorModoNav");
+    const popoverModo = document.getElementById("popoverModoNav");
+    const wrapperModo = document.getElementById("selectorModoNavWrapper");
+
+    btnSelector?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (!popoverModo) return;
+        const abierto = popoverModo.classList.toggle("abierto");
+        wrapperModo?.classList.toggle("popover-abierto", abierto);
+        if (abierto) {
+            document.getElementById("listaIdiomas")?.classList.remove("abierta");
+            document.getElementById("popoverSonido")?.classList.remove("abierto");
+            document.getElementById("controlSonidoWrapper")?.classList.remove("popover-abierto");
+        }
+    });
+
+    document.querySelectorAll(".opcionModoNav").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const modo = btn.dataset.modo;
+            if (modo) {
+                cambiarModoNavegacion(modo);
+                popoverModo?.classList.remove("abierto");
+                wrapperModo?.classList.remove("popover-abierto");
+            }
+        });
+    });
+
+    // Cerrar popover de modo al pulsar fuera
+    document.addEventListener("click", (e) => {
+        if (popoverModo && !popoverModo.contains(e.target) && e.target !== btnSelector && !btnSelector?.contains(e.target)) {
+            popoverModo.classList.remove("abierto");
+            wrapperModo?.classList.remove("popover-abierto");
+        }
+    });
+
+    // Cerrar dropdown clásica al hacer clic fuera
+    document.addEventListener("click", (e) => {
+        const barraClasica = document.getElementById("barraNavegacionClasica");
+        if (barraClasica && !barraClasica.contains(e.target)) {
+            cerrarDropdownClasica();
+        }
+    });
+
+    // Botones volver de la navegación experimental
+    document.getElementById("expBtnVolverInicio")?.addEventListener("click", () => {
+        if (typeof reproducirSonidoUI === "function") reproducirSonidoUI("volver");
+        EstadoExperimental.nivel = 1;
+        EstadoExperimental.categoriaId = null;
+        EstadoExperimental.herramientaId = null;
+        renderizarNavegacionExperimental();
+    });
+
+    document.getElementById("expBtnVolverCategoria")?.addEventListener("click", () => {
+        if (typeof reproducirSonidoUI === "function") reproducirSonidoUI("volver");
+        if (window.ventanaActual && typeof cerrarVentana === "function") {
+            cerrarVentana(window.ventanaActual);
+        }
+        EstadoExperimental.nivel = 2;
+        EstadoExperimental.herramientaId = null;
+        renderizarNavegacionExperimental();
+    });
+
+    // Aplicar el modo guardado (ya leído desde URL o localStorage).
+    // actualizarURL=false porque la URL ya tiene el param correcto o es una carga inicial.
+    cambiarModoNavegacion(window.modoNavegacionActual, false);
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    inicializarNuevoSistemaNavegacion();
 
     // Botones de cerrar en ventanas
     document.querySelectorAll(".cerrar")
@@ -805,6 +1643,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (ventana) {
                     if (ventana.id === "ventanaTemporizador" && document.getElementById("app")?.classList.contains("modo-paralelo")) {
                         cerrarTemporizadorAcoplado();
+                        sincronizarCierreVentanaExperimental(ventana.id);
                         return;
                     }
                     if (ventana.id === "ventanaRetosOpciones") {
@@ -836,6 +1675,11 @@ document.addEventListener("DOMContentLoaded", function () {
                         abrirVentana("ventanaRetos", true);
                         return;
                     }
+                    if (ventana.id === "ventanaResultados") {
+                        // Ventana secundaria del Filtrador: app.js gestiona cerrarVentana + abrirVentana.
+                        // En Experimental el nivel 3 permanece activo (Filtrador sigue siendo la herramienta).
+                        return;
+                    }
                     if (ventana.id === "ventanaFichaSolar") {
                         const destino = window.ventanaOrigenFicha || window.ventanaAnterior || "ventanaBuscador";
                         window.solarFichaActual = null;
@@ -844,10 +1688,13 @@ document.addEventListener("DOMContentLoaded", function () {
                         if (typeof window.emitirEventoOBS === "function" && !window.esSincronizacionOBS) {
                             window.emitirEventoOBS("SYNC_CERRAR_FICHA_SOLAR", { ventanaDestino: destino });
                         }
+                        // ventanaFichaSolar es siempre una ventana secundaria (abierta desde Filtrador/Listado).
+                        // Cerrarla vuelve a la herramienta (nivel 3) y no al selector de categoría (nivel 2).
                         return;
                     }
 
                     cerrarVentana(ventana.id);
+                    sincronizarCierreVentanaExperimental(ventana.id);
                 }
             });
         });
@@ -940,6 +1787,10 @@ function initNavigation() {
     // Dar un pequeño respiro extra (10ms) para asegurar que acercade.js
     // asignó la función window.inicializarCarruselAcercaDe
     setTimeout(() => {
+        // Marcar que la URL inicial ya va a ser procesada.
+        // A partir de aquí, comprobarVentanaVisible() y las actualizaciones
+        // de URL en renderizarNavegacionExperimental() funcionan con normalidad.
+        _urlInicialProcesada = true;
         procesarRutaURL();
     }, 10);
 }

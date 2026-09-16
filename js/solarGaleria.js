@@ -53,6 +53,29 @@ async function obtenerFotosSolar(idSolar) {
     return { fotos: lista, error: false };
 }
 
+function obtenerUltimaFotoSolarSync(idSolar) {
+    if (!_manifestSolares || !idSolar) return null;
+    const idLimpio = String(idSolar).trim();
+    const lista = _manifestSolares[idLimpio];
+    if (Array.isArray(lista) && lista.length > 0) {
+        return lista[lista.length - 1];
+    }
+    return null;
+}
+window.obtenerUltimaFotoSolarSync = obtenerUltimaFotoSolarSync;
+
+async function obtenerUltimaFotoSolar(idSolar) {
+    if (!idSolar) return null;
+    const manifest = await cargarManifestSolares();
+    const idLimpio = String(idSolar).trim();
+    const lista = manifest[idLimpio];
+    if (Array.isArray(lista) && lista.length > 0) {
+        return lista[lista.length - 1];
+    }
+    return null;
+}
+window.obtenerUltimaFotoSolar = obtenerUltimaFotoSolar;
+
 async function cargarGaleriaSolar(idSolar) {
     const contenedor = document.getElementById("galeriaFichaSolar");
     if (!contenedor) return;

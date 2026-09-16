@@ -101,11 +101,34 @@ function construirMapaIconosPacks() {
 
     if (!database.packs) return;
 
+    // Mapa auxiliar de Kits desde database.estadisticasSims4 (columna 20 nombre, columna 23 ID real)
+    const mapaKitsEstadisticas = new Map();
+    if (Array.isArray(database.estadisticasSims4)) {
+        database.estadisticasSims4.forEach(fila => {
+            if (fila && fila.length > 23 && fila[20] && fila[23]) {
+                const nombreKit = fila[20].trim().toLowerCase();
+                const idReal = fila[23].trim().toUpperCase();
+                if (nombreKit && idReal && idReal !== "ID") {
+                    mapaKitsEstadisticas.set(nombreKit, idReal);
+                }
+            }
+        });
+    }
+
     database.packs.forEach(fila => {
         pares.forEach(([colNombre, colId]) => {
             const nombre = (fila[colNombre] || "").trim();
-            const id = (fila[colId] || "").trim();
+            let id = (fila[colId] || "").trim();
             if (!nombre || !id) return;
+
+            // Si es un kit con ID "CAS" o "ESPECIAL", resolver ID real desde Estadísticas Sims 4
+            const idUpper = id.toUpperCase();
+            if (colId === 7 && (idUpper.includes("CAS") || idUpper.includes("ESPECIAL"))) {
+                const idReal = mapaKitsEstadisticas.get(nombre.toLowerCase());
+                if (idReal) {
+                    id = idReal;
+                }
+            }
 
             const prefijo = id.match(/^[A-Za-z]+/)?.[0]?.toUpperCase() || "";
             const subcarpeta = subcarpetaPorPrefijo[prefijo] || "expansiones";

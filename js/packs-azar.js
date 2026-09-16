@@ -64,11 +64,18 @@ function _packsFiltrarPacks() {
     database.packs.forEach(fila => {
         pares.forEach(([colNombre, colId, tipoNombre]) => {
             const nombre = (fila[colNombre] || "").trim();
-            const id = (fila[colId] || "").trim();
+            let id = (fila[colId] || "").trim();
             if (!nombre) return;
             if (tipoNombre === "Kits") {
-                const kitId = id.toUpperCase();
-                if (kitId.includes("CAS")) return; // Excluir kits CAS
+                const idUpper = id.toUpperCase();
+                if (idUpper.includes("CAS") || idUpper.includes("ESPECIAL")) {
+                    const infoIcono = (typeof database !== "undefined" && database.iconosPacks)
+                        ? database.iconosPacks[nombre.toLowerCase()]
+                        : null;
+                    if (infoIcono && infoIcono.id) {
+                        id = infoIcono.id;
+                    }
+                }
             }
             const esBase = tipoNombre === "Juego Base" || nombre.toLowerCase() === "base" || nombre.toLowerCase() === "juego base";
             const pasaFiltro = esBase || (packsSet && packsSet instanceof Set ? packsSet.has(nombre) : true);
@@ -268,8 +275,8 @@ function _packsAnimarTirada(elegidas) {
             card.style.animationDelay = (i * 0.08) + "s";
             const imgSrc = item.rutaIcono || (typeof rutaIconoPack === "function" ? rutaIconoPack(item.nombre) : null);
             const esBase = item.esBase || item.tipo === "Juego Base";
-            const tipoBadgeHTML = "<div class='habResultadoCardPack" + (esBase ? " habResultadoCardPackBase" : "") + "'>" +
-                (esBase ? "🎮 Juego Base" : "📦 " + item.tipo) +
+            const tipoBadgeHTML = "<div class='habResultadoCardTipo" + (esBase ? " habResultadoCardPackBase" : "") + "'>" +
+                (esBase ? "Juego Base" : item.tipo) +
             "</div>";
 
             card.innerHTML =
@@ -277,7 +284,7 @@ function _packsAnimarTirada(elegidas) {
                     (imgSrc
                         ? "<img src='" + imgSrc + "' alt='" + item.nombre + "' loading='lazy' decoding='async' onerror=\"this.style.display='none';this.nextElementSibling.style.display='flex'\">"
                         : "") +
-                    "<div class='habResultadoCardFallback' style='" + (imgSrc ? "display:none" : "display:flex") + "'>📦</div>" +
+                    "<div class='habResultadoCardFallback' style='" + (imgSrc ? "display:none" : "display:flex") + "'>🎮</div>" +
                 "</div>" +
                 "<div class='habResultadoCardNombre'>" + item.nombre + "</div>" +
                 tipoBadgeHTML;
@@ -329,8 +336,8 @@ window.restaurarResultadoPacksObs = function (data) {
         card.style.animationDelay = (i * 0.08) + "s";
         const imgSrc = item.rutaIcono || (typeof rutaIconoPack === "function" ? rutaIconoPack(item.nombre) : null);
         const esBase = item.esBase || item.tipo === "Juego Base";
-        const tipoBadgeHTML = "<div class='habResultadoCardPack" + (esBase ? " habResultadoCardPackBase" : "") + "'>" +
-            (esBase ? "🎮 Juego Base" : "📦 " + item.tipo) +
+        const tipoBadgeHTML = "<div class='habResultadoCardTipo" + (esBase ? " habResultadoCardPackBase" : "") + "'>" +
+            (esBase ? "Juego Base" : item.tipo) +
         "</div>";
 
         card.innerHTML =
@@ -338,7 +345,7 @@ window.restaurarResultadoPacksObs = function (data) {
                 (imgSrc
                     ? "<img src='" + imgSrc + "' alt='" + item.nombre + "' loading='lazy' decoding='async' onerror=\"this.style.display='none';this.nextElementSibling.style.display='flex'\">"
                     : "") +
-                "<div class='habResultadoCardFallback' style='" + (imgSrc ? "display:none" : "display:flex") + "'>📦</div>" +
+                "<div class='habResultadoCardFallback' style='" + (imgSrc ? "display:none" : "display:flex") + "'>🎮</div>" +
             "</div>" +
             "<div class='habResultadoCardNombre'>" + item.nombre + "</div>" +
             tipoBadgeHTML;

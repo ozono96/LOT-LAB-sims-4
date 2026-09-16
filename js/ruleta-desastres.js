@@ -204,6 +204,14 @@ const ModulosDesastres = {
                 });
             }
 
+            // Si Permitir Kits CAS está OFF (por defecto), excluir Kits CAS de los packs disponibles a prohibir
+            if (!window.PERMITIR_KITS_CAS && typeof window.obtenerSetKitsCAS === "function") {
+                const setCAS = window.obtenerSetKitsCAS();
+                if (setCAS && setCAS.size > 0) {
+                    packsDisponibles = packsDisponibles.filter(p => !setCAS.has(p.trim().toLowerCase()));
+                }
+            }
+
             if (packsDisponibles.length > 0) {
                 packProhibido = packsDisponibles[Math.floor(Math.random() * packsDisponibles.length)];
                 const ruta = typeof rutaIconoPack === "function" ? rutaIconoPack(packProhibido) : null;

@@ -253,14 +253,14 @@ function _habAnimarTirada(elegidas) {
             card.style.animationDelay = (i * 0.08) + "s";
 
             let packBadgeHTML = "";
+            const tooltipTexto = "Pack: " + nombrePackNormalizado;
             if (rutaIcono) {
-                packBadgeHTML = "<div class='habResultadoCardPack" + (esBase ? " habResultadoCardPackBase" : "") + "'>" +
-                    "<img src='" + rutaIcono + "' alt='" + nombrePackNormalizado + "' title='" + nombrePackNormalizado + "' class='iconoPackMini' style='width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:4px;' onerror=\"this.style.display='none'\">" +
-                    "<span>" + nombrePackNormalizado + "</span>" +
+                packBadgeHTML = "<div class='habResultadoCardPack' data-tooltip='" + tooltipTexto + "'>" +
+                    "<img src='" + rutaIcono + "' alt='" + tooltipTexto + "' aria-label='" + tooltipTexto + "' class='iconoPackMini' onerror=\"this.style.display='none'\">" +
                 "</div>";
             } else {
-                packBadgeHTML = "<div class='habResultadoCardPack" + (esBase ? " habResultadoCardPackBase" : "") + "'>" +
-                    (esBase ? "🎮 Juego Base" : "📦 " + packReq) +
+                packBadgeHTML = "<div class='habResultadoCardPack' data-tooltip='" + tooltipTexto + "' aria-label='" + tooltipTexto + "'>" +
+                    "<span class='iconoPackMini' style='display:inline-flex;align-items:center;justify-content:center;font-size:1.1rem;' role='img' aria-label='" + tooltipTexto + "'>" + (esBase ? "🎮" : "📦") + "</span>" +
                 "</div>";
             }
 
@@ -270,9 +270,9 @@ function _habAnimarTirada(elegidas) {
                         ? "<img src='" + imgSrc + "' alt='" + nombre + "' onerror=\"this.style.display='none';this.nextElementSibling.style.display='flex'\">"
                         : "") +
                     "<div class='habResultadoCardFallback' style='" + (imgSrc ? "display:none" : "display:flex") + "'>🧠</div>" +
+                    packBadgeHTML +
                 "</div>" +
-                "<div class='habResultadoCardNombre'>" + nombre + "</div>" +
-                packBadgeHTML;
+                "<div class='habResultadoCardNombre'>" + nombre + "</div>";
 
             return card;
         }
@@ -329,14 +329,14 @@ window.restaurarResultadoHabilidadesObs = function (data) {
         card.style.animationDelay = (i * 0.08) + "s";
 
         let packBadgeHTML = "";
+        const tooltipTexto = "Pack: " + nombrePackNormalizado;
         if (rutaIcono) {
-            packBadgeHTML = "<div class='habResultadoCardPack" + (esBase ? " habResultadoCardPackBase" : "") + "'>" +
-                "<img src='" + rutaIcono + "' alt='" + nombrePackNormalizado + "' title='" + nombrePackNormalizado + "' class='iconoPackMini' style='width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:4px;' onerror=\"this.style.display='none'\">" +
-                "<span>" + nombrePackNormalizado + "</span>" +
+            packBadgeHTML = "<div class='habResultadoCardPack' data-tooltip='" + tooltipTexto + "'>" +
+                "<img src='" + rutaIcono + "' alt='" + tooltipTexto + "' aria-label='" + tooltipTexto + "' class='iconoPackMini' onerror=\"this.style.display='none'\">" +
             "</div>";
         } else {
-            packBadgeHTML = "<div class='habResultadoCardPack" + (esBase ? " habResultadoCardPackBase" : "") + "'>" +
-                (esBase ? "🎮 Juego Base" : "📦 " + packReq) +
+            packBadgeHTML = "<div class='habResultadoCardPack' data-tooltip='" + tooltipTexto + "' aria-label='" + tooltipTexto + "'>" +
+                "<span class='iconoPackMini' style='display:inline-flex;align-items:center;justify-content:center;font-size:1.1rem;' role='img' aria-label='" + tooltipTexto + "'>" + (esBase ? "🎮" : "📦") + "</span>" +
             "</div>";
         }
 
@@ -346,9 +346,9 @@ window.restaurarResultadoHabilidadesObs = function (data) {
                     ? "<img src='" + imgSrc + "' alt='" + nombre + "' onerror=\"this.style.display='none';this.nextElementSibling.style.display='flex'\">"
                     : "") +
                 "<div class='habResultadoCardFallback' style='" + (imgSrc ? "display:none" : "display:flex") + "'>🧠</div>" +
+                packBadgeHTML +
             "</div>" +
-            "<div class='habResultadoCardNombre'>" + nombre + "</div>" +
-            packBadgeHTML;
+            "<div class='habResultadoCardNombre'>" + nombre + "</div>";
 
         grid.appendChild(card);
     });

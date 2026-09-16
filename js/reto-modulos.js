@@ -227,6 +227,14 @@ const RetoModulos = {
                     return false;
                 }
 
+                // Excluir Kits CAS si Permitir Kits CAS está desactivado
+                if (!window.PERMITIR_KITS_CAS && typeof window.obtenerSetKitsCAS === "function") {
+                    const setCAS = window.obtenerSetKitsCAS();
+                    if (setCAS && setCAS.has(packClean)) {
+                        return false;
+                    }
+                }
+
                 if (!tipoPack) return true; // Si no se encuentra tipo, no descartar estrictamente
 
                 return tiposPermitidos.some(t => tipoPack.toLowerCase().includes(t.toLowerCase()) || t.toLowerCase().includes(tipoPack.toLowerCase()));

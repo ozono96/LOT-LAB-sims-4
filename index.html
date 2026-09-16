@@ -422,21 +422,42 @@
                     <h2>🎮 Selector de Packs</h2>
                 </div>
 
-                <!-- Switch Control para Modo de Vista: Ventana desplegable / Lista -->
-                <div class="selectorModoVistaPacks"
-                    style="display: flex; justify-content: center; align-items: center; gap: 14px; margin-top: 14px; margin-bottom: 20px;">
-                    <span style="font-weight: bold; font-size: 0.95rem; opacity: 0.9;">Modo de vista:</span>
-                    <label class="switchModoVista">
-                        <span id="lblModoDesplegable"
-                            style="font-size: 0.9rem; font-weight: bold; transition: all 0.25s;">🗂️ Ventana
-                            desplegable</span>
-                        <input type="checkbox" id="toggleModoVistaInput" style="display: none;">
-                        <span class="sliderSwitch">
-                            <span class="thumbSwitch"></span>
-                        </span>
-                        <span id="lblModoLista" style="font-size: 0.9rem; opacity: 0.6; transition: all 0.25s;">📜
-                            Lista</span>
-                    </label>
+                <!-- Fila de Controles: Modo de Vista y Permitir Kits CAS -->
+                <div class="filaControlesSelectorPacks"
+                    style="display: flex; justify-content: center; align-items: center; gap: 24px; flex-wrap: wrap; margin-top: 14px; margin-bottom: 20px;">
+
+                    <!-- Switch Control para Modo de Vista: Ventana desplegable / Lista -->
+                    <div class="selectorModoVistaPacks"
+                        style="display: flex; justify-content: center; align-items: center; gap: 14px;">
+                        <span style="font-weight: bold; font-size: 0.95rem; opacity: 0.9;">Modo de vista:</span>
+                        <label class="switchModoVista">
+                            <span id="lblModoDesplegable"
+                                style="font-size: 0.9rem; font-weight: bold; transition: all 0.25s;">🗂️ Ventana
+                                desplegable</span>
+                            <input type="checkbox" id="toggleModoVistaInput" style="display: none;">
+                            <span class="sliderSwitch">
+                                <span class="thumbSwitch"></span>
+                            </span>
+                            <span id="lblModoLista" style="font-size: 0.9rem; opacity: 0.6; transition: all 0.25s;">📜
+                                Lista</span>
+                        </label>
+                    </div>
+
+                    <!-- Switch Control para Permitir Kits CAS (Modo Retos y Ruleta Desastres) -->
+                    <div id="contenedorToggleKitsCAS" class="selectorModoVistaPacks"
+                        style="display: flex; justify-content: center; align-items: center; gap: 12px; cursor: pointer;"
+                        data-tooltip="Activa esta opción si quieres permitir Kits del CAS en la selección de packs. Al activarla, podrás seleccionarlos en el selector de packs y podrán aparecer en los retos/desastres generados cuando se utilicen limitantes de packs.">
+                        <span style="font-weight: bold; font-size: 0.95rem; opacity: 0.9;">Permitir Kits CAS:</span>
+                        <label class="switchModoVista" style="cursor: pointer;">
+                            <input type="checkbox" id="togglePermitirKitsCASInput" style="display: none;">
+                            <span class="sliderSwitch sliderSwitchCAS">
+                                <span class="thumbSwitch thumbSwitchCAS"></span>
+                            </span>
+                            <span id="lblEstadoKitsCAS"
+                                style="font-size: 0.9rem; font-weight: bold; opacity: 0.6; transition: all 0.25s;">OFF</span>
+                        </label>
+                    </div>
+
                 </div>
 
                 <p style="text-align: center; margin-bottom: 20px; font-size: 1.05rem;">Selecciona los packs que tienes
@@ -3482,7 +3503,7 @@
             </div>
 
             <p>
-                El unico buscador de Solares y generador de retos para construir en Los Sims 4 - Versión 1.2.4
+                El unico buscador de Solares y generador de retos para construir en Los Sims 4 - Versión 1.2.5
 
 
             </p>

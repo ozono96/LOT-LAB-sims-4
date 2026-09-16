@@ -484,6 +484,7 @@ header p {
         opacity: 0;
         transform: translateY(-6px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -840,6 +841,7 @@ body:not(.modo-nav-experimental) #ventanaAcercaDe .cerrar {
 }
 
 @media (max-width: 768px) {
+
     .controlSonidoWrapper,
     .selectorModoNavWrapper {
         position: static;
@@ -1016,12 +1018,12 @@ body.modo-dia .sliderSwitch {
     transition: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.switchSonido input:checked + .sliderSwitch {
+.switchSonido input:checked+.sliderSwitch {
     background-color: var(--color-resaltado);
     border-color: var(--color-resaltado);
 }
 
-.switchSonido input:checked + .sliderSwitch:before {
+.switchSonido input:checked+.sliderSwitch:before {
     transform: translateX(20px);
 }
 
@@ -1046,27 +1048,34 @@ body.modo-dia .sliderSwitch {
         padding: 14px 12px;
         margin-bottom: 18px;
     }
+
     .categorias-nav-clasica {
         justify-content: flex-start;
         gap: 8px;
     }
+
     .btn-categoria-nav {
         padding: 9px 14px;
         font-size: 0.88rem;
     }
+
     .dropdown-herramientas-lista {
         grid-template-columns: 1fr;
     }
+
     .exp-circulos-grid {
         gap: 16px 12px;
     }
+
     .exp-circulo {
         width: 82px;
     }
+
     .exp-circulo-burbuja {
         width: 68px;
         height: 68px;
     }
+
     .exp-herramientas-grid {
         grid-template-columns: 1fr;
     }
@@ -1086,6 +1095,7 @@ body.modo-dia .sliderSwitch {
         opacity: 0.88;
         transform: translate(-50%, -6px);
     }
+
     to {
         opacity: 1;
         transform: translate(-50%, 0);
@@ -1244,16 +1254,17 @@ body.modo-dia .sliderSwitch {
 }
 
 /* La cabecera en el temporizador debe cuadrar con el marco completo de la ventana */
-#ventanaTemporizador > .cabeceraVentana,
-#ventanaTiempoAgotado > .cabeceraVentana {
+#ventanaTemporizador>.cabeceraVentana,
+#ventanaTiempoAgotado>.cabeceraVentana {
     width: calc(100% + 50px);
     align-self: stretch;
     margin: -25px -25px 20px -25px;
 }
 
 @media (max-width: 700px) {
-    #ventanaTemporizador > .cabeceraVentana,
-    #ventanaTiempoAgotado > .cabeceraVentana {
+
+    #ventanaTemporizador>.cabeceraVentana,
+    #ventanaTiempoAgotado>.cabeceraVentana {
         width: calc(100% + 36px);
         margin: -18px -18px 18px -18px;
     }
@@ -1398,8 +1409,8 @@ body.modo-dia .cabeceraVentana {
 }
 
 /* Título centrado dentro de cabeceraVentana (mismo concepto visual que Agradecimientos) */
-.cabeceraVentana > h2,
-.cabeceraVentana > h3 {
+.cabeceraVentana>h2,
+.cabeceraVentana>h3 {
     position: absolute;
     left: 50%;
     top: 50%;
@@ -1420,15 +1431,16 @@ body.modo-dia .cabeceraVentana {
 
 /* Responsive: móvil y tablet */
 @media (max-width: 768px) {
-    .cabeceraVentana > h2,
-    .cabeceraVentana > h3 {
+
+    .cabeceraVentana>h2,
+    .cabeceraVentana>h3 {
         font-size: 1.15rem;
         max-width: calc(100% - 180px);
     }
 }
 
 /* Fix: título de ruletaColorTitulo dentro de cabeceraVentana usa la variable de color estándar */
-.cabeceraVentana > h2.ruletaColorTitulo {
+.cabeceraVentana>h2.ruletaColorTitulo {
     color: var(--color-titulo, var(--color-texto));
     font-size: 1.35rem;
     font-weight: bold;
@@ -1457,8 +1469,8 @@ body.modo-dia .cabeceraVentana {
         padding: 10px 14px;
     }
 
-    .cabeceraVentana > h2,
-    .cabeceraVentana > h3 {
+    .cabeceraVentana>h2,
+    .cabeceraVentana>h3 {
         font-size: 0.95rem;
         left: 14px;
         transform: translateY(-50%);
@@ -2976,9 +2988,7 @@ body.modo-dia .contadorBarrio {
     justify-content: center;
 }
 
-.contenidoBarrio.abierto {
-    display: flex;
-}
+/* .contenidoBarrio.abierto: la regla de display:grid está definida en la sección TARJETAS DE SOLAR (GRID) */
 
 
 /* ==========================================================
@@ -3398,23 +3408,28 @@ body.modo-dia .contadorBarrio {
 
     display: grid;
 
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
 
-    gap: 16px;
+    gap: 18px;
 
     justify-content: center;
 
 }
 
+/* Grid de tarjetas por barrio: minmax igual que #listaResultados para que
+   las tarjetas de Juego Base (sección full-width) y de Expansión/Contenido
+   (columnas ~50%) tengan exactamente el mismo tamaño de celda. */
 .contenidoBarrio.abierto {
 
     display: grid;
 
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
 
-    gap: 12px;
+    gap: 18px;
 
     justify-content: center;
+
+    padding: 14px;
 
 }
 
@@ -3460,11 +3475,11 @@ body.modo-dia .contadorBarrio {
 
     width: 100%;
 
-    max-width: 220px;
+    max-width: 250px;
 
     margin: 0 auto;
 
-    padding: 16px 12px;
+    padding: 12px 12px 14px 12px;
 
     border-radius: var(--radio-normal);
 
@@ -3484,9 +3499,12 @@ body.modo-dia .contadorBarrio {
 
     text-align: center;
 
+    box-sizing: border-box;
+
 }
 
-.tarjetaSolar:hover {
+.tarjetaSolar:hover,
+.tarjetaSolar.tarjetaSolarActiva {
 
     transform: translateY(-4px);
 
@@ -3500,19 +3518,115 @@ body.modo-dia .contadorBarrio {
 
     position: relative;
 
-    width: 64px;
+    width: 100%;
 
-    height: 64px;
+    aspect-ratio: 16 / 10;
+
+    min-height: 110px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    background: rgba(0, 0, 0, 0.08);
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 
 }
 
-.iconoTarjetaSolar img {
+body.modo-noche .iconoTarjetaSolar {
+
+    background: rgba(255, 255, 255, 0.04);
+
+}
+
+/* Foto de fondo: siempre presente, muy difuminada en reposo y nítida en hover */
+.tarjetaSolarFoto {
 
     position: absolute;
 
-    top: 0;
+    inset: 0;
 
-    left: 0;
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+    border-radius: 10px;
+
+    display: block;
+
+    filter: blur(8px) brightness(0.52);
+
+    transform: scale(1.08);
+
+    transition: filter 0.3s ease, transform 0.3s ease;
+
+    z-index: 0;
+
+}
+
+/* Modo día: placeholder más claro y luminoso (mismo blur, sin oscurecer la imagen) */
+body.modo-dia .tarjetaSolarFoto {
+
+    filter: blur(8px) brightness(2.0);
+
+}
+
+.tarjetaSolar:hover .tarjetaSolarFoto,
+.tarjetaSolar.tarjetaSolarActiva .tarjetaSolarFoto {
+
+    filter: blur(0px) brightness(1);
+
+    transform: scale(1);
+
+}
+
+/* Capa de Reposo: Marco rectangular con Mundo en centro, Pack abajo izq, Tipo abajo der */
+.tarjetaSolarCapaReposo {
+
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    transition: opacity .25s ease;
+
+}
+
+.tarjetaSolarMundoCenter {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 68px;
+
+    height: 68px;
+
+}
+
+.tarjetaSolarMundoImg,
+.iconoTarjetaSolar .iconoPackImg,
+.iconoTarjetaSolar .iconoMundoImg {
 
     width: 100%;
 
@@ -3522,33 +3636,16 @@ body.modo-dia .contadorBarrio {
 
     border-radius: 10px;
 
-    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .25));
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .28));
 
-    transition: opacity .3s ease;
-
-}
-
-.iconoMundoImg {
-
-    opacity: 0;
+    display: block;
 
 }
 
-.tarjetaSolar:hover .iconoTarjetaSolar.tieneIconoMundo .iconoPackImg {
-
-    opacity: 0;
-
-}
-
-.tarjetaSolar:hover .iconoTarjetaSolar.tieneIconoMundo .iconoMundoImg {
-
-    opacity: 1;
-
-}
-
+.tarjetaSolarMundoFallback,
 .iconoTarjetaSolarFallback {
 
-    font-size: 2.2rem;
+    font-size: 2.4rem;
 
     display: flex;
 
@@ -3562,6 +3659,280 @@ body.modo-dia .contadorBarrio {
 
 }
 
+.tarjetaSolarPackBadge {
+
+    position: absolute;
+
+    bottom: 8px;
+
+    left: 8px;
+
+    z-index: 2;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    line-height: 1;
+
+    pointer-events: none;
+
+}
+
+.tarjetaSolarPackBadge .iconoPackMini {
+
+    width: 25px;
+
+    height: 25px;
+
+    object-fit: contain;
+
+    display: block;
+
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+
+}
+
+.tarjetaSolarPackBadge .iconoPackMini.fallback {
+
+    font-size: 1.15rem;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+.tarjetaSolarTipoBadge {
+
+    position: absolute;
+
+    bottom: 8px;
+
+    right: 8px;
+
+    z-index: 2;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    line-height: 1;
+
+    pointer-events: none;
+
+}
+
+.tarjetaSolarTipoBadge .tarjetaSolarTipoIcono {
+
+    width: 25px;
+
+    height: 25px;
+
+}
+
+.tarjetaSolarTipoBadge .tarjetaSolarTipoFallback {
+
+    font-size: 1.15rem;
+
+    line-height: 1;
+
+    display: inline-flex;
+
+    align-items: center;
+
+}
+
+/* Capa de Hover / Pulsación: Última foto disponible en formato rectangular */
+.tarjetaSolarCapaHover {
+
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition: opacity .25s ease;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+}
+
+.tarjetaSolarFotoHover {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+
+    border-radius: 10px;
+
+}
+
+/* Transición entre reposo y hover */
+.tarjetaSolar:hover .tarjetaSolarCapaReposo,
+.tarjetaSolar.tarjetaSolarActiva .tarjetaSolarCapaReposo {
+
+    opacity: 0;
+
+}
+
+.tarjetaSolar:hover .tarjetaSolarCapaHover,
+.tarjetaSolar.tarjetaSolarActiva .tarjetaSolarCapaHover {
+
+    opacity: 1;
+
+    pointer-events: auto;
+
+}
+
+/* Esquina inferior izquierda sobre la foto: Mundo arriba, Pack debajo (columna vertical) */
+.tarjetaSolarFotoStackIzq {
+
+    position: absolute;
+
+    bottom: 8px;
+
+    left: 8px;
+
+    z-index: 3;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 4px;
+
+    pointer-events: none;
+
+}
+
+/* Esquina inferior derecha sobre la foto: Tipo de solar */
+.tarjetaSolarFotoDer {
+
+    position: absolute;
+
+    bottom: 8px;
+
+    right: 8px;
+
+    z-index: 3;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    pointer-events: none;
+
+}
+
+/* Iconos sobre la foto: sin cajas, sin bordes, con drop-shadow nítido */
+.tarjetaSolarFotoMiniIcono {
+
+    width: 25px;
+
+    height: 25px;
+
+    object-fit: contain;
+
+    display: block;
+
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.85));
+
+}
+
+.tarjetaSolarFotoMiniFallback {
+
+    font-size: 1.15rem;
+
+    line-height: 1;
+
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.85));
+
+}
+
+/* Tratamiento día/noche para icono de tipo de solar (respetando regla existente) */
+.tarjetaSolarTipoIcono {
+
+    width: 25px;
+
+    height: 25px;
+
+    object-fit: contain;
+
+    display: block;
+
+    transition: filter var(--transicion, 0.25s ease);
+
+}
+
+/* Tamaño fijo del tipo icono dentro de la capa hover: nunca debe crecer */
+.tarjetaSolarFotoDer .tarjetaSolarTipoIcono {
+
+    width: 25px !important;
+
+    height: 25px !important;
+
+    flex-shrink: 0;
+
+    transform: none !important;
+
+}
+
+/* Modo Día: aspecto normal con drop shadow para contraste */
+body.modo-dia .tarjetaSolarTipoIcono {
+
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.45));
+
+}
+
+/* Modo Noche: icono blanco luminoso sobre fondo oscuro (reutilizando exactamente la regla existente) */
+body.modo-noche .tarjetaSolarTipoIcono {
+
+    filter: brightness(0) invert(1) drop-shadow(0 0 4px rgba(255, 255, 255, 0.35)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.7));
+
+}
+
+/* Resplandor del tipo icono SOLO durante hover/pulsación — sobre la foto nítida */
+
+/* Modo Día → resplandor blanco suave */
+body.modo-dia .tarjetaSolar:hover .tarjetaSolarFotoDer .tarjetaSolarTipoIcono,
+body.modo-dia .tarjetaSolar.tarjetaSolarActiva .tarjetaSolarFotoDer .tarjetaSolarTipoIcono {
+
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 12px rgba(255, 255, 255, 0.7));
+
+}
+
+/* Modo Noche → icono blanco + resplandor azul marino intenso */
+body.modo-noche .tarjetaSolar:hover .tarjetaSolarFotoDer .tarjetaSolarTipoIcono,
+body.modo-noche .tarjetaSolar.tarjetaSolarActiva .tarjetaSolarFotoDer .tarjetaSolarTipoIcono {
+
+    filter: brightness(0) invert(1) drop-shadow(0 0 4px #001a4d) drop-shadow(0 0 8px #002266) drop-shadow(0 0 14px #001f5c);
+
+}
+
+/* Nombre del solar debajo del área visual: limpio y centrado */
 .nombreTarjetaSolar {
 
     font-weight: bold;
@@ -3572,6 +3943,16 @@ body.modo-dia .contadorBarrio {
 
     color: var(--color-texto);
 
+    display: block;
+
+    text-align: center;
+
+    width: 100%;
+
+    word-break: break-word;
+
+    padding: 0 4px;
+
 }
 
 @media(max-width:700px) {
@@ -3579,7 +3960,7 @@ body.modo-dia .contadorBarrio {
     #listaResultados,
     .contenidoBarrio.abierto {
 
-        grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
 
         gap: 12px;
 
@@ -3589,15 +3970,75 @@ body.modo-dia .contadorBarrio {
 
         max-width: none;
 
-        padding: 12px 8px;
+        padding: 10px 8px 12px 8px;
 
     }
 
     .iconoTarjetaSolar {
 
+        min-height: 85px;
+
+    }
+
+    .tarjetaSolarMundoCenter {
+
         width: 52px;
 
         height: 52px;
+
+    }
+
+    .tarjetaSolarPackBadge {
+
+        bottom: 6px;
+
+        left: 6px;
+
+    }
+
+    .tarjetaSolarTipoBadge {
+
+        bottom: 6px;
+
+        right: 6px;
+
+    }
+
+    .tarjetaSolarFotoStackIzq {
+
+        bottom: 6px;
+
+        left: 6px;
+
+        gap: 3px;
+
+    }
+
+    .tarjetaSolarFotoDer {
+
+        bottom: 6px;
+
+        right: 6px;
+
+    }
+
+    .tarjetaSolarFotoMiniIcono,
+    .tarjetaSolarPackBadge .iconoPackMini,
+    .tarjetaSolarTipoBadge .tarjetaSolarTipoIcono,
+    .tarjetaSolarTipoIcono {
+
+        width: 21px;
+
+        height: 21px;
+
+    }
+
+    /* Tamaño fijo del tipo icono en hover: nunca debe crecer en móvil */
+    .tarjetaSolarFotoDer .tarjetaSolarTipoIcono {
+
+        width: 21px !important;
+
+        height: 21px !important;
 
     }
 
@@ -4857,7 +5298,7 @@ body>.skiptranslate {
     margin-bottom: 8px;
     padding: 14px 20px;
     border-radius: var(--radio-normal, 12px);
-    background: var(--fondo-tarjeta, rgba(255,255,255,0.05));
+    background: var(--fondo-tarjeta, rgba(255, 255, 255, 0.05));
     border: 1px solid var(--borde);
 }
 
@@ -4895,7 +5336,7 @@ body>.skiptranslate {
 
 /* Contenedor de la rueda con halo luminoso posterior */
 .ruletaColorWheelWrapperModerna {
-    filter: drop-shadow(0 6px 18px rgba(0,0,0,0.28));
+    filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.28));
     transition: filter var(--transicion);
 }
 
@@ -4943,6 +5384,7 @@ body>.skiptranslate {
     from {
         box-shadow: 0 0 14px rgba(46, 204, 113, 0.40), 0 0 28px rgba(46, 204, 113, 0.20);
     }
+
     to {
         box-shadow: 0 0 22px rgba(46, 204, 113, 0.60), 0 0 44px rgba(46, 204, 113, 0.32);
     }
@@ -4952,6 +5394,7 @@ body>.skiptranslate {
     from {
         box-shadow: 0 0 18px rgba(230, 126, 34, 0.55), 0 0 36px rgba(230, 126, 34, 0.28);
     }
+
     to {
         box-shadow: 0 0 26px rgba(230, 126, 34, 0.78), 0 0 54px rgba(230, 126, 34, 0.42);
     }
@@ -4970,12 +5413,12 @@ body.modo-dia .ruletaColorTitulo {
 }
 
 body.modo-dia .ruletaColorControlesModerna {
-    background: rgba(0,0,0,0.04);
-    border-color: rgba(0,0,0,0.12);
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.12);
 }
 
 body.modo-dia .ruletaColorInput {
-    background: rgba(0,0,0,0.04);
+    background: rgba(0, 0, 0, 0.04);
 }
 
 body.modo-dia .ruletaColorWheelWrapperModerna.ruletaColorWheelWrapper--girando::before {
@@ -6686,6 +7129,7 @@ body.modo-dia .estatInstruccionesGraficos kbd {
         opacity: 0;
         transform: translateY(-8px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -7226,6 +7670,7 @@ body.modo-dia .accionesPacksFlotante {
 #cuerpoModalPacks {
     padding: 20px;
     overflow-y: auto;
+    overflow-x: hidden;
     flex: 1;
     display: flex;
     flex-wrap: wrap;
@@ -7276,7 +7721,7 @@ body.modo-dia .footerPacksFlotante {
     }
 }
 
-/* Tarjetas de CategorÃ­a en Modo Desplegable */
+/* Tarjetas de Categoría en Modo Desplegable */
 .gridCategoriasDesplegables {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -7302,6 +7747,63 @@ body.modo-dia .footerPacksFlotante {
     }
 }
 
+/* Organización en dos filas para Packs al Azar en Modo Desplegable */
+.gridCategoriasDesplegablesAzar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 25px 0;
+}
+
+.gridCategoriasDesplegablesAzar .filaCategoriasDesplegables {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+@media (max-width: 680px) {
+    .gridCategoriasDesplegablesAzar .filaCategoriasDesplegables {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .gridCategoriasDesplegablesAzar .filaCategoriasDesplegables {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+}
+
+/* Colores de sección según Estadísticas Sims 4 gráficos */
+.btnCategoriaDesplegable[data-cat="exp"] {
+    --color-cat: #3aeded;
+}
+
+.btnCategoriaDesplegable[data-cat="cont"] {
+    --color-cat: #2563EB;
+}
+
+.btnCategoriaDesplegable[data-cat="acc"] {
+    --color-cat: #18d906;
+}
+
+.btnCategoriaDesplegable[data-cat="kits"] {
+    --color-cat: #9c0cc0;
+}
+
+.btnCategoriaDesplegable[data-cat="kits-construir"] {
+    --color-cat: #9c0cc0;
+}
+
+.btnCategoriaDesplegable[data-cat="kits-cas"] {
+    --color-cat: #d946ef;
+}
+
+.btnCategoriaDesplegable[data-cat="kits-especiales"] {
+    --color-cat: #9c0cc0;
+}
+
 .btnCategoriaDesplegable {
     display: flex;
     flex-direction: column;
@@ -7309,34 +7811,35 @@ body.modo-dia .footerPacksFlotante {
     justify-content: center;
     gap: 8px;
     padding: 22px 16px;
-    background: rgba(255, 255, 255, 0.07);
-    border: 1.5px solid var(--borde);
+    background: color-mix(in srgb, var(--color-cat, white) 12%, rgba(255, 255, 255, 0.05));
+    border: 2px solid color-mix(in srgb, var(--color-cat, var(--borde)) 50%, transparent);
     border-radius: var(--radio-normal, 12px);
     color: var(--color-texto);
     font-weight: bold;
     font-size: 1.05rem;
     cursor: pointer;
     transition: all 0.25s ease;
-    box-shadow: var(--sombra-suave);
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--color-cat, transparent) 18%, transparent);
 }
 
 body.modo-dia .btnCategoriaDesplegable {
-    background: rgba(255, 255, 255, 0.65);
-    border-color: rgba(0, 0, 0, 0.15);
-    color: #2b2b2b;
+    background: color-mix(in srgb, var(--color-cat, white) 14%, rgba(255, 255, 255, 0.88));
+    border: 2px solid color-mix(in srgb, var(--color-cat, black) 40%, transparent);
+    color: #1f2937;
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--color-cat, transparent) 15%, transparent);
 }
 
 .btnCategoriaDesplegable:hover {
     transform: translateY(-3px);
-    border-color: var(--color-resaltado);
-    background: rgba(46, 204, 113, 0.18);
-    box-shadow: var(--sombra-normal);
+    border-color: var(--color-cat, var(--color-resaltado));
+    background: color-mix(in srgb, var(--color-cat, white) 24%, rgba(255, 255, 255, 0.09));
+    box-shadow: 0 6px 20px color-mix(in srgb, var(--color-cat, #2ecc71) 45%, transparent);
 }
 
 body.modo-dia .btnCategoriaDesplegable:hover {
-    background: rgba(46, 204, 113, 0.22);
-    border-color: #27ae60;
-    box-shadow: var(--sombra-normal);
+    background: color-mix(in srgb, var(--color-cat, white) 28%, rgba(255, 255, 255, 0.95));
+    border-color: var(--color-cat, #27ae60);
+    box-shadow: 0 6px 20px color-mix(in srgb, var(--color-cat, #27ae60) 35%, transparent);
 }
 
 .btnCategoriaDesplegable .badgeConteoPacks {
@@ -7345,13 +7848,13 @@ body.modo-dia .btnCategoriaDesplegable:hover {
     padding: 4px 12px;
     border-radius: 12px;
     background: rgba(0, 0, 0, 0.25);
-    border: 1px solid var(--borde);
+    border: 1px solid color-mix(in srgb, var(--color-cat, var(--borde)) 40%, transparent);
     color: var(--color-subtexto, inherit);
 }
 
 body.modo-dia .btnCategoriaDesplegable .badgeConteoPacks {
     background: rgba(0, 0, 0, 0.08);
-    border-color: rgba(0, 0, 0, 0.12);
+    border-color: color-mix(in srgb, var(--color-cat, rgba(0,0,0,0.15)) 40%, transparent);
     color: #444444;
 }
 
@@ -7396,6 +7899,48 @@ body.modo-dia .btnCategoriaDesplegable .badgeConteoPacks {
 .switchModoVista input:checked~.sliderSwitch {
     background: rgba(var(--color-resaltado-rgb, 52, 152, 219), 0.3);
     border-color: var(--color-resaltado);
+}
+
+/* Anular el ::before global de .sliderSwitch — este switch usa .thumbSwitch en el DOM,
+   no el pseudo-elemento. Sin esto aparece un círculo blanco fijo extra. */
+.switchModoVista .sliderSwitch:before {
+    display: none;
+    content: none;
+}
+
+/* Switch Permitir Kits CAS (Modo Retos y Ruleta Desastres) */
+.switchModoVista .sliderSwitchCAS {
+    position: relative;
+    width: 48px;
+    height: 26px;
+    background: rgba(0, 0, 0, 0.22);
+    border: 1.5px solid var(--borde);
+    border-radius: 20px;
+    transition: background 0.3s ease, border-color 0.3s ease;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.switchModoVista .thumbSwitchCAS {
+    position: absolute;
+    top: 2.5px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    background: #d946ef;
+    border-radius: 50%;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.switchModoVista .sliderSwitchCAS:before {
+    display: none;
+    content: none;
+}
+
+body.modo-dia .switchModoVista .sliderSwitchCAS {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.2);
 }
 
 /* =========================================================
@@ -8905,6 +9450,7 @@ body.modo-dia .habAnim-item {
     from {
         transform: scale(1);
     }
+
     to {
         transform: scale(1.03);
         box-shadow: 0 4px 20px rgba(46, 204, 113, 0.45);
@@ -8958,6 +9504,7 @@ body.modo-dia .habAnim-item {
     from {
         box-shadow: 0 0 12px rgba(46, 204, 113, 0.4);
     }
+
     to {
         box-shadow: 0 0 25px rgba(46, 204, 113, 0.8);
     }
@@ -9013,6 +9560,7 @@ body.modo-dia .habAnim-item {
 }
 
 .habResultadoCardImg {
+    position: relative;
     width: 64px;
     height: 64px;
     display: flex;
@@ -9035,6 +9583,7 @@ body.modo-dia .habAnim-item {
 }
 
 .habResultadoCardNombre {
+    margin-top: 12px;
     font-size: 0.95rem;
     font-weight: 800;
     color: var(--color-texto);
@@ -9042,22 +9591,52 @@ body.modo-dia .habAnim-item {
     line-height: 1.25;
 }
 
-.habResultadoCardPack {
-    font-size: 0.72rem;
-    opacity: 0.8;
-    padding: 3px 8px;
-    background: rgba(255, 255, 255, 0.12);
-    border-radius: 6px;
-    border: 1px solid var(--borde);
-    max-width: 130px;
+.habResultadoCardTipo,
+.habResultadoCard > .habResultadoCardPack {
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--color-texto-secundario, rgba(255,255,255,0.65));
+    margin-top: 4px;
+    letter-spacing: 0.03em;
+    opacity: 0.9;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    padding: 0 4px;
+    line-height: 1.4;
+    cursor: default;
+    position: static;
 }
 
-.habResultadoCardPackBase {
-    background: rgba(46, 204, 113, 0.15);
-    border-color: rgba(46, 204, 113, 0.3);
+/* Badge con icono en la esquina de la miniatura para Habilidades/Mundos/Retos */
+.habResultadoCardImg .habResultadoCardPack {
+    position: absolute;
+    bottom: -10px;
+    left: -12px;
+    z-index: 2;
+    cursor: default;
+}
+
+.habResultadoCardImg .habResultadoCardPack .iconoPackMini {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    display: block;
+    cursor: default;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+}
+
+/* Ajuste proporcional para tarjetas compactas (Modo Retos) */
+.habResultadoCardImg[style*="42px"] .habResultadoCardPack {
+    font-size: 0.65rem;
+}
+
+.habResultadoCardImg[style*="42px"] .habResultadoCardPack .iconoPackMini {
+    width: 20px;
+    height: 20px;
 }
 
 .habBtnTirarOtraVez {
@@ -9670,19 +10249,19 @@ body.modo-obs .ventana {
 }
 
 /* Escalado de ventanas directas de section#app según posición */
-body.modo-obs section#app > .ventana {
+body.modo-obs section#app>.ventana {
     transform: scale(var(--escala-obs, 1)) !important;
 }
 
-body.modo-obs.obs-pos-left section#app > .ventana {
+body.modo-obs.obs-pos-left section#app>.ventana {
     transform-origin: top left !important;
 }
 
-body.modo-obs.obs-pos-center section#app > .ventana {
+body.modo-obs.obs-pos-center section#app>.ventana {
     transform-origin: top center !important;
 }
 
-body.modo-obs.obs-pos-right section#app > .ventana {
+body.modo-obs.obs-pos-right section#app>.ventana {
     transform-origin: top right !important;
 }
 
@@ -9791,16 +10370,42 @@ body.modo-obs.modo-obs-noche {
 
 /* ─── Ciclado Visual Rápido de Opciones (Solar, Habilidades, Colores, Packs, Limitantes) ── */
 @keyframes retoCicladoFlash {
-    0%   { opacity: 0; transform: scale(0.97); }
-    15%  { opacity: 1; transform: scale(1); }
-    85%  { opacity: 1; transform: scale(1); }
-    100% { opacity: 0; transform: scale(0.97); }
+    0% {
+        opacity: 0;
+        transform: scale(0.97);
+    }
+
+    15% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    85% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0.97);
+    }
 }
 
 @keyframes retoCicladoAterrizaje {
-    0%   { opacity: 0; transform: scale(0.95); }
-    60%  { opacity: 1; transform: scale(1.02); }
-    100% { opacity: 1; transform: scale(1); }
+    0% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    60% {
+        opacity: 1;
+        transform: scale(1.02);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .catResultadoSlotWrap {
@@ -9832,6 +10437,7 @@ body.modo-obs.modo-obs-noche {
 .muestrasColores {
     overflow: visible;
 }
+
 .chipColor {
     overflow: visible;
 }
@@ -10123,6 +10729,10 @@ body.modo-obs .obsBrandingTextoDer {
     display: block;
 }
 
+body.modo-dia .botonAgradecimientosBtn .icono-corazon {
+    fill: #000000;
+}
+
 /* Tarjeta del modal */
 .modalAgradecimientosCard {
     max-width: 720px !important;
@@ -10230,9 +10840,11 @@ body.modo-dia .btnSaltarAnimacion:hover {
         transform: translateY(120px);
         opacity: 0;
     }
+
     12% {
         opacity: 1;
     }
+
     100% {
         transform: translateY(0);
         opacity: 1;
@@ -10435,18 +11047,22 @@ body.modo-dia .enlaceTexto:hover {
     .cuerpoModalAgradecimientos {
         padding: 18px 16px 30px;
     }
+
     .modalAgradecimientosCard {
         width: 95% !important;
         max-height: 92vh;
     }
+
     .gridPioneros {
         grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
         gap: 16px 12px;
     }
+
     .tarjetaPionero .fotoColaborador {
         width: 70px;
         height: 70px;
     }
+
     .tarjetaAportacion .fotoColaborador {
         width: 88px;
         height: 88px;
@@ -10466,7 +11082,8 @@ body.modo-dia .enlaceTexto:hover {
 .desastreBienvenida .desastreItemDesc {
     word-break: break-word;
     overflow-wrap: break-word;
-    max-width: 100% !important; /* anula el inline max-width:480px */
+    max-width: 100% !important;
+    /* anula el inline max-width:480px */
     box-sizing: border-box;
 }
 
@@ -10474,6 +11091,7 @@ body.modo-dia .enlaceTexto:hover {
     .desastreBienvenida {
         padding: 16px 14px;
     }
+
     .desastreBienvenida .desastreItemDesc {
         font-size: 0.88rem;
     }
@@ -10485,11 +11103,13 @@ body.modo-dia .enlaceTexto:hover {
     box-sizing: border-box;
     min-width: 0;
 }
+
 .btnCategoriaDesplegable span {
     max-width: 100%;
     word-break: break-word;
     text-align: center;
 }
+
 .btnCategoriaDesplegable .badgeConteoPacks {
     max-width: 100%;
     box-sizing: border-box;
@@ -10502,17 +11122,21 @@ body.modo-dia .enlaceTexto:hover {
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
     }
+
     .btnCategoriaDesplegable {
         padding: 12px 6px;
         font-size: 0.88rem;
     }
+
     .btnCategoriaDesplegable .badgeConteoPacks {
         font-size: 0.78rem;
         padding: 3px 8px;
     }
+
     .accionesPacksFlotante {
         padding: 10px 14px;
     }
+
     .accionesPacksFlotante .botonReto {
         max-width: 100%;
         box-sizing: border-box;
@@ -10520,18 +11144,22 @@ body.modo-dia .enlaceTexto:hover {
         text-align: center;
         white-space: normal;
     }
+
     #cuerpoModalPacks {
         padding: 10px 8px;
         gap: 8px;
     }
+
     #cuerpoModalPacks .btnPackIcono {
         width: 70px;
         height: 70px;
     }
+
     #cuerpoModalPacks .btnPackIcono img.iconoPack {
         width: 64px;
         height: 64px;
     }
+
     #cuerpoModalPacks .opcionFiltro:not(.btnPackIcono) {
         max-width: 100%;
         box-sizing: border-box;
@@ -10539,6 +11167,7 @@ body.modo-dia .enlaceTexto:hover {
         min-height: 46px;
         padding: 8px 10px;
     }
+
     .footerPacksFlotante {
         padding: 12px 14px;
     }
@@ -10562,6 +11191,7 @@ body.modo-dia .enlaceTexto:hover {
         width: 100%;
         margin: 12px 0;
     }
+
     .estatToggleVistaWrap .estatToggleVista {
         display: flex;
         gap: 6px;
@@ -10571,6 +11201,7 @@ body.modo-dia .enlaceTexto:hover {
         justify-content: flex-start;
         flex-shrink: 1;
     }
+
     .estatToggleVistaWrap .compartirSeccion {
         position: static;
         margin: 0 0 0 auto;
@@ -10582,20 +11213,24 @@ body.modo-dia .enlaceTexto:hover {
         min-width: 38px !important;
         min-height: 38px !important;
     }
+
     .estatBtnVista {
         padding: 7px 12px;
         font-size: 0.82rem;
         white-space: nowrap;
     }
 }
+
 @media (max-width: 360px) {
     .estatToggleVistaWrap .estatToggleVista {
         gap: 4px;
     }
+
     .estatBtnVista {
         padding: 6px 8px;
         font-size: 0.76rem;
     }
+
     .estatToggleVistaWrap .compartirSeccion {
         width: 36px !important;
         height: 36px !important;
@@ -10612,6 +11247,7 @@ body.modo-dia .enlaceTexto:hover {
         letter-spacing: 0.02em;
         line-height: 1.2;
     }
+
     .estatBtnLinea {
         padding: 3px 8px;
         font-size: 0.72rem;
@@ -10621,21 +11257,25 @@ body.modo-dia .enlaceTexto:hover {
         text-align: center;
         max-width: 100%;
     }
+
     .estatTipoGrupoHeader {
         min-width: 0;
         overflow-wrap: break-word;
         word-break: break-word;
     }
-    .estatTipoGrupoHeader > span:first-child {
+
+    .estatTipoGrupoHeader>span:first-child {
         min-width: 0;
         overflow-wrap: break-word;
         word-break: break-word;
     }
+
     .estatCustomTriggerBtn {
         min-width: 0;
         max-width: 100%;
         box-sizing: border-box;
     }
+
     .estatCustomTriggerBtn span {
         min-width: 0;
         overflow-wrap: break-word;
@@ -10661,8 +11301,8 @@ body.modo-dia .enlaceTexto:hover {
     }
 
     /* El título pasa a una segunda fila independiente debajo de los botones */
-    .cabeceraVentana > h2,
-    .cabeceraVentana > h3 {
+    .cabeceraVentana>h2,
+    .cabeceraVentana>h3 {
         position: static;
         transform: none;
         left: auto;
@@ -10690,8 +11330,9 @@ body.modo-dia .enlaceTexto:hover {
         flex-wrap: nowrap;
         justify-content: flex-end;
     }
-    .ventanaPequena .cabeceraVentana > h2,
-    .ventanaPequena .cabeceraVentana > h3 {
+
+    .ventanaPequena .cabeceraVentana>h2,
+    .ventanaPequena .cabeceraVentana>h3 {
         position: absolute;
         left: calc(50% - 16px);
         top: 50%;
@@ -10798,7 +11439,8 @@ body {
         /* Ya tiene overflow-x: auto, garantizamos que no desborde */
         max-width: 100%;
         box-sizing: border-box;
-        padding-bottom: 6px;   /* espacio para el scrollbar invisible */
+        padding-bottom: 6px;
+        /* espacio para el scrollbar invisible */
     }
 
     .btn-categoria-nav {
@@ -10980,6 +11622,7 @@ body {
 }
 
 @media (max-width: 768px) {
+
     .controlSonidoWrapper:has(.abierto),
     .selectorModoNavWrapper:has(.abierto),
     .controlSonidoWrapper.popover-abierto,
@@ -11063,6 +11706,7 @@ body {
 /* ── 16. GARANTÍA GLOBAL — ningún elemento directo del body
    supera el ancho del viewport                               */
 @media (max-width: 768px) {
+
     *,
     *::before,
     *::after {
@@ -11082,4 +11726,3 @@ body {
         max-width: calc(100vw - 16px) !important;
     }
 }
-

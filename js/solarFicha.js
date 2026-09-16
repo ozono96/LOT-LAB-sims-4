@@ -213,7 +213,7 @@ function mostrarResumenSolar(event,idSolar){
 
         <strong>${solar.nombre}</strong>
 
-        <br><br>
+        <br>
 
         📦 ${solar.nombrePack}
 

@@ -278,17 +278,18 @@ function _mundosAnimarTirada(elegidas) {
             const imgSrc = item.rutaIcono || (typeof rutaIconoMundo === "function" ? rutaIconoMundo(item.nombre) : null);
             const nombrePackNormalizado = item.nombrePack || "Juego Base";
             const esBase = !item.nombrePack || item.nombrePack.toLowerCase() === "base" || item.nombrePack.toLowerCase() === "juego base";
-            const rutaIconoP = typeof rutaIconoPack === "function" ? rutaIconoPack(nombrePackNormalizado) : null;
+            const nombrePackIcono = esBase ? "Sims 4" : nombrePackNormalizado;
+            const rutaIconoP = typeof rutaIconoPack === "function" ? (rutaIconoPack(nombrePackIcono) || rutaIconoPack(nombrePackNormalizado)) : null;
 
             let packBadgeHTML = "";
+            const tooltipTexto = "Pack: " + nombrePackIcono;
             if (rutaIconoP) {
-                packBadgeHTML = "<div class='habResultadoCardPack" + (esBase ? " habResultadoCardPackBase" : "") + "'>" +
-                    "<img src='" + rutaIconoP + "' alt='" + nombrePackNormalizado + "' title='" + nombrePackNormalizado + "' class='iconoPackMini' loading='lazy' decoding='async' style='width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:4px;' onerror=\"this.style.display='none'\">" +
-                    "<span>" + nombrePackNormalizado + "</span>" +
+                packBadgeHTML = "<div class='habResultadoCardPack' data-tooltip='" + tooltipTexto + "'>" +
+                    "<img src='" + rutaIconoP + "' alt='" + tooltipTexto + "' aria-label='" + tooltipTexto + "' class='iconoPackMini' onerror=\"this.style.display='none'\">" +
                 "</div>";
             } else {
-                packBadgeHTML = "<div class='habResultadoCardPack" + (esBase ? " habResultadoCardPackBase" : "") + "'>" +
-                    (esBase ? "🎮 Juego Base" : "📦 " + nombrePackNormalizado) +
+                packBadgeHTML = "<div class='habResultadoCardPack' data-tooltip='" + tooltipTexto + "' aria-label='" + tooltipTexto + "'>" +
+                    "<span class='iconoPackMini' style='display:inline-flex;align-items:center;justify-content:center;font-size:1.1rem;' role='img' aria-label='" + tooltipTexto + "'>" + (esBase ? "🎮" : "📦") + "</span>" +
                 "</div>";
             }
 
@@ -298,9 +299,9 @@ function _mundosAnimarTirada(elegidas) {
                         ? "<img src='" + imgSrc + "' alt='" + item.nombre + "' loading='lazy' decoding='async' onerror=\"this.style.display='none';this.nextElementSibling.style.display='flex'\">"
                         : "") +
                     "<div class='habResultadoCardFallback' style='" + (imgSrc ? "display:none" : "display:flex") + "'>🌎</div>" +
+                    packBadgeHTML +
                 "</div>" +
-                "<div class='habResultadoCardNombre'>" + item.nombre + "</div>" +
-                packBadgeHTML;
+                "<div class='habResultadoCardNombre'>" + item.nombre + "</div>";
 
             return card;
         }
@@ -350,17 +351,18 @@ window.restaurarResultadoMundosObs = function (data) {
         const imgSrc = item.rutaIcono || (typeof rutaIconoMundo === "function" ? rutaIconoMundo(item.nombre) : null);
         const nombrePackNormalizado = item.nombrePack || "Juego Base";
         const esBase = !item.nombrePack || item.nombrePack.toLowerCase() === "base" || item.nombrePack.toLowerCase() === "juego base";
-        const rutaIconoP = typeof rutaIconoPack === "function" ? rutaIconoPack(nombrePackNormalizado) : null;
+        const nombrePackIcono = esBase ? "Sims 4" : nombrePackNormalizado;
+        const rutaIconoP = typeof rutaIconoPack === "function" ? (rutaIconoPack(nombrePackIcono) || rutaIconoPack(nombrePackNormalizado)) : null;
 
         let packBadgeHTML = "";
+        const tooltipTexto = "Pack: " + nombrePackIcono;
         if (rutaIconoP) {
-            packBadgeHTML = "<div class='habResultadoCardPack" + (esBase ? " habResultadoCardPackBase" : "") + "'>" +
-                "<img src='" + rutaIconoP + "' alt='" + nombrePackNormalizado + "' title='" + nombrePackNormalizado + "' class='iconoPackMini' loading='lazy' decoding='async' style='width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:4px;' onerror=\"this.style.display='none'\">" +
-                "<span>" + nombrePackNormalizado + "</span>" +
+            packBadgeHTML = "<div class='habResultadoCardPack' data-tooltip='" + tooltipTexto + "'>" +
+                "<img src='" + rutaIconoP + "' alt='" + tooltipTexto + "' aria-label='" + tooltipTexto + "' class='iconoPackMini' onerror=\"this.style.display='none'\">" +
             "</div>";
         } else {
-            packBadgeHTML = "<div class='habResultadoCardPack" + (esBase ? " habResultadoCardPackBase" : "") + "'>" +
-                (esBase ? "🎮 Juego Base" : "📦 " + nombrePackNormalizado) +
+            packBadgeHTML = "<div class='habResultadoCardPack' data-tooltip='" + tooltipTexto + "' aria-label='" + tooltipTexto + "'>" +
+                "<span class='iconoPackMini' style='display:inline-flex;align-items:center;justify-content:center;font-size:1.1rem;' role='img' aria-label='" + tooltipTexto + "'>" + (esBase ? "🎮" : "📦") + "</span>" +
             "</div>";
         }
 
@@ -370,9 +372,9 @@ window.restaurarResultadoMundosObs = function (data) {
                     ? "<img src='" + imgSrc + "' alt='" + item.nombre + "' loading='lazy' decoding='async' onerror=\"this.style.display='none';this.nextElementSibling.style.display='flex'\">"
                     : "") +
                 "<div class='habResultadoCardFallback' style='" + (imgSrc ? "display:none" : "display:flex") + "'>🌎</div>" +
+                packBadgeHTML +
             "</div>" +
-            "<div class='habResultadoCardNombre'>" + item.nombre + "</div>" +
-            packBadgeHTML;
+            "<div class='habResultadoCardNombre'>" + item.nombre + "</div>";
 
         grid.appendChild(card);
     });

@@ -7,14 +7,24 @@
 let retoActual = null;
 
 function obtenerPacksSeleccionadosUsuario() {
+    let seleccionados = [];
     if (window.PACKS_SELECCIONADOS_SET && window.PACKS_SELECCIONADOS_SET instanceof Set && window.PACKS_SELECCIONADOS_SET.size > 0) {
-        return Array.from(window.PACKS_SELECCIONADOS_SET);
+        seleccionados = Array.from(window.PACKS_SELECCIONADOS_SET);
+    } else {
+        document.querySelectorAll("#listaPacksRetos .opcionFiltro.seleccionada").forEach(btn => {
+            const pack = btn.getAttribute("data-pack");
+            if (pack) seleccionados.push(pack);
+        });
     }
-    const seleccionados = [];
-    document.querySelectorAll("#listaPacksRetos .opcionFiltro.seleccionada").forEach(btn => {
-        const pack = btn.getAttribute("data-pack");
-        if (pack) seleccionados.push(pack);
-    });
+
+    // Si la opción Permitir Kits CAS está OFF (por defecto), excluir Kits CAS del conjunto elegible
+    if (!window.PERMITIR_KITS_CAS && typeof window.obtenerSetKitsCAS === "function") {
+        const setCAS = window.obtenerSetKitsCAS();
+        if (setCAS && setCAS.size > 0) {
+            seleccionados = seleccionados.filter(p => !setCAS.has(p.trim().toLowerCase()));
+        }
+    }
+
     return seleccionados;
 }
 

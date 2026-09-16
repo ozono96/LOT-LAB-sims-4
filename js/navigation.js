@@ -542,6 +542,16 @@ function procesarRutaURL() {
     const idVentana = MAPA_RUTAS[slug];
 
     if (idVentana) {
+        if (slug === "packs-azar") {
+            window.proximaVentanaTrasPacks = "ventanaPacksGenerador";
+        } else if (slug === "habilidades" || slug === "habilidades-packs" || slug === "habilidad") {
+            window.proximaVentanaTrasPacks = "ventanaHabilidadesGenerador";
+        } else if (slug === "mundos-azar") {
+            window.proximaVentanaTrasPacks = "ventanaMundosGenerador";
+        } else if (slug === "modo-retos" || slug === "retos" || slug === "desafios") {
+            window.proximaVentanaTrasPacks = "ventanaRetosOpciones";
+        }
+
         if (window.ventanaActual !== idVentana || document.getElementById(idVentana)?.style.display !== "block") {
             abrirVentana(idVentana, false);
             if (idVentana === "ventanaEstadisticas" && typeof abrirEstadisticas === "function") {
@@ -639,7 +649,11 @@ function abrirVentana(id, esClickUsuario = false) {
     gestionarPausaNavegacionTemporizadores();
 
     if (typeof window.emitirEventoOBS === "function") {
-        window.emitirEventoOBS("SYNC_ABRIR_VENTANA", { idVentana: id });
+        const payloadVentana = { idVentana: id };
+        if (id === "ventanaRetos") {
+            payloadVentana.modoPacksAzar = (window.proximaVentanaTrasPacks === "ventanaPacksGenerador") || (window._modoPacksAzarActivo === true);
+        }
+        window.emitirEventoOBS("SYNC_ABRIR_VENTANA", payloadVentana);
     }
 
     if (id === "ventanaAcercaDe" && typeof window.inicializarCarruselAcercaDe === "function") {
@@ -652,6 +666,10 @@ function abrirVentana(id, esClickUsuario = false) {
 
     if (id === "ventanaAleatorio" && typeof window.mostrarAleatorio === "function") {
         window.mostrarAleatorio();
+    }
+
+    if (id === "ventanaRetos" && typeof window.renderizarPacksRetos === "function") {
+        window.renderizarPacksRetos();
     }
 
     // 2. Sincronizar URL hash de forma segura

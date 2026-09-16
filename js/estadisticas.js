@@ -495,6 +495,65 @@ function actualizarContador(filtrados, total) {
     }
 }
 
+// ── Helper para subtipo específico de Kit (Construir, CAS, Especial) ──
+function obtenerSubtipoKitEstadisticas(nombreKit) {
+    if (!nombreKit || typeof database === "undefined" || !Array.isArray(database.packs)) {
+        return "Kit — Construir";
+    }
+    const nombreClean = nombreKit.trim().toLowerCase();
+    for (const fila of database.packs) {
+        if (fila[6] && fila[6].trim().toLowerCase() === nombreClean) {
+            const idKit = (fila[7] || "").trim().toUpperCase();
+            if (idKit.includes("CAS")) return "Kit — CAS";
+            if (idKit.includes("ESPECIAL")) return "Kit — Especial";
+            return "Kit — Construir";
+        }
+    }
+    // Fallback flexible sin acentos
+    const normBuscado = typeof quitarAcentos === "function" ? quitarAcentos(nombreClean) : nombreClean;
+    for (const fila of database.packs) {
+        if (fila[6]) {
+            const normFila = typeof quitarAcentos === "function" ? quitarAcentos(fila[6].trim().toLowerCase()) : fila[6].trim().toLowerCase();
+            if (normFila === normBuscado || normFila.includes(normBuscado) || normBuscado.includes(normFila)) {
+                const idKit = (fila[7] || "").trim().toUpperCase();
+                if (idKit.includes("CAS")) return "Kit — CAS";
+                if (idKit.includes("ESPECIAL")) return "Kit — Especial";
+                return "Kit — Construir";
+            }
+        }
+    }
+    return "Kit — Construir";
+}
+
+// ── Helper para desglose cuantitativo de Kits (Construir, CAS, Especial) ──
+function contarSubtiposKits(packs) {
+    let construir = 0;
+    let cas = 0;
+    let especiales = 0;
+
+    if (Array.isArray(packs)) {
+        packs.forEach(p => {
+            if (p && (p.tipoPack === "Kits" || p.prefijo === "TK")) {
+                const subtipo = obtenerSubtipoKitEstadisticas(p.nombre);
+                if (subtipo === "Kit — CAS") {
+                    cas++;
+                } else if (subtipo === "Kit — Especial") {
+                    especiales++;
+                } else {
+                    construir++;
+                }
+            }
+        });
+    }
+
+    return {
+        construir,
+        cas,
+        especiales,
+        total: construir + cas + especiales
+    };
+}
+
 // ── Vista Lista ──────────────────────────────────────────
 function renderizarLista(packs) {
     const contenedor = document.getElementById("estatListaPacks");
@@ -515,7 +574,10 @@ function renderizarLista(packs) {
 
         const badgeCodigo = pack.codigoInterno || pack.id;
         const badgeId = `<span class="packBadgeId" data-tooltip="Nombre interno del pack dentro del juego" title="Nombre interno del pack dentro del juego" style="background:${colorTipo}; color:#ffffff; border-color:${colorTipo};">${badgeCodigo}</span>`;
-        const badgeTipo = `<span class="packBadgeTipo" style="background:${colorConAlpha(colorTipo, "22")}; color:${colorTipo}; border:1px solid ${colorConAlpha(colorTipo, "55")};">${pack.tipoPack}</span>`;
+        const textoTipo = (pack.tipoPack === "Kits")
+            ? obtenerSubtipoKitEstadisticas(pack.nombre)
+            : pack.tipoPack;
+        const badgeTipo = `<span class="packBadgeTipo" style="background:${colorConAlpha(colorTipo, "22")}; color:${colorTipo}; border:1px solid ${colorConAlpha(colorTipo, "55")};">${textoTipo}</span>`;
 
         let notaExtra = "";
         if (pack.esJuegoBase) {
@@ -888,7 +950,8 @@ function dibujarGraficoMesesAno(packs) {
         nombre: NOMBRES_MESES[i] || "",
         nombreCompleto: NOMBRES_MESES_COMPLETOS[i] || "",
         total: 0,
-        porTipo: {}
+        porTipo: {},
+        packs: []
     }));
 
     conFecha.forEach(p => {
@@ -899,6 +962,7 @@ function dibujarGraficoMesesAno(packs) {
             meses[mIdx].total++;
             const t = p.tipoPack || "Otro";
             meses[mIdx].porTipo[t] = (meses[mIdx].porTipo[t] || 0) + 1;
+            meses[mIdx].packs.push(p);
         }
     });
 
@@ -943,7 +1007,11 @@ function dibujarGraficoMesesAno(packs) {
         tiposActivos.forEach((tipo, tIdx) => {
             const cant = mesData.porTipo[tipo];
             const color = COLORES_TIPO[tipo] || "#2563EB";
-            desglose.push({ tipo, cant, color });
+            const desgloseItem = { tipo, cant, color };
+            if (tipo === "Kits") {
+                desgloseItem.desgloseKits = contarSubtiposKits(mesData.packs);
+            }
+            desglose.push(desgloseItem);
 
             const segH = (cant / maxTotalMes) * aH;
             const segY = currY - segH;
@@ -1051,7 +1119,8 @@ function dibujarGraficoDiasSemana(packs) {
         index: i,
         nombre: NOMBRES_DIAS_SEMANA[i] || "",
         total: 0,
-        porTipo: {}
+        porTipo: {},
+        packs: []
     }));
 
     conFecha.forEach(p => {
@@ -1068,6 +1137,7 @@ function dibujarGraficoDiasSemana(packs) {
             dias[diaIdx].total++;
             const t = p.tipoPack || "Otro";
             dias[diaIdx].porTipo[t] = (dias[diaIdx].porTipo[t] || 0) + 1;
+            dias[diaIdx].packs.push(p);
         }
     });
 
@@ -1112,7 +1182,11 @@ function dibujarGraficoDiasSemana(packs) {
         tiposActivos.forEach((tipo, tIdx) => {
             const cant = diaData.porTipo[tipo];
             const color = COLORES_TIPO[tipo] || "#2563EB";
-            desglose.push({ tipo, cant, color });
+            const desgloseItem = { tipo, cant, color };
+            if (tipo === "Kits") {
+                desgloseItem.desgloseKits = contarSubtiposKits(diaData.packs);
+            }
+            desglose.push(desgloseItem);
 
             const segH = (cant / maxTotalDia) * aH;
             const segY = currY - segH;
@@ -1276,7 +1350,8 @@ function mostrarDetalleLanzamientos(chartId, tipo, valor, titulo) {
             const colorTipo = COLORES_TIPO[pack.tipoPack] || "#2563EB";
             const badgeCodigo = pack.codigoInterno || pack.id;
             const badgeId = `<span class="packBadgeId" style="background:${colorTipo}; color:#ffffff; border-color:${colorTipo}; font-size:0.75rem; padding:2px 8px;">${badgeCodigo}</span>`;
-            const badgeTipo = `<span class="packBadgeTipo" style="background:${colorConAlpha(colorTipo, "22")}; color:${colorTipo}; border:1px solid ${colorConAlpha(colorTipo, "55")}; font-size:0.7rem; padding:2px 8px;">${pack.tipoPack}</span>`;
+            const textoBadge = pack.tipoPack === "Kits" ? obtenerSubtipoKitEstadisticas(pack.nombre) : pack.tipoPack;
+            const badgeTipo = `<span class="packBadgeTipo" style="background:${colorConAlpha(colorTipo, "22")}; color:${colorTipo}; border:1px solid ${colorConAlpha(colorTipo, "55")}; font-size:0.7rem; padding:2px 8px;">${textoBadge}</span>`;
 
             let precioDisplay = "";
             if (pack.esJuegoBase || pack.precio === 0) {
@@ -1605,7 +1680,8 @@ function dibujarGraficoPastel(packs) {
             cantPacks: valores[i],
             totalPacks: total,
             pct: ((valores[i] / total) * 100).toFixed(1).replace(".0", ""),
-            color
+            color,
+            desgloseKits: (tipo === "Kits") ? contarSubtiposKits(packs) : null
         });
 
         ang = angFin;
@@ -1707,7 +1783,8 @@ function dibujarGraficoPrecio(packs) {
             totalPrecio,
             pct: ((precioPorTipo[tipo] / totalPrecio) * 100).toFixed(1).replace(".0", ""),
             cantPacks: cantidadPorTipo[tipo] || 0,
-            color
+            color,
+            desgloseKits: (tipo === "Kits") ? contarSubtiposKits(packs) : null
         });
 
         ang = angFin;
@@ -2670,7 +2747,8 @@ function rellenarPanelTiempo() {
             const btn = document.createElement("button");
             btn.type = "button";
             btn.className = "estatPackIconoBtn";
-            const tooltipTexto = `${pack.nombre} (${pack.tipoPack || "Pack"}${pack.fecha ? " · " + pack.fecha : ""})`;
+            const tipoTexto = (pack.tipoPack === "Kits") ? obtenerSubtipoKitEstadisticas(pack.nombre) : (pack.tipoPack || "Pack");
+            const tooltipTexto = `${pack.nombre} (${tipoTexto}${pack.fecha ? " · " + pack.fecha : ""})`;
             btn.setAttribute("data-tooltip", tooltipTexto);
 
             const img = document.createElement("img");
@@ -2777,6 +2855,24 @@ function inicializarTooltipGraficos() {
                         if (slice) {
                             const isDark = document.body.classList.contains("modo-noche");
                             const bordeSep = isDark ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.12)";
+
+                            let desgloseKitsHTML = "";
+                            if (slice.tipo === "Kits" && slice.desgloseKits) {
+                                const dk = slice.desgloseKits;
+                                desgloseKitsHTML = `<div style="margin-top:6px; padding-top:5px; border-top:1px dashed ${bordeSep}; font-size:0.78rem; opacity:0.95;">
+                                    <div style="font-weight:700; margin-bottom:3px; opacity:0.85;">Desglose por categoría:</div>
+                                    <div style="display:flex; justify-content:space-between; gap:10px; margin-left:4px;">
+                                        <span>• Construir:</span><strong>${dk.construir}</strong>
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between; gap:10px; margin-left:4px;">
+                                        <span>• CAS:</span><strong>${dk.cas}</strong>
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between; gap:10px; margin-left:4px;">
+                                        <span>• Especiales:</span><strong>${dk.especiales}</strong>
+                                    </div>
+                                </div>`;
+                            }
+
                             if (slice.chartId === "graficoPrecio") {
                                 tooltip.innerHTML = `<div style="text-align:left; min-width:145px;">
                                     <div style="font-weight:800; font-size:0.9rem; border-bottom:1px solid ${bordeSep}; padding-bottom:4px; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
@@ -2786,6 +2882,7 @@ function inicializarTooltipGraficos() {
                                     <div style="font-size:0.88rem; font-weight:800; color:${slice.color}; margin-top:2px;">${formatearEuros(slice.precio)}</div>
                                     <div style="font-size:0.8rem; opacity:0.88; margin-top:2px;">${slice.pct}% del coste total</div>
                                     <div style="font-size:0.78rem; opacity:0.75; margin-top:2px;">📦 ${slice.cantPacks} ${slice.cantPacks === 1 ? 'pack' : 'packs'}</div>
+                                    ${desgloseKitsHTML}
                                 </div>`;
                             } else {
                                 tooltip.innerHTML = `<div style="text-align:left; min-width:130px;">
@@ -2795,6 +2892,7 @@ function inicializarTooltipGraficos() {
                                     </div>
                                     <div style="font-size:0.88rem; font-weight:800; color:${slice.color}; margin-top:2px;">${slice.cantPacks} ${slice.cantPacks === 1 ? 'pack' : 'packs'}</div>
                                     <div style="font-size:0.8rem; opacity:0.88; margin-top:2px;">${slice.pct}% de los packs</div>
+                                    ${desgloseKitsHTML}
                                 </div>`;
                             }
                             tooltip.style.left = e.clientX + "px";
@@ -2822,21 +2920,33 @@ function inicializarTooltipGraficos() {
 
             if (hit) {
                 if (hit.desglose) {
-                    const lineasDesglose = (hit.desglose.length > 0)
-                        ? hit.desglose.map(d =>
-                            `<div style="display:flex; align-items:center; justify-content:space-between; gap:14px; margin-top:3px;">
-                                <div style="display:flex; align-items:center; gap:6px;">
-                                    <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:${d.color}; flex-shrink:0;"></span>
-                                    <span style="font-size:0.8rem; opacity:0.9;">${d.tipo}</span>
-                                </div>
-                                <strong style="font-size:0.82rem;">${d.cant}</strong>
-                            </div>`
-                        ).join("")
-                        : `<div style="font-size:0.8rem; opacity:0.75; font-style:italic; margin-top:2px;">Sin lanzamientos</div>`;
-
                     const isDark = document.body.classList.contains("modo-noche");
                     const bordeSep = isDark ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.12)";
                     const badgeBg = isDark ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.08)";
+
+                    const lineasDesglose = (hit.desglose.length > 0)
+                        ? hit.desglose.map(d => {
+                            let subDesgloseHtml = "";
+                            if (d.tipo === "Kits" && d.desgloseKits && d.cant > 0) {
+                                const dk = d.desgloseKits;
+                                subDesgloseHtml = `<div style="font-size:0.75rem; opacity:0.85; margin-left:16px; margin-top:2px; line-height:1.35;">
+                                    <div>• Construir: <strong>${dk.construir}</strong></div>
+                                    <div>• CAS: <strong>${dk.cas}</strong></div>
+                                    <div>• Especiales: <strong>${dk.especiales}</strong></div>
+                                </div>`;
+                            }
+                            return `<div style="margin-top:3px;">
+                                <div style="display:flex; align-items:center; justify-content:space-between; gap:14px;">
+                                    <div style="display:flex; align-items:center; gap:6px;">
+                                        <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:${d.color}; flex-shrink:0;"></span>
+                                        <span style="font-size:0.8rem; opacity:0.9;">${d.tipo}</span>
+                                    </div>
+                                    <strong style="font-size:0.82rem;">${d.cant}</strong>
+                                </div>
+                                ${subDesgloseHtml}
+                            </div>`;
+                        }).join("")
+                        : `<div style="font-size:0.8rem; opacity:0.75; font-style:italic; margin-top:2px;">Sin lanzamientos</div>`;
 
                     tooltip.innerHTML = `<div style="text-align:left; min-width:145px;">
                         <div style="font-weight:800; font-size:0.9rem; border-bottom:1px solid ${bordeSep}; padding-bottom:4px; margin-bottom:4px; display:flex; align-items:center; justify-content:space-between; gap:12px;">
@@ -2854,7 +2964,15 @@ function inicializarTooltipGraficos() {
                     } else if (hit.chartId === "graficoSolaresMundos" && hit.cantSolares) {
                         infoExtra = `<br><span style="opacity:0.85;font-size:0.78rem;">🏡 Solares: ${hit.cantSolares.toLocaleString("es-ES")}</span>`;
                     }
-                    tooltip.innerHTML = `<strong>${p.nombre}</strong><br><span style="opacity:0.85;font-size:0.78rem;">📅 Lanzamiento: ${anio}</span>${infoExtra}`;
+                    let subtipoHtml = "";
+                    if (p.tipoPack) {
+                        const tipoTexto = (p.tipoPack === "Kits")
+                            ? obtenerSubtipoKitEstadisticas(p.nombre)
+                            : p.tipoPack;
+                        const tipoColor = COLORES_TIPO[p.tipoPack] || "#2563EB";
+                        subtipoHtml = `<br><span style="font-weight:700;font-size:0.8rem;color:${tipoColor};">${tipoTexto}</span>`;
+                    }
+                    tooltip.innerHTML = `<strong>${p.nombre}</strong>${subtipoHtml}<br><span style="opacity:0.85;font-size:0.78rem;">📅 Lanzamiento: ${anio}</span>${infoExtra}`;
                 }
                 tooltip.style.left = e.clientX + "px";
                 tooltip.style.top = e.clientY + "px";

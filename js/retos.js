@@ -59,9 +59,19 @@ document.addEventListener("DOMContentLoaded", () => {
             const packsArr = (PACKS_SELECCIONADOS_SET && PACKS_SELECCIONADOS_SET instanceof Set)
                 ? Array.from(PACKS_SELECCIONADOS_SET)
                 : [];
+            // Usar el estado persistido: si _modoPacksAzarActivo está seteado úsalo,
+            // si no, fallback a proximaVentanaTrasPacks o estado de Permitir Kits CAS
+            const esModoAzar = (window._modoPacksAzarActivo === true) ||
+                (typeof window !== "undefined" && window.proximaVentanaTrasPacks === "ventanaPacksGenerador") ||
+                (window.PERMITIR_KITS_CAS === true);
             window.emitirEventoOBS("SYNC_ACCION", {
                 accion: "RETOS_PACKS_UPDATE",
-                payload: { packs: packsArr, modoVista: MODO_VISTA_PACKS }
+                payload: {
+                    packs: packsArr,
+                    modoVista: MODO_VISTA_PACKS,
+                    modoPacksAzar: esModoAzar,
+                    permitirKitsCAS: (window.PERMITIR_KITS_CAS === true)
+                }
             });
         }
     }
@@ -241,19 +251,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
 let MODO_VISTA_PACKS = "desplegable"; // "desplegable" | "lista"
 let PACKS_SELECCIONADOS_SET = null;
+let PERMITIR_KITS_CAS = false;
+window.PERMITIR_KITS_CAS = false;
+
+function obtenerSetKitsCAS() {
+    const setCAS = new Set();
+    if (typeof database !== "undefined" && Array.isArray(database.packs)) {
+        database.packs.forEach(fila => {
+            const idPack = fila[7] ? String(fila[7]).trim().toUpperCase() : "";
+            // Columna 6 es el nombre del kit; Columna 7 es el ID
+            // Excluir ESPECIAL (que contiene contenido de Construir y sí es elegible por defecto)
+            if (idPack.includes("CAS") && !idPack.includes("ESPECIAL")) {
+                if (fila[6] && fila[6].trim()) {
+                    setCAS.add(fila[6].trim().toLowerCase());
+                }
+            }
+        });
+    }
+    return setCAS;
+}
+window.obtenerSetKitsCAS = obtenerSetKitsCAS;
 
 function inicializarSetPacks() {
-    if (PACKS_SELECCIONADOS_SET !== null) return;
+    if (PACKS_SELECCIONADOS_SET !== null && PACKS_SELECCIONADOS_SET.size > 0) return;
     PACKS_SELECCIONADOS_SET = new Set();
-    if (typeof database !== "undefined" && database.packs) {
+    if (typeof database !== "undefined" && database.packs && database.packs.length > 0) {
         database.packs.forEach(fila => {
             if (fila[0] && fila[0].trim()) PACKS_SELECCIONADOS_SET.add(fila[0].trim());
             if (fila[2] && fila[2].trim()) PACKS_SELECCIONADOS_SET.add(fila[2].trim());
             if (fila[4] && fila[4].trim()) PACKS_SELECCIONADOS_SET.add(fila[4].trim());
-            if (fila[6] && fila[6].trim()) {
-                const kitId = (fila[7] || "").trim().toUpperCase();
-                if (!kitId.includes("CAS")) PACKS_SELECCIONADOS_SET.add(fila[6].trim());
-            }
+            // Todos los kits se marcan por defecto (incluidos CAS y Especial)
+            if (fila[6] && fila[6].trim()) PACKS_SELECCIONADOS_SET.add(fila[6].trim());
             if (fila[8] && fila[8].trim()) PACKS_SELECCIONADOS_SET.add(fila[8].trim());
             if (fila[10] && fila[10].trim()) PACKS_SELECCIONADOS_SET.add(fila[10].trim());
         });
@@ -261,41 +289,76 @@ function inicializarSetPacks() {
     window.PACKS_SELECCIONADOS_SET = PACKS_SELECCIONADOS_SET;
 }
 
-function inicializarSelectorModoVistaPacks() {
-
+function aplicarEstadoSwitchModoVista(esLista) {
     const switchInput = document.getElementById("toggleModoVistaInput");
     const lblDesplegable = document.getElementById("lblModoDesplegable");
     const lblLista = document.getElementById("lblModoLista");
+    if (switchInput) switchInput.checked = esLista;
+    const thumb = switchInput?.parentElement?.querySelector(".thumbSwitch");
+    const slider = switchInput?.parentElement?.querySelector(".sliderSwitch");
+    if (thumb) thumb.style.left = esLista ? "25px" : "3px";
+    if (slider) {
+        slider.style.background = esLista
+            ? "rgba(52,152,219,0.3)"
+            : "rgba(0,0,0,0.22)";
+        slider.style.borderColor = esLista ? "var(--color-resaltado)" : "var(--borde)";
+    }
+    if (lblDesplegable) {
+        lblDesplegable.style.opacity = esLista ? "0.6" : "1";
+        lblDesplegable.style.fontWeight = esLista ? "normal" : "bold";
+    }
+    if (lblLista) {
+        lblLista.style.opacity = esLista ? "1" : "0.6";
+        lblLista.style.fontWeight = esLista ? "bold" : "normal";
+    }
+}
+window.aplicarEstadoSwitchModoVista = aplicarEstadoSwitchModoVista;
+
+function aplicarEstadoSwitchPermitirKitsCAS(activado) {
+    const switchInput = document.getElementById("togglePermitirKitsCASInput");
+    const lblEstado = document.getElementById("lblEstadoKitsCAS");
+    if (switchInput) switchInput.checked = Boolean(activado);
+    const thumb = switchInput?.parentElement?.querySelector(".thumbSwitchCAS");
+    const slider = switchInput?.parentElement?.querySelector(".sliderSwitchCAS");
+    if (thumb) thumb.style.left = activado ? "25px" : "3px";
+    if (slider) {
+        slider.style.background = activado
+            ? "rgba(217, 70, 239, 0.3)"
+            : "rgba(0, 0, 0, 0.22)";
+        slider.style.borderColor = activado ? "#d946ef" : "var(--borde)";
+    }
+    if (lblEstado) {
+        lblEstado.textContent = activado ? "ON" : "OFF";
+        lblEstado.style.opacity = activado ? "1" : "0.6";
+        lblEstado.style.color = activado ? "#d946ef" : "inherit";
+    }
+}
+window.aplicarEstadoSwitchPermitirKitsCAS = aplicarEstadoSwitchPermitirKitsCAS;
+
+function inicializarSelectorModoVistaPacks() {
+    const switchInput = document.getElementById("toggleModoVistaInput");
+    aplicarEstadoSwitchModoVista(MODO_VISTA_PACKS === "lista");
 
     if (switchInput) {
-        const thumb = switchInput.parentElement?.querySelector(".thumbSwitch");
-        const slider = switchInput.parentElement?.querySelector(".sliderSwitch");
-
-        function aplicarEstadoSwitch(esLista) {
-            switchInput.checked = esLista;
-            if (thumb) thumb.style.left = esLista ? "25px" : "3px";
-            if (slider) {
-                slider.style.background = esLista
-                    ? "rgba(52,152,219,0.3)"
-                    : "rgba(0,0,0,0.22)";
-                slider.style.borderColor = esLista ? "var(--color-resaltado)" : "var(--borde)";
-            }
-            if (lblDesplegable) {
-                lblDesplegable.style.opacity = esLista ? "0.6" : "1";
-                lblDesplegable.style.fontWeight = esLista ? "normal" : "bold";
-            }
-            if (lblLista) {
-                lblLista.style.opacity = esLista ? "1" : "0.6";
-                lblLista.style.fontWeight = esLista ? "bold" : "normal";
-            }
-        }
-
-        // Estado inicial
-        aplicarEstadoSwitch(MODO_VISTA_PACKS === "lista");
-
         switchInput.addEventListener("change", () => {
             MODO_VISTA_PACKS = switchInput.checked ? "lista" : "desplegable";
-            aplicarEstadoSwitch(switchInput.checked);
+            aplicarEstadoSwitchModoVista(switchInput.checked);
+            renderizarPacksRetos();
+            sincronizarPacksRetosOBS();
+        });
+    }
+
+    const switchCAS = document.getElementById("togglePermitirKitsCASInput");
+    aplicarEstadoSwitchPermitirKitsCAS(PERMITIR_KITS_CAS);
+
+    if (switchCAS) {
+        switchCAS.addEventListener("change", () => {
+            PERMITIR_KITS_CAS = switchCAS.checked;
+            window.PERMITIR_KITS_CAS = PERMITIR_KITS_CAS;
+            aplicarEstadoSwitchPermitirKitsCAS(PERMITIR_KITS_CAS);
+            if (PERMITIR_KITS_CAS && typeof asegurarKitsCASInicializados === "function") {
+                asegurarKitsCASInicializados();
+            }
             renderizarPacksRetos();
             sincronizarPacksRetosOBS();
         });
@@ -393,8 +456,33 @@ function abrirModalPacksFlotanteUI(config) {
 }
 window.abrirModalPacksFlotanteUI = abrirModalPacksFlotanteUI;
 
+function asegurarKitsCASInicializados() {
+    if (window._kitsCASInicializados) return;
+    window._kitsCASInicializados = true;
+    if (typeof database !== "undefined" && database.packs && PACKS_SELECCIONADOS_SET) {
+        database.packs.forEach(fila => {
+            if (fila[6] && fila[6].trim()) {
+                const kitId = (fila[7] || "").trim().toUpperCase();
+                if (kitId.includes("CAS")) {
+                    PACKS_SELECCIONADOS_SET.add(fila[6].trim());
+                }
+            }
+        });
+    }
+}
+
 window.renderizarSelectorPacksUI = function(config) {
     const { contenedorId, setPacks, modoVista, onChange } = config;
+    const modoPacksAzar = Boolean(
+        config.modoPacksAzar ||
+        (typeof window !== "undefined" && window.proximaVentanaTrasPacks === "ventanaPacksGenerador") ||
+        (typeof window !== "undefined" && window._modoPacksAzarActivo === true)
+    );
+
+    if (modoPacksAzar) {
+        asegurarKitsCASInicializados();
+    }
+
     const contenedor = document.getElementById(contenedorId);
     if (!contenedor || !setPacks) return;
 
@@ -403,25 +491,37 @@ window.renderizarSelectorPacksUI = function(config) {
     const packsExpansion = [];
     const packsContenido = [];
     const packsAccesorios = [];
-    const packsKits = [];
+    const packsKitsNormales = [];
+    const packsKitsConstruir = [];
+    const packsKitsCAS = [];
+    const packsKitsEspeciales = [];
     const packsGratis = [];
     let juegoBaseEntradas = [];
 
-    database.packs.forEach(fila => {
-        if (fila[0] && fila[0].trim() !== "") packsExpansion.push(fila[0].trim());
-        if (fila[2] && fila[2].trim() !== "") packsContenido.push(fila[2].trim());
-        if (fila[4] && fila[4].trim() !== "") packsAccesorios.push(fila[4].trim());
+    if (typeof database !== "undefined" && database.packs) {
+        database.packs.forEach(fila => {
+            if (fila[0] && fila[0].trim() !== "") packsExpansion.push(fila[0].trim());
+            if (fila[2] && fila[2].trim() !== "") packsContenido.push(fila[2].trim());
+            if (fila[4] && fila[4].trim() !== "") packsAccesorios.push(fila[4].trim());
 
-        if (fila[6] && fila[6].trim() !== "") {
-            const kitId = (fila[7] || "").trim().toUpperCase();
-            if (!kitId.includes("CAS")) {
-                packsKits.push(fila[6].trim());
+            if (fila[6] && fila[6].trim() !== "") {
+                const kitId = (fila[7] || "").trim().toUpperCase();
+                const nombreKit = fila[6].trim();
+                if (kitId.includes("CAS")) {
+                    packsKitsCAS.push(nombreKit);
+                } else if (kitId.includes("ESPECIAL")) {
+                    packsKitsEspeciales.push(nombreKit);
+                    packsKitsNormales.push(nombreKit);
+                } else {
+                    packsKitsConstruir.push(nombreKit);
+                    packsKitsNormales.push(nombreKit);
+                }
             }
-        }
 
-        if (fila[8] && fila[8].trim() !== "") packsGratis.push(fila[8].trim());
-        if (fila[10] && fila[10].trim() !== "") juegoBaseEntradas.push(fila[10].trim());
-    });
+            if (fila[8] && fila[8].trim() !== "") packsGratis.push(fila[8].trim());
+            if (fila[10] && fila[10].trim() !== "") juegoBaseEntradas.push(fila[10].trim());
+        });
+    }
 
     const tieneJuegoBase = juegoBaseEntradas.length > 0;
 
@@ -464,29 +564,71 @@ window.renderizarSelectorPacksUI = function(config) {
         const selExp = contarSel(packsExpansion);
         const selCont = contarSel(packsContenido);
         const selAcc = contarSel(packsAccesorios);
-        const selKits = contarSel(packsKits);
 
-        let htmlDesplegable = '<div class="gridCategoriasDesplegables">';
-        htmlDesplegable += `
-            <button type="button" class="btnCategoriaDesplegable" data-cat="exp">
-                <span>📦 Packs de Expansión</span>
-                <span class="badgeConteoPacks">${selExp} de ${packsExpansion.length} seleccionados</span>
-            </button>
-            <button type="button" class="btnCategoriaDesplegable" data-cat="cont">
-                <span>💎 Packs de Contenido</span>
-                <span class="badgeConteoPacks">${selCont} de ${packsContenido.length} seleccionados</span>
-            </button>
-            <button type="button" class="btnCategoriaDesplegable" data-cat="acc">
-                <span>🎨 Packs de Accesorios</span>
-                <span class="badgeConteoPacks">${selAcc} de ${packsAccesorios.length} seleccionados</span>
-            </button>
-            <button type="button" class="btnCategoriaDesplegable" data-cat="kits">
-                <span>🎁 Kits</span>
-                <span class="badgeConteoPacks">${selKits} de ${packsKits.length} seleccionados</span>
-            </button>
-        `;
-        htmlDesplegable += '</div>';
-        contenedor.innerHTML += htmlDesplegable;
+        if (modoPacksAzar) {
+            const selKitsConstruir = contarSel(packsKitsConstruir);
+            const selKitsCAS = contarSel(packsKitsCAS);
+            const selKitsEspeciales = contarSel(packsKitsEspeciales);
+
+            // Dos filas: fila superior = packs normales, fila inferior = kits
+            let htmlDesplegable = `<div class="gridCategoriasDesplegablesAzar">
+                <div class="filaCategoriasDesplegables">
+                    <button type="button" class="btnCategoriaDesplegable" data-cat="exp">
+                        <span>📦 Packs de Expansión</span>
+                        <span class="badgeConteoPacks">${selExp} de ${packsExpansion.length} seleccionados</span>
+                    </button>
+                    <button type="button" class="btnCategoriaDesplegable" data-cat="cont">
+                        <span>💎 Packs de Contenido</span>
+                        <span class="badgeConteoPacks">${selCont} de ${packsContenido.length} seleccionados</span>
+                    </button>
+                    <button type="button" class="btnCategoriaDesplegable" data-cat="acc">
+                        <span>🎨 Packs de Accesorios</span>
+                        <span class="badgeConteoPacks">${selAcc} de ${packsAccesorios.length} seleccionados</span>
+                    </button>
+                </div>
+                <div class="filaCategoriasDesplegables">
+                    <button type="button" class="btnCategoriaDesplegable" data-cat="kits-construir">
+                        <span>🔨 Kits de Construir</span>
+                        <span class="badgeConteoPacks">${selKitsConstruir} de ${packsKitsConstruir.length} seleccionados</span>
+                    </button>
+                    <button type="button" class="btnCategoriaDesplegable" data-cat="kits-cas">
+                        <span>💇 Kits CAS</span>
+                        <span class="badgeConteoPacks">${selKitsCAS} de ${packsKitsCAS.length} seleccionados</span>
+                    </button>
+                    <button type="button" class="btnCategoriaDesplegable" data-cat="kits-especiales">
+                        <span>⭐ Kits Especiales</span>
+                        <span class="badgeConteoPacks">${selKitsEspeciales} de ${packsKitsEspeciales.length} seleccionados</span>
+                    </button>
+                </div>
+            </div>`;
+            contenedor.innerHTML += htmlDesplegable;
+        } else {
+            // Modo normal: 4 categorías en grid plano
+            let htmlDesplegable = '<div class="gridCategoriasDesplegables">';
+            htmlDesplegable += `
+                <button type="button" class="btnCategoriaDesplegable" data-cat="exp">
+                    <span>📦 Packs de Expansión</span>
+                    <span class="badgeConteoPacks">${selExp} de ${packsExpansion.length} seleccionados</span>
+                </button>
+                <button type="button" class="btnCategoriaDesplegable" data-cat="cont">
+                    <span>💎 Packs de Contenido</span>
+                    <span class="badgeConteoPacks">${selCont} de ${packsContenido.length} seleccionados</span>
+                </button>
+                <button type="button" class="btnCategoriaDesplegable" data-cat="acc">
+                    <span>🎨 Packs de Accesorios</span>
+                    <span class="badgeConteoPacks">${selAcc} de ${packsAccesorios.length} seleccionados</span>
+                </button>
+            `;
+            const selKits = contarSel(packsKitsNormales);
+            htmlDesplegable += `
+                <button type="button" class="btnCategoriaDesplegable" data-cat="kits">
+                    <span>🎁 Kits</span>
+                    <span class="badgeConteoPacks">${selKits} de ${packsKitsNormales.length} seleccionados</span>
+                </button>
+            `;
+            htmlDesplegable += '</div>';
+            contenedor.innerHTML += htmlDesplegable;
+        }
 
         const origen = config.origen || (config.contenedorId === "listaPacksHabilidades" ? "habilidades" : "retos");
         const abrirModal = (titulo, lista) => {
@@ -503,7 +645,14 @@ window.renderizarSelectorPacksUI = function(config) {
         contenedor.querySelector(".btnCategoriaDesplegable[data-cat='exp']")?.addEventListener("click", () => abrirModal("📦 Packs de Expansión", packsExpansion));
         contenedor.querySelector(".btnCategoriaDesplegable[data-cat='cont']")?.addEventListener("click", () => abrirModal("💎 Packs de Contenido", packsContenido));
         contenedor.querySelector(".btnCategoriaDesplegable[data-cat='acc']")?.addEventListener("click", () => abrirModal("🎨 Packs de Accesorios", packsAccesorios));
-        contenedor.querySelector(".btnCategoriaDesplegable[data-cat='kits']")?.addEventListener("click", () => abrirModal("🎁 Kits", packsKits));
+
+        if (modoPacksAzar) {
+            contenedor.querySelector(".btnCategoriaDesplegable[data-cat='kits-construir']")?.addEventListener("click", () => abrirModal("🔨 Kits de Construir", packsKitsConstruir));
+            contenedor.querySelector(".btnCategoriaDesplegable[data-cat='kits-cas']")?.addEventListener("click", () => abrirModal("💇 Kits CAS", packsKitsCAS));
+            contenedor.querySelector(".btnCategoriaDesplegable[data-cat='kits-especiales']")?.addEventListener("click", () => abrirModal("⭐ Kits Especiales", packsKitsEspeciales));
+        } else {
+            contenedor.querySelector(".btnCategoriaDesplegable[data-cat='kits']")?.addEventListener("click", () => abrirModal("🎁 Kits", packsKitsNormales));
+        }
 
     } else {
         function crearSeccion(titulo, listaPacks, idTarget) {
@@ -531,9 +680,16 @@ window.renderizarSelectorPacksUI = function(config) {
         gridSecciones += crearSeccion("Packs de Expansión", packsExpansion, "packs-expansion");
         gridSecciones += crearSeccion("Packs de Contenido", packsContenido, "packs-contenido");
         gridSecciones += crearSeccion("Packs de Accesorios", packsAccesorios, "packs-accesorios");
-        gridSecciones += crearSeccion("Kits", packsKits, "packs-kits");
-        gridSecciones += '</div>';
 
+        if (modoPacksAzar) {
+            gridSecciones += crearSeccion("Kits de Construir", packsKitsConstruir, "packs-kits-construir");
+            gridSecciones += crearSeccion("Kits CAS", packsKitsCAS, "packs-kits-cas");
+            gridSecciones += crearSeccion("Kits Especiales", packsKitsEspeciales, "packs-kits-especiales");
+        } else {
+            gridSecciones += crearSeccion("Kits", packsKitsNormales, "packs-kits");
+        }
+
+        gridSecciones += '</div>';
         contenedor.innerHTML += gridSecciones;
 
         contenedor.querySelectorAll(".toggleSeccionBtn").forEach(btn => {
@@ -546,7 +702,10 @@ window.renderizarSelectorPacksUI = function(config) {
                 if (idTarget === "packs-expansion") targetArray = packsExpansion;
                 if (idTarget === "packs-contenido") targetArray = packsContenido;
                 if (idTarget === "packs-accesorios") targetArray = packsAccesorios;
-                if (idTarget === "packs-kits") targetArray = packsKits;
+                if (idTarget === "packs-kits") targetArray = packsKitsNormales;
+                if (idTarget === "packs-kits-construir") targetArray = packsKitsConstruir;
+                if (idTarget === "packs-kits-cas") targetArray = packsKitsCAS;
+                if (idTarget === "packs-kits-especiales") targetArray = packsKitsEspeciales;
 
                 if (estado === "marcado") {
                     targetArray.forEach(p => setPacks.delete(p));
@@ -582,18 +741,44 @@ window.renderizarSelectorPacksUI = function(config) {
 
 // --- WRAPPERS PARA RETOS ---
 
-function renderizarPacksRetos() {
+function renderizarPacksRetos(modoAzar) {
     inicializarSetPacks();
+    const contenedorToggleCAS = document.getElementById("contenedorToggleKitsCAS");
+    const esGeneradorPacks = (typeof window !== "undefined" && window.proximaVentanaTrasPacks === "ventanaPacksGenerador");
+
+    // Ocultar toggle en Packs al Azar (siempre incluye todas las categorías), mostrarlo en Retos y Ruleta Desastres
+    if (contenedorToggleCAS) {
+        contenedorToggleCAS.style.display = esGeneradorPacks ? "none" : "flex";
+    }
+
+    let esModoAzar;
+    if (typeof modoAzar === "boolean") {
+        esModoAzar = modoAzar;
+    } else if (esGeneradorPacks) {
+        esModoAzar = true;
+    } else {
+        esModoAzar = (window.PERMITIR_KITS_CAS === true);
+    }
+
+    // Persiste para que OBS y otras llamadas posteriores conozcan el modo activo
+    window._modoPacksAzarActivo = esModoAzar;
+
     window.renderizarSelectorPacksUI({
         contenedorId: "listaPacksRetos",
         setPacks: PACKS_SELECCIONADOS_SET,
         modoVista: MODO_VISTA_PACKS,
+        modoPacksAzar: esModoAzar,
         onChange: () => {
             sincronizarPacksRetosOBS();
             if (typeof window.actualizarAvisoTipoSolar === "function") window.actualizarAvisoTipoSolar();
         }
     });
+
+    if (!window.esSincronizacionOBS && typeof sincronizarPacksRetosOBS === "function") {
+        sincronizarPacksRetosOBS();
+    }
 }
+window.renderizarPacksRetos = renderizarPacksRetos;
 
 // Wrappers de compatibilidad para Retos (usados en obs.js y en el botón Aceptar)
 function cerrarModalPacksFlotante() {
@@ -630,9 +815,22 @@ function juegoBaseMarcado() {
 }
 
 window.actualizarPacksRetosObs = function(payload) {
-    // Acepta tanto array (legado) como objeto { packs, modoVista }
+    // Acepta tanto array (legado) como objeto { packs, modoVista, modoPacksAzar, permitirKitsCAS }
     const packsArr = Array.isArray(payload) ? payload : (payload && Array.isArray(payload.packs) ? payload.packs : null);
     const modoVista = (!Array.isArray(payload) && payload && payload.modoVista) ? payload.modoVista : null;
+    const modoPacksAzar = (!Array.isArray(payload) && payload && payload.modoPacksAzar) ? true : false;
+    const permitirKitsCAS = (!Array.isArray(payload) && payload && typeof payload.permitirKitsCAS === "boolean") ? payload.permitirKitsCAS : null;
+
+    if (permitirKitsCAS !== null) {
+        PERMITIR_KITS_CAS = permitirKitsCAS;
+        window.PERMITIR_KITS_CAS = permitirKitsCAS;
+        if (typeof window.aplicarEstadoSwitchPermitirKitsCAS === "function") {
+            window.aplicarEstadoSwitchPermitirKitsCAS(permitirKitsCAS);
+        }
+    }
+
+    // Persistir el modo para que renderizarPacksRetos funcione correctamente en el viewer
+    window._modoPacksAzarActivo = modoPacksAzar;
 
     if (packsArr !== null) {
         PACKS_SELECCIONADOS_SET = new Set(packsArr);
@@ -640,54 +838,16 @@ window.actualizarPacksRetosObs = function(payload) {
     }
 
     // Actualizar switch de modo de vista si difiere
-    if (modoVista && modoVista !== MODO_VISTA_PACKS) {
+    if (modoVista) {
         MODO_VISTA_PACKS = modoVista;
-        const switchInput = document.getElementById("toggleModoVistaInput");
-        if (switchInput) {
-            switchInput.checked = (modoVista === "lista");
-            switchInput.dispatchEvent(new Event("change"));
-        } else if (typeof renderizarPacksRetos === "function") {
-            renderizarPacksRetos();
+        if (typeof window.aplicarEstadoSwitchModoVista === "function") {
+            window.aplicarEstadoSwitchModoVista(modoVista === "lista");
         }
-    } else if (MODO_VISTA_PACKS === "lista") {
-        // En modo Lista sin cambio de vista: actualizar directamente las clases .seleccionada de los botones inline y el estado de los .toggleSeccionBtn sin reescribir innerHTML
-        const contenedor = document.getElementById("listaPacksRetos");
-        if (contenedor) {
-            contenedor.querySelectorAll(".opcionFiltro[data-pack]").forEach(btn => {
-                const packName = btn.getAttribute("data-pack");
-                if (!packName) return;
-                if (PACKS_SELECCIONADOS_SET.has(packName)) {
-                    btn.classList.add("seleccionada");
-                } else {
-                    btn.classList.remove("seleccionada");
-                }
-            });
+    }
 
-            // Actualizar botones de toggle de sección ("Marcar todos / Desmarcar todos")
-            contenedor.querySelectorAll(".toggleSeccionBtn").forEach(btn => {
-                const idTarget = btn.getAttribute("data-target");
-                if (!idTarget) return;
-                const opciones = contenedor.querySelectorAll(`#${idTarget} .opcionFiltro[data-pack]`);
-                if (opciones.length === 0) return;
-                let todosSeleccionados = true;
-                opciones.forEach(op => {
-                    const pk = op.getAttribute("data-pack");
-                    if (pk && !PACKS_SELECCIONADOS_SET.has(pk)) {
-                        todosSeleccionados = false;
-                    }
-                });
-                if (todosSeleccionados) {
-                    btn.setAttribute("data-estado", "marcado");
-                    btn.textContent = "❌ Desmarcar todos";
-                } else {
-                    btn.setAttribute("data-estado", "desmarcado");
-                    btn.textContent = "✔️ Marcar todos";
-                }
-            });
-        }
-    } else {
-        // En modo Desplegable sin cambio de vista: re-renderizar badges / botones principales
-        if (typeof renderizarPacksRetos === "function") renderizarPacksRetos();
+    // Siempre re-renderizar en OBS viewer con el modo explícito (sea desplegable o lista)
+    if (typeof renderizarPacksRetos === "function") {
+        renderizarPacksRetos(modoPacksAzar);
     }
 
     // Si el modal de categoría está abierto, refrescar sus botones según PACKS_SELECCIONADOS_SET

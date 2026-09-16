@@ -212,6 +212,7 @@
             if (msg.accion === "FILTROS_SOLARES_STATE") EstadoGlobal.estadosSemanticos.filtrosSolares = msg.payload;
             if (msg.accion === "FILTRO_SOLARES_PANEL") EstadoGlobal.estadosSemanticos.filtroSolarPanel = msg.payload;
             if (msg.accion === "BUSCAR_SOLARES_RESULTADO") EstadoGlobal.estadosSemanticos.buscarSolaresResultado = msg.payload;
+            if (msg.accion === "SOLAR_HOVER") EstadoGlobal.estadosSemanticos.solarHover = msg.payload;
         }
     }
 
@@ -321,7 +322,20 @@
                 conexionesActivas.push(conn);
                 console.log("[Master] Nuevo Viewer conectado:", conn.peer);
                 
+                function refrescarPacksEstadoGlobal() {
+                    if (typeof PACKS_SELECCIONADOS_SET !== "undefined" && PACKS_SELECCIONADOS_SET instanceof Set) {
+                        const esModoAzar = (window._modoPacksAzarActivo === true) || (typeof window !== "undefined" && window.proximaVentanaTrasPacks === "ventanaPacksGenerador");
+                        EstadoGlobal.estadosSemanticos.retosPacks = {
+                            packs: Array.from(PACKS_SELECCIONADOS_SET),
+                            modoVista: typeof MODO_VISTA_PACKS !== "undefined" ? MODO_VISTA_PACKS : "desplegable",
+                            modoPacksAzar: esModoAzar,
+                            permitirKitsCAS: (window.PERMITIR_KITS_CAS === true)
+                        };
+                    }
+                }
+
                 conn.on('open', () => {
+                    refrescarPacksEstadoGlobal();
                     conn.send({
                         tipo: "FULL_STATE",
                         estado: EstadoGlobal,
@@ -332,6 +346,7 @@
                 
                 conn.on('data', data => {
                     if (data.tipo === "REQUEST_STATE") {
+                        refrescarPacksEstadoGlobal();
                         conn.send({ tipo: "FULL_STATE", estado: EstadoGlobal, config: obsConfig, timestamp: Date.now() });
                     }
                 });
@@ -477,6 +492,10 @@
                         if (typeof window.actualizarBotonesFiltros === 'function') window.actualizarBotonesFiltros();
                         if (typeof window.actualizarZonaBorrar === 'function') window.actualizarZonaBorrar();
                     }
+
+                    if (sem.solarHover && typeof window.actualizarHoverSolarObs === 'function') {
+                        window.actualizarHoverSolarObs(sem.solarHover);
+                    }
                 }
 
                 // 5. Restaurar ventana principal (AUTORIDAD FINAL - SIEMPRE AL FINAL)
@@ -512,6 +531,11 @@
                         // Llamamos también a mostrarListadoCompleto() como fallback y revinculamos listeners.
                         if (typeof window.mostrarListadoCompleto === 'function') window.mostrarListadoCompleto();
                         if (typeof window.vincularListenersListado === 'function') window.vincularListenersListado();
+                    } else if (data.estado.ventanaActual === 'ventanaRetos') {
+                        // _modoPacksAzarActivo ya fue seteado por actualizarPacksRetosObs (paso 4)
+                        if (typeof window.renderizarPacksRetos === 'function') {
+                            window.renderizarPacksRetos(window._modoPacksAzarActivo === true);
+                        }
                     }
                 });
 
@@ -527,6 +551,9 @@
                         }
                         break;
                     case 'SYNC_ABRIR_VENTANA':
+                        if (data.modoPacksAzar !== undefined) {
+                            window._modoPacksAzarActivo = Boolean(data.modoPacksAzar);
+                        }
                         if (data.idVentana && typeof window.abrirVentana === 'function') {
                             window.abrirVentana(data.idVentana, false);
                         }
@@ -551,6 +578,11 @@
                             if (typeof window.ajustarEscalaRetoOBS === 'function') window.ajustarEscalaRetoOBS();
                         } else if (data.idVentana === 'ventanaListado') {
                             if (typeof window.mostrarListadoCompleto === 'function') window.mostrarListadoCompleto();
+                        } else if (data.idVentana === 'ventanaRetos') {
+                            // _modoPacksAzarActivo ya fue seteado por el RETOS_PACKS_UPDATE previo
+                            if (typeof window.renderizarPacksRetos === 'function') {
+                                window.renderizarPacksRetos(window._modoPacksAzarActivo === true);
+                            }
                         }
                         aplicarBrandingOBS();
                         break;
@@ -738,6 +770,8 @@
                             if (typeof window.actualizarZonaBorrar === 'function') window.actualizarZonaBorrar();
                             setTimeout(() => { window.esSincronizacionOBS = false; }, 50);
 
+                        } else if (data.accion === 'SOLAR_HOVER' && typeof window.actualizarHoverSolarObs === 'function') {
+                            window.actualizarHoverSolarObs(data.payload);
                         } else if (data.accion === 'LISTADO_ACORDEON_TOGGLE' && data.payload) {
                             // Sincronizar apertura/cierre de acordeón de mundos/barrios
                             window.esSincronizacionOBS = true;

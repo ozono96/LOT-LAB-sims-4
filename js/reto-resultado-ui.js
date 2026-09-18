@@ -472,6 +472,36 @@ function construirSecuenciaCategoria(catId, reto, contexto) {
             if (poolFiltrado.length > 0) poolSolares = poolFiltrado;
         }
 
+        // Filtrar también por tipo de solar para que la animación sea coherente con el resultado.
+        // Se usa la misma lógica que seleccionarSolarParaReto(): el tipo se lee del objetivo
+        // generado y la categoría de cada tipoSolar se obtiene de database.todosTiposSolares.
+        const tipoObjetivoRaw = reto.categorias?.objetivo?.resultado?.tipo;
+        const tipoObjetivo = (typeof tipoObjetivoRaw === "string" && !tipoObjetivoRaw.startsWith("_error"))
+            ? tipoObjetivoRaw.trim().toLowerCase()
+            : null;
+
+        if (tipoObjetivo !== null) {
+            let poolPorTipo;
+            if (tipoObjetivo === "residencial") {
+                poolPorTipo = poolSolares.filter(s => {
+                    const t = (s.tipoSolar || "").trim().toLowerCase();
+                    return t === "residencial" || t === "vacio";
+                });
+            } else if (tipoObjetivo === "comunitario" && Array.isArray(database.todosTiposSolares)) {
+                const tiposComunitarios = new Set();
+                database.todosTiposSolares.forEach(fila => {
+                    if ((fila[0] || "").trim().toLowerCase() === "comunitario") {
+                        const nombre = (fila[1] || "").trim().toLowerCase();
+                        if (nombre) tiposComunitarios.add(nombre);
+                    }
+                });
+                poolPorTipo = poolSolares.filter(s =>
+                    tiposComunitarios.has((s.tipoSolar || "").trim().toLowerCase())
+                );
+            }
+            if (poolPorTipo && poolPorTipo.length > 0) poolSolares = poolPorTipo;
+        }
+
         const items = [];
         const numPasos = INTERVALOS_CICLADO_VISUAL.length;
         for (let i = 0; i < numPasos; i++) {
@@ -481,6 +511,7 @@ function construirSecuenciaCategoria(catId, reto, contexto) {
         items.push(reto.solar);
         return items;
     }
+
 
     const modulo = (cat && cat.modulo) ? cat.modulo : RetoModulos[catId];
     const targetResultado = (cat && cat.resultado)
@@ -562,6 +593,7 @@ function animarGeneracionReto(reto, secuencias, onComplete) {
     if (!contenedor) return;
 
     window.retoAnimando = true;
+    console.log("[TRACE TIPO SOLAR] resultado mostrado (animacion):", reto.categorias?.objetivo ? "si" : "no");
 
     // Renderizar cabecera fija
     let html = "";

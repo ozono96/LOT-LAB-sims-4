@@ -219,6 +219,17 @@ function generarReto(esAleatorio = false) {
 
     // Validación preventiva obligatoria antes de generar
     if (!esAleatorio) {
+        const dificultadActual = typeof window.obtenerDificultadActualReto === "function"
+            ? window.obtenerDificultadActualReto()
+            : parseInt(document.getElementById("valDificultadUI")?.textContent || "0", 10);
+
+        if (dificultadActual < 1) {
+            if (typeof abrirVentana === "function") {
+                abrirVentana("ventanaAvisoDificultadReto");
+            }
+            return;
+        }
+
         const problemas = validarDisponibilidadReto();
         if (problemas.length > 0) {
             actualizarAvisoDisponibilidadReto();
@@ -255,7 +266,7 @@ function generarReto(esAleatorio = false) {
         }
 
         // Leer opciones extra seleccionadas por el usuario (excluyendo el botón padre tipo-solar que se resuelve abajo)
-        document.querySelectorAll("#opcionesExtraRetos .opcionFiltro.seleccionada").forEach(btn => {
+        document.querySelectorAll("#opcionesExtraRetos .opcionFiltroReto.seleccionada").forEach(btn => {
             const op = btn.getAttribute("data-opcion");
             if (op && op !== "tipo-solar") opcionesActivas.push(op);
         });
@@ -268,15 +279,14 @@ function generarReto(esAleatorio = false) {
 
         // Leer opción de tipo de solar (solo si el botón padre tipo-solar está seleccionado)
         const btnPadreTipoSolar = document.querySelector('#opcionesExtraRetos .opcionFiltro[data-opcion="tipo-solar"]');
-        const tipoSolarActivado = btnPadreTipoSolar ? btnPadreTipoSolar.classList.contains("seleccionada") : true;
+        const tipoSolarActivado = btnPadreTipoSolar ? btnPadreTipoSolar.classList.contains("seleccionada") : false;
+
+        const btnTipoSolar = document.querySelector("#tipoSolarOpciones .opcionSubmenuTipoSolar.seleccionada, #tipoSolarOpciones .opcionFiltro.seleccionada");
+        const valorTipoSolar = btnTipoSolar ? btnTipoSolar.getAttribute("data-opcion") : null;
 
         if (tipoSolarActivado) {
-            const btnTipoSolar = document.querySelector("#tipoSolarOpciones .opcionSubmenuTipoSolar.seleccionada, #tipoSolarOpciones .opcionFiltro.seleccionada");
-            if (btnTipoSolar) {
-                const op = btnTipoSolar.getAttribute("data-opcion");
-                if (op && op !== "sin-tipo-solar") {
-                    opcionesActivas.push(op);
-                }
+            if (valorTipoSolar && valorTipoSolar !== "sin-tipo-solar") {
+                opcionesActivas.push(valorTipoSolar);
             }
         }
 
@@ -352,10 +362,6 @@ function generarReto(esAleatorio = false) {
         }
     });
 
-    // Selección de solar si corresponde.
-    // IMPORTANTE: el "límite de packs" restringe qué packs de contenido/objetos
-    // se pueden usar, NO en qué mundo/solar se construye. Por eso el pool de
-    // solares siempre usa los packs completos del usuario.
     let solarSeleccionado = null;
     if (tipoReto === "con-solar") {
         solarSeleccionado = seleccionarSolarParaReto(packsUsuario, categoriasGeneradas);

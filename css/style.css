@@ -1745,6 +1745,8 @@ button:hover {
 #confirmarFiltro,
 #confirmarBorrar,
 #cerrarAvisoFiltros,
+#cerrarAvisoDificultadReto,
+#cerrarAvisoDesastres,
 #volverOpcionesBtn,
 #toggleTemporizadorRetoBtn,
 #botonTemporizador,
@@ -3029,15 +3031,21 @@ body.modo-dia .contadorBarrio {
    VENTANA AVISO FILTROS
 ========================================================== */
 
-#ventanaAvisoFiltros {
+#ventanaAvisoFiltros,
+#ventanaAvisoDificultadReto,
+#ventanaAvisoDesastres {
     text-align: center;
 }
 
-#ventanaAvisoFiltros p {
+#ventanaAvisoFiltros p,
+#ventanaAvisoDificultadReto p,
+#ventanaAvisoDesastres p {
     margin-bottom: 12px;
 }
 
-#cerrarAvisoFiltros {
+#cerrarAvisoFiltros,
+#cerrarAvisoDificultadReto,
+#cerrarAvisoDesastres {
     display: block;
     margin: 24px auto 0 auto;
 }

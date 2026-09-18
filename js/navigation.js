@@ -132,6 +132,11 @@ let estaNavegandoInternamente = false;
 // Se activa a true justo antes de que procesarRutaURL() se ejecute por primera vez.
 let _urlInicialProcesada = false;
 
+// Flag: indica que la navegación actual proviene de popstate (botón Atrás/Adelante).
+// Cuando es true, actualizarHashURL usará replaceState en lugar de pushState
+// para no añadir una entrada duplicada al historial.
+let _esNavegandoDesdePopstate = false;
+
 // ─── HELPERS PARA EL PARÁMETRO DE MODO EN LA URL (?nav=exp) ────────────
 // Usa history.replaceState para añadir/eliminar ?nav=exp sin tocar el hash.
 function leerModoDesdeURL() {
@@ -165,18 +170,23 @@ function obtenerSearchConModo() {
     return modo === "experimental" ? "?nav=exp" : "?nav=classic";
 }
 
-function actualizarHashURL(slug) {
+function actualizarHashURL(slug, usarPushState = false) {
     if (!slug) return;
     const search = obtenerSearchConModo();
     const hashDeseado = "#" + slug;
-    // Evitar replaceState redundante
+    // Evitar operación redundante si la URL ya es la correcta
     if (window.location.hash === hashDeseado && window.location.search === search) return;
 
     estaNavegandoInternamente = true;
     try {
-        if (window.location.protocol !== "file:" && history.replaceState) {
-            // Siempre escribe el modo explícito junto al hash
-            history.replaceState(null, "", search + hashDeseado);
+        if (window.location.protocol !== "file:" && history.pushState) {
+            if (usarPushState) {
+                // Navegación voluntaria → nueva entrada en el historial
+                history.pushState(null, "", search + hashDeseado);
+            } else {
+                // Restauración (popstate, carga inicial, estado interno) → no añadir entrada
+                history.replaceState(null, "", search + hashDeseado);
+            }
         } else {
             window.location.hash = hashDeseado;
         }
@@ -604,7 +614,7 @@ function gestionarPausaNavegacionTemporizadores() {
 }
 window.gestionarPausaNavegacionTemporizadores = gestionarPausaNavegacionTemporizadores;
 
-function abrirVentana(id, esClickUsuario = false) {
+function abrirVentana(id, esClickUsuario = false, esNavegacionHistorial = false) {
     if (typeof ocultarResumenSolar === "function") {
         ocultarResumenSolar();
     }
@@ -673,70 +683,72 @@ function abrirVentana(id, esClickUsuario = false) {
     }
 
     // 2. Sincronizar URL hash de forma segura
+    // usarPushState = true cuando el usuario navega voluntariamente (no desde popstate ni carga inicial)
+    const _usarPush = !esNavegacionHistorial && esClickUsuario;
     if (id !== "ventana404") {
         if (id === "ventanaFichaSolar") {
             const slugSolar = (window.solarFichaActual && typeof obtenerSlugSolar === "function")
                 ? obtenerSlugSolar(window.solarFichaActual)
                 : "";
-            actualizarHashURL(slugSolar ? ("ficha-solar/" + slugSolar) : "ficha-solar");
+            actualizarHashURL(slugSolar ? ("ficha-solar/" + slugSolar) : "ficha-solar", _usarPush);
         } else if (id === "ventanaRetoResultado") {
             const token = (window.retoActual && typeof serializarRetoAToken === "function")
                 ? serializarRetoAToken(window.retoActual)
                 : null;
-            actualizarHashURL(token ? ("reto-generado/v1/" + token) : (VENTANA_A_SLUG[id] || "reto-generado"));
+            actualizarHashURL(token ? ("reto-generado/v1/" + token) : (VENTANA_A_SLUG[id] || "reto-generado"), _usarPush);
         } else if (id === "ventanaDados") {
             // Preservar token si ya hay uno activo; si no, usar slug estático
             const slugActual = (window.location.hash || "").replace(/^[#/]+/, "").trim().toLowerCase();
             if (!slugActual.startsWith("dados/v1/")) {
-                actualizarHashURL(VENTANA_A_SLUG[id] || "dados");
+                actualizarHashURL(VENTANA_A_SLUG[id] || "dados", _usarPush);
             }
         } else if (id === "ventanaRuletaColor") {
             const slugActual = (window.location.hash || "").replace(/^[#/]+/, "").trim().toLowerCase();
             if (!slugActual.startsWith("ruleta-colores/v1/") && !slugActual.startsWith("ruleta-color/v1/")) {
-                actualizarHashURL(VENTANA_A_SLUG[id] || "ruleta-colores");
+                actualizarHashURL(VENTANA_A_SLUG[id] || "ruleta-colores", _usarPush);
             }
         } else if (id === "ventanaHabilidadesGenerador") {
             const slugActual = (window.location.hash || "").replace(/^[#/]+/, "").trim().toLowerCase();
             if (!slugActual.startsWith("habilidades-azar/v1/") && !slugActual.startsWith("habilidades/v1/")) {
-                actualizarHashURL(VENTANA_A_SLUG[id] || "habilidades-azar");
+                actualizarHashURL(VENTANA_A_SLUG[id] || "habilidades-azar", _usarPush);
             }
         } else if (id === "ventanaPacksGenerador") {
             const slugActual = (window.location.hash || "").replace(/^[#/]+/, "").trim().toLowerCase();
             if (!slugActual.startsWith("packs-azar/v1/") && !slugActual.startsWith("packs/v1/")) {
-                actualizarHashURL(VENTANA_A_SLUG[id] || "packs-azar");
+                actualizarHashURL(VENTANA_A_SLUG[id] || "packs-azar", _usarPush);
             }
         } else if (id === "ventanaMundosGenerador") {
             const slugActual = (window.location.hash || "").replace(/^[#/]+/, "").trim().toLowerCase();
             if (!slugActual.startsWith("mundos-azar/v1/") && !slugActual.startsWith("mundos/v1/")) {
-                actualizarHashURL(VENTANA_A_SLUG[id] || "mundos-azar");
+                actualizarHashURL(VENTANA_A_SLUG[id] || "mundos-azar", _usarPush);
             }
         } else if (id === "ventanaTemporizador") {
             const slugActual = (window.location.hash || "").replace(/^[#/]+/, "").trim().toLowerCase();
             if (!slugActual.startsWith("temporizador/v1/")) {
-                actualizarHashURL(VENTANA_A_SLUG[id] || "temporizador");
+                actualizarHashURL(VENTANA_A_SLUG[id] || "temporizador", _usarPush);
             }
         } else if (id === "ventanaEstadisticas") {
             const slugActual = (window.location.hash || "").replace(/^[#/]+/, "").trim().toLowerCase();
             if (!slugActual.startsWith("estadisticas/v1/")) {
-                actualizarHashURL(VENTANA_A_SLUG[id] || "estadisticas");
+                actualizarHashURL(VENTANA_A_SLUG[id] || "estadisticas", _usarPush);
             }
         } else if (id === "ventanaTrucos") {
             const slugActual = (window.location.hash || "").replace(/^[#/]+/, "").trim().toLowerCase();
             if (!slugActual.startsWith("trucos/v1/")) {
-                actualizarHashURL(VENTANA_A_SLUG[id] || "trucos");
+                actualizarHashURL(VENTANA_A_SLUG[id] || "trucos", _usarPush);
             }
         } else if (id === "ventanaRuletaDesastres") {
             const slugActual = (window.location.hash || "").replace(/^[#/]+/, "").trim().toLowerCase();
             if (!slugActual.startsWith("ruleta-desastres/v1/") && !slugActual.startsWith("ruleta-desastre/v1/") && !slugActual.startsWith("desastres/v1/")) {
-                actualizarHashURL(VENTANA_A_SLUG[id] || "ruleta-desastres");
+                actualizarHashURL(VENTANA_A_SLUG[id] || "ruleta-desastres", _usarPush);
             }
         } else if (id === "ventanaBuscador") {
             const slugActual = (window.location.hash || "").replace(/^[#/]+/, "").trim().toLowerCase();
             if (!slugActual.startsWith("filtrador/v1/") && !slugActual.startsWith("buscador/v1/")) {
-                actualizarHashURL(VENTANA_A_SLUG[id] || "filtrador");
+                actualizarHashURL(VENTANA_A_SLUG[id] || "filtrador", _usarPush);
             }
         } else if (VENTANA_A_SLUG[id]) {
-            actualizarHashURL(VENTANA_A_SLUG[id]);
+            actualizarHashURL(VENTANA_A_SLUG[id], _usarPush);
         }
     }
 
@@ -1693,6 +1705,16 @@ document.addEventListener("DOMContentLoaded", function () {
                         abrirVentana("ventanaRetos", true);
                         return;
                     }
+                    if (ventana.id === "ventanaAvisoDificultadReto") {
+                        cerrarVentana("ventanaAvisoDificultadReto");
+                        abrirVentana("ventanaRetosOpciones", true);
+                        return;
+                    }
+                    if (ventana.id === "ventanaAvisoDesastres") {
+                        cerrarVentana("ventanaAvisoDesastres");
+                        abrirVentana("ventanaRuletaDesastres", true);
+                        return;
+                    }
                     if (ventana.id === "ventanaResultados") {
                         // Ventana secundaria del Filtrador: app.js gestiona cerrarVentana + abrirVentana.
                         // En Experimental el nivel 3 permanece activo (Filtrador sigue siendo la herramienta).
@@ -1784,6 +1806,20 @@ document.addEventListener("DOMContentLoaded", function () {
     // Escuchar cambios de URL en la barra de navegación del navegador (Atrás/Adelante)
     window.addEventListener("hashchange", function () {
         procesarRutaURL();
+    });
+
+    // Escuchar navegación Atrás/Adelante del navegador (popstate).
+    // Se activa cuando el usuario pulsa el botón Atrás/Adelante o usa el ratón.
+    // En ese caso, procesarRutaURL restaura la vista sin generar una nueva entrada pushState.
+    window.addEventListener("popstate", function () {
+        if (estaNavegandoInternamente) return;
+        _esNavegandoDesdePopstate = true;
+        try {
+            procesarRutaURL();
+        } finally {
+            // Restablecer el flag tras el procesamiento (microtask)
+            setTimeout(() => { _esNavegandoDesdePopstate = false; }, 0);
+        }
     });
 
     // Botones de la ventana 404

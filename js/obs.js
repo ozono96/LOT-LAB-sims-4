@@ -661,8 +661,21 @@
                     case 'RETO_REROLL':
                         if (data.reto) {
                             window.retoActual = data.reto;
-                            if (data.secuencia && typeof window.animarRerollTarjeta === 'function') {
-                                window.animarRerollTarjeta(data.categoriaId, data.reto, data.secuencia);
+                            const tieneSecuencia = Array.isArray(data.secuencia) && data.secuencia.length > 0;
+                            if (tieneSecuencia && typeof window.animarRerollTarjeta === 'function') {
+                                let finalizado = false;
+                                const asegurarRenderFinal = () => {
+                                    if (finalizado) return;
+                                    finalizado = true;
+                                    if (typeof window.renderizarResultadoReto === 'function') {
+                                        window.renderizarResultadoReto(data.reto);
+                                    }
+                                };
+                                const timerSeguridad = setTimeout(asegurarRenderFinal, 4000);
+                                window.animarRerollTarjeta(data.categoriaId, data.reto, data.secuencia, () => {
+                                    clearTimeout(timerSeguridad);
+                                    asegurarRenderFinal();
+                                });
                             } else if (typeof window.renderizarResultadoReto === 'function') {
                                 window.renderizarResultadoReto(data.reto);
                             }

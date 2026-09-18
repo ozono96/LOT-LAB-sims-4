@@ -857,8 +857,8 @@
                                 <div
                                     style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
                                     <h3 style="margin: 0;">⚙️ Configuración de Desastres</h3>
-                                    <button type="button" id="btnToggleTodosDesastres" class="botonSecundario">
-                                        ☑️ Marcar / desmarcar todos
+                                    <button type="button" id="btnToggleTodosDesastres" class="botonSecundario" data-estado="desmarcado">
+                                        Marcar todos
                                     </button>
                                 </div>
                                 <p class="descripcionConfig">Selecciona los tipos de eventos que deseas incluir en la
@@ -1176,6 +1176,44 @@
                 </p>
 
                 <button id="cerrarAvisoFiltros">
+                    Aceptar
+                </button>
+
+            </div>
+
+            <div id="ventanaAvisoDificultadReto" class="ventana ventanaPequena">
+
+                <div class="cabeceraVentana">
+                    <button class="cerrar">✕</button>
+                    <h3>⚠️ No se puede generar el reto</h3>
+                </div>
+
+                <p>
+                    Selecciona al menos una opción de reto para poder generarlo.
+                </p>
+
+                <button id="cerrarAvisoDificultadReto">
+                    Aceptar
+                </button>
+
+            </div>
+
+            <div id="ventanaAvisoDesastres" class="ventana ventanaPequena">
+
+                <div class="cabeceraVentana">
+                    <button class="cerrar">✕</button>
+                    <h3>⚠️ Activa algún desastre</h3>
+                </div>
+
+                <p>
+                    Es necesario activar al menos un desastre para poder utilizar la ruleta.
+                </p>
+
+                <p>
+                    Es recomendable activar al menos dos desastres para una experiencia más variada.
+                </p>
+
+                <button id="cerrarAvisoDesastres">
                     Aceptar
                 </button>
 

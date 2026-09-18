@@ -355,9 +355,9 @@ const EstadoRuletaDesastres = {
     categoriasActivas: {}
 };
 
-// Inicializar todas las categorías como activas por defecto
+// Inicializar todas las categorías como inactivas (desmarcadas) por defecto
 Object.keys(ModulosDesastres).forEach(catId => {
-    EstadoRuletaDesastres.categoriasActivas[catId] = true;
+    EstadoRuletaDesastres.categoriasActivas[catId] = false;
 });
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -394,6 +394,18 @@ function inicializarUIRuletaDesastres() {
 
     if (btnToggleTodos) btnToggleTodos.addEventListener("click", alternarTodasCategoriasDesastres);
     if (btnPausarReanudar) btnPausarReanudar.addEventListener("click", togglePausaReanudarRuletaDesastres);
+
+    const btnCerrarAviso = document.getElementById("cerrarAvisoDesastres");
+    if (btnCerrarAviso) {
+        btnCerrarAviso.addEventListener("click", () => {
+            if (typeof cerrarVentana === "function") {
+                cerrarVentana("ventanaAvisoDesastres");
+            }
+            if (typeof abrirVentana === "function") {
+                abrirVentana("ventanaRuletaDesastres", true);
+            }
+        });
+    }
 
     // Manejo de cambio de modo (Manual / Auto)
     const radioManual = document.getElementById("modoManualRuletaDesastres");
@@ -482,9 +494,24 @@ window.aplicarConfigRuletaDesastresObs = function(payload) {
     actualizarVisibilidadSeccionDinero();
 };
 
+function actualizarBotonToggleTodosDesastres() {
+    const btnToggle = document.getElementById("btnToggleTodosDesastres");
+    if (!btnToggle) return;
+    const keys = Object.keys(ModulosDesastres);
+    const todasActivas = keys.length > 0 && keys.every(catId => !!EstadoRuletaDesastres.categoriasActivas[catId]);
+
+    if (todasActivas) {
+        btnToggle.setAttribute("data-estado", "marcado");
+        btnToggle.textContent = "Desmarcar todos";
+    } else {
+        btnToggle.setAttribute("data-estado", "desmarcado");
+        btnToggle.textContent = "Marcar todos";
+    }
+}
+
 function alternarTodasCategoriasDesastres() {
     const keys = Object.keys(ModulosDesastres);
-    const todasActivas = keys.every(catId => EstadoRuletaDesastres.categoriasActivas[catId] !== false);
+    const todasActivas = keys.length > 0 && keys.every(catId => !!EstadoRuletaDesastres.categoriasActivas[catId]);
     const nuevoEstado = !todasActivas;
 
     keys.forEach(catId => {
@@ -530,7 +557,7 @@ function renderizarBotonesCategorias() {
     Object.values(ModulosDesastres).forEach(mod => {
         const btnToggle = document.createElement("button");
         btnToggle.type = "button";
-        const estaActivo = EstadoRuletaDesastres.categoriasActivas[mod.id] !== false;
+        const estaActivo = !!EstadoRuletaDesastres.categoriasActivas[mod.id];
 
         btnToggle.className = `botonDesastreToggle ${estaActivo ? "activo" : ""}`;
         btnToggle.dataset.catId = mod.id;
@@ -549,6 +576,7 @@ function renderizarBotonesCategorias() {
                 btnToggle.classList.remove("activo");
             }
             actualizarVisibilidadSeccionDinero();
+            actualizarBotonToggleTodosDesastres();
             sincronizarConfigRuletaDesastresOBS();
         });
 
@@ -556,12 +584,15 @@ function renderizarBotonesCategorias() {
     });
 
     actualizarVisibilidadSeccionDinero();
+    actualizarBotonToggleTodosDesastres();
 }
 
 function comenzarRuletaDesastres() {
     const activas = Object.keys(EstadoRuletaDesastres.categoriasActivas).filter(id => EstadoRuletaDesastres.categoriasActivas[id]);
     if (activas.length === 0) {
-        alert("Por favor, activa al menos una categoría de desastres.");
+        if (typeof abrirVentana === "function") {
+            abrirVentana("ventanaAvisoDesastres");
+        }
         return;
     }
 
@@ -1082,7 +1113,7 @@ function reconstruirIconoHTML(modId, imgSrc) {
 }
 
 function codificarCategoriasActivas() {
-    return IDS_MODULOS_DESASTRES.map(id => EstadoRuletaDesastres.categoriasActivas[id] !== false ? "1" : "0").join("");
+    return IDS_MODULOS_DESASTRES.map(id => EstadoRuletaDesastres.categoriasActivas[id] ? "1" : "0").join("");
 }
 
 function decodificarCategoriasActivas(bits) {

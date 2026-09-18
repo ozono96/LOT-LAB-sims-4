@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const tipoReto = btnTipo ? (btnTipo.getAttribute("data-tipo") || "con-solar") : "con-solar";
 
         const opcionesExtra = [];
-        document.querySelectorAll("#opcionesExtraRetos .opcionFiltro.seleccionada").forEach(btn => {
+        document.querySelectorAll("#opcionesExtraRetos .opcionFiltroReto.seleccionada").forEach(btn => {
             const op = btn.getAttribute("data-opcion");
             if (op) opcionesExtra.push(op);
         });
@@ -119,11 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     window.sincronizarOpcionesRetoOBS = sincronizarOpcionesRetoOBS;
 
-    // Función para actualizar el contador de dificultad en tiempo real
-    function actualizarDificultadUI() {
-        const valUI = document.getElementById("valDificultadUI");
-        if (!valUI) return;
-
+    function obtenerDificultadActualReto() {
         let dificultad = 0;
 
         // "Reto con solar" suma 1
@@ -133,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Opciones extra suman 1 cada una, excepto tamaño solar si área <= 900 (30x30)
-        document.querySelectorAll("#opcionesExtraRetos .opcionFiltro.seleccionada").forEach(btn => {
+        document.querySelectorAll("#opcionesExtraRetos .opcionFiltroReto.seleccionada").forEach(btn => {
             const op = btn.getAttribute("data-opcion");
             if (op === "tamano-solar") {
                 const valTamano = document.getElementById("valTamanoSolar");
@@ -164,6 +160,17 @@ document.addEventListener("DOMContentLoaded", () => {
             dificultad += sliderComprar ? (parseInt(sliderComprar.value, 10) || 1) : 1;
         }
 
+        return dificultad;
+    }
+    window.obtenerDificultadActualReto = obtenerDificultadActualReto;
+
+    // Función para actualizar el contador de dificultad en tiempo real
+    function actualizarDificultadUI() {
+        const valUI = document.getElementById("valDificultadUI");
+        if (!valUI) return;
+
+        const dificultad = obtenerDificultadActualReto();
+
         // Opciones de ayuda seleccionadas (indica ± al generar según el resultado de cada ayuda)
         const numAyudas = document.querySelectorAll("#opcionesAyudaRetos .opcionFiltro.seleccionada").length;
         if (numAyudas > 0) {
@@ -179,7 +186,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.actualizarDificultadUI = actualizarDificultadUI;
 
     // Opciones extra (checkboxes múltiples)
-    const botonesOpcionesExtra = document.querySelectorAll("#opcionesExtraRetos .opcionFiltro");
+    const botonesOpcionesExtra = document.querySelectorAll("#opcionesExtraRetos .opcionFiltroReto");
     botonesOpcionesExtra.forEach(boton => {
         boton.addEventListener("click", function () {
             this.classList.toggle("seleccionada");
@@ -242,6 +249,16 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("volverModoRetosBtn")?.addEventListener("click", () => {
         if (typeof abrirVentana === "function") {
             abrirVentana("ventanaRetos");
+        }
+    });
+
+    // Botón Aceptar en aviso de dificultad insuficiente
+    document.getElementById("cerrarAvisoDificultadReto")?.addEventListener("click", () => {
+        if (typeof cerrarVentana === "function") {
+            cerrarVentana("ventanaAvisoDificultadReto");
+        }
+        if (typeof abrirVentana === "function") {
+            abrirVentana("ventanaRetosOpciones", true);
         }
     });
 

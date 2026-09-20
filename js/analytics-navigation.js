@@ -76,7 +76,8 @@
 
         window.gtag("event", "page_view", {
             page_location: urlActual,
-            page_title: document.title
+            page_title: document.title,
+            lotlab_vista: rutaActual.replace(/^#/, "")
         });
 
         console.log(

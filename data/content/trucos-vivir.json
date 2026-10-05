@@ -1,0 +1,423 @@
+{
+  "id": "trucos-vivir",
+  "titulo": "🏠 Trucos del Modo Vivir",
+  "slug": "trucos-vivir",
+  "estado": "publicado",
+  "ruta": "herramientas/trucos/vivir",
+  "creadoEl": "2026-09-25T14:10:09.677Z",
+  "modificadoEl": "2026-10-04T14:04:01.908Z",
+  "bloques": [
+    {
+      "id": "b_tv_h2",
+      "tipo": "titulo",
+      "contenido": "🏠 Trucos del Modo Vivir",
+      "nivel": 2
+    },
+    {
+      "id": "b_tv_p_intro",
+      "tipo": "texto",
+      "contenido": "El Modo Vivir es donde transcurre la mayor parte de la partida. Es el momento en el que tus Sims trabajan, forman relaciones, desarrollan habilidades, cumplen aspiraciones y construyen su historia.<br><br>Precisamente por eso, también es el apartado que reúne el mayor número de trucos. Desde conseguir dinero ilimitado hasta rellenar todas las necesidades de la unidad doméstica, modificar profesiones o eliminar estados de ánimo negativos, existen decenas de comandos que facilitan enormemente la experiencia de juego.<br><br>En esta primera parte del Modo Vivir veremos los trucos más utilizados relacionados con el dinero, las facturas, las necesidades y algunos comandos generales que conviene conocer."
+    },
+    {
+      "id": "b_tv_sep_1",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_tv_h3_dinero",
+      "tipo": "titulo",
+      "contenido": "Trucos para conseguir dinero",
+      "nivel": 3,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_dinero_intro",
+      "tipo": "texto",
+      "contenido": "El dinero (simoleones) es uno de los recursos más importantes de Los Sims 4. Aunque puedes ganarlo trabajando o desarrollando habilidades, muchos jugadores prefieren utilizar los siguientes códigos para empezar una partida sin limitaciones económicas."
+    },
+    {
+      "id": "b_tv_h4_motherlode",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">motherlode</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_motherlode",
+      "tipo": "texto",
+      "contenido": "Es el truco más famoso de toda la saga.<br><br>Cada vez que lo escribes, tu unidad doméstica recibe 50.000 simoleones al instante.<br><br><strong>¿Depende de otro truco?</strong> No.<br><br><strong>¿Cuándo utilizarlo?</strong> Es perfecto para:"
+    },
+    {
+      "id": "b_tv_h4_kaching",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">kaching</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_kaching",
+      "tipo": "texto",
+      "contenido": "Añade 1.000 simoleones a la familia activa.<br><br>Es ideal cuando solo necesitas una pequeña cantidad para comprar un objeto concreto.<br><br><strong>¿Depende de otro truco?</strong> No."
+    },
+    {
+      "id": "b_tv_h4_rosebud",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">rosebud</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_rosebud",
+      "tipo": "texto",
+      "contenido": "Tiene exactamente el mismo efecto que kaching. También añade 1.000 simoleones.<br><br>Muchos jugadores veteranos siguen utilizándolo porque era uno de los trucos clásicos de las primeras entregas de Los Sims.<br><br><strong>¿Depende de otro truco?</strong> No."
+    },
+    {
+      "id": "b_tv_h4_money",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">money X</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_money",
+      "tipo": "texto",
+      "contenido": "Este comando permite establecer exactamente la cantidad de dinero que tendrá la unidad doméstica. Solo tienes que sustituir la letra X por la cifra deseada.<br><br><strong>Ejemplos:</strong>"
+    },
+    {
+      "id": "b_tv_h4_free_re",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">freerealestate on</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_free_re",
+      "tipo": "texto",
+      "contenido": "Permite comprar cualquier vivienda del juego completamente gratis.<br><br>No importa si cuesta 20.000 o 300.000 simoleones. Mientras el truco permanezca activo, todas las casas aparecerán con un coste de 0 simoleones al mudarte desde el mapa del mundo.<br><br><strong>¿Depende de otro truco?</strong> No.<br><br><strong>Importante:</strong> Debe utilizarse desde la pantalla del mundo o durante el proceso de mudanza para que tenga efecto.<br><br>Para desactivarlo, escribe: <span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">freerealestate off</span>"
+    },
+    {
+      "id": "b_tv_h4_autopay",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">household.autopay_bills true</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_autopay",
+      "tipo": "texto",
+      "contenido": "Las facturas forman parte de la gestión habitual de cualquier unidad doméstica.<br><br>Con este comando el juego las pagará automáticamente cuando llegue el momento, evitando cortes de luz o de agua por olvido.<br><br><strong>¿Depende de otro truco?</strong> Sí. Primero activa <span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">testingcheats true</span>.<br><br>Para volver al funcionamiento normal, utiliza: <span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">household.autopay_bills false</span>"
+    },
+    {
+      "id": "b_tv_sep_2",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_tv_h3_necesidades",
+      "tipo": "titulo",
+      "contenido": "Trucos para las necesidades",
+      "nivel": 3,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_nec_intro",
+      "tipo": "texto",
+      "contenido": "Gestionar el hambre, la energía o la higiene forma parte de la esencia de Los Sims 4. Sin embargo, cuando quieres construir, grabar vídeos o simplemente experimentar con el juego, puede resultar mucho más cómodo mantener todas las necesidades al máximo."
+    },
+    {
+      "id": "b_tv_h4_fill_one",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">sims.fill_all_commodities</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_fill_one",
+      "tipo": "texto",
+      "contenido": "Rellena automáticamente todas las necesidades del Sim activo (Hambre, Energía, Diversión, Higiene, Vejiga, Social).<br><br><strong>¿Depende de otro truco?</strong> Sí. Necesita: <span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">testingcheats true</span>"
+    },
+    {
+      "id": "b_tv_h4_fill_all",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">stats.fill_all_commodities_household</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_fill_all",
+      "tipo": "texto",
+      "contenido": "Hace exactamente lo mismo que el comando anterior, pero afecta a todos los Sims de la unidad doméstica.<br><br><strong>¿Depende de otro truco?</strong> Sí. Necesita: <span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">testingcheats true</span>"
+    },
+    {
+      "id": "b_tv_h4_buffs",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">sims.remove_all_buffs</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_buffs",
+      "tipo": "texto",
+      "contenido": "Elimina todos los modificadores de estado de ánimo (Moodlets) que tenga el Sim activo (Tristeza, Vergüenza, Tensión, Incomodidad, Enfado). El Sim volverá a un estado emocional neutral.<br><br><strong>¿Depende de otro truco?</strong> Sí. Necesita: <span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">testingcheats true</span>"
+    },
+    {
+      "id": "b_tv_h4_sat_points",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">sims.give_satisfaction_points X</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_sat_points",
+      "tipo": "texto",
+      "contenido": "Añade puntos de satisfacción al Sim activo. Solo debes sustituir la X por la cantidad deseada (ej. 1000, 5000, 50000).<br><br>Estos puntos sirven para comprar recompensas permanentes (Nunca hambriento, Nunca cansado, Aprendiz veloz, Empresario, Poción de juventud, Siempre bienvenido).<br><br><strong>¿Depende de otro truco?</strong> Sí. Necesita: <span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">testingcheats true</span>"
+    },
+    {
+      "id": "b_tv_sep_3",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_tv_h3_generales",
+      "tipo": "titulo",
+      "contenido": "Trucos generales del Modo Vivir",
+      "nivel": 3,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_h4_resetsim",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">resetsim Nombre Apellido</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_resetsim",
+      "tipo": "texto",
+      "contenido": "A veces un Sim puede quedarse completamente bloqueado (no responde a órdenes, se queda inmóvil, no termina una acción, no puede moverse). Con este truco el personaje se reinicia sin perder su progreso (ejemplo: <span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">resetsim Laura García</span>).<br><br><strong>¿Depende de otro truco?</strong> No."
+    },
+    {
+      "id": "b_tv_h4_death",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">death.toggle false</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_death",
+      "tipo": "texto",
+      "contenido": "Impide que los Sims mueran mientras permanezca activado.<br><br><strong>¿Depende de otro truco?</strong> Sí. Primero debes escribir: <span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">testingcheats true</span>.<br><br>Para volver a activar las muertes, utiliza: <span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">death.toggle true</span>"
+    },
+    {
+      "id": "b_tv_sep_4",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_tv_h3_habilidades",
+      "tipo": "titulo",
+      "contenido": "Trucos de habilidades",
+      "nivel": 3,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_h4_skill_general",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">stats.set_skill_level [Habilidad] [Nivel]</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_skills_list",
+      "tipo": "texto",
+      "contenido": "Permite asignar el nivel que quieras a una habilidad concreta. Solo debes sustituir el nombre interno de la habilidad y el nivel deseado.<br><br><strong>¿Depende de otro truco?</strong> No.<br><br><strong>Ejemplos de habilidades:</strong>"
+    },
+    {
+      "id": "b_tv_sep_5",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_tv_h3_profesiones",
+      "tipo": "titulo",
+      "contenido": "Trucos de profesiones",
+      "nivel": 3,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_h4_promote",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">careers.promote [Profesión]</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_promote",
+      "tipo": "texto",
+      "contenido": "Asciende automáticamente un nivel en la profesión indicada.<br><br><strong>¿Depende de otro truco?</strong> No.<br><br><strong>Ejemplos:</strong>"
+    },
+    {
+      "id": "b_tv_h4_demote",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">careers.demote [Profesión]</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_demote",
+      "tipo": "texto",
+      "contenido": "Reduce un nivel en la profesión indicada.<br><br><strong>¿Depende de otro truco?</strong> No."
+    },
+    {
+      "id": "b_tv_h4_add_career",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">careers.add_career [Profesión]</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_add_career",
+      "tipo": "texto",
+      "contenido": "Añade una profesión al Sim activo (Astronaut, Business, Culinary, Writer, Painter, SecretAgent, TechGuru, Criminal, Entertainer).<br><br><strong>¿Depende de otro truco?</strong> No."
+    },
+    {
+      "id": "b_tv_h4_remove_career",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">careers.remove_career [Profesión]</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_remove_career",
+      "tipo": "texto",
+      "contenido": "Elimina la profesión actual del Sim.<br><br><strong>¿Depende de otro truco?</strong> No."
+    },
+    {
+      "id": "b_tv_sep_6",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_tv_h3_aspiraciones",
+      "tipo": "titulo",
+      "contenido": "Trucos de aspiraciones",
+      "nivel": 3,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_h4_asp_complete",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">aspirations.complete_current_milestone</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_asp_complete",
+      "tipo": "texto",
+      "contenido": "Completa automáticamente el objetivo actual de la aspiración activa.<br><br><strong>¿Depende de otro truco?</strong> Sí. Primero debes activar <span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">testingcheats true</span>."
+    },
+    {
+      "id": "b_tv_sep_7",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_tv_h3_relaciones",
+      "tipo": "titulo",
+      "contenido": "Trucos de relaciones",
+      "nivel": 3,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_h4_rel_friend",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">modifyrelationship Nombre Apellido Nombre Apellido X LTR_Friendship_Main</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_rel_friend",
+      "tipo": "texto",
+      "contenido": "Aumenta o reduce el nivel de amistad entre dos Sims (ejemplo: <span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">modifyrelationship Laura García Pedro López 100 LTR_Friendship_Main</span>).<br><br><strong>¿Depende de otro truco?</strong> Sí. Necesita <span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">testingcheats true</span>."
+    },
+    {
+      "id": "b_tv_h4_rel_romance",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">modifyrelationship Nombre Apellido Nombre Apellido X LTR_Romance_Main</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_rel_romance",
+      "tipo": "texto",
+      "contenido": "Modifica el nivel de relación romántica entre dos Sims (ejemplo: <span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">modifyrelationship Laura García Pedro López 100 LTR_Romance_Main</span>).<br><br><strong>¿Depende de otro truco?</strong> Sí. Necesita <span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">testingcheats true</span>."
+    },
+    {
+      "id": "b_tv_sep_8",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_tv_h3_emociones",
+      "tipo": "titulo",
+      "contenido": "Trucos de emociones",
+      "nivel": 3,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_h4_headline",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">headlineeffects off</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_headline",
+      "tipo": "texto",
+      "contenido": "Oculta todos los elementos visuales situados encima de los Sims (bocadillos, cristales, pensamiento, burbujas). Para volver a mostrarlos: <span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">headlineeffects on</span>.<br><br><strong>¿Depende de otro truco?</strong> No."
+    },
+    {
+      "id": "b_tv_sep_9",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_tv_h3_poco_conocidos",
+      "tipo": "titulo",
+      "contenido": "Trucos útiles poco conocidos",
+      "nivel": 3,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_h4_fullscreen",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">fullscreenToggle</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_fullscreen",
+      "tipo": "texto",
+      "contenido": "Activa o desactiva el modo de pantalla completa sin necesidad de entrar en las opciones."
+    },
+    {
+      "id": "b_tv_h4_fps",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">fps on</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_fps",
+      "tipo": "texto",
+      "contenido": "Muestra el contador de imágenes por segundo (FPS). Para ocultarlo: <span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">fps off</span>."
+    },
+    {
+      "id": "b_tv_h4_help",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">help</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tv_p_help",
+      "tipo": "texto",
+      "contenido": "Muestra una lista con muchos de los comandos disponibles en el juego."
+    },
+    {
+      "id": "b_tv_sep_10",
+      "tipo": "separador"
+    }
+  ]
+}

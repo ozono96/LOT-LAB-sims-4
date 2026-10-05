@@ -121,18 +121,25 @@ const REGISTRO_NAVEGACION = [
                 icono: "🕹️",
                 disponible: true,
                 descripcion: "Trucos útiles para Los Sims 4"
+            },
+            {
+                id: "tier-list",
+                nombre: "Tier List",
+                icono: "📊",
+                disponible: true,
+                descripcion: "Crea, clasifica y comparte tu propia Tier List"
             }
         ]
     },
     {
         id: "datos",
         nombre: "Datos",
-        icono: "📊",
+        icono: "📈",
         herramientas: [
             {
                 id: "estadisticas",
                 nombre: "Estadísticas Sims 4",
-                icono: "📊",
+                icono: "📈",
                 disponible: true,
                 descripcion: "Base de datos y estadísticas del juego"
             }

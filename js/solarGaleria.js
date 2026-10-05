@@ -9,7 +9,10 @@ async function cargarManifestSolares() {
 
     _promesaCargaManifest = (async () => {
         try {
-            const respuesta = await fetch("img/solares/manifest.json");
+            const versionParam = (window.CONFIG?.VERSION && window.CONFIG?.BUILD)
+                ? `?v=${window.CONFIG.VERSION}.${window.CONFIG.BUILD}`
+                : "";
+            const respuesta = await fetch("img/solares/manifest.json" + versionParam);
             if (!respuesta.ok) {
                 console.warn("[Galería] No se pudo cargar img/solares/manifest.json (status: " + respuesta.status + ")");
                 _manifestSolares = {};

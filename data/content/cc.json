@@ -1,0 +1,22 @@
+{
+  "id": "cc",
+  "titulo": "CC",
+  "slug": "cc",
+  "ruta": "descargas/cc",
+  "estado": "borrador",
+  "creadoEl": "2026-10-04T08:56:34.937Z",
+  "modificadoEl": "2026-10-04T08:56:34.937Z",
+  "bloques": [
+    {
+      "id": "b_1791104194937_tit",
+      "tipo": "titulo",
+      "contenido": "CC",
+      "nivel": 1
+    },
+    {
+      "id": "b_1791104194937_txt",
+      "tipo": "texto",
+      "contenido": "Contenido de CC. Puedes editar este texto o añadir nuevos bloques."
+    }
+  ]
+}

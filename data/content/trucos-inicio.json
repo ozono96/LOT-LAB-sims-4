@@ -1,0 +1,166 @@
+{
+  "id": "trucos-inicio",
+  "titulo": "🕹️ Trucos de Los Sims 4",
+  "slug": "trucos-inicio",
+  "estado": "publicado",
+  "ruta": "herramientas/trucos/inicio",
+  "creadoEl": "2026-09-25T14:10:09.677Z",
+  "modificadoEl": "2026-10-03T22:34:06.532Z",
+  "bloques": [
+    {
+      "id": "b_trucos_h2",
+      "tipo": "titulo",
+      "contenido": "🕹️ Trucos de Los Sims 4",
+      "nivel": 2
+    },
+    {
+      "id": "b_buscador_principal",
+      "tipo": "buscador",
+      "placeholder": "Buscar truco por nombre o código (ej: moveobjects, motherlode, dinero, cas...)",
+      "ambito": "arbol"
+    },
+    {
+      "id": "b_trucos_h3_1",
+      "tipo": "titulo",
+      "contenido": "Cómo activar los trucos en Los Sims 4",
+      "nivel": 3,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_trucos_p_1",
+      "tipo": "texto",
+      "contenido": "Antes de introducir cualquier código es necesario abrir la consola de comandos del juego. El procedimiento cambia ligeramente dependiendo de la plataforma en la que juegues."
+    },
+    {
+      "id": "b_trucos_h4_pc",
+      "tipo": "titulo",
+      "contenido": "En PC",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_trucos_p_pc",
+      "tipo": "texto",
+      "contenido": "Pulsa al mismo tiempo:<br><strong>Ctrl + Shift + C</strong><br>Aparecerá una barra blanca en la parte superior izquierda de la pantalla donde podrás escribir cualquier truco."
+    },
+    {
+      "id": "b_trucos_h4_mac",
+      "tipo": "titulo",
+      "contenido": "En Mac",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_trucos_p_mac",
+      "tipo": "texto",
+      "contenido": "Pulsa:<br><strong>Command + Shift + C</strong>"
+    },
+    {
+      "id": "b_trucos_h4_ps",
+      "tipo": "titulo",
+      "contenido": "En PlayStation 4 y PlayStation 5",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_trucos_p_ps",
+      "tipo": "texto",
+      "contenido": "Mantén pulsados simultáneamente:<br><strong>L1 + L2 + R1 + R2</strong>"
+    },
+    {
+      "id": "b_trucos_h4_xbox",
+      "tipo": "titulo",
+      "contenido": "En Xbox One y Xbox Series X|S",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_trucos_p_xbox",
+      "tipo": "texto",
+      "contenido": "Mantén pulsados:<br><strong>LB + LT + RB + RT</strong><br><br>Cuando aparezca la consola, simplemente escribe el truco que quieras utilizar y pulsa Enter (o el botón correspondiente en consola)."
+    },
+    {
+      "id": "b_trucos_sep_1",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_trucos_h3_testing",
+      "tipo": "titulo",
+      "contenido": "El truco más importante: testingcheats true",
+      "nivel": 3,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_trucos_p_test_1",
+      "tipo": "texto",
+      "contenido": "Antes de hablar del resto de comandos es necesario explicar el código más importante de todo el juego."
+    },
+    {
+      "id": "b_trucos_c_test_1",
+      "tipo": "cuadro-copiable",
+      "contenido": "testingcheats true",
+      "alineacion": "center"
+    },
+    {
+      "id": "b_trucos_p_test_2",
+      "tipo": "texto",
+      "contenido": "Este comando activa el modo de trucos avanzado de Los Sims 4.<br><br>Muchos jugadores creen que únicamente sirve para habilitar otros códigos, pero en realidad hace bastante más que eso.<br><br>Al activarlo, el juego desbloquea numerosas funciones ocultas utilizadas por los propios desarrolladores para realizar pruebas internas. Gracias a ello es posible modificar necesidades, editar Sims ya creados, cambiar relaciones, completar aspiraciones, alterar estados de ánimo y utilizar una enorme cantidad de comandos que de otra forma permanecerían deshabilitados.<br><br>Por este motivo, a lo largo de toda esta guía indicaremos siempre cuándo un truco depende de testingcheats true."
+    },
+    {
+      "id": "b_trucos_p_test_3",
+      "tipo": "texto",
+      "contenido": "<strong>¿Cómo se activa?</strong><br>Simplemente abre la consola de comandos y escribe:"
+    },
+    {
+      "id": "b_trucos_c_test_2",
+      "tipo": "cuadro-copiable",
+      "contenido": "testingcheats true",
+      "alineacion": "center"
+    },
+    {
+      "id": "b_trucos_p_test_4",
+      "tipo": "texto",
+      "contenido": "Si deseas volver al funcionamiento normal del juego puedes escribir:"
+    },
+    {
+      "id": "b_trucos_c_test_false",
+      "tipo": "cuadro-copiable",
+      "contenido": "testingcheats false",
+      "alineacion": "center"
+    },
+    {
+      "id": "b_trucos_p_test_5",
+      "tipo": "texto",
+      "contenido": "Aunque normalmente no es necesario desactivarlo."
+    },
+    {
+      "id": "b_trucos_h4_func",
+      "tipo": "titulo",
+      "contenido": "Funciones adicionales de testingcheats true",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_trucos_p_func_list",
+      "tipo": "texto",
+      "contenido": "Además de permitir utilizar otros códigos, también desbloquea varias acciones ocultas mediante Shift + clic sobre distintos elementos del juego.<br><br>Por ejemplo podrás:"
+    },
+    {
+      "id": "b_trucos_p_test_cada_vez",
+      "tipo": "texto",
+      "contenido": "<strong>¿Es necesario escribir testingcheats true cada vez?</strong><br><br>Depende.<br><br>Mientras permanezcas en la misma partida normalmente seguirá activo.<br><br>Sin embargo, al cerrar el juego o cargar otra partida es recomendable volver a introducirlo antes de utilizar cualquier otro truco avanzado.<br><br>De esta forma evitarás que algunos comandos no funcionen correctamente."
+    },
+    {
+      "id": "b_trucos_sep_2",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_trucos_h3_cat",
+      "tipo": "titulo",
+      "contenido": "Categorías de Trucos",
+      "nivel": 3,
+      "fontSize": "1.4rem",
+      "textAlign": "center"
+    }
+  ]
+}

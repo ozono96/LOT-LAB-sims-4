@@ -171,6 +171,7 @@
         if (msg.tipo === "TIRAR_HABILIDADES") EstadoGlobal.estadosSemanticos.habilidades = msg;
         if (msg.tipo === "TIRAR_PACKS") EstadoGlobal.estadosSemanticos.packs = msg;
         if (msg.tipo === "TIRAR_MUNDOS") EstadoGlobal.estadosSemanticos.mundos = msg;
+        if (msg.tipo === "TIER_LIST_ESTADO") EstadoGlobal.estadosSemanticos.tierList = msg;
 
         if (msg.tipo === "SYNC_UI_BATCH") {
             // Actualizar uiState y htmlState
@@ -536,6 +537,10 @@
                         if (typeof window.renderizarPacksRetos === 'function') {
                             window.renderizarPacksRetos(window._modoPacksAzarActivo === true);
                         }
+                    } else if (data.estado.ventanaActual === 'ventanaTierList') {
+                        if (sem && sem.tierList && typeof window.restaurarTierListObs === 'function') {
+                            window.restaurarTierListObs(sem.tierList.estado || sem.tierList);
+                        }
                     }
                 });
 
@@ -583,6 +588,8 @@
                             if (typeof window.renderizarPacksRetos === 'function') {
                                 window.renderizarPacksRetos(window._modoPacksAzarActivo === true);
                             }
+                        } else if (data.idVentana === 'ventanaTierList') {
+                            if (typeof window.inicializarTierList === 'function') window.inicializarTierList();
                         }
                         aplicarBrandingOBS();
                         break;
@@ -694,6 +701,11 @@
                     case 'TIRAR_MUNDOS':
                         if (typeof window.ejecutarTiradaMundosObs === 'function') {
                             window.ejecutarTiradaMundosObs(data);
+                        }
+                        break;
+                    case 'TIER_LIST_ESTADO':
+                        if (typeof window.restaurarTierListObs === 'function') {
+                            window.restaurarTierListObs(data.estado || data);
                         }
                         break;
                     case 'SYNC_MODAL_PACKS':

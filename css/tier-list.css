@@ -1,0 +1,2006 @@
+/* =========================================================
+   LOT-LAB SIMS 4 - TIER LIST STYLES
+   css/tier-list.css
+   ========================================================= */
+
+/* Contenedor principal de la ventana (hereda estilos estándar de .ventana) */
+#ventanaTierList {
+    display: none;
+    box-sizing: border-box;
+}
+
+/* Área de contenido interno */
+.tierlist-contenedor {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 5px 0 15px 0;
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   PANTALLA 1: SELECTOR DE MODO Y CONFIGURACIÓN PREVIA
+   ========================================================= */
+.tierlist-selector-pantalla {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    padding: 15px 10px 25px 10px;
+    max-width: 820px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.tierlist-selector-hero {
+    text-align: center;
+}
+
+.tierlist-selector-titulo {
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: var(--color-titulo, #EDEDED);
+    margin: 0 0 8px 0;
+}
+
+.tierlist-selector-subtitulo {
+    font-size: 0.95rem;
+    color: var(--color-texto, #CCCCCC);
+    opacity: 0.85;
+    margin: 0;
+}
+
+/* Tarjetas de Selección de Modo */
+.tierlist-selector-modos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    width: 100%;
+}
+
+@media (max-width: 680px) {
+    .tierlist-selector-modos {
+        grid-template-columns: 1fr;
+    }
+}
+
+.tierlist-card-modo {
+    background: var(--color-tarjeta, rgba(30, 30, 30, 0.7));
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 22px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    user-select: none;
+}
+
+body.modo-dia .tierlist-card-modo {
+    border-color: rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.tierlist-card-modo:hover {
+    border-color: rgba(255, 255, 255, 0.35);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3);
+}
+
+.tierlist-card-modo.seleccionado {
+    border-color: var(--color-resaltado, #2ECC71);
+    background: rgba(46, 204, 113, 0.1);
+    box-shadow: 0 0 0 1px var(--color-resaltado, #2ECC71), 0 8px 24px rgba(46, 204, 113, 0.25);
+    transform: translateY(-2px);
+}
+
+.tierlist-card-icono {
+    font-size: 2.4rem;
+    line-height: 1;
+}
+
+.tierlist-card-titulo {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--color-titulo, #EDEDED);
+}
+
+.tierlist-card-desc {
+    font-size: 0.82rem;
+    color: var(--color-texto, #BBBBBB);
+    line-height: 1.35;
+}
+
+/* Configuración Previa de Filtros */
+.tierlist-selector-config {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 18px 20px;
+    box-sizing: border-box;
+}
+
+body.modo-dia .tierlist-selector-config {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+.tierlist-config-titulo {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-titulo, #EDEDED);
+    margin-bottom: 14px;
+    text-align: center;
+}
+
+.tierlist-filtros-chips {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.tierlist-chip-filtro {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: var(--color-principal, #3A3A3A);
+    color: var(--color-texto, #EDEDED);
+    border: 1.5px solid transparent;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.tierlist-chip-filtro input[type="checkbox"] {
+    cursor: pointer;
+    accent-color: var(--color-resaltado, #2ECC71);
+}
+
+.tierlist-chip-filtro:hover {
+    background: var(--color-secundario, #4A4A4A);
+}
+
+.tierlist-chip-filtro.activo {
+    background: var(--color-resaltado, #2ECC71);
+    color: #FFFFFF;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.tierlist-personalizada-intro {
+    text-align: center;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--color-texto, #EDEDED);
+    margin: 4px 0;
+}
+
+.tierlist-selector-error {
+    color: #FF5252;
+    background: rgba(255, 82, 82, 0.12);
+    border: 1px solid #FF5252;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Botón Entrar */
+.tierlist-selector-footer {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 5px;
+}
+
+.tierlist-btn-entrar {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--color-resaltado, #2ECC71);
+    color: #FFFFFF;
+    font-size: 1.15rem;
+    font-weight: 800;
+    padding: 14px 34px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    font-family: inherit;
+    letter-spacing: 0.5px;
+}
+
+.tierlist-btn-entrar:hover {
+    background: #27ae60;
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 26px rgba(46, 204, 113, 0.5);
+}
+
+/* =========================================================
+   PANTALLA 2: TABLERO DE TIERS Y CONTROLES
+   ========================================================= */
+
+/* Barra superior del tablero */
+.tierlist-tablero-topbar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-bottom: 5px;
+}
+
+/* Fila 1: botón Cambiar modo (izquierda) + título perfectamente centrado */
+.tierlist-topbar-fila1 {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* Espaciador invisible que equilibra el ancho del botón izquierdo */
+.tierlist-topbar-spacer {
+    flex: 0 0 auto;
+    visibility: hidden;
+    /* El ancho se iguala al botón via JS, pero como aproximación usamos min-content */
+    min-width: var(--topbar-btn-w, 130px);
+}
+
+.tierlist-btn-volver-selector {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.2);
+    color: var(--color-texto, #EDEDED);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+body.modo-dia .tierlist-btn-volver-selector {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+.tierlist-btn-volver-selector:hover {
+    background: var(--color-principal, #3A3A3A);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateX(-2px);
+}
+
+/* Título editable */
+.tierlist-titulo-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
+
+.tierlist-titulo-input {
+    width: 100%;
+    max-width: 550px;
+    text-align: center;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--color-titulo, #EDEDED);
+    background: rgba(0, 0, 0, 0.15);
+    border: 1.5px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 7px 14px;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+body.modo-dia .tierlist-titulo-input {
+    background: rgba(255, 255, 255, 0.4);
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+.tierlist-titulo-input:hover,
+.tierlist-titulo-input:focus {
+    border-color: var(--color-resaltado, #2ECC71);
+    background: rgba(0, 0, 0, 0.25);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.2);
+}
+
+body.modo-dia .tierlist-titulo-input:focus {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+/* Grupo de botones de acción */
+.tierlist-acciones-grupo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Control de alcance de cambios (Solo este / Todos) */
+.tierlist-control-alcance {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 4px 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+body.modo-dia .tierlist-control-alcance {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.12);
+}
+
+.tierlist-control-alcance-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--color-texto, #EDEDED);
+    opacity: 0.85;
+    white-space: nowrap;
+}
+
+body.modo-dia .tierlist-control-alcance-label {
+    color: #2D3436;
+}
+
+.tierlist-switch-alcance {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    margin: 0;
+}
+
+.tierlist-switch-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--color-texto, #EDEDED);
+    opacity: 0.55;
+    transition: opacity 0.2s ease, font-weight 0.2s ease, color 0.2s ease;
+    white-space: nowrap;
+}
+
+body.modo-dia .tierlist-switch-label {
+    color: #2D3436;
+}
+
+.tierlist-switch-label.activo {
+    opacity: 1;
+    font-weight: 700;
+    color: var(--color-resaltado, #3498db);
+}
+
+body.modo-dia .tierlist-switch-label.activo {
+    color: var(--color-resaltado, #2980b9);
+}
+
+body.modo-dia .tierlist-switch-alcance .sliderSwitch {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+body.modo-dia .tierlist-switch-alcance input:checked ~ .sliderSwitch {
+    background: rgba(41, 128, 185, 0.25);
+    border-color: #2980b9;
+}
+
+
+/* ── CONTROL DE APARIENCIA GLOBAL DE IMÁGENES (Personalizada) ── */
+.tierlist-control-forma {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 4px 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+body.modo-dia .tierlist-control-forma {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.12);
+}
+
+.tierlist-control-forma-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--color-texto, #EDEDED);
+    opacity: 0.85;
+    white-space: nowrap;
+}
+
+body.modo-dia .tierlist-control-forma-label {
+    color: #2D3436;
+}
+
+/* Track del switch de 3 posiciones — pill con dots indicadores */
+.tierlist-forma3-track {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 72px;
+    height: 26px;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 20px;
+    border: 1.5px solid var(--borde, rgba(255,255,255,0.15));
+    padding: 0 9px;
+    cursor: pointer;
+    touch-action: none;
+    flex-shrink: 0;
+}
+
+body.modo-dia .tierlist-forma3-track {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Puntos indicadores de las 3 posiciones */
+.tierlist-forma3-dot {
+    position: relative;
+    z-index: 1;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(180, 180, 180, 0.35); /* gris oscuro modo noche */
+    flex-shrink: 0;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+body.modo-dia .tierlist-forma3-dot {
+    background: rgba(100, 100, 100, 0.25); /* gris claro modo día */
+}
+
+/* Dot activo (debajo del thumb): casi invisible */
+.tierlist-forma3-dot.activo {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+body.modo-dia .tierlist-forma3-dot.activo {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* Dot "pasando" durante el arrastre: destello sutil */
+.tierlist-forma3-dot.pasando {
+    transform: scale(1.6);
+    background: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.55);
+    box-shadow: 0 0 6px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.4);
+}
+
+/* Thumb verde arrastrable */
+.tierlist-forma3-thumb {
+    position: absolute;
+    top: 50%;
+    left: 4px; /* posición inicial — JS la ajusta */
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--color-resaltado, #2ECC71);
+    z-index: 2;
+    cursor: grab;
+    transition: left 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    pointer-events: auto;
+}
+
+.tierlist-forma3-thumb:active {
+    cursor: grabbing;
+    box-shadow: 0 2px 12px rgba(46, 204, 113, 0.5);
+}
+
+/* Etiqueta de texto del modo actual */
+.tierlist-forma3-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    min-width: 50px;
+    text-align: left;
+    color: var(--color-resaltado, #2ECC71);
+    transition: color 0.2s ease;
+    white-space: nowrap;
+}
+
+body.modo-dia .tierlist-forma3-label {
+    color: var(--color-resaltado, #27ae60);
+}
+
+/* Animación suave al cambiar forma en las fichas */
+.tierlist-ficha .tierlist-ficha-cuerpo {
+    transition: border-radius 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                background 0.3s ease,
+                box-shadow 0.3s ease;
+}
+
+
+.tierlist-btn-secundario {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: var(--color-principal, #3A3A3A);
+    color: var(--color-texto, #EDEDED);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+body.modo-dia .tierlist-btn-secundario {
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+.tierlist-btn-secundario:hover {
+    background: var(--color-secundario, #4A4A4A);
+    transform: translateY(-1px);
+}
+
+.tierlist-btn-limpiar {
+    color: #FF7675 !important;
+    border-color: rgba(255, 118, 117, 0.3) !important;
+}
+
+.tierlist-btn-limpiar:hover {
+    background: rgba(255, 118, 117, 0.15) !important;
+    border-color: #FF7675 !important;
+}
+
+/* =========================================================
+   TABLERO DE TIERS
+   ========================================================= */
+.tierlist-tablero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 8px;
+    overflow: hidden;
+}
+
+body.modo-dia .tierlist-tablero {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Fila "Añadir Tier" al final del tablero */
+.tierlist-add-tier-fila {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 8px 2px;
+}
+
+.tierlist-btn-add-tier {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    justify-content: center;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1.5px dashed rgba(255, 255, 255, 0.18);
+    background: transparent;
+    color: var(--color-texto, #EDEDED);
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    opacity: 0.55;
+    transition: opacity 0.2s ease, border-color 0.2s ease,
+                background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+body.modo-dia .tierlist-btn-add-tier {
+    border-color: rgba(0, 0, 0, 0.18);
+    color: #2D3436;
+}
+
+.tierlist-btn-add-tier:hover {
+    opacity: 1;
+    border-color: var(--color-resaltado, #2ECC71);
+    color: var(--color-resaltado, #2ECC71);
+    background: rgba(46, 204, 113, 0.07);
+    transform: translateY(-1px);
+}
+
+.tierlist-add-tier-icono {
+    font-size: 1.1rem;
+    font-weight: 300;
+    line-height: 1;
+}
+
+/* Fila individual de Tier */
+.tierlist-fila {
+    display: flex;
+    min-height: 86px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    transition: opacity 0.2s ease, outline 0.15s ease;
+}
+
+.tierlist-fila.arrastrando-tier {
+    opacity: 0.35;
+    outline: 2px dashed var(--color-resaltado, #3498db);
+}
+
+/* Columna de Etiqueta (izquierda) */
+.tierlist-etiqueta-col {
+    width: 110px;
+    min-width: 95px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    position: relative;
+    user-select: none;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 2;
+    box-sizing: border-box;
+}
+
+.tierlist-etiqueta-texto {
+    font-weight: 900;
+    font-size: 1.35rem;
+    text-align: center;
+    word-break: break-word;
+    cursor: pointer;
+    line-height: 1.1;
+    transition: transform 0.15s ease;
+}
+
+.tierlist-etiqueta-texto:hover {
+    transform: scale(1.08);
+}
+
+.tierlist-etiqueta-controles {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.tierlist-fila:hover .tierlist-etiqueta-controles {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+@media (hover: none) {
+    .tierlist-etiqueta-controles {
+        opacity: 0.85;
+        pointer-events: auto;
+    }
+}
+
+.tierlist-btn-config-tier {
+    background: rgba(0, 0, 0, 0.35);
+    border: none;
+    color: inherit;
+    font-size: 0.75rem;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.tierlist-btn-config-tier:hover {
+    transform: scale(1.2);
+    background: rgba(0, 0, 0, 0.6);
+}
+
+/* Asa vertical de tres puntos (⋮) para arrastrar y reordenar el tier completo */
+.tierlist-tier-drag-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    min-width: 22px;
+    align-self: stretch;
+    background: rgba(0, 0, 0, 0.28);
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.75);
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    transition: background 0.2s ease, color 0.2s ease;
+    font-size: 1.15rem;
+    line-height: 1;
+    z-index: 2;
+    flex-shrink: 0;
+}
+
+body.modo-dia .tierlist-tier-drag-handle {
+    background: rgba(0, 0, 0, 0.08);
+    border-left-color: rgba(0, 0, 0, 0.1);
+    border-right-color: rgba(0, 0, 0, 0.1);
+    color: rgba(0, 0, 0, 0.65);
+}
+
+.tierlist-fila:hover .tierlist-tier-drag-handle {
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.45);
+}
+
+body.modo-dia .tierlist-fila:hover .tierlist-tier-drag-handle {
+    color: #000000;
+    background: rgba(0, 0, 0, 0.16);
+}
+
+.tierlist-tier-drag-handle:active {
+    cursor: grabbing;
+}
+
+/* Indicador de posición al arrastrar tier */
+.tierlist-tier-drop-indicador {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    height: 4px;
+    background: var(--color-resaltado, #3498db);
+    box-shadow: 0 0 10px var(--color-resaltado, #3498db);
+    border-radius: 2px;
+    z-index: 100;
+    pointer-events: none;
+}
+
+/* Zona de Soltado / Elementos de la fila */
+.tierlist-zona-drop {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    align-content: flex-start;
+    padding: 10px;
+    gap: 8px;
+    min-height: 86px;
+    transition: background-color 0.2s ease, outline 0.2s ease;
+    position: relative;
+}
+
+.tierlist-zona-drop.dropzone-activa {
+    outline: 2px dashed var(--color-resaltado, #2ECC71);
+    outline-offset: -2px;
+    background-color: rgba(46, 204, 113, 0.08) !important;
+}
+
+.tierlist-vacio-msg {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.35);
+    font-style: italic;
+    pointer-events: none;
+    user-select: none;
+}
+
+body.modo-dia .tierlist-vacio-msg {
+    color: rgba(0, 0, 0, 0.35);
+}
+
+/* =========================================================
+   ZONA DE SIN CLASIFICAR
+   ========================================================= */
+.tierlist-sin-clasificar-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--color-tarjeta, rgba(25, 25, 25, 0.75));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 14px;
+}
+
+body.modo-dia .tierlist-sin-clasificar-wrap {
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+.tierlist-sin-clasificar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4px 6px 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body.modo-dia .tierlist-sin-clasificar-header {
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+.tierlist-sin-clasificar-titulo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--color-titulo, #EDEDED);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tierlist-sin-clasificar-contador {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--color-texto, #EDEDED);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+body.modo-dia .tierlist-sin-clasificar-contador {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.tierlist-sin-clasificar-zona {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    align-content: flex-start;
+    padding: 12px;
+    gap: 8px;
+    min-height: 90px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+}
+
+.tierlist-sin-clasificar-zona.dropzone-activa {
+    outline: 2px dashed var(--color-resaltado, #2ECC71);
+    outline-offset: -2px;
+    background-color: rgba(46, 204, 113, 0.08);
+}
+
+/* Dropzone grande cuando Sin Clasificar está vacío en Personalizada */
+.tierlist-dropzone-personalizada {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 20px;
+    width: 100%;
+    border: 2px dashed rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.12);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-sizing: border-box;
+}
+
+body.modo-dia .tierlist-dropzone-personalizada {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+.tierlist-dropzone-personalizada:hover,
+.tierlist-sin-clasificar-zona.drag-archivos-over {
+    border-color: var(--color-resaltado, #2ECC71);
+    background: rgba(46, 204, 113, 0.08);
+}
+
+.tierlist-dropzone-icono {
+    font-size: 2.2rem;
+    margin-bottom: 6px;
+}
+
+.tierlist-dropzone-texto {
+    font-weight: 700;
+    font-size: 0.98rem;
+    color: var(--color-texto, #EDEDED);
+    margin-bottom: 4px;
+}
+
+.tierlist-dropzone-sub {
+    font-size: 0.8rem;
+    color: var(--color-texto, #AAAAAA);
+    margin-bottom: 12px;
+}
+
+/* Botón inline para añadir fotos en Sin Clasificar */
+.tierlist-ficha-add-inline {
+    width: 68px;
+    height: 68px;
+    border-radius: 8px;
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    background: rgba(0, 0, 0, 0.2);
+    color: var(--color-texto, #EDEDED);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    font-family: inherit;
+    padding: 0;
+}
+
+body.modo-dia .tierlist-ficha-add-inline {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.25);
+}
+
+.tierlist-ficha-add-inline:hover {
+    border-color: var(--color-resaltado, #2ECC71);
+    color: var(--color-resaltado, #2ECC71);
+    background: rgba(46, 204, 113, 0.1);
+    transform: scale(1.04);
+}
+
+.tierlist-add-inline-icono {
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.tierlist-add-inline-texto {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.1;
+}
+
+/* =========================================================
+   FICHAS Y TARJETAS DRAGGABLES
+   ========================================================= */
+.tierlist-ficha {
+    width: 68px;
+    height: 68px;
+    position: relative;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    flex-shrink: 0;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tierlist-ficha:active {
+    cursor: grabbing;
+}
+
+.tierlist-ficha:hover {
+    transform: translateY(-2px) scale(1.04);
+    z-index: 5;
+}
+
+/* Contenedor interno de la ficha */
+.tierlist-ficha-cuerpo {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    transition: border-radius 0.2s ease;
+}
+
+/* Forma Cuadrada (fotos personalizadas en formato cuadrado) */
+.tierlist-ficha.forma-cuadrado .tierlist-ficha-cuerpo {
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+/* Forma Circular (Mundos, Packs e imágenes circulares: sin marco cuadrado) */
+.tierlist-ficha.forma-circulo .tierlist-ficha-cuerpo {
+    border-radius: 50%;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.tierlist-ficha.forma-circulo .tierlist-ficha-img {
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.35));
+    transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.tierlist-ficha.forma-circulo:hover .tierlist-ficha-img {
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
+}
+
+/* Imagen dentro de la ficha */
+.tierlist-ficha-img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: auto;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+    transform-origin: center center;
+    transition: transform 0.1s ease;
+}
+
+/* Botón de eliminar (✕) en fichas personalizadas */
+.tierlist-ficha-eliminar {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #E53935;
+    color: #FFFFFF;
+    border: 1.5px solid #FFFFFF;
+    font-size: 0.65rem;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    padding: 0;
+}
+
+.tierlist-ficha:hover .tierlist-ficha-eliminar {
+    opacity: 1;
+}
+
+.tierlist-ficha-eliminar:hover {
+    transform: scale(1.2);
+    background: #FF1744;
+}
+
+/* Botón de ajustar forma/encuadre (✂️) */
+.tierlist-ficha-encuadrar {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.8);
+    color: #FFFFFF;
+    border: 1.5px solid #FFFFFF;
+    font-size: 0.62rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.35);
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    padding: 0;
+}
+
+.tierlist-ficha:hover .tierlist-ficha-encuadrar {
+    opacity: 1;
+}
+
+.tierlist-ficha-encuadrar:hover {
+    transform: scale(1.2);
+    background: var(--color-resaltado, #2ECC71);
+}
+
+/* Estado mientras se arrastra */
+.tierlist-ficha.arrastrando {
+    opacity: 0.3;
+    transform: scale(0.95);
+}
+
+/* Elemento fantasma que sigue el puntero (Limpio, sin caja exterior) */
+.tierlist-drag-ghost {
+    position: fixed;
+    pointer-events: none;
+    z-index: 999999;
+    width: 68px;
+    height: 68px;
+    transform: translate(-50%, -50%) scale(1.08) rotate(2deg);
+    opacity: 0.95;
+    box-shadow: none !important;
+    background: transparent !important;
+    border: none !important;
+    transition: none;
+}
+
+/* Ghost Cuadrado (solo para imágenes personalizadas cuadradas) */
+.tierlist-drag-ghost.forma-cuadrado .tierlist-ficha-cuerpo {
+    border-radius: 8px !important;
+    background: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6), 0 0 0 2px var(--color-resaltado, #2ECC71);
+}
+
+/* Ghost Circular (Mundos, Packs y fotos circulares) - 100% circular, SIN marco cuadrado */
+.tierlist-drag-ghost.forma-circulo .tierlist-ficha-cuerpo {
+    border-radius: 50% !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+.tierlist-drag-ghost.forma-circulo .tierlist-ficha-img {
+    filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.65)) drop-shadow(0 0 4px var(--color-resaltado, #2ECC71)) !important;
+}
+
+/* Indicador de posición de inserción */
+.tierlist-drop-indicador {
+    width: 4px;
+    height: 64px;
+    background: var(--color-resaltado, #2ECC71);
+    border-radius: 2px;
+    box-shadow: 0 0 10px var(--color-resaltado, #2ECC71);
+    margin: 0 2px;
+    flex-shrink: 0;
+    pointer-events: none;
+    animation: pulsoIndicador 0.8s infinite alternate;
+}
+
+@keyframes pulsoIndicador {
+    from { opacity: 0.6; transform: scaleY(0.9); }
+    to { opacity: 1; transform: scaleY(1.05); }
+}
+
+/* =========================================================
+   SELECTOR DE COLOR Y RENOMBRAR TIER (MODAL)
+   ========================================================= */
+.tierlist-colorpicker-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100000;
+}
+
+.tierlist-colorpicker-card {
+    background: var(--color-tarjeta, rgba(25, 25, 25, 0.95));
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 18px;
+    padding: 22px;
+    width: 380px;
+    max-width: 92vw;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    color: var(--color-texto, #EDEDED);
+}
+
+body.modo-dia .tierlist-colorpicker-card {
+    background: #FFFFFF;
+    border-color: rgba(0, 0, 0, 0.15);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.tierlist-colorpicker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.15rem;
+    font-weight: 800;
+}
+
+.tierlist-cp-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.tierlist-cp-campo label {
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.tierlist-cp-input {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: inherit;
+}
+
+body.modo-dia .tierlist-cp-input {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+.tierlist-cp-preview-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tierlist-cp-swatch {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.tierlist-cp-presets {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+}
+
+.tierlist-preset-btn {
+    width: 100%;
+    height: 28px;
+    border-radius: 6px;
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+.tierlist-preset-btn:hover {
+    transform: scale(1.15);
+}
+
+.tierlist-cp-sliders {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tierlist-slider-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.tierlist-slider-row span:first-child {
+    width: 90px;
+}
+
+.tierlist-slider-row input[type="range"] {
+    flex: 1;
+    cursor: pointer;
+}
+
+.tierlist-slider-row span:last-child {
+    width: 40px;
+    text-align: right;
+}
+
+/* =========================================================
+   EDITOR DE ENCUADRE 1:1 Y FORMA INDIVIDUAL (MODAL)
+   ========================================================= */
+.tierlist-encuadre-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100000;
+}
+
+.tierlist-encuadre-card {
+    background: var(--color-tarjeta, rgba(25, 25, 25, 0.95));
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 18px;
+    padding: 22px;
+    width: 360px;
+    max-width: 92vw;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    color: var(--color-texto, #EDEDED);
+}
+
+body.modo-dia .tierlist-encuadre-card {
+    background: #FFFFFF;
+    border-color: rgba(0, 0, 0, 0.15);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.tierlist-encuadre-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+/* Selector individual de Forma */
+.tierlist-encuadre-forma-selector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+    text-align: center;
+}
+
+body.modo-dia .tierlist-encuadre-forma-selector {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.tierlist-encuadre-forma-label {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--color-texto, #EDEDED);
+}
+
+body.modo-dia .tierlist-encuadre-forma-label {
+    color: #000000;
+}
+
+.tierlist-forma-toggle {
+    display: inline-flex;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 20px;
+    padding: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.modo-dia .tierlist-forma-toggle {
+    background: rgba(0, 0, 0, 0.06);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+.tierlist-forma-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 16px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    background: transparent;
+    color: var(--color-texto, #EDEDED);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tierlist-forma-btn.activo {
+    background: var(--color-resaltado, #2ECC71);
+    color: #FFFFFF;
+    box-shadow: 0 2px 8px rgba(46, 204, 113, 0.35);
+}
+
+/* Visor de recorte 1:1 */
+.tierlist-encuadre-visor {
+    width: 260px;
+    height: 260px;
+    margin: 0 auto;
+    border: 2px solid var(--color-resaltado, #2ECC71);
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    background: #000000;
+    cursor: grab;
+    touch-action: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    transition: border-radius 0.25s ease;
+}
+
+.tierlist-encuadre-visor.es-circulo {
+    border-radius: 50%;
+}
+
+.tierlist-encuadre-visor:active {
+    cursor: grabbing;
+}
+
+.tierlist-encuadre-img {
+    position: absolute;
+    pointer-events: none;
+    transform-origin: center center;
+    user-select: none;
+}
+
+.tierlist-encuadre-ayuda {
+    text-align: center;
+    font-size: 0.78rem;
+    opacity: 0.8;
+}
+
+.tierlist-encuadre-zoom-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.tierlist-encuadre-zoom-slider {
+    flex: 1;
+    cursor: pointer;
+}
+
+.tierlist-modal-botones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.tierlist-btn-confirmar {
+    background: var(--color-resaltado, #2ECC71);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    padding: 9px 18px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.tierlist-btn-confirmar:hover {
+    background: #27ae60;
+    transform: translateY(-1px);
+}
+
+.tierlist-btn-cancelar {
+    background: transparent;
+    color: var(--color-texto, #EDEDED);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 9px 16px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+body.modo-dia .tierlist-btn-cancelar {
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+.tierlist-btn-cancelar:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* =========================================================
+   MODAL DE CONFIRMACIÓN LOT-LAB (LIMPIAR TABLERO)
+   ========================================================= */
+.tierlist-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100000;
+}
+
+.tierlist-confirm-card {
+    background: var(--color-tarjeta, rgba(25, 25, 25, 0.95));
+    border: 1.5px solid rgba(255, 255, 255, 0.15);
+    border-radius: 18px;
+    padding: 24px;
+    width: 420px;
+    max-width: 92vw;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+    text-align: center;
+    color: var(--color-texto, #EDEDED);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+body.modo-dia .tierlist-confirm-card {
+    background: #FFFFFF;
+    border-color: rgba(0, 0, 0, 0.15);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.tierlist-confirm-icono {
+    font-size: 2.4rem;
+}
+
+.tierlist-confirm-titulo {
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: var(--color-titulo, #EDEDED);
+}
+
+.tierlist-confirm-texto {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    opacity: 0.9;
+}
+
+.tierlist-btn-peligro {
+    background: #E53935;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    padding: 9px 18px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.tierlist-btn-peligro:hover {
+    background: #c62828;
+    transform: translateY(-1px);
+}
+
+.tierlist-confirm-card .tierlist-modal-botones {
+    justify-content: center;
+    margin-top: 10px;
+}
+
+/* Botón Deshacer */
+.tierlist-btn-deshacer {
+    border-color: rgba(241, 196, 15, 0.45);
+    color: #f1c40f;
+}
+
+.tierlist-btn-deshacer:hover {
+    border-color: #f1c40f;
+    background: rgba(241, 196, 15, 0.12);
+    color: #f39c12;
+}
+
+body.modo-dia .tierlist-btn-deshacer {
+    border-color: rgba(211, 84, 0, 0.45);
+    color: #d35400;
+}
+
+body.modo-dia .tierlist-btn-deshacer:hover {
+    border-color: #d35400;
+    background: rgba(211, 84, 0, 0.08);
+    color: #b94200;
+}
+
+/* Modal de Opciones de Limpieza */
+.tierlist-limpiar-opciones-card {
+    width: 490px;
+    max-width: 94vw;
+    text-align: left;
+    gap: 14px;
+}
+
+.tierlist-opciones-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tierlist-opcion-limpiar-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    color: var(--color-texto, #EDEDED);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+body.modo-dia .tierlist-opcion-limpiar-btn {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.12);
+    color: #111111;
+}
+
+.tierlist-opcion-limpiar-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--color-resaltado, #3498db);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+body.modo-dia .tierlist-opcion-limpiar-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+    border-color: var(--color-resaltado, #3498db);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+}
+
+.tierlist-opcion-limpiar-btn.tierlist-opcion-peligro:hover {
+    border-color: #E53935;
+    background: rgba(229, 57, 53, 0.14);
+}
+
+body.modo-dia .tierlist-opcion-limpiar-btn.tierlist-opcion-peligro:hover {
+    border-color: #E53935;
+    background: rgba(229, 57, 53, 0.08);
+}
+
+.tierlist-opcion-icono {
+    font-size: 1.8rem;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.tierlist-opcion-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tierlist-opcion-titulo {
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--color-titulo, #EDEDED);
+}
+
+body.modo-dia .tierlist-opcion-titulo {
+    color: #111111;
+}
+
+.tierlist-opcion-desc {
+    font-size: 0.82rem;
+    line-height: 1.4;
+    opacity: 0.85;
+}
+
+/* =========================================================
+   MODAL DE RECUPERACIÓN LOCAL DE TIER LIST
+   ========================================================= */
+.tierlist-recuperar-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100000;
+}
+
+.tierlist-recuperar-card {
+    background: var(--color-tarjeta, rgba(25, 25, 25, 0.95));
+    border: 1.5px solid var(--color-resaltado, #2ECC71);
+    border-radius: 18px;
+    padding: 24px;
+    width: 420px;
+    max-width: 92vw;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+    text-align: center;
+    color: var(--color-texto, #EDEDED);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.tierlist-recuperar-icono {
+    font-size: 2.5rem;
+}
+
+.tierlist-recuperar-titulo {
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: var(--color-titulo, #EDEDED);
+}
+
+.tierlist-recuperar-texto {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    opacity: 0.9;
+}
+
+.tierlist-recuperar-botones {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.tierlist-btn-recuperar {
+    background: var(--color-resaltado, #2ECC71);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.tierlist-btn-recuperar:hover {
+    background: #27ae60;
+    transform: translateY(-1px);
+}
+
+.tierlist-btn-empezar-nuevo {
+    background: var(--color-principal, #3A3A3A);
+    color: var(--color-texto, #EDEDED);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.tierlist-btn-empezar-nuevo:hover {
+    background: var(--color-secundario, #4A4A4A);
+}
+
+/* =========================================================
+   RESPONSIVE DESIGN (MÓVIL / TABLET)
+   ========================================================= */
+@media (max-width: 768px) {
+    .tierlist-contenedor {
+        padding: 4px 0 16px 0;
+        gap: 14px;
+    }
+
+    .tierlist-selector-titulo {
+        font-size: 1.3rem;
+    }
+
+    .tierlist-tablero-topbar {
+        gap: 8px;
+    }
+
+    .tierlist-topbar-fila1 {
+        flex-wrap: wrap;
+    }
+
+    .tierlist-titulo-input {
+        font-size: 1.15rem;
+        padding: 6px 10px;
+    }
+
+    .tierlist-acciones-grupo {
+        justify-content: center;
+    }
+
+    .tierlist-control-alcance {
+        padding: 4px 8px;
+        gap: 6px;
+    }
+
+    .tierlist-control-alcance-label {
+        font-size: 0.75rem;
+    }
+
+    .tierlist-switch-label {
+        font-size: 0.75rem;
+    }
+
+    .tierlist-control-forma {
+        padding: 4px 8px;
+        gap: 5px;
+    }
+
+    .tierlist-control-forma-label {
+        font-size: 0.75rem;
+    }
+
+    .tierlist-forma3-btn {
+        min-width: 24px;
+        height: 22px;
+        padding: 0 6px;
+        font-size: 0.72rem;
+    }
+
+    .tierlist-forma3-label {
+        font-size: 0.75rem;
+        min-width: 40px;
+    }
+
+    .tierlist-etiqueta-col {
+        width: 85px;
+        min-width: 75px;
+        padding: 6px;
+    }
+
+    .tierlist-etiqueta-texto {
+        font-size: 1rem;
+    }
+
+    .tierlist-ficha,
+    .tierlist-drag-ghost {
+        width: 58px;
+        height: 58px;
+    }
+
+    .tierlist-drop-indicador {
+        height: 54px;
+    }
+
+    .tierlist-zona-drop {
+        padding: 8px;
+        gap: 6px;
+        min-height: 74px;
+    }
+
+    .tierlist-fila {
+        min-height: 74px;
+    }
+
+    .tierlist-sin-clasificar-zona {
+        padding: 10px 8px;
+        gap: 6px;
+    }
+}
+
+/* =========================================================
+   TOOLTIP CON EL ESTILO REAL DE LOT-LAB (ESTADÍSTICAS SIMS 4)
+   ========================================================= */
+#tooltipOpciones.estatGraficoTooltip,
+#tooltipOpciones {
+    position: fixed;
+    z-index: 100000;
+    padding: 8px 14px;
+    background: rgba(20, 24, 33, 0.94);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: var(--radio-pequeño, 8px);
+    font-size: 0.84rem;
+    font-family: inherit;
+    pointer-events: none;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transform: translate(-50%, -120%);
+    transition: opacity 0.12s ease;
+    white-space: pre-line;
+    text-align: center;
+    line-height: 1.35;
+    max-width: none;
+}
+
+body.modo-dia #tooltipOpciones.estatGraficoTooltip,
+body.modo-dia #tooltipOpciones {
+    background: rgba(255, 255, 255, 0.96);
+    color: #111111;
+    border: 1px solid rgba(0, 0, 0, 0.16);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+body.tierlist-arrastrando-activo #tooltipOpciones {
+    display: none !important;
+}
+
+/* =========================================================
+   DESCARGO DE RESPONSABILIDAD (TIER LIST PERSONALIZADA)
+   Aviso de advertencia llamativo con borde rojo y alto contraste
+   ========================================================= */
+.tierlist-descargo-responsabilidad {
+    margin-top: 14px;
+    padding: 14px 18px;
+    background: #1e1416;
+    border: 2px solid #e74c3c;
+    border-radius: 12px;
+    box-shadow: 0 4px 18px rgba(231, 76, 60, 0.2);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: #ffffff !important;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+body.modo-dia .tierlist-descargo-responsabilidad {
+    background: #fff5f5;
+    border: 2px solid #e74c3c;
+    box-shadow: 0 4px 16px rgba(231, 76, 60, 0.12);
+    color: #000000 !important;
+}
+
+.tierlist-descargo-titulo {
+    font-weight: 800;
+    font-size: 0.95rem;
+    margin-bottom: 6px;
+    color: #ffffff !important;
+    letter-spacing: 0.2px;
+}
+
+body.modo-dia .tierlist-descargo-titulo {
+    color: #000000 !important;
+}
+
+.tierlist-descargo-texto {
+    font-size: 0.82rem;
+    color: #ffffff !important;
+    opacity: 1 !important;
+    line-height: 1.5;
+}
+
+body.modo-dia .tierlist-descargo-texto {
+    color: #000000 !important;
+    opacity: 1 !important;
+}
+
+/* =========================================================
+   MODO CAPTURA DE TIER LIST
+   Oculta controles de edición preservando ventana, título, tiers y descargo
+   ========================================================= */
+#ventanaTierList.tierlist-modo-captura .tierlist-btn-volver-selector,
+#ventanaTierList.tierlist-modo-captura .tierlist-acciones-grupo,
+#ventanaTierList.tierlist-modo-captura .tierlist-topbar-spacer,
+#ventanaTierList.tierlist-modo-captura .tierlist-etiqueta-controles,
+#ventanaTierList.tierlist-modo-captura .tierlist-tier-drag-handle,
+#ventanaTierList.tierlist-modo-captura .tierlist-ficha-eliminar,
+#ventanaTierList.tierlist-modo-captura .tierlist-ficha-encuadrar,
+#ventanaTierList.tierlist-modo-captura #btnSubirFotosInline,
+#ventanaTierList.tierlist-modo-captura #btnSubirFotosVacia,
+#ventanaTierList.tierlist-modo-captura .tierlist-add-tier-fila,
+#ventanaTierList.tierlist-modo-captura .tierlist-dropzone-personalizada,
+#ventanaTierList.tierlist-modo-captura .tierlist-sin-clasificar-wrap[data-vacia="true"] {
+    display: none !important;
+}
+
+#ventanaTierList.tierlist-modo-captura .tierlist-tablero-topbar {
+    justify-content: center !important;
+    padding: 6px 0 !important;
+}
+
+#ventanaTierList.tierlist-modo-captura .tierlist-topbar-fila1 {
+    justify-content: center !important;
+}
+
+#ventanaTierList.tierlist-modo-captura .tierlist-titulo-input {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    text-align: center !important;
+    pointer-events: none !important;
+    font-size: 1.35rem !important;
+}
+

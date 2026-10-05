@@ -72,6 +72,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // Inicializar Buscador de Trucos
     inicializarBuscadorTrucos();
 
+    // Reconstruir el índice cuando termine de cargarse la base de datos (solares, estadísticas, etc.)
+    document.addEventListener("datosCargados", () => {
+        construirIndiceTrucos();
+    });
+
 });
 
 /* =========================================================
@@ -82,22 +87,129 @@ let INDICE_TRUCOS = [];
 
 function normalizarTextoBusqueda(texto) {
     if (!texto) return "";
-    return texto
+    return String(texto)
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[¡!¿?.,:;\-_'"«»“”‘’(){}\[\]\\\/|@#$%^&*+=<>~`]/g, " ")
+        .replace(/\s+/g, " ")
         .trim();
 }
+
+function normalizarCompacto(texto) {
+    return normalizarTextoBusqueda(texto).replace(/\s+/g, "");
+}
+
+function extraerPacksEstadisticas(filas) {
+    if (!filas || !Array.isArray(filas) || filas.length === 0) return [];
+    if (typeof window.parsearFilasEstadisticas === "function") {
+        try {
+            const res = window.parsearFilasEstadisticas(filas);
+            if (Array.isArray(res) && res.length > 0) return res;
+        } catch (e) {}
+    }
+    const packs = [];
+    const COLS_POR_GRUPO = 6;
+    const cabecera = filas[0] || [];
+    let filasDatos = filas;
+    const textoFila0 = cabecera.join(" ").toLowerCase();
+    if (textoFila0.includes("fecha") || textoFila0.includes("nombre")) {
+        filasDatos = filas.slice(1);
+    }
+    const maxCols = Math.max(...filas.map(f => f.length));
+    const numGrupos = Math.ceil(maxCols / COLS_POR_GRUPO);
+
+    for (let g = 0; g < numGrupos; g++) {
+        const base = g * COLS_POR_GRUPO;
+        const tipoHeader = (cabecera[base + 2] || "").trim();
+
+        filasDatos.forEach(fila => {
+            const fecha = (fila[base + 0] || "").trim();
+            const nombreInterno = (fila[base + 1] || "").trim();
+            const colC = (fila[base + 2] || "").trim();
+            const precioRaw = (fila[base + 3] || "").trim();
+            const objetosRaw = (fila[base + 4] || "").trim();
+            const idFoto = (fila[base + 5] || "").trim();
+
+            if (!idFoto && !nombreInterno && !colC) return;
+            const colCLow = colC.toLowerCase();
+            if (["expansión", "contenido", "accesorios", "kits", "packs gratuitos", "juego base"].includes(colCLow)) return;
+
+            const id = idFoto || nombreInterno;
+            let nombre = colC || nombreInterno || id;
+            let tipoPack = tipoHeader || "Pack";
+
+            packs.push({
+                id: id,
+                nombre: nombre,
+                tipoPack: tipoPack,
+                fecha: fecha,
+                precio: precioRaw,
+                objetos: objetosRaw
+            });
+        });
+    }
+    return packs;
+}
+
+function calcularRelevancia(item, queryNorm, queryCompact) {
+    const titNorm = normalizarTextoBusqueda(item.titulo);
+    const codNorm = normalizarTextoBusqueda(item.codigo);
+    const catNorm = normalizarTextoBusqueda(item.categoria);
+    const descNorm = normalizarTextoBusqueda(item.descripcion);
+
+    const titComp = titNorm.replace(/\s+/g, "");
+    const codComp = codNorm.replace(/\s+/g, "");
+
+    let score = 0;
+
+    // Coincidencia exacta
+    if (titNorm === queryNorm) return 200;
+    if (codNorm === queryNorm) return 190;
+    if (queryCompact && codComp === queryCompact) return 185;
+
+    // Título empieza por la búsqueda o palabra completa exacta
+    if (titNorm.startsWith(queryNorm)) score = Math.max(score, 160);
+    const palabrasTitulo = titNorm.split(" ");
+    if (palabrasTitulo.includes(queryNorm)) score = Math.max(score, 150);
+
+    // Tolerancia singular/plural para consultas de 3 o más caracteres (ej: "días" <-> "día")
+    const qStem = (queryNorm.length > 3 && queryNorm.endsWith("s")) ? queryNorm.slice(0, -1) : (queryNorm + "s");
+    if (palabrasTitulo.includes(qStem)) score = Math.max(score, 145);
+    if (titNorm.startsWith(qStem)) score = Math.max(score, 140);
+
+    // Código empieza por la búsqueda
+    if (codNorm.startsWith(queryNorm)) score = Math.max(score, 130);
+
+    // Título contiene la consulta o el stem
+    if (titNorm.includes(queryNorm)) score = Math.max(score, 100);
+    if (titNorm.includes(qStem)) score = Math.max(score, 95);
+    if (queryCompact && titComp.includes(queryCompact)) score = Math.max(score, 90);
+
+    // Código contiene la consulta
+    if (codNorm.includes(queryNorm)) score = Math.max(score, 80);
+    if (queryCompact && codComp.includes(queryCompact)) score = Math.max(score, 75);
+
+    // Categoría contiene la consulta
+    if (catNorm.includes(queryNorm)) score = Math.max(score, 50);
+
+    // Descripción contiene la consulta
+    if (descNorm.includes(queryNorm)) score = Math.max(score, 25);
+    if (queryCompact && descNorm.replace(/\s+/g, "").includes(queryCompact)) score = Math.max(score, 20);
+
+    return score;
+}
+
 
 function construirIndiceTrucos() {
     INDICE_TRUCOS = [];
 
     const secciones = [
-        { idVentana: "ventanaTrucos", categoria: "🕹️ General" },
-        { idVentana: "ventanaTrucosConstruir", categoria: "🏗️ Construir" },
-        { idVentana: "ventanaTrucosCAS", categoria: "💇 CAS" },
-        { idVentana: "ventanaTrucosVivir", categoria: "🏠 Modo Vivir" },
-        { idVentana: "ventanaTrucosPacks", categoria: "📦 Packs" }
+        { idVentana: "ventanaTrucos", categoria: "🕹️ General", nodoId: "trucos-inicio", ramaId: "trucos" },
+        { idVentana: "ventanaTrucosConstruir", categoria: "🏗️ Construir", nodoId: "trucos-construir", ramaId: "trucos" },
+        { idVentana: "ventanaTrucosCAS", categoria: "💇 CAS", nodoId: "trucos-cas", ramaId: "trucos" },
+        { idVentana: "ventanaTrucosVivir", categoria: "🏠 Modo Vivir", nodoId: "trucos-vivir", ramaId: "trucos" },
+        { idVentana: "ventanaTrucosPacks", categoria: "📦 Packs", nodoId: "trucos-packs", ramaId: "trucos" }
     ];
 
     let contador = 0;
@@ -157,12 +269,206 @@ function construirIndiceTrucos() {
                 descripcion: descripcion,
                 categoria: sec.categoria,
                 idVentana: sec.idVentana,
+                nodoId: sec.nodoId,
+                ramaId: sec.ramaId,
                 elemento: el
             });
         });
     });
 
-    console.log(`✔ Índice de trucos construido con ${INDICE_TRUCOS.length} entradas.`);
+    // Indexar dinámicamente el resto de secciones y ventanas de la web (para ámbito 'todo' y páginas fuera de trucos)
+    const todasLasVentanas = document.querySelectorAll(".ventana");
+    todasLasVentanas.forEach(vent => {
+        if (!vent.id || secciones.some(s => s.idVentana === vent.id)) return;
+
+        const h2 = vent.querySelector(".cabeceraVentana h2");
+        const titVentana = h2 ? h2.textContent.trim() : vent.id.replace("ventana", "");
+        let ramaId = vent.getAttribute("data-rama");
+        if (!ramaId) {
+            if (vent.id.startsWith("ventanaTrucos")) ramaId = "trucos";
+            else if (vent.id === "ventanaAcercaDe") ramaId = "inicio";
+            else if (vent.id.startsWith("ventanaReto")) ramaId = "retos";
+            else if (vent.id.includes("Generador")) ramaId = "generadores";
+            else if (vent.id === "ventanaBuscador" || vent.id === "ventanaResultados" || vent.id === "ventanaFichaSolar") ramaId = "solares";
+            else ramaId = vent.id.replace("ventana", "").toLowerCase();
+        }
+        const nodoId = vent.getAttribute("data-nodo-id") || vent.id;
+
+        // Añadir la sección misma como destino navegable
+        if (titVentana) {
+            contador++;
+            INDICE_TRUCOS.push({
+                id: `web_idx_${contador}`,
+                codigo: "",
+                titulo: titVentana,
+                descripcion: `Ir a la sección de ${titVentana}`,
+                categoria: "🌐 " + titVentana,
+                idVentana: vent.id,
+                nodoId: nodoId,
+                ramaId: ramaId,
+                elemento: vent
+            });
+        }
+
+        // Buscar elementos internos: .truco-copiable, h3, h4, .boton-lotlab
+        const subEls = vent.querySelectorAll("h3, h4, .truco-copiable, .boton-lotlab");
+        subEls.forEach(el => {
+            let codigo = "";
+            let titulo = "";
+            let descripcion = "";
+
+            if (el.classList.contains("truco-copiable")) {
+                codigo = el.textContent.trim();
+                titulo = codigo;
+            } else if (el.tagName === "H3" || el.tagName === "H4") {
+                const cop = el.querySelector(".truco-copiable");
+                if (cop) {
+                    codigo = cop.textContent.trim();
+                    titulo = el.textContent.trim();
+                } else {
+                    titulo = el.textContent.trim();
+                }
+            } else if (el.classList.contains("boton-lotlab")) {
+                titulo = el.textContent.trim();
+            }
+
+            if (!titulo && !codigo) return;
+
+            let sig = el.nextElementSibling;
+            while (sig && sig.tagName === "P" && !descripcion) {
+                descripcion = sig.textContent.trim();
+                sig = sig.nextElementSibling;
+            }
+
+            const queryKey = normalizarTextoBusqueda(`${vent.id}_${codigo || titulo}`);
+            const existe = INDICE_TRUCOS.some(item => normalizarTextoBusqueda(`${item.idVentana}_${item.codigo || item.titulo}`) === queryKey);
+            if (existe) return;
+
+            contador++;
+            INDICE_TRUCOS.push({
+                id: `web_sub_idx_${contador}`,
+                codigo: codigo,
+                titulo: titulo,
+                descripcion: descripcion,
+                categoria: titVentana,
+                idVentana: vent.id,
+                nodoId: nodoId,
+                ramaId: ramaId,
+                elemento: el
+            });
+        });
+    });
+
+    // ── Indexar solares y fichas de solar (database.solares) ──
+    if (typeof database !== "undefined" && Array.isArray(database.solares) && database.solares.length > 0) {
+        // Entrada general a fichas de solar
+        contador++;
+        INDICE_TRUCOS.push({
+            id: "solar_general",
+            tipoResultado: "ventana",
+            codigo: "",
+            titulo: "Fichas de Solar - Buscador de Solares",
+            descripcion: "Explora y consulta las fichas de solares de todos los mundos de Los Sims 4",
+            categoria: "🏡 Fichas de Solar",
+            idVentana: "ventanaBuscador",
+            nodoId: "solares",
+            ramaId: "solares",
+            elemento: document.getElementById("ventanaBuscador") || null
+        });
+
+        database.solares.forEach(solar => {
+            if (!solar || !solar.nombre) return;
+            contador++;
+            const desc = [
+                solar.mundo || "",
+                solar.barrio || "",
+                solar.tipoSolar || "",
+                solar.tamaño ? `${solar.tamaño}` : "",
+                solar.nombrePack ? `(${solar.nombrePack})` : ""
+            ].filter(Boolean).join(" • ");
+
+            INDICE_TRUCOS.push({
+                id: `solar_${solar.id}`,
+                idSolar: solar.id,
+                tipoResultado: "solar",
+                codigo: solar.tamaño || "",
+                titulo: solar.nombre,
+                descripcion: desc,
+                categoria: `🏡 Ficha de Solar: ${solar.mundo || 'Solar'}`,
+                idVentana: "ventanaFichaSolar",
+                nodoId: "solares",
+                ramaId: "solares",
+                elemento: null
+            });
+        });
+    }
+
+    // ── Indexar sección de Estadísticas Sims 4 y sus packs/datos ──
+    const ventEstad = document.getElementById("ventanaEstadisticas");
+    contador++;
+    INDICE_TRUCOS.push({
+        id: "estadisticas_general",
+        tipoResultado: "estadisticas",
+        codigo: "",
+        titulo: "Estadísticas Sims 4",
+        descripcion: "Gráficos de lanzamientos, precios, tipos de packs y datos históricos de Los Sims 4",
+        categoria: "📊 Estadísticas Sims 4",
+        idVentana: "ventanaEstadisticas",
+        nodoId: "estadisticas",
+        ramaId: "datos",
+        elemento: ventEstad || null
+    });
+
+    const opcionesEstad = [
+        { titulo: "Lista de Packs - Estadísticas Sims 4", desc: "Ver tabla completa de lanzamientos, precios y objetos de todos los packs" },
+        { titulo: "Gráficos de Lanzamientos - Estadísticas Sims 4", desc: "Evolución temporal de expansiones, packs de contenido y kits a lo largo de los años" },
+        { titulo: "Precios y Objetos por Pack - Estadísticas", desc: "Análisis comparativo de contenido y precio de packs de Los Sims 4" }
+    ];
+    opcionesEstad.forEach((op, opIdx) => {
+        contador++;
+        INDICE_TRUCOS.push({
+            id: `estad_op_${opIdx}`,
+            tipoResultado: "estadisticas",
+            codigo: "",
+            titulo: op.titulo,
+            descripcion: op.desc,
+            categoria: "📊 Estadísticas Sims 4",
+            idVentana: "ventanaEstadisticas",
+            nodoId: "estadisticas",
+            ramaId: "datos",
+            elemento: ventEstad || null
+        });
+    });
+
+    // Indexar todos los packs de estadísticas desde database.estadisticasSims4
+    let filasEstad = (typeof database !== "undefined" && Array.isArray(database.estadisticasSims4)) ? database.estadisticasSims4 : [];
+    if (filasEstad.length > 0) {
+        try {
+            const packsEstad = (window.ESTAD && window.ESTAD.packsOriginales && window.ESTAD.packsOriginales.length > 0)
+                ? window.ESTAD.packsOriginales
+                : extraerPacksEstadisticas(filasEstad);
+            
+            packsEstad.forEach(p => {
+                if (!p || !p.nombre) return;
+                contador++;
+                INDICE_TRUCOS.push({
+                    id: `pack_estad_${p.id}`,
+                    tipoResultado: "estadisticas",
+                    codigo: p.id || p.codigoInterno || "",
+                    titulo: `${p.nombre} (${p.tipoPack || 'Pack'})`,
+                    nombreSolo: p.nombre,
+                    descripcion: `Lanzamiento: ${p.fecha || p.anioLanzamiento || 'N/D'} • ${p.precio ? p.precio + (String(p.precio).includes('€') ? '' : '€') : 'Gratis'} • ${p.objetos ? p.objetos + ' objetos' : ''}`,
+                    categoria: `📊 Estadísticas: ${p.tipoPack || 'Pack'}`,
+                    idVentana: "ventanaEstadisticas",
+                    nodoId: "estadisticas",
+                    ramaId: "datos",
+                    elemento: ventEstad || null
+                });
+            });
+        } catch(e) {}
+    }
+
+    console.log(`✔ Índice web y trucos construido con ${INDICE_TRUCOS.length} entradas.`);
 }
 
 function inicializarBuscadorTrucos() {
@@ -178,20 +484,41 @@ function inicializarBuscadorTrucos() {
 
         if (!input || !contenedorResultados) return;
 
+        const ambito = input.getAttribute("data-ambito") || contenedor.getAttribute("data-ambito") || "arbol";
+        const ventanaActual = contenedor.closest(".ventana");
+        const idVentanaActual = ventanaActual ? ventanaActual.id : null;
+
+        let ramaContenedor = contenedor.getAttribute("data-rama") || (ventanaActual ? ventanaActual.getAttribute("data-rama") : null);
+        if (!ramaContenedor && ventanaActual && ventanaActual.id) {
+            if (ventanaActual.id.startsWith("ventanaTrucos")) {
+                ramaContenedor = "trucos";
+            } else if (ventanaActual.id === "ventanaAcercaDe") {
+                ramaContenedor = "inicio";
+            } else if (ventanaActual.id.startsWith("ventanaReto")) {
+                ramaContenedor = "retos";
+            } else if (ventanaActual.id.includes("Generador")) {
+                ramaContenedor = "generadores";
+            } else if (ventanaActual.id === "ventanaBuscador" || ventanaActual.id === "ventanaResultados" || ventanaActual.id === "ventanaFichaSolar") {
+                ramaContenedor = "solares";
+            } else {
+                ramaContenedor = ventanaActual.id.replace("ventana", "").toLowerCase();
+            }
+        }
+
         let indiceTecladoActivo = -1;
 
         function renderizarResultados(coincidencias) {
             if (coincidencias.length === 0) {
                 contenedorResultados.innerHTML = `
                     <div style="padding: 16px; text-align: center; opacity: 0.7; font-size: 0.95rem;">
-                        🔍 No se encontraron trucos que coincidan con la búsqueda.
+                        🔍 No se encontraron resultados que coincidan con la búsqueda.
                     </div>`;
                 contenedorResultados.style.display = "block";
                 return;
             }
 
             let html = "";
-            coincidencias.slice(0, 10).forEach((item, idx) => {
+            coincidencias.slice(0, 18).forEach((item, idx) => {
                 html += `
                     <div class="itemResultadoTruco" data-idx="${idx}" id="item_res_${idx}">
                         <div class="infoResultadoTruco">
@@ -229,6 +556,7 @@ function inicializarBuscadorTrucos() {
 
         input.addEventListener("input", () => {
             const query = normalizarTextoBusqueda(input.value);
+            const queryCompact = normalizarCompacto(input.value);
 
             if (btnLimpiar) {
                 btnLimpiar.style.display = query ? "block" : "none";
@@ -239,17 +567,45 @@ function inicializarBuscadorTrucos() {
                 return;
             }
 
-            const resultados = INDICE_TRUCOS.filter(item => {
-                const normCodigo = normalizarTextoBusqueda(item.codigo);
-                const normTitulo = normalizarTextoBusqueda(item.titulo);
-                const normDesc = normalizarTextoBusqueda(item.descripcion);
-                const normCat = normalizarTextoBusqueda(item.categoria);
+            const resultadosConScore = [];
 
-                return normCodigo.includes(query) ||
-                       normTitulo.includes(query) ||
-                       normDesc.includes(query) ||
-                       normCat.includes(query);
+            INDICE_TRUCOS.forEach(item => {
+                // Filtro de ámbito (Scope):
+                // 1. ÁMBITO: Página actual ("actual")
+                if (ambito === "actual") {
+                    if (idVentanaActual && item.idVentana && item.idVentana !== idVentanaActual) {
+                        return;
+                    }
+                    if (ventanaActual && item.elemento && !ventanaActual.contains(item.elemento)) {
+                        return;
+                    }
+                }
+                // 2. ÁMBITO: Árbol / Rama ("arbol")
+                else if (ambito === "arbol") {
+                    if (ramaContenedor && item.ramaId && item.ramaId !== ramaContenedor) {
+                        return;
+                    }
+                }
+                // 3. ÁMBITO: Toda la web / Global ("todo" o "global")
+                else if (ambito === "todo" || ambito === "global") {
+                    // No se filtra por rama ni por ventana: búsqueda global
+                }
+                // 4. Ámbito por identificador específico
+                else if (ambito) {
+                    if (item.nodoId !== ambito && item.ramaId !== ambito && item.idVentana !== ambito) {
+                        return;
+                    }
+                }
+
+                const score = calcularRelevancia(item, query, queryCompact);
+                if (score > 0) {
+                    resultadosConScore.push({ item, score });
+                }
             });
+
+            // Ordenar por relevancia descendente: títulos/packs y códigos exactos primero
+            resultadosConScore.sort((a, b) => b.score - a.score);
+            const resultados = resultadosConScore.map(r => r.item);
 
             indiceTecladoActivo = -1;
             renderizarResultados(resultados);
@@ -312,7 +668,37 @@ function inicializarBuscadorTrucos() {
 function irATruco(item) {
     document.querySelectorAll(".desplegableResultadosTrucos").forEach(d => d.style.display = "none");
 
-    // 1. Abrir la ventana destino si es diferente
+    // 1. Redirección específica para Fichas de Solar
+    if (item.tipoResultado === "solar" && item.idSolar) {
+        if (typeof abrirFichaSolar === "function") {
+            abrirFichaSolar(item.idSolar);
+        } else if (typeof abrirVentana === "function") {
+            abrirVentana("ventanaFichaSolar", true);
+        }
+        return;
+    }
+
+    // 2. Redirección específica para Estadísticas Sims 4
+    if (item.idVentana === "ventanaEstadisticas" || item.tipoResultado === "estadisticas") {
+        if (typeof abrirVentana === "function") {
+            abrirVentana("ventanaEstadisticas", true);
+        }
+        if (typeof abrirEstadisticas === "function") {
+            abrirEstadisticas();
+        }
+        if (item.nombreSolo) {
+            setTimeout(() => {
+                const inputFiltro = document.getElementById("estatBuscarTexto");
+                if (inputFiltro) {
+                    inputFiltro.value = item.nombreSolo;
+                    inputFiltro.dispatchEvent(new Event("input"));
+                }
+            }, 300);
+        }
+        return;
+    }
+
+    // 3. Abrir la ventana destino si es diferente
     if (typeof abrirVentana === "function") {
         abrirVentana(item.idVentana);
     }
@@ -455,10 +841,20 @@ function restaurarTrucosV1(param) {
             });
         }
 
-        return true;
     } catch (e) {
         console.error("Error al restaurar trucos:", e);
         return false;
     }
 }
-window.restaurarTrucosV1 = restaurarTrucosV1;
+window.restaurarTrucosV1 = restaurarTrucosV1;
+window.construirIndiceTrucos = construirIndiceTrucos;
+window.inicializarBuscadorTrucos = inicializarBuscadorTrucos;
+window.normalizarTextoBusqueda = normalizarTextoBusqueda;
+window.irATruco = irATruco;
+window.LOTLAB_BUSCADOR = {
+    normalizar: normalizarTextoBusqueda,
+    construirIndice: construirIndiceTrucos,
+    inicializar: inicializarBuscadorTrucos,
+    irATruco: irATruco,
+    getIndice: function() { return INDICE_TRUCOS; }
+};

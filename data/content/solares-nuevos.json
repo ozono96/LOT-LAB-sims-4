@@ -1,0 +1,22 @@
+{
+  "id": "solares-nuevos",
+  "titulo": "solares nuevos",
+  "slug": "solares-nuevos",
+  "ruta": "solares/solares-nuevos",
+  "estado": "borrador",
+  "creadoEl": "2026-10-04T08:54:47.019Z",
+  "modificadoEl": "2026-10-04T08:54:47.019Z",
+  "bloques": [
+    {
+      "id": "b_1791104087019_tit",
+      "tipo": "titulo",
+      "contenido": "solares nuevos",
+      "nivel": 1
+    },
+    {
+      "id": "b_1791104087019_txt",
+      "tipo": "texto",
+      "contenido": "Contenido de solares nuevos. Puedes editar este texto o añadir nuevos bloques."
+    }
+  ]
+}

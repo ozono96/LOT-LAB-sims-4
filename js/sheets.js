@@ -1,29 +1,10 @@
-let _resolverAutorizacion = null;
-const _promesaAutorizacion = new Promise((resolve) => {
-    _resolverAutorizacion = resolve;
-});
-
-window.marcarAppAutorizada = function () {
-    if (typeof _resolverAutorizacion === "function") {
-        _resolverAutorizacion(true);
-        _resolverAutorizacion = null;
-    }
-};
-
-
-
-
-
 async function iniciarBaseDatos() {
-    const autorizada = await _promesaAutorizacion;
-
-    if (!autorizada) {
-        console.warn("[LOT-LAB] Acceso bloqueado: La aplicación no está autorizada.");
-        return;
-    }
 
     try {
-        const respuesta = await fetch("data/database.json");
+        const versionParam = (window.CONFIG?.VERSION && window.CONFIG?.BUILD)
+            ? `?v=${window.CONFIG.VERSION}.${window.CONFIG.BUILD}`
+            : "";
+        const respuesta = await fetch("data/database.json" + versionParam);
         if (!respuesta.ok) {
             throw new Error(`HTTP ${respuesta.status}`);
         }
@@ -73,7 +54,11 @@ async function iniciarBaseDatos() {
 
     document.dispatchEvent(new Event("datosCargados"));
 }
-window.iniciarBaseDatosSegura = iniciarBaseDatos;
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", iniciarBaseDatos);
+} else {
+    iniciarBaseDatos();
+}
 
 // ── Mapa de iconos de packs ──────────────────────────────────
 // Construye database.iconosPacks: { "nombre pack": { ruta, id } }

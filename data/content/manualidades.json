@@ -1,0 +1,22 @@
+{
+  "id": "manualidades",
+  "titulo": "manualidades",
+  "slug": "manualidades",
+  "estado": "publicado",
+  "ruta": "juegos/manualidades",
+  "creadoEl": "2026-10-04T09:33:18.442Z",
+  "modificadoEl": "2026-10-04T09:33:21.707Z",
+  "bloques": [
+    {
+      "id": "b_1791106398442_tit",
+      "tipo": "titulo",
+      "contenido": "manualidades",
+      "nivel": 2
+    },
+    {
+      "id": "b_1791106398442_txt",
+      "tipo": "texto",
+      "contenido": "Contenido de manualidades. Puedes editar este texto o añadir nuevos bloques desssde la paleta."
+    }
+  ]
+}

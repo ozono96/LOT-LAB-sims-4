@@ -48,6 +48,9 @@ const MAPA_RUTAS = {
     "about": "ventanaAcercaDe",
 
     "buscador": "ventanaBuscador",
+    "buscador-solares": "ventanaBuscador",
+    "listado": "ventanaListado",
+    "listado-solares": "ventanaListado",
     "filtrador": "ventanaBuscador",
     "solares": "ventanaBuscador",
     "buscar": "ventanaBuscador",
@@ -68,6 +71,9 @@ const MAPA_RUTAS = {
     "ruleta-colores": "ventanaRuletaColor",
     "colores": "ventanaRuletaColor",
 
+    "dados": "ventanaDados",
+    "tirador-dados": "ventanaDados",
+
     "temporizador": "ventanaTemporizador",
     "timer": "ventanaTemporizador",
     "tiempo": "ventanaTemporizador",
@@ -75,6 +81,7 @@ const MAPA_RUTAS = {
     "habilidades": "ventanaRetos",
     "habilidad": "ventanaRetos",
     "habilidades-packs": "ventanaRetos",
+    "habilidades-azar": "ventanaHabilidadesGenerador",
     "habilidades-generador": "ventanaHabilidadesGenerador",
 
     "packs-azar": "ventanaRetos",
@@ -86,6 +93,7 @@ const MAPA_RUTAS = {
     "trucos": "ventanaTrucos",
     "truco": "ventanaTrucos",
     "cheats": "ventanaTrucos",
+    "trucos-inicio": "ventanaTrucos",
     "trucos-construir": "ventanaTrucosConstruir",
     "trucos-cas": "ventanaTrucosCAS",
     "trucos-vivir": "ventanaTrucosVivir",
@@ -96,8 +104,18 @@ const MAPA_RUTAS = {
 
     "resultados": "ventanaResultados",
     "listado": "ventanaListado",
+    "listado-solares": "ventanaListado",
+    "buscador-solares": "ventanaBuscador",
     "aleatorio": "ventanaAleatorio",
-    "ficha-solar": "ventanaFichaSolar"
+    "ficha-solar": "ventanaFichaSolar",
+    "tier-list": "ventanaTierList",
+    "tierlist": "ventanaTierList",
+    "tier-list/mundos": "ventanaTierList",
+    "tier-list/packs": "ventanaTierList",
+    "tier-list/personalizada": "ventanaTierList",
+    "tierlist/mundos": "ventanaTierList",
+    "tierlist/packs": "ventanaTierList",
+    "tierlist/personalizada": "ventanaTierList"
 };
 
 const VENTANA_A_SLUG = {
@@ -108,6 +126,7 @@ const VENTANA_A_SLUG = {
     "ventanaRetoResultado": "reto-generado",
     "ventanaRuletaDesastres": "ruleta-desastres",
     "ventanaRuletaColor": "ruleta-color",
+    "ventanaDados": "dados",
     "ventanaTemporizador": "temporizador",
     "ventanaHabilidadesGenerador": "habilidades-generador",
     "ventanaPacksGenerador": "packs-generador",
@@ -121,7 +140,8 @@ const VENTANA_A_SLUG = {
     "ventanaResultados": "resultados",
     "ventanaListado": "listado",
     "ventanaAleatorio": "aleatorio",
-    "ventanaFichaSolar": "ficha-solar"
+    "ventanaFichaSolar": "ficha-solar",
+    "ventanaTierList": "tier-list"
 };
 
 window.ventanaAnterior = "ventanaAcercaDe";
@@ -549,9 +569,115 @@ function procesarRutaURL() {
         return;
     }
 
+    // ── Ruta dinámica para Tier List (#tier-list/v1/<token>) ──
+    if (slug.startsWith("tier-list/v1/") || slug.startsWith("tierlist/v1/")) {
+        const prefijo = slug.startsWith("tier-list/v1/") ? "tier-list/v1/" : "tierlist/v1/";
+        const token = rawSlug.substring(prefijo.length).trim();
+        const procesarTierList = () => {
+            if (window.TierListCore && typeof window.TierListCore.deserializarEstadoURL === "function") {
+                window.TierListCore.deserializarEstadoURL(token);
+            }
+            abrirVentana("ventanaTierList", false);
+            if (typeof window.inicializarTierList === "function") {
+                window.inicializarTierList();
+            }
+        };
+        if (typeof database === "undefined" || !Array.isArray(database.mundos) || database.mundos.length === 0) {
+            document.addEventListener("datosCargados", procesarTierList, { once: true });
+        } else {
+            procesarTierList();
+        }
+        return;
+    }
+    // ── Rutas normales de navegación para Tier List ──
+    const matchTierListModo = slug.match(/^tier-?list\/(mundos|packs|personalizada)$/);
+    if (matchTierListModo) {
+        const modo = matchTierListModo[1];
+        const procesarModo = () => {
+            if (window.EstadoTierList) {
+                window.EstadoTierList.modo = modo;
+                window.EstadoTierList.pantalla = "tablero";
+                if (modo !== "personalizada" && window.TierListCore) {
+                    window.TierListCore.sincronizarElementosDisponibles(modo);
+                }
+            }
+            abrirVentana("ventanaTierList", false);
+            if (typeof window.inicializarTierList === "function") {
+                window.inicializarTierList();
+            }
+            if (window.TierListUI && typeof window.TierListUI.renderizarTierList === "function") {
+                window.TierListUI.renderizarTierList();
+            }
+        };
+        if (typeof database === "undefined" || !Array.isArray(database.mundos) || database.mundos.length === 0) {
+            document.addEventListener("datosCargados", procesarModo, { once: true });
+        } else {
+            procesarModo();
+        }
+        return;
+    }
+
+    if (slug === "tier-list" || slug === "tierlist") {
+        const procesarSelector = () => {
+            if (window.EstadoTierList) {
+                window.EstadoTierList.pantalla = "selector";
+            }
+            abrirVentana("ventanaTierList", false);
+            if (typeof window.inicializarTierList === "function") {
+                window.inicializarTierList();
+            }
+            if (window.TierListUI && typeof window.TierListUI.renderizarTierList === "function") {
+                window.TierListUI.renderizarTierList();
+            }
+        };
+        if (typeof database === "undefined" || !Array.isArray(database.mundos) || database.mundos.length === 0) {
+            document.addEventListener("datosCargados", procesarSelector, { once: true });
+        } else {
+            procesarSelector();
+        }
+        return;
+    }
+
+    // Primero: Comprobar si el slug coincide con alguna página editable en ITEMS_ESTRUCTURA_SITIO
+    // PERO solo si NO existe ya una ventana hardcoded para este slug en MAPA_RUTAS.
+    // Las ventanas hardcoded (trucos, estadísticas, etc.) tienen prioridad sobre el árbol editable.
+    const ventanaHardcoded = MAPA_RUTAS[slug];
+    const esVentanaHardcoded = ventanaHardcoded && VENTANAS_HARDCODED.has(ventanaHardcoded);
+
+    if (!esVentanaHardcoded) {
+        let itemEditable = window.ITEMS_ESTRUCTURA_SITIO?.find(it => it.ruta === slug || it.id === slug);
+        if (!itemEditable && slug.includes("/")) {
+            const partes = slug.split("/");
+            const lastPart = partes[partes.length - 1];
+            itemEditable = window.ITEMS_ESTRUCTURA_SITIO?.find(it => it.id === lastPart || it.ruta === slug);
+        }
+        if (itemEditable) {
+            // Bloquear acceso público a páginas que no están publicadas.
+            // Borrador y Oculta se tratan igual que ruta inexistente para el visitante.
+            const estadoEditable = itemEditable.estado || "";
+            const esPublicada = (estadoEditable === "publicado" || estadoEditable === "publicada");
+            if (!esPublicada) {
+                mostrarError404(slug);
+                return;
+            }
+            if (typeof abrirPaginaEditable === "function") {
+                abrirPaginaEditable(itemEditable, false);
+                return;
+            }
+        }
+    }
+
     const idVentana = MAPA_RUTAS[slug];
 
     if (idVentana) {
+        if (idVentana.startsWith("ventana_pag_")) {
+            const pageId = idVentana.replace("ventana_pag_", "");
+            const it = window.ITEMS_ESTRUCTURA_SITIO?.find(i => i.id === pageId);
+            if (it && typeof cargarContenidoPaginaEditable === "function") {
+                cargarContenidoPaginaEditable(it, idVentana);
+            }
+        }
+
         if (slug === "packs-azar") {
             window.proximaVentanaTrasPacks = "ventanaPacksGenerador";
         } else if (slug === "habilidades" || slug === "habilidades-packs" || slug === "habilidad") {
@@ -682,6 +808,10 @@ function abrirVentana(id, esClickUsuario = false, esNavegacionHistorial = false)
         window.renderizarPacksRetos();
     }
 
+    if (id === "ventanaTierList" && typeof window.inicializarTierList === "function") {
+        window.inicializarTierList();
+    }
+
     // 2. Sincronizar URL hash de forma segura
     // usarPushState = true cuando el usuario navega voluntariamente (no desde popstate ni carga inicial)
     const _usarPush = !esNavegacionHistorial && esClickUsuario;
@@ -731,6 +861,25 @@ function abrirVentana(id, esClickUsuario = false, esNavegacionHistorial = false)
             const slugActual = (window.location.hash || "").replace(/^[#/]+/, "").trim().toLowerCase();
             if (!slugActual.startsWith("estadisticas/v1/")) {
                 actualizarHashURL(VENTANA_A_SLUG[id] || "estadisticas", _usarPush);
+            }
+        } else if (id === "ventanaTierList") {
+            const slugActual = (window.location.hash || "").replace(/^[#/]+/, "").trim().toLowerCase();
+            if (!slugActual.startsWith("tier-list/v1/") && !slugActual.startsWith("tierlist/v1/")) {
+                let slugDestino = "tier-list";
+                const estado = window.EstadoTierList;
+                if (estado && estado.pantalla === "tablero") {
+                    if (estado.modo === "personalizada") {
+                        slugDestino = "tier-list/personalizada";
+                    } else if (window.TierListCore && typeof window.TierListCore.serializarEstadoURL === "function") {
+                        const token = window.TierListCore.serializarEstadoURL();
+                        slugDestino = token ? ("tier-list/v1/" + token) : ("tier-list/" + estado.modo);
+                    } else if (estado.modo === "mundos") {
+                        slugDestino = "tier-list/mundos";
+                    } else if (estado.modo === "packs") {
+                        slugDestino = "tier-list/packs";
+                    }
+                }
+                actualizarHashURL(slugDestino, _usarPush);
             }
         } else if (id === "ventanaTrucos") {
             const slugActual = (window.location.hash || "").replace(/^[#/]+/, "").trim().toLowerCase();
@@ -884,9 +1033,11 @@ function ejecutarAccionHerramienta(idHerramienta) {
             abrirVentana("ventanaAcercaDe", true);
             break;
         case "buscador":
+        case "buscador-solares":
             abrirVentana("ventanaBuscador", true);
             break;
         case "listado":
+        case "listado-solares":
             abrirVentana("ventanaListado", true);
             break;
         case "dados":
@@ -927,8 +1078,37 @@ function ejecutarAccionHerramienta(idHerramienta) {
                 abrirEstadisticas();
             }
             break;
-        default:
+        case "tier-list":
+            abrirVentana("ventanaTierList", true);
+            if (typeof window.inicializarTierList === "function") {
+                window.inicializarTierList();
+            }
+            break;
+        default: {
+            let item = window.ITEMS_ESTRUCTURA_SITIO?.find(it => it.id === idHerramienta || it.ruta === idHerramienta);
+            if (!item && idHerramienta && idHerramienta.includes("/")) {
+                const partes = idHerramienta.split("/");
+                const last = partes[partes.length - 1];
+                item = window.ITEMS_ESTRUCTURA_SITIO?.find(it => it.id === last || it.ruta === idHerramienta);
+            }
+            if (item && typeof abrirPaginaEditable === "function") {
+                // Bloquear acceso público a páginas que no están publicadas.
+                const estadoItem = item.estado || "";
+                const esPublicadaItem = (estadoItem === "publicado" || estadoItem === "publicada");
+                if (!esPublicadaItem) {
+                    mostrarError404(idHerramienta);
+                    return;
+                }
+                abrirPaginaEditable(item, true);
+                return;
+            }
+            if (MAPA_RUTAS[idHerramienta]) {
+                const targetVentana = MAPA_RUTAS[idHerramienta];
+                abrirVentana(targetVentana, true);
+                return;
+            }
             console.warn("Herramienta no implementada o desconocida:", idHerramienta);
+        }
     }
 }
 window.ejecutarAccionHerramienta = ejecutarAccionHerramienta;
@@ -956,34 +1136,88 @@ function obtenerRegistro() {
 // ─── GESTIÓN DE CATEGORÍA ACTIVA EN NAVEGACIÓN CLÁSICA ─────────────────
 let categoriaClasicaActiva = "inicio";
 
+const MAPA_VENTANA_A_TOOL = {
+    "ventanaAcercaDe": "acerca-de",
+    "ventanaBuscador": "buscador",
+    "ventanaResultados": "buscador",
+    "ventanaListado": "listado",
+    "ventanaFichaSolar": "buscador",
+    "ventanaDados": "dados",
+    "ventanaRuletaColor": "ruleta-colores",
+    "ventanaHabilidadesGenerador": "habilidades-azar",
+    "ventanaPacksGenerador": "packs-azar",
+    "ventanaMundosGenerador": "mundos-azar",
+    "ventanaRetos": "modo-retos",
+    "ventanaRetosOpciones": "modo-retos",
+    "ventanaRetoResultado": "modo-retos",
+    "ventanaRuletaDesastres": "ruleta-desastres",
+    "ventanaTemporizador": "temporizador",
+    "ventanaTiempoAgotado": "temporizador",
+    "ventanaTrucos": "trucos",
+    "ventanaTrucosConstruir": "trucos",
+    "ventanaTrucosCAS": "trucos",
+    "ventanaTrucosVivir": "trucos",
+    "ventanaTrucosPacks": "trucos",
+    "ventanaTierList": "tier-list",
+    "ventanaEstadisticas": "estadisticas"
+};
+
 function obtenerCategoriaPorVentana(idVentana) {
     if (!idVentana) return "inicio";
+
+    const toolId = MAPA_VENTANA_A_TOOL[idVentana] || idVentana;
+    const registro = obtenerRegistro();
+
+    // 1. Buscar dinámicamente en el registro activo (fuente de verdad estructural del CMS)
+    for (const cat of registro) {
+        if (!cat || !Array.isArray(cat.herramientas)) continue;
+        if (cat.herramientas.some(h => h.id === toolId || h.id === idVentana || (toolId === "buscador" && (h.id === "buscador-solares" || h.id === "listado-solares")))) {
+            return cat.id;
+        }
+    }
+
+    // 2. Comportamiento especial de generadores dentro de retos
+    if (window.proximaVentanaTrasPacks && (
+        window.proximaVentanaTrasPacks === "ventanaHabilidadesGenerador" ||
+        window.proximaVentanaTrasPacks === "ventanaPacksGenerador" ||
+        window.proximaVentanaTrasPacks === "ventanaMundosGenerador"
+    )) {
+        return "generadores";
+    }
+
+    // 3. Páginas dinámicas del CMS
+    if (idVentana && idVentana.startsWith("ventana_pag_")) {
+        const pageId = idVentana.replace("ventana_pag_", "");
+        const it = window.ITEMS_ESTRUCTURA_SITIO?.find(i => i.id === pageId);
+        if (it) {
+            let pId = it.padreId;
+            let hops = 0;
+            while (pId && hops < 10) {
+                const parentNode = window.ITEMS_ESTRUCTURA_SITIO?.find(i => i.id === pId);
+                if (!parentNode || !parentNode.padreId) return pId;
+                pId = parentNode.padreId;
+                hops++;
+            }
+            if (pId) return pId;
+        }
+    }
+
+    // 4. Fallback estático
     switch (idVentana) {
-        case "ventanaAcercaDe":
-            return "inicio";
+        case "ventanaAcercaDe": return "inicio";
         case "ventanaBuscador":
         case "ventanaResultados":
         case "ventanaListado":
-        case "ventanaFichaSolar":
-            return "solares";
+        case "ventanaFichaSolar": return "solares";
         case "ventanaDados":
         case "ventanaRuletaColor":
         case "ventanaHabilidadesGenerador":
         case "ventanaPacksGenerador":
-        case "ventanaMundosGenerador":
-            return "generadores";
+        case "ventanaMundosGenerador": return "generadores";
         case "ventanaRetos":
         case "ventanaRetosOpciones":
         case "ventanaRetoResultado":
-        case "ventanaRuletaDesastres":
-            if (window.proximaVentanaTrasPacks && (
-                window.proximaVentanaTrasPacks === "ventanaHabilidadesGenerador" ||
-                window.proximaVentanaTrasPacks === "ventanaPacksGenerador" ||
-                window.proximaVentanaTrasPacks === "ventanaMundosGenerador"
-            )) {
-                return "generadores";
-            }
-            return "retos";
+        case "ventanaRuletaDesastres": return "retos";
         case "ventanaTemporizador":
         case "ventanaTiempoAgotado":
         case "ventanaTrucos":
@@ -991,14 +1225,259 @@ function obtenerCategoriaPorVentana(idVentana) {
         case "ventanaTrucosCAS":
         case "ventanaTrucosVivir":
         case "ventanaTrucosPacks":
-            return "herramientas";
-        case "ventanaEstadisticas":
-            return "datos";
-        default:
-            return "inicio";
+        case "ventanaTierList": return "herramientas";
+        case "ventanaEstadisticas": return "datos";
+        default: return "inicio";
     }
 }
 window.obtenerCategoriaPorVentana = obtenerCategoriaPorVentana;
+
+// ─── GESTIÓN DINÁMICA DE PÁGINAS EDITABLES CMS ───────────────────────
+const VENTANAS_HARDCODED = new Set([
+    "ventanaAcercaDe", "ventanaBuscador", "ventanaResultados", "ventanaFichaSolar",
+    "ventanaListado", "ventanaRetos", "ventanaRetosOpciones", "ventanaRetoResultado",
+    "ventanaRuletaDesastres", "ventanaTemporizador", "ventanaRuletaColor",
+    "ventanaDados", "ventanaTrucos", "ventanaTrucosConstruir", "ventanaTrucosCAS",
+    "ventanaTrucosVivir", "ventanaTrucosPacks", "ventanaEstadisticas",
+    "ventanaHabilidadesGenerador", "ventanaPacksGenerador", "ventanaMundosGenerador",
+    "ventanaTierList", "ventana404"
+]);
+
+function escHtml(s) {
+    return String(s || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+}
+
+function asegurarVentanaPaginaEditable(item) {
+    if (!item || !item.id) return null;
+    const idVentana = "ventana_pag_" + item.id;
+    let ventanaEl = document.getElementById(idVentana);
+    if (!ventanaEl) {
+        ventanaEl = document.createElement("div");
+        ventanaEl.id = idVentana;
+        ventanaEl.className = "ventana ventana-pagina-editable";
+        ventanaEl.style.display = "none";
+
+        const iconoHtml = item.icono ? `<span style="margin-right:8px;">${escHtml(item.icono)}</span>` : "";
+        const tituloHtml = escHtml(item.nombre || "Página");
+
+        ventanaEl.innerHTML = `
+            <div class="cabeceraVentana">
+                <button class="cerrar" type="button" aria-label="Cerrar">✕</button>
+                <h2 id="h2_${idVentana}">${iconoHtml}${tituloHtml}</h2>
+            </div>
+            <div class="cuerpoVentana contenidoPaginaEditable" id="contenido_${idVentana}" style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 20px;">
+                <div class="cargando-pagina-cms" style="padding:40px;text-align:center;color:var(--texto-secundario, #aaa);">
+                    Cargando contenido...
+                </div>
+            </div>
+        `;
+
+        ventanaEl.querySelector(".cerrar").addEventListener("click", function () {
+            cerrarVentana(idVentana);
+            sincronizarCierreVentanaExperimental(idVentana);
+        });
+
+        const appSec = document.getElementById("app");
+        if (appSec) {
+            appSec.appendChild(ventanaEl);
+        } else {
+            document.body.appendChild(ventanaEl);
+        }
+    }
+    return idVentana;
+}
+window.asegurarVentanaPaginaEditable = asegurarVentanaPaginaEditable;
+
+function cargarContenidoPaginaEditable(item, idVentana) {
+    if (!item || !idVentana) return;
+    const contEl = document.getElementById("contenido_" + idVentana);
+    const h2El = document.getElementById("h2_" + idVentana);
+    if (!contEl) return;
+
+    const archivo = item.archivo || (item.id + ".json");
+    const rutaArchivo = archivo.startsWith("data/content/") ? archivo : ("data/content/" + archivo);
+
+    contEl.innerHTML = '<div style="padding:40px;text-align:center;color:var(--texto-secundario, #aaa);">Cargando contenido...</div>';
+
+    fetch(rutaArchivo + "?t=" + Date.now())
+        .then(r => {
+            if (!r.ok) throw new Error("HTTP " + r.status);
+            return r.json();
+        })
+        .then(data => {
+            const bloques = Array.isArray(data.bloques) ? data.bloques : [];
+
+            // 1. Cabecera / Título H2
+            let primerTitulo = null;
+            for (let i = 0; i < bloques.length; i++) {
+                if (bloques[i].tipo === "titulo" && (bloques[i].nivel || 2) <= 2) {
+                    primerTitulo = bloques[i];
+                    break;
+                }
+            }
+
+            if (h2El) {
+                const icono = item.icono ? (item.icono + " ") : "";
+                if (primerTitulo && primerTitulo.contenido) {
+                    const rawTit = primerTitulo.contenido;
+                    const tmpD = document.createElement("div");
+                    tmpD.innerHTML = rawTit;
+                    h2El.textContent = icono + (tmpD.innerText || tmpD.textContent || rawTit);
+                } else {
+                    h2El.textContent = icono + (data.titulo || item.nombre || "Página");
+                }
+            }
+
+            // 2. Bloques del cuerpo (excluyendo el primer título si fue a la cabecera)
+            const bloquesCuerpo = bloques.filter(b => !(b.tipo === "titulo" && (b.nivel || 2) <= 2));
+
+            if (bloquesCuerpo.length === 0) {
+                contEl.innerHTML = '<div style="padding:40px 20px;text-align:center;color:var(--texto-secundario,#888);font-style:italic;">Esta página aún no contiene bloques de contenido publicados.</div>';
+            } else if (window.AcercaDeCMS && typeof window.AcercaDeCMS.renderizarBloques === "function") {
+                if (typeof window.AcercaDeCMS.inyectarEstilosCMS === "function") {
+                    window.AcercaDeCMS.inyectarEstilosCMS();
+                }
+                contEl.innerHTML = window.AcercaDeCMS.renderizarBloques(bloquesCuerpo);
+                if (typeof window.AcercaDeCMS.inicializarGaleriasCMS === "function") {
+                    window.AcercaDeCMS.inicializarGaleriasCMS(contEl);
+                }
+            } else if (typeof window.renderizarBloquesCMS === "function") {
+                contEl.innerHTML = window.renderizarBloquesCMS(bloquesCuerpo);
+                if (typeof window.inicializarGaleriasCMS === "function") {
+                    window.inicializarGaleriasCMS(contEl);
+                }
+            } else {
+                contEl.innerHTML = bloquesCuerpo.map(b => `<p style="margin-bottom:12px;">${escHtml(b.contenido || "")}</p>`).join("");
+            }
+
+            contEl.dataset.archivoCargado = rutaArchivo;
+            contEl.dataset.cargadoOk = "true";
+        })
+        .catch(err => {
+            console.error("Error al cargar contenido de la página:", rutaArchivo, err);
+            contEl.innerHTML = `
+                <div style="padding:40px 20px;text-align:center;color:var(--texto-secundario,#888);">
+                    <div style="font-size:2.4rem;margin-bottom:12px;">📄</div>
+                    <p style="font-weight:700;font-size:1.15rem;margin-bottom:8px;color:var(--texto-principal,#fff);">Página en construcción</p>
+                    <p style="font-size:0.95rem;opacity:0.85;">No se encontró el archivo de contenido de esta página o aún no ha sido publicado.</p>
+                </div>
+            `;
+            contEl.dataset.cargadoOk = "error";
+        });
+}
+window.cargarContenidoPaginaEditable = cargarContenidoPaginaEditable;
+
+function abrirPaginaEditable(item, esClickUsuario = true) {
+    if (!item) return;
+    const idVentana = asegurarVentanaPaginaEditable(item);
+    if (!idVentana) return;
+
+    cargarContenidoPaginaEditable(item, idVentana);
+    abrirVentana(idVentana, esClickUsuario);
+}
+window.abrirPaginaEditable = abrirPaginaEditable;
+
+function registrarPaginasEditables(items) {
+    if (!Array.isArray(items)) return;
+    items.forEach(it => {
+        if (it.tipo === "pagina") {
+            const targetActual = MAPA_RUTAS[it.id];
+            // Si ya apunta a una ventana hardcoded del núcleo, respetarla
+            if (targetActual && VENTANAS_HARDCODED.has(targetActual)) {
+                return;
+            }
+
+            const idVentana = asegurarVentanaPaginaEditable(it);
+            MAPA_RUTAS[it.id] = idVentana;
+            if (it.ruta) {
+                MAPA_RUTAS[it.ruta] = idVentana;
+                const partes = it.ruta.split("/");
+                const ultimo = partes[partes.length - 1];
+                if (ultimo) MAPA_RUTAS[ultimo] = idVentana;
+            }
+            VENTANA_A_SLUG[idVentana] = it.ruta || it.id;
+        }
+    });
+}
+window.registrarPaginasEditables = registrarPaginasEditables;
+
+function sincronizarEstructuraDesdeJSON() {
+    fetch("data/content/site-structure.json")
+        .then(r => r.ok ? r.json() : null)
+        .then(items => {
+            if (!Array.isArray(items) || items.length === 0) return;
+            window.ITEMS_ESTRUCTURA_SITIO = items;
+            registrarPaginasEditables(items);
+
+            const raices = items
+                .filter(it => !it.padreId && it.tipo === "seccion" && it.estado !== "oculta" && it.estado !== "oculto")
+                .sort((a, b) => (a.orden || 0) - (b.orden || 0));
+
+            const registro = raices.map(raiz => {
+                const hijos = items
+                    .filter(it => it.padreId === raiz.id && it.estado !== "oculta" && it.estado !== "oculto")
+                    .sort((a, b) => (a.orden || 0) - (b.orden || 0));
+
+                const herramientas = hijos.map(h => {
+                    let toolId = h.id;
+                    if (toolId === "buscador-solares") toolId = "buscador";
+                    if (toolId === "listado-solares") toolId = "listado";
+
+                    const esBorrador = (h.estado === "borrador");
+                    const esDisponible = !esBorrador;
+
+                    const obj = {
+                        id: toolId,
+                        nombre: h.nombre,
+                        icono: h.icono || (h.tipo === "seccion" ? "📁" : "📄"),
+                        disponible: esDisponible,
+                        descripcion: h.descripcion || (h.tipo === "seccion" ? ("Sección " + h.nombre) : ("Herramienta " + h.nombre))
+                    };
+                    if (h.ruta) obj.ruta = h.ruta;
+                    if (h.archivo) obj.archivo = h.archivo;
+                    if (!esDisponible) {
+                        obj.tooltip = "🏗️ Próximamente";
+                    }
+                    return obj;
+                });
+
+                return {
+                    id: raiz.id,
+                    nombre: raiz.nombre,
+                    icono: raiz.icono || "📁",
+                    herramientas: herramientas
+                };
+            });
+
+            window.REGISTRO_NAVEGACION = registro;
+            renderizarNavegacionClasica();
+            renderizarNavegacionExperimental();
+            const catActual = obtenerCategoriaPorVentana(window.ventanaActual);
+            actualizarCategoriaClasicaActiva(catActual);
+
+            // Si hay un hash activo en la URL, re-procesar la ruta ahora que
+            // ITEMS_ESTRUCTURA_SITIO ya está poblado. Cubre dos casos:
+            // A) Página editable cuyo MAPA_RUTAS se acaba de registrar.
+            // B) Cualquier slug que no pudo resolverse al inicio porque la
+            //    estructura aún no había cargado (la ventana actual sería la
+            //    de inicio o la 404, no la página real del hash).
+            const currentHash = (window.location.hash || "").replace(/^[#/]+/, "").trim().toLowerCase();
+            if (currentHash) {
+                const ventanaInicioOError = (window.ventanaActual === "ventanaAcercaDe" || window.ventanaActual === "ventana404");
+                const esPaginaEditable = MAPA_RUTAS[currentHash] && MAPA_RUTAS[currentHash].startsWith("ventana_pag_");
+                const esItemEditable = !!window.ITEMS_ESTRUCTURA_SITIO?.find(it => (it.ruta === currentHash || it.id === currentHash));
+                if (ventanaInicioOError || esPaginaEditable || esItemEditable) {
+                    procesarRutaURL();
+                }
+            }
+        })
+        .catch(() => {});
+}
+window.sincronizarEstructuraDesdeJSON = sincronizarEstructuraDesdeJSON;
 
 function actualizarCategoriaClasicaActiva(catId) {
     if (catId) {
@@ -1430,23 +1909,27 @@ function renderizarNavegacionExperimental() {
         if (n2) n2.style.display = "none";
         if (n3) n3.style.display = "none";
 
-        // Pantalla limpia: ninguna ventana visible detrás de Nivel 1
-        document.querySelectorAll(".ventana").forEach(v => { v.style.display = "none"; });
-        document.querySelectorAll(".btnVolverExperimental").forEach(b => b.remove());
+        // Solo ocultar ventanas y actualizar URL del launcher si el modo experimental está activo.
+        // En modo clásico, el launcher experimental no interfiere con las ventanas ya abiertas
+        // ni con la URL (p.ej. las abiertas por procesarRutaURL durante la carga inicial).
+        if (window.modoNavegacionActual === "experimental") {
+            document.querySelectorAll(".ventana").forEach(v => { v.style.display = "none"; });
 
-        // URL del launcher: ?nav=exp (sin hash)
-        // Solo actualizar la URL durante la navegación del usuario, NO durante la
-        // carga inicial (evita que se borre el hash original antes de que procesarRutaURL lo lea).
-        if (_urlInicialProcesada) {
-            try {
-                if (window.location.protocol !== "file:") {
-                    const search = obtenerSearchConModo();
-                    if (window.location.search !== search || window.location.hash) {
-                        history.replaceState(null, "", search);
+            // URL del launcher: ?nav=exp (sin hash)
+            // Solo actualizar la URL durante la navegación del usuario, NO durante la
+            // carga inicial (evita que se borre el hash original antes de que procesarRutaURL lo lea).
+            if (_urlInicialProcesada) {
+                try {
+                    if (window.location.protocol !== "file:") {
+                        const search = obtenerSearchConModo();
+                        if (window.location.search !== search || window.location.hash) {
+                            history.replaceState(null, "", search);
+                        }
                     }
-                }
-            } catch (_) {}
+                } catch (_) {}
+            }
         }
+        document.querySelectorAll(".btnVolverExperimental").forEach(b => b.remove());
 
         const grid = document.getElementById("expCirculosGrid");
         if (grid) {
@@ -1660,6 +2143,9 @@ function inicializarNuevoSistemaNavegacion() {
     // Aplicar el modo guardado (ya leído desde URL o localStorage).
     // actualizarURL=false porque la URL ya tiene el param correcto o es una carga inicial.
     cambiarModoNavegacion(window.modoNavegacionActual, false);
+
+    // Sincronizar dinámicamente con la estructura del CMS si está disponible
+    sincronizarEstructuraDesdeJSON();
 }
 
 document.addEventListener("DOMContentLoaded", function () {

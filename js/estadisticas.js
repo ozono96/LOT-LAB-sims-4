@@ -3180,3 +3180,4 @@ async function restaurarEstadisticasV1(token) {
     }
 }
 window.restaurarEstadisticasV1 = restaurarEstadisticasV1;
+window.parsearFilasEstadisticas = parsearFilasEstadisticas;

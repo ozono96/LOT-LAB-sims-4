@@ -1,0 +1,22 @@
+{
+  "id": "simfile",
+  "titulo": "SimFile",
+  "slug": "simfile",
+  "ruta": "descargas/simfile",
+  "estado": "publicado",
+  "creadoEl": "2026-10-04T10:00:00.000Z",
+  "modificadoEl": "2026-10-04T10:00:00.000Z",
+  "bloques": [
+    {
+      "id": "b_simfile_tit",
+      "tipo": "titulo",
+      "contenido": "🏡 SimFile",
+      "nivel": 2
+    },
+    {
+      "id": "b_simfile_desc",
+      "tipo": "texto",
+      "contenido": "Archivos de guardado, partidas y solares destacados para Los Sims 4."
+    }
+  ]
+}

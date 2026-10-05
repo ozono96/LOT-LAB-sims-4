@@ -1,14 +1,14 @@
 /* =========================================================
    ACERCA DE Y CARRUSEL YOUTUBE
+   Soporte dinámico para múltiples carruseles, vídeos y playlists
+   FASE 2.8C — LOT-LAB
    ========================================================= */
 
 (function() {
 
     const botonAcercaDe = document.getElementById("botonAcercaDe");
-    const carruselTrack = document.getElementById("carruselVideos");
-    const carruselWrapper = document.querySelector(".carrusel-videos-wrapper");
 
-    // IDs de los vídeos proporcionados por el usuario
+    // IDs de vídeos por defecto (fallback)
     const videoIDs = [
         "9pZkYub2bUc",
         "p2AcmNNJyL4",
@@ -23,7 +23,7 @@
         "G2HRpJkjo0w"
     ];
 
-    // Mezclar el array (Fisher-Yates) para que salgan aleatorios
+    // Mezclar el array (Fisher-Yates) para fallback
     function mezclarArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -32,202 +32,163 @@
         return array;
     }
 
-    function cargarVideos() {
-        if (!carruselTrack) return;
+    function inicializarUnCarrusel(wrapper, items) {
+        if (!wrapper) return;
+        const track = wrapper.querySelector(".carrusel-videos-track");
+        if (!track) return;
 
-        carruselTrack.innerHTML = "";
-        const mezclados = mezclarArray([...videoIDs]);
-
-        // Crear las miniaturas
-        mezclados.forEach(id => {
-            const a = document.createElement("a");
-            a.href = `https://www.youtube.com/watch?v=${id}`;
-            a.target = "_blank";
-            a.className = "video-item";
-
-            const img = document.createElement("img");
-            img.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
-            img.alt = "Vídeo de YouTube";
-            img.loading = "lazy";
-            img.decoding = "async";
-
-            const playIcon = document.createElement("div");
-            playIcon.className = "play-icon";
-            playIcon.innerHTML = "▶";
-
-            a.appendChild(img);
-            a.appendChild(playIcon);
-            carruselTrack.appendChild(a);
-        });
-
-        // Duplicar para crear efecto de scroll infinito si el carrusel es ancho
-        mezclados.forEach(id => {
-            const a = document.createElement("a");
-            a.href = `https://www.youtube.com/watch?v=${id}`;
-            a.target = "_blank";
-            a.className = "video-item";
-
-            const img = document.createElement("img");
-            img.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
-            img.alt = "Vídeo de YouTube";
-            img.loading = "lazy";
-            img.decoding = "async";
-
-            const playIcon = document.createElement("div");
-            playIcon.className = "play-icon";
-            playIcon.innerHTML = "▶";
-
-            a.appendChild(img);
-            a.appendChild(playIcon);
-            carruselTrack.appendChild(a);
-        });
-
-        // Tercera copia para el scroll infinito bidireccional
-        mezclados.forEach(id => {
-            const a = document.createElement("a");
-            a.href = `https://www.youtube.com/watch?v=${id}`;
-            a.target = "_blank";
-            a.className = "video-item";
-
-            const img = document.createElement("img");
-            img.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
-            img.alt = "Vídeo de YouTube";
-            img.loading = "lazy";
-            img.decoding = "async";
-
-            const playIcon = document.createElement("div");
-            playIcon.className = "play-icon";
-            playIcon.innerHTML = "▶";
-
-            a.appendChild(img);
-            a.appendChild(playIcon);
-            carruselTrack.appendChild(a);
-        });
-    }
-
-    // Configurar lógica del carrusel dinámico
-    let position = 0;
-    let speed = 0.5; // Velocidad base lenta
-    let targetSpeed = 0.5;
-    let animFrame = null;
-
-    function animarCarrusel() {
-        // Interpolar suavemente la velocidad
-        speed += (targetSpeed - speed) * 0.1;
-
-        position -= speed;
-
-        if (carruselTrack) {
-            // Tenemos 3 copias idénticas, por lo que el ancho de 1 copia es scrollWidth / 3
-            const singleWidth = carruselTrack.scrollWidth / 3;
-
-            if (singleWidth > 0) {
-                // Si llegamos demasiado a la izquierda (pasamos la copia del centro)
-                if (position <= -(singleWidth * 2)) {
-                    position += singleWidth;
-                }
-                // Si llegamos demasiado a la derecha (pasamos la copia del centro)
-                else if (position > -singleWidth) {
-                    position -= singleWidth;
-                }
-            }
-
-            carruselTrack.style.transform = `translateX(${position}px)`;
+        // Normalizar items a lista de objetos { tipo, youtubeId / playlistId }
+        let listaItems = [];
+        if (items && Array.isArray(items) && items.length > 0) {
+            listaItems = items.map(it => {
+                if (typeof it === "string") return { tipo: "video", youtubeId: it };
+                return it;
+            });
+        } else if (track.children.length === 0) {
+            listaItems = mezclarArray([...videoIDs]).map(id => ({ tipo: "video", youtubeId: id }));
         }
 
-        animFrame = requestAnimationFrame(animarCarrusel);
-    }
+        function crearElemento(it) {
+            const a = document.createElement("a");
+            a.target = "_blank";
+            a.className = "video-item";
 
-    if (carruselWrapper) {
-        carruselWrapper.addEventListener("mousemove", (e) => {
-            const rect = carruselWrapper.getBoundingClientRect();
-            // Calcular de -1 a 1 según el ratón (centro = 0, izq = -1, der = 1)
-            const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-
-            // Si el ratón está en los laterales, aumentar velocidad en esa dirección
-            // targetSpeed positivo mueve hacia la izq, targetSpeed negativo mueve hacia la der
-            // Si ratón a la derecha (x = 1), movemos pista hacia la izquierda (scroll a la derecha)
-            // Velocidad máxima = 8
-
-            // Si abs(x) es menor a 0.2 (centro), velocidad muy lenta 
-            if (Math.abs(x) < 0.2) {
-                targetSpeed = x > 0 ? 0.5 : -0.5;
+            if (it.tipo === "playlist") {
+                const pId = it.playlistId || it.id || "";
+                const nombrePl = it.playlistTitle ? String(it.playlistTitle) : (it.titulo ? String(it.titulo) : (it.nombre ? String(it.nombre) : ""));
+                a.href = `https://www.youtube.com/playlist?list=${pId}`;
+                a.className += " video-item--playlist";
+                const cover = it.coverUrl || (it.coverVideoId ? `https://img.youtube.com/vi/${it.coverVideoId}/hqdefault.jpg` : "");
+                const bgFallback = `<div style="width:100%;height:100%;background:linear-gradient(135deg,#151c2e,#0d3b66);display:flex;align-items:center;justify-content:center;color:rgba(255,213,74,0.3);font-size:3rem;">📑</div>`;
+                a.innerHTML = (cover
+                    ? `<img src="${cover}" alt="${nombrePl}" loading="lazy" decoding="async">`
+                    : bgFallback) +
+                    `<div class="playlist-overlay-center" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;pointer-events:none;z-index:2;">` +
+                        `<div class="play-icon" style="position:static;transform:none;margin:0;">▶</div>` +
+                        `<div class="playlist-badge-box" style="background:rgba(15,17,23,0.92);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);color:#ffd54a;border:1px solid rgba(255,213,74,0.5);padding:3px 9px;border-radius:6px;text-align:center;max-width:88%;box-shadow:0 3px 8px rgba(0,0,0,0.6);">` +
+                            `<div style="font-size:0.62rem;font-weight:800;letter-spacing:0.5px;color:#ffd54a;">▶ PLAYLIST</div>` +
+                            (nombrePl ? `<div style="font-size:0.72rem;font-weight:600;color:#ffffff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px;max-width:140px;">${nombrePl}</div>` : '') +
+                        `</div>` +
+                    `</div>`;
             } else {
-                // Acelera progresivamente hacia los bordes
-                const multiplier = Math.pow(Math.abs(x), 2) * 10;
-                targetSpeed = x > 0 ? multiplier : -multiplier;
+                const yId = it.youtubeId || it.id || "";
+                a.href = `https://www.youtube.com/watch?v=${yId}`;
+                a.innerHTML = `<img src="https://img.youtube.com/vi/${yId}/hqdefault.jpg" alt="Vídeo de YouTube" loading="lazy" decoding="async">` +
+                    `<div class="play-icon">▶</div>`;
+            }
+            return a;
+        }
+
+        if (track.children.length === 0 && listaItems.length > 0) {
+            track.innerHTML = "";
+            // 3 copias para el scroll infinito suave
+            for (let pass = 0; pass < 3; pass++) {
+                listaItems.forEach(it => {
+                    track.appendChild(crearElemento(it));
+                });
+            }
+        }
+
+        if (wrapper._carruselIniciado) return;
+        wrapper._carruselIniciado = true;
+
+        let position = 0;
+        let speed = 0.5;
+        let targetSpeed = 0.5;
+        let animFrame = null;
+
+        function animar() {
+            speed += (targetSpeed - speed) * 0.1;
+            position -= speed;
+            const singleWidth = track.scrollWidth / 3;
+            if (singleWidth > 0) {
+                if (position <= -(singleWidth * 2)) position += singleWidth;
+                else if (position > -singleWidth) position -= singleWidth;
+            }
+            track.style.transform = `translateX(${position}px)`;
+            animFrame = requestAnimationFrame(animar);
+        }
+
+        wrapper.addEventListener("mousemove", (e) => {
+            const rect = wrapper.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+            if (Math.abs(x) < 0.2) targetSpeed = x > 0 ? 0.5 : -0.5;
+            else {
+                const mult = Math.pow(Math.abs(x), 2) * 10;
+                targetSpeed = x > 0 ? mult : -mult;
             }
         });
 
-        carruselWrapper.addEventListener("mouseleave", () => {
-            // Vuelve a la velocidad base lenta
+        wrapper.addEventListener("mouseleave", () => {
             targetSpeed = targetSpeed > 0 ? 0.5 : -0.5;
         });
 
-        // Soporte táctil: arrastrar el carrusel con el dedo
         let arrastrando = false;
         let touchStartX = 0;
-        let touchStartPosition = 0;
+        let touchStartPos = 0;
         let huboArrastre = false;
 
-        if (carruselWrapper) {
+        wrapper.addEventListener("touchstart", (e) => {
+            arrastrando = true;
+            huboArrastre = false;
+            touchStartX = e.touches[0].clientX;
+            touchStartPos = position;
+            if (animFrame) cancelAnimationFrame(animFrame);
+        }, { passive: true });
 
-            carruselWrapper.addEventListener("touchstart", (e) => {
-                arrastrando = true;
-                huboArrastre = false;
-                touchStartX = e.touches[0].clientX;
-                touchStartPosition = position;
-                if (animFrame) cancelAnimationFrame(animFrame);
-            }, { passive: true });
+        wrapper.addEventListener("touchmove", (e) => {
+            if (!arrastrando) return;
+            const deltaX = e.touches[0].clientX - touchStartX;
+            if (Math.abs(deltaX) > 5) huboArrastre = true;
+            position = touchStartPos + deltaX;
+            const singleWidth = track.scrollWidth / 3;
+            if (singleWidth > 0) {
+                if (position <= -(singleWidth * 2)) position += singleWidth;
+                else if (position > -singleWidth) position -= singleWidth;
+            }
+            track.style.transform = `translateX(${position}px)`;
+        }, { passive: true });
 
-            carruselWrapper.addEventListener("touchmove", (e) => {
-                if (!arrastrando) return;
+        wrapper.addEventListener("touchend", () => {
+            arrastrando = false;
+            speed = 0.5;
+            targetSpeed = 0.5;
+            animar();
+        });
 
-                const deltaX = e.touches[0].clientX - touchStartX;
-                if (Math.abs(deltaX) > 5) huboArrastre = true;
+        wrapper.addEventListener("click", (e) => {
+            if (huboArrastre) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        }, true);
 
-                position = touchStartPosition + deltaX;
-
-                if (carruselTrack) {
-                    const singleWidth = carruselTrack.scrollWidth / 3;
-                    if (singleWidth > 0) {
-                        if (position <= -(singleWidth * 2)) {
-                            position += singleWidth;
-                        } else if (position > -singleWidth) {
-                            position -= singleWidth;
-                        }
-                    }
-                    carruselTrack.style.transform = `translateX(${position}px)`;
-                }
-            }, { passive: true });
-
-            carruselWrapper.addEventListener("touchend", () => {
-                arrastrando = false;
-                speed = 0.5;
-                targetSpeed = 0.5;
-                animarCarrusel();
-            });
-
-            // Evita abrir el vídeo por error si el usuario estaba arrastrando
-            carruselWrapper.addEventListener("click", (e) => {
-                if (huboArrastre) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            }, true);
-        }
+        setTimeout(() => { animar(); }, 60);
     }
 
+    window.inicializarCarruselAcercaDe = function(root) {
+        const base = root || document;
+        const wrappers = base.querySelectorAll(".carrusel-videos-wrapper");
+        if (!wrappers || wrappers.length === 0) return;
 
-    window.inicializarCarruselAcercaDe = function() {
-        cargarVideos(); // Recargar aleatorios al abrir
-        position = 0;
-        if (animFrame) cancelAnimationFrame(animFrame);
-        // Retrasamos la animación para dar tiempo al navegador a pintar el DOM
-        // y que el cálculo de scrollWidth no sea 0.
-        setTimeout(() => {
-            animarCarrusel();
-        }, 50);
+        const carruselesConfig = window._acercaDeCarousels || [];
+
+        wrappers.forEach(wrap => {
+            if (wrap.style.display === "none") return;
+            const cId = wrap.dataset.carruselId;
+            let items = null;
+            if (cId && carruselesConfig.length > 0) {
+                const found = carruselesConfig.find(c => c.id === cId);
+                if (found) items = found.items || found.videos;
+            }
+            if (!items && carruselesConfig.length > 0) {
+                items = carruselesConfig[0].items || carruselesConfig[0].videos;
+            }
+            if (!items && window._acercaDeVideoIDs) {
+                items = window._acercaDeVideoIDs;
+            }
+            inicializarUnCarrusel(wrap, items);
+        });
     };
 
     if (botonAcercaDe) {

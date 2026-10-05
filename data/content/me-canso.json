@@ -1,0 +1,242 @@
+{
+  "id": "me-canso",
+  "titulo": "me canso",
+  "slug": "me-canso",
+  "estado": "publicado",
+  "ruta": "juegos/me-canso",
+  "creadoEl": "2026-10-04T11:47:43.063Z",
+  "modificadoEl": "2026-10-04T13:08:56.956Z",
+  "bloques": [
+    {
+      "id": "b_1791114463063_tit",
+      "tipo": "titulo",
+      "contenido": "me canso",
+      "nivel": 2
+    },
+    {
+      "id": "b_1791114463063_txt",
+      "tipo": "texto",
+      "contenido": "Contenido de me canso. Puedes editar este texto o añadir nuevos bloques desde la paleta. dfdf"
+    },
+    {
+      "id": "b_1791114476034",
+      "tipo": "imagen",
+      "url": "img/content/imagen_1791114481887.png",
+      "alt": "Imagen ilustrativa",
+      "alineacion": "center",
+      "forma": "original",
+      "hoverGlow": true
+    },
+    {
+      "id": "boton_1791114509467",
+      "tipo": "boton",
+      "texto": "Botón",
+      "tipoDestino": "interna",
+      "destinoInterno": "trucos-inicio",
+      "url": "",
+      "alineacion": "center",
+      "apariencia": {
+        "preset": "lotlab",
+        "fondoColor": "",
+        "textoColor": "",
+        "bordeColor": "",
+        "bordeGrosor": "",
+        "bordeEstilo": "solid",
+        "radio": "",
+        "sombra": false,
+        "sombraIntensidad": "media",
+        "opacidad": 1
+      },
+      "tamano": {
+        "adaptativo": true,
+        "ancho": "",
+        "anchoUnidad": "px",
+        "alto": "",
+        "altoUnidad": "px",
+        "paddingH": "",
+        "paddingV": "",
+        "fontSize": "",
+        "emojiSize": ""
+      },
+      "imagen": {
+        "activa": false,
+        "url": "",
+        "alt": "",
+        "forma": "original",
+        "zoom": 100,
+        "posX": 50,
+        "posY": 50
+      },
+      "hover": {
+        "fondoColor": "",
+        "bordeColor": "",
+        "escala": false,
+        "opacidad": 1,
+        "glow": false,
+        "glowColor": "#ffd54a",
+        "glowIntensidad": "media",
+        "transicion": "0.25s",
+        "imagenHover": {
+          "activa": false,
+          "url": "",
+          "alt": "",
+          "zoom": 100,
+          "posX": 50,
+          "posY": 50
+        }
+      },
+      "tooltip": {
+        "activo": false,
+        "texto": ""
+      },
+      "sonido": {
+        "activo": true
+      },
+      "desplegable": {
+        "activo": false,
+        "posicion": "bottom",
+        "opciones": []
+      },
+      "emoji": "",
+      "emojiPos": "left",
+      "abrirNuevaPestana": false
+    },
+    {
+      "id": "b_1791114671894",
+      "tipo": "texto",
+      "contenido": "me gusta escribr"
+    },
+    {
+      "id": "galeria_1791114685634",
+      "tipo": "galeria",
+      "titulo": "Galería de imágenes",
+      "_activeIdx": 0,
+      "imagenes": [
+        {
+          "id": "gi_1791114691215",
+          "url": "img/content/imagen_1791114696473.png",
+          "alt": "Nueva foto",
+          "forma": "horizontal"
+        },
+        {
+          "id": "gi_1791114700853",
+          "url": "img/content/imagen_1791114704251.png",
+          "alt": "Nueva foto",
+          "forma": "horizontal"
+        }
+      ]
+    },
+    {
+      "id": "buscador_1791114720473",
+      "tipo": "buscador",
+      "placeholder": "Buscar truco por nombre o código (ej: moveobjects, motherlode, dinero, cas...)",
+      "ambito": "arbol"
+    },
+    {
+      "id": "b_1791116181035",
+      "tipo": "imagen",
+      "url": "img/content/imagen_1791116186638.png",
+      "alt": "Imagen ilustrativa",
+      "alineacion": "center",
+      "forma": "original"
+    },
+    {
+      "id": "b_1791116389981",
+      "tipo": "imagen",
+      "url": "img/content/imagen_1791116397917.png",
+      "alt": "Imagen ilustrativa",
+      "alineacion": "center",
+      "forma": "original"
+    },
+    {
+      "id": "tablon_1791114725732",
+      "tipo": "tablon",
+      "alineacion": "center",
+      "filas": [
+        {
+          "id": "fila_1791114725732",
+          "altura": null,
+          "items": [
+            {
+              "id": "ti_1791114725732_1",
+              "url": "img/content/imagen_1791114732226.png",
+              "flex": 50,
+              "alt": "Imagen 1",
+              "forma": "original"
+            },
+            {
+              "id": "ti_1791114725732_2",
+              "url": "img/content/imagen_1791114740844.png",
+              "flex": 50,
+              "alt": "Imagen 2",
+              "forma": "original"
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "id": "ti_1791114725732_1",
+          "url": "img/content/imagen_1791114732226.png",
+          "flex": 50,
+          "alt": "Imagen 1",
+          "forma": "original"
+        },
+        {
+          "id": "ti_1791114725732_2",
+          "url": "img/content/imagen_1791114740844.png",
+          "flex": 50,
+          "alt": "Imagen 2",
+          "forma": "original"
+        }
+      ]
+    },
+    {
+      "id": "b_1791114748080",
+      "tipo": "titulo",
+      "contenido": "casa",
+      "nivel": 3,
+      "fontSize": "26px"
+    },
+    {
+      "id": "b_1791114755605",
+      "tipo": "separador"
+    },
+    {
+      "id": "truco_1791114761976",
+      "tipo": "cuadro-copiable",
+      "contenido": "testingcheats true",
+      "alineacion": "center"
+    },
+    {
+      "id": "carrusel_1791114782930",
+      "tipo": "carrusel-videos",
+      "titulo": "Vídeos destacados de YouTube",
+      "items": [
+        {
+          "tipo": "video",
+          "youtubeId": "N5yJcR38ZUI",
+          "coverUrl": "https://i.ytimg.com/vi/N5yJcR38ZUI/hqdefault.jpg"
+        },
+        {
+          "tipo": "playlist",
+          "playlistId": "PL0f5dKZfLQcyGaz0OuS1XH1o5QQMlZ9ny",
+          "coverVideoId": "",
+          "playlistTitle": "sims 4 construcciones",
+          "titulo": "sims 4 construcciones",
+          "nombre": "sims 4 construcciones",
+          "coverUrl": "https://i.ytimg.com/vi/LQrFa5qzoOg/hqdefault.jpg"
+        },
+        {
+          "tipo": "video",
+          "youtubeId": "Xc3VwSjgnmY",
+          "coverUrl": "https://i.ytimg.com/vi/Xc3VwSjgnmY/hqdefault.jpg"
+        }
+      ],
+      "videos": [
+        "N5yJcR38ZUI",
+        "Xc3VwSjgnmY"
+      ]
+    }
+  ]
+}

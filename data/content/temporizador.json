@@ -1,0 +1,22 @@
+{
+  "id": "temporizador",
+  "titulo": "Temporizador",
+  "slug": "temporizador",
+  "ruta": "herramientas/temporizador",
+  "estado": "publicado",
+  "creadoEl": "2026-09-24T05:35:17.310Z",
+  "modificadoEl": "2026-09-24T05:35:17.310Z",
+  "bloques": [
+    {
+      "id": "b_1790228117310_tit",
+      "tipo": "titulo",
+      "contenido": "Temporizador",
+      "nivel": 1
+    },
+    {
+      "id": "b_1790228117310_txt",
+      "tipo": "texto",
+      "contenido": "Contenido inicial de Temporizador. Puedes editar este texto o añadir nuevos bloques."
+    }
+  ]
+}

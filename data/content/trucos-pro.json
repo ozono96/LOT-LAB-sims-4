@@ -1,0 +1,38 @@
+{
+  "id": "trucos-pro",
+  "titulo": "Trucos y Guías PRO",
+  "slug": "trucos-pro",
+  "ruta": "herramientas/trucos/trucos-pro",
+  "estado": "borrador",
+  "creadoEl": "2026-09-24T05:33:08.874Z",
+  "modificadoEl": "2026-09-24T05:33:08.874Z",
+  "bloques": [
+    {
+      "id": "b_t",
+      "tipo": "titulo",
+      "contenido": "Herramientas Avanzadas para Sims",
+      "nivel": 1
+    },
+    {
+      "id": "b_txt",
+      "tipo": "texto",
+      "contenido": "Aquí encontrarás trucos avanzados para modo vivir y dinero."
+    },
+    {
+      "id": "b_btn",
+      "tipo": "boton",
+      "texto": "Ir a Trucos de Modo Vivir",
+      "tipoDestino": "interna",
+      "destinoInterno": "trucos-vivir"
+    },
+    {
+      "id": "b_img_btn",
+      "tipo": "boton-imagen",
+      "texto": "Packs de Expansión",
+      "subtexto": "Guía con trucos para cada DLC",
+      "imagen": "img/content/packs.webp",
+      "tipoDestino": "interna",
+      "destinoInterno": "trucos-packs"
+    }
+  ]
+}

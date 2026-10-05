@@ -1,0 +1,39 @@
+{
+  "id": "proximamente-juegos",
+  "titulo": "🎮 Próximamente",
+  "slug": "proximamente",
+  "estado": "publicado",
+  "ruta": "juegos/proximamente",
+  "creadoEl": "2026-10-04T10:00:00.000Z",
+  "modificadoEl": "2026-10-04T11:46:27.629Z",
+  "bloques": [
+    {
+      "id": "b_prox_tit",
+      "tipo": "titulo",
+      "contenido": "🎮 Próximamente",
+      "nivel": 2
+    },
+    {
+      "id": "b_prox_desc",
+      "tipo": "texto",
+      "contenido": "Nuevos mini-juegos, herramientas interactivas y dinámicas en desarrolfdfdfdflo para Los Sims 4. df"
+    },
+    {
+      "id": "b_1791114370820",
+      "tipo": "imagen",
+      "url": "img/content/imagen_1791114377905.png",
+      "alt": "Imagen ilustrativa",
+      "alineacion": "center",
+      "forma": "original"
+    },
+    {
+      "id": "boton_1791114384655",
+      "tipo": "boton",
+      "texto": "Botón",
+      "tipoDestino": "interna",
+      "destinoInterno": "trucos-inicio",
+      "url": "",
+      "alineacion": "center"
+    }
+  ]
+}

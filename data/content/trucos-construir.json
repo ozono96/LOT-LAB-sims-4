@@ -1,0 +1,273 @@
+{
+  "id": "trucos-construir",
+  "titulo": "🏗️ Trucos de Construir",
+  "slug": "trucos-construir",
+  "estado": "publicado",
+  "ruta": "herramientas/trucos/construir",
+  "creadoEl": "2026-09-25T14:10:09.677Z",
+  "modificadoEl": "2026-10-04T14:03:10.545Z",
+  "bloques": [
+    {
+      "id": "b_tc_h2",
+      "tipo": "titulo",
+      "contenido": "🏗️ Trucos de Construir",
+      "nivel": 2
+    },
+    {
+      "id": "b_tc_h3_1",
+      "tipo": "titulo",
+      "contenido": "Trucos para Construir",
+      "nivel": 3,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tc_p_intro",
+      "tipo": "texto",
+      "contenido": "Uno de los apartados donde más partido se le puede sacar a los trucos es el modo Construir. Gracias a ellos podrás colocar muebles sin restricciones, acceder a objetos ocultos, modificar solares especiales o desbloquear muebles reservados para determinadas profesiones.<br><br>Si te gusta crear casas espectaculares o recrear edificios reales, estos códigos son prácticamente imprescindibles."
+    },
+    {
+      "id": "b_tc_sep_1",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_tc_h4_mo_on",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">bb.moveobjects on</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tc_p_mo_on",
+      "tipo": "texto",
+      "contenido": "Sin duda, el truco más utilizado por la comunidad.<br><br>Permite colocar objetos ignorando las restricciones normales del juego, lo que significa que podrás superponer muebles, acercarlos mucho más entre sí o situarlos en posiciones donde normalmente aparecería el mensaje de error indicando que no hay espacio suficiente.<br><br>Gracias a este comando es posible crear habitaciones mucho más realistas y decoraciones extremadamente detalladas.<br><br>Es especialmente útil para:"
+    },
+    {
+      "id": "b_tc_h4_mo_consejos",
+      "tipo": "titulo",
+      "contenido": "Consejos para utilizar bb.moveobjects",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tc_p_mo_consejos",
+      "tipo": "texto",
+      "contenido": "Aunque el truco elimina muchas limitaciones, existen varios atajos que permiten aprovecharlo todavía mejor.<br><br>Por ejemplo, combinándolo con las teclas Alt podrás colocar los objetos con total libertad, sin ajustarse automáticamente a la cuadrícula del juego.<br><br>Del mismo modo, utilizando las teclas 0 y 9 podrás bajar o subir objetos para crear decoraciones flotantes o colocar elementos encima de muebles donde normalmente sería imposible.<br><br>La combinación de estos tres métodos es la base de prácticamente todas las construcciones avanzadas de Los Sims 4."
+    },
+    {
+      "id": "b_tc_sep_2",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_tc_h4_hidden",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">bb.showhiddenobjects</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tc_p_hidden",
+      "tipo": "texto",
+      "contenido": "Este truco desbloquea el llamado catálogo de objetos ocultos o Debug. Se trata de cientos de objetos que existen dentro del juego pero que normalmente no aparecen disponibles en el modo Construir/Comprar.<br><br>Entre ellos encontrarás:"
+    },
+    {
+      "id": "b_tc_sep_3",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_tc_h4_liveedit",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">bb.showliveeditobjects</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tc_p_liveedit",
+      "tipo": "texto",
+      "contenido": "Este comando desbloquea miles de objetos decorativos utilizados por los propios desarrolladores para ambientar los barrios del juego.<br><br>Muchos jugadores lo confunden con bb.showhiddenobjects, pero no hacen exactamente lo mismo.<br><br>Mientras que el anterior muestra el catálogo Debug, este permite acceder a elementos del mundo que normalmente forman parte del escenario.<br><br>Entre ellos encontramos:"
+    },
+    {
+      "id": "b_tc_sep_4",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_tc_h4_freebuild",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">bb.enablefreebuild</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tc_p_freebuild",
+      "tipo": "texto",
+      "contenido": "Permite construir y modificar solares que normalmente están bloqueados.<br><br>Por ejemplo:"
+    },
+    {
+      "id": "b_tc_sep_5",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_tc_h4_unlocks",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">bb.ignoregameplayunlocksentitlement</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tc_p_unlocks",
+      "tipo": "texto",
+      "contenido": "Este comando desbloquea todos los objetos del modo Construir y Comprar que normalmente requieren alcanzar determinados niveles en las profesiones.<br><br>Por ejemplo, muchos muebles solo aparecen cuando un Sim progresa en carreras como:"
+    },
+    {
+      "id": "b_tc_sep_6",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_tc_h4_mo_off",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">bb.moveobjects off</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tc_p_mo_off",
+      "tipo": "texto",
+      "contenido": "Aunque la mayoría utiliza únicamente la versión on, también existe la posibilidad de desactivar el truco escribiendo:<br><br><strong>bb.moveobjects off</strong><br><br>Esto devuelve el comportamiento habitual del modo Construcción.<br><br>Puede resultar útil si empiezas a colocar objetos accidentalmente unos encima de otros."
+    },
+    {
+      "id": "b_tc_sep_7",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_tc_h3_avanzados",
+      "tipo": "titulo",
+      "contenido": "Trucos avanzados para construir mejor",
+      "nivel": 3,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tc_p_avanzados_intro",
+      "tipo": "texto",
+      "contenido": "Los códigos anteriores son solo una parte del potencial del modo Construcción.<br><br>Existen además varios atajos de teclado que, combinados con los trucos, permiten crear casas prácticamente profesionales."
+    },
+    {
+      "id": "b_tc_h4_alt_colocar",
+      "tipo": "titulo",
+      "contenido": "Colocar objetos libremente",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tc_p_alt_colocar",
+      "tipo": "texto",
+      "contenido": "Mientras tienes un objeto seleccionado, mantén pulsada la tecla Alt.<br><br>Esto desactiva el ajuste automático a la cuadrícula y permite colocarlo exactamente donde quieras.<br><br>Es una de las funciones más utilizadas por los constructores expertos."
+    },
+    {
+      "id": "b_tc_h4_alt_girar",
+      "tipo": "titulo",
+      "contenido": "Girar objetos con mayor precisión",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tc_p_alt_girar",
+      "tipo": "texto",
+      "contenido": "Normalmente los objetos giran en incrementos bastante grandes.<br><br>Sin embargo, si mantienes pulsada la tecla Alt mientras utilizas el ratón, podrás rotarlos de forma completamente libre.<br><br>Esto permite orientar sofás, mesas o plantas con mucha más naturalidad."
+    },
+    {
+      "id": "b_tc_h4_subir_bajar",
+      "tipo": "titulo",
+      "contenido": "Subir y bajar objetos",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tc_p_subir_bajar",
+      "tipo": "texto",
+      "contenido": "Selecciona un objeto y utiliza:"
+    },
+    {
+      "id": "b_tc_h4_tamano",
+      "tipo": "titulo",
+      "contenido": "Ampliar y reducir objetos",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tc_p_tamano",
+      "tipo": "texto",
+      "contenido": "Puedes cambiar el tamaño de casi cualquier objeto.<br><br>Utiliza:"
+    },
+    {
+      "id": "b_tc_sep_8",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_tc_h3_errores",
+      "tipo": "titulo",
+      "contenido": "Errores habituales al usar los trucos de Construcción",
+      "nivel": 3,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tc_p_errores_intro",
+      "tipo": "texto",
+      "contenido": "Aunque los comandos son muy sencillos de utilizar, existen algunos errores bastante comunes."
+    },
+    {
+      "id": "b_tc_h4_desaparecen",
+      "tipo": "titulo",
+      "contenido": "Los objetos desaparecen",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tc_p_desaparecen",
+      "tipo": "texto",
+      "contenido": "Esto suele ocurrir cuando se elimina un objeto que estaba sosteniendo otro colocado mediante bb.moveobjects.<br><br>Antes de borrar muebles, revisa si hay decoración situada encima."
+    },
+    {
+      "id": "b_tc_h4_noseleccionar",
+      "tipo": "titulo",
+      "contenido": "No puedo seleccionar algunos objetos",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tc_p_noseleccionar",
+      "tipo": "texto",
+      "contenido": "Los objetos del catálogo Debug tienen un comportamiento diferente al resto.<br><br>En ocasiones es necesario utilizar la herramienta de mover varias veces para seleccionarlos correctamente."
+    },
+    {
+      "id": "b_tc_h4_nointeractuar",
+      "tipo": "titulo",
+      "contenido": "Los Sims no pueden utilizar un objeto",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tc_p_nointeractuar",
+      "tipo": "texto",
+      "contenido": "Este es probablemente el problema más frecuente.<br><br>Aunque bb.moveobjects permite colocar cualquier elemento en cualquier sitio, los Sims siguen necesitando espacio suficiente para interactuar con él.<br><br>Antes de dar por terminada una construcción conviene comprobar que:"
+    },
+    {
+      "id": "b_tc_sep_9",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_tc_h3_seguro",
+      "tipo": "titulo",
+      "contenido": "¿Es seguro utilizar los trucos de Construcción?",
+      "nivel": 3,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tc_p_seguro",
+      "tipo": "texto",
+      "contenido": "Sí.<br><br>Todos los comandos incluidos en este apartado forman parte del propio juego y han sido desarrollados por Maxis.<br><br>No requieren instalar mods ni modificar archivos.<br><br>La única precaución recomendable consiste en guardar la partida antes de realizar grandes modificaciones, especialmente cuando vas a remodelar solares especiales como hospitales o laboratorios."
+    },
+    {
+      "id": "b_tc_sep_10",
+      "tipo": "separador"
+    }
+  ]
+}

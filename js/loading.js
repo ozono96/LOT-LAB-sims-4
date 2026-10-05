@@ -151,28 +151,6 @@ function iniciarPantallaCarga() {
         }
     }
 
-    function forzarFinCargaPreLaunch() {
-        if (cargaTerminada) return;
-
-        const tiempoTranscurrido = Date.now() - inicioCarga;
-        const esperaRestante = Math.max(0, TIEMPO_MINIMO_PANTALLA - tiempoTranscurrido);
-
-        setTimeout(() => {
-            if (cargaTerminada) return;
-            cargaTerminada = true;
-            if (intervaloBarra) clearInterval(intervaloBarra);
-            if (timeoutFrase) clearTimeout(timeoutFrase);
-            actualizarBarra(100);
-            setTimeout(() => {
-                pantalla.classList.add("oculta");
-                desbloquearScrollCarga();
-                setTimeout(() => {
-                    pantalla.style.display = "none";
-                }, 500);
-            }, 150);
-        }, esperaRestante);
-    }
-    window.forzarFinCargaPreLaunch = forzarFinCargaPreLaunch;
 
     // ── Barra de progreso fluida (se frena según se acerca al límite simulado) ──
     intervaloBarra = setInterval(() => {

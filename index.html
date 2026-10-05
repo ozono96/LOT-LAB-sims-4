@@ -4,14 +4,14 @@
 <head>
 
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-3DTNMZGWDV"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3DTNMZGWDV"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
 
-  gtag('config', 'G-3DTNMZGWDV');
-</script>
+        gtag('config', 'G-3DTNMZGWDV');
+    </script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,12 +20,12 @@
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
 
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/auth-prelaunch.css">
+    <link rel="stylesheet" href="css/style.css?v=1.2.6.1">
+    <link rel="stylesheet" href="css/tier-list.css?v=1.2.6.1">
 
     <!-- Garantizar scroll = 0 en cada carga/recarga, antes de que cualquier otro JS se ejecute -->
     <script>history.scrollRestoration = 'manual'; window.scrollTo(0, 0);</script>
-    <script src="js/sonido.js"></script>
+    <script src="js/sonido.js?v=1.2.6.1"></script>
 
 </head>
 
@@ -56,93 +56,6 @@
             </div>
         </div>
     </div>
-
-    <!-- ==================== PANTALLA DE PRE-LANZAMIENTO ==================== -->
-    <div id="pantallaPreLaunch" class="oculta" style="display:none;">
-        <div class="prelaunchOverlay"></div>
-
-        <div class="prelaunchCard">
-            <!-- Botón de cambio de tema -->
-            <button type="button" id="btnToggleTemaPrelaunch" class="btnToggleTemaPrelaunch"
-                title="Cambiar modo día/noche">
-                <span class="iconoTemaPrelaunchSol">☀️</span>
-                <span class="iconoTemaPrelaunchLuna">🌙</span>
-            </button>
-
-            <!-- Cabecera -->
-            <div class="prelaunchHeader">
-                <div class="prelaunchLogos">
-                    <img src="img/logo/logo1.webp" alt="Logo LOT-LAB Sims 4" class="prelaunchLogo1">
-                    <span class="prelaunchBy">By</span>
-                    <img src="img/logo/logo2.webp" alt="Ozono96 Logo" class="prelaunchLogo2">
-                </div>
-                <h1>LOT-LAB Sims 4</h1>
-                <p class="prelaunchSubtitle">Encuentra cualquier solar del juego fácilmente<br>y crea retos divertidos
-                    para construir &amp; more...</p>
-            </div>
-
-            <!-- Cuenta Atrás -->
-            <div class="prelaunchCountdownWrapper">
-                <div class="prelaunchCountdownTitle">⏳ Lanzamiento Oficial</div>
-                <div class="prelaunchCountdownGrid">
-                    <div class="countdownBlock">
-                        <span class="countdownNum" id="prelaunchDias">00</span>
-                        <span class="countdownLabel">Días</span>
-                    </div>
-                    <div class="countdownBlock">
-                        <span class="countdownNum" id="prelaunchHoras">00</span>
-                        <span class="countdownLabel">Horas</span>
-                    </div>
-                    <div class="countdownBlock">
-                        <span class="countdownNum" id="prelaunchMinutos">00</span>
-                        <span class="countdownLabel">Min</span>
-                    </div>
-                    <div class="countdownBlock">
-                        <span class="countdownNum" id="prelaunchSegundos">00</span>
-                        <span class="countdownLabel">Seg</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Formulario de Acceso Anticipado -->
-            <div class="prelaunchFormSection">
-                <div class="prelaunchFormTitle">
-                    <span>🔐</span> Acceso Anticipado
-                </div>
-
-                <form id="formAccesoPrelaunch" class="prelaunchForm" autocomplete="off">
-                    <div class="formGroup">
-                        <label for="inputPrelaunchUser">Usuario</label>
-                        <div class="inputWrapper">
-                            <span class="inputIcon">👤</span>
-                            <input type="text" id="inputPrelaunchUser" class="prelaunchInput"
-                                placeholder="Introduce tu nombre de usuario" required autocomplete="username">
-                        </div>
-                    </div>
-
-                    <div class="formGroup">
-                        <label for="inputPrelaunchPass">Contraseña</label>
-                        <div class="inputWrapper">
-                            <span class="inputIcon">🔑</span>
-                            <input type="password" id="inputPrelaunchPass" class="prelaunchInput"
-                                placeholder="Introduce tu contraseña de acceso" required
-                                autocomplete="current-password">
-                            <button type="button" id="btnTogglePasswordPrelaunch" class="btnTogglePassword"
-                                title="Mostrar/ocultar contraseña">👁️</button>
-                        </div>
-                    </div>
-
-                    <button type="submit" id="btnAccederPrelaunch" class="btnAccederPrelaunch">
-                        <span id="btnAccederTexto">🚀 Entrar a LOT-LAB</span>
-                        <span id="btnAccederSpinner" class="spinnerAcceso" style="display:none;"></span>
-                    </button>
-                </form>
-
-                <div id="prelaunchMensaje" class="prelaunchMensaje"></div>
-            </div>
-        </div>
-    </div>
-    <!-- ==================== FIN PANTALLA PRE-LANZAMIENTO ==================== -->
 
 
     <header>
@@ -867,7 +780,8 @@
                                 <div
                                     style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
                                     <h3 style="margin: 0;">⚙️ Configuración de Desastres</h3>
-                                    <button type="button" id="btnToggleTodosDesastres" class="botonSecundario" data-estado="desmarcado">
+                                    <button type="button" id="btnToggleTodosDesastres" class="botonSecundario"
+                                        data-estado="desmarcado">
                                         Marcar todos
                                     </button>
                                 </div>
@@ -1128,10 +1042,10 @@
                     <button class="cerrar">
                         ✕
                     </button>
-                    <h2>👋 ¡Bienvenido a LOT-LAB Sims 4!</h2>
+                    <h2 id="acercaDeH2">👋 ¡Bienvenido a LOT-LAB Sims 4!</h2>
                 </div>
 
-                <div style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 20px;">
+                <div id="acercaDeContenido" style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 20px;">
                     <p style="margin-bottom: 12px;">Esta página web ha sido creada para ayudarte a encontrar cualquier
                         solar de <strong>Los Sims 4</strong> de una forma rápida, cómoda e intuitiva.</p>
 
@@ -2657,7 +2571,7 @@
                     </button>
                     <button class="cerrar">✕</button>
 
-                    <h2>📊 Estadísticas Sims 4</h2>
+                    <h2>📈 Estadísticas Sims 4</h2>
                 </div>
 
                 <!-- BLOQUE RESUMEN (cards + panel tiempo) estilo ventana -->
@@ -3350,55 +3264,85 @@
                     </div>
                 </div>
             </div>
-            <!-- ==================== FIN VENTANA 404 ==================== -->
+            <!-- ==================== VENTANA TIER LIST ==================== -->
+            <div id="ventanaTierList" class="ventana" style="display:none;">
+
+                <div class="cabeceraVentana">
+                    <button class="compartir" id="tierlistBtnCompartir" data-tooltip="Compartir enlace"
+                        aria-label="Compartir enlace" style="display:none;">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z" />
+                        </svg>
+                    </button>
+                    <button class="captura" id="tierlistBtnCapturar" data-tooltip="Capturar Tier List"
+                        aria-label="Capturar" style="display:none;">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" />
+                            <path
+                                d="M9 3 7.17 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.17L15 3H9zm3 14a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" />
+                        </svg>
+                    </button>
+                    <button class="cerrar" id="tierlistBtnCerrar">✕</button>
+
+                    <h2>📊 Tier List</h2>
+                </div>
+
+                <div id="tierlistContenidoDinamico"></div>
+
+            </div>
+            <!-- ==================== FIN VENTANA TIER LIST ==================== -->
 
         </section>
 
     </main>
 
-    <script src="js/loading.js"></script>
-    <script src="js/config.js"></script>
-    <script src="js/auth-prelaunch.js"></script>
-    <script src="js/database.js"></script>
-    <script src="js/sheets.js"></script>
-    <script src="js/render.js"></script>
-    <script src="js/solarFicha.js"></script>
-    <script src="js/ruleta-colores.js"></script>
-    <script src="js/dados.js"></script>
-    <script src="js/trucos.js"></script>
-    <script src="js/solarGaleria.js"></script>
-    <script src="js/filterInfo.js"></script>
-    <script src="js/filterLogic.js"></script>
-    <script src="js/filterUI.js"></script>
-    <script src="js/filterCore.js"></script>
-    <script src="js/buscadorNombre.js"></script>
-    <script src="js/filters.js"></script>
-    <script src="js/ruleta-desastres.js"></script>
-    <script src="js/navigation-config.js"></script>
-    <script src="js/navigation.js"></script>
-    <script src="js/analytics-navigation.js"></script>
-    <script src="js/retos.js"></script>
-    <script src="js/reto-modulos.js"></script>
-    <script src="js/reto-solar.js"></script>
-    <script src="js/reto-etapas.js"></script>
-    <script src="js/reto-limitantes.js"></script>
-    <script src="js/reto-submenus.js"></script>
-    <script src="js/reto-generador.js"></script>
-    <script src="js/reto-resultado-ui.js"></script>
-    <script src="js/temporizador.js"></script>
-    <script src="js/acercade.js"></script>
+    <script src="js/loading.js?v=1.2.6.1"></script>
+    <script src="js/config.js?v=1.2.6.1"></script>
+    <script src="js/database.js?v=1.2.6.1"></script>
+    <script src="js/sheets.js?v=1.2.6.1"></script>
+    <script src="js/render.js?v=1.2.6.1"></script>
+    <script src="js/solarFicha.js?v=1.2.6.1"></script>
+    <script src="js/ruleta-colores.js?v=1.2.6.1"></script>
+    <script src="js/dados.js?v=1.2.6.1"></script>
+    <script src="js/trucos.js?v=1.2.6.1"></script>
+    <script src="js/solarGaleria.js?v=1.2.6.1"></script>
+    <script src="js/filterInfo.js?v=1.2.6.1"></script>
+    <script src="js/filterLogic.js?v=1.2.6.1"></script>
+    <script src="js/filterUI.js?v=1.2.6.1"></script>
+    <script src="js/filterCore.js?v=1.2.6.1"></script>
+    <script src="js/buscadorNombre.js?v=1.2.6.1"></script>
+    <script src="js/filters.js?v=1.2.6.1"></script>
+    <script src="js/ruleta-desastres.js?v=1.2.6.1"></script>
+    <script src="js/navigation-config.js?v=1.2.6.1"></script>
+    <script src="js/navigation.js?v=1.2.6.1"></script>
+    <script src="js/analytics-navigation.js?v=1.2.6.1"></script>
+    <script src="js/retos.js?v=1.2.6.1"></script>
+    <script src="js/reto-modulos.js?v=1.2.6.1"></script>
+    <script src="js/reto-solar.js?v=1.2.6.1"></script>
+    <script src="js/reto-etapas.js?v=1.2.6.1"></script>
+    <script src="js/reto-limitantes.js?v=1.2.6.1"></script>
+    <script src="js/reto-submenus.js?v=1.2.6.1"></script>
+    <script src="js/reto-generador.js?v=1.2.6.1"></script>
+    <script src="js/reto-resultado-ui.js?v=1.2.6.1"></script>
+    <script src="js/temporizador.js?v=1.2.6.1"></script>
+    <script src="js/acercade-cms.js?v=1.2.6.1"></script>
+    <script src="js/trucos-cms.js?v=1.2.6.1"></script>
+    <script src="js/acercade.js?v=1.2.6.1"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="js/compartir.js"></script>
-    <script src="js/estadisticas.js"></script>
-    <script src="js/carrusel-random.js"></script>
-    <script src="js/habilidades.js"></script>
-    <script src="js/packs-azar.js"></script>
-    <script src="js/mundos-azar.js"></script>
-    <script src="js/app.js"></script>
-    <script src="js/theme.js"></script>
-    <script src="js/menu-flotante.js"></script>
+    <script src="js/compartir.js?v=1.2.6.1"></script>
+    <script src="js/estadisticas.js?v=1.2.6.1"></script>
+    <script src="js/carrusel-random.js?v=1.2.6.1"></script>
+    <script src="js/habilidades.js?v=1.2.6.1"></script>
+    <script src="js/packs-azar.js?v=1.2.6.1"></script>
+    <script src="js/mundos-azar.js?v=1.2.6.1"></script>
+    <script src="js/tier-list.js?v=1.2.6.1"></script>
+    <script src="js/tier-list-ui.js?v=1.2.6.1"></script>
+    <script src="js/app.js?v=1.2.6.1"></script>
+    <script src="js/theme.js?v=1.2.6.1"></script>
+    <script src="js/menu-flotante.js?v=1.2.6.1"></script>
     <div id="google_translate_element" style="display:none;"></div>
-    <script src="js/idioma.js"></script>
+    <script src="js/idioma.js?v=1.2.6.1"></script>
     <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <footer class="footer">
@@ -3552,7 +3496,7 @@
             </div>
 
             <p>
-                El unico buscador de Solares y generador de retos para construir en Los Sims 4 - Versión 1.2.5
+                El unico buscador de Solares y generador de retos para construir en Los Sims 4 - Versión 1.2.6
 
 
             </p>
@@ -3611,8 +3555,8 @@
 
     </footer>
 
-    <!-- Tooltip para opciones del reto -->
-    <div id="tooltipOpciones" class="tooltip"></div>
+    <!-- Tooltip global con estilo de LOT-LAB (Estadísticas Sims 4) -->
+    <div id="tooltipOpciones" class="tooltip estatGraficoTooltip"></div>
 
     <!-- MODAL FLOTANTE DE SELECCIÓN DE PACKS POR CATEGORÍA (MODO DESPLEGABLE) -->
     <div id="modalPacksCategoria" class="modalPacksFlotante">
@@ -3786,8 +3730,8 @@
     </div>
 
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-    <script src="js/obs.js"></script>
-    <script src="js/agradecimientos.js"></script>
+    <script src="js/obs.js?v=1.2.6.1"></script>
+    <script src="js/agradecimientos.js?v=1.2.6.1"></script>
 </body>
 
 

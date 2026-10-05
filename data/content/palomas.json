@@ -1,0 +1,22 @@
+{
+  "id": "palomas",
+  "titulo": "palomas",
+  "slug": "palomas",
+  "estado": "borrador",
+  "ruta": "juegos/palomas",
+  "creadoEl": "2026-10-04T09:31:16.306Z",
+  "modificadoEl": "2026-10-04T09:31:24.990Z",
+  "bloques": [
+    {
+      "id": "b_1791106276306_tit",
+      "tipo": "titulo",
+      "contenido": "palomas",
+      "nivel": 2
+    },
+    {
+      "id": "b_1791106276306_txt",
+      "tipo": "texto",
+      "contenido": "Contenido de palomas. Puedes editar este texto o añadir nuevos bloques desde la paleta."
+    }
+  ]
+}

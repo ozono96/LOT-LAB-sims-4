@@ -1,0 +1,165 @@
+{
+  "id": "acerca-de",
+  "titulo": "👋 ¡Bienvenido a LOT-LAB Sims 4!",
+  "slug": "acerca-de",
+  "estado": "publicado",
+  "ruta": "inicio/acerca-de",
+  "creadoEl": "2026-09-24T00:00:00.000Z",
+  "modificadoEl": "2026-10-03T22:36:10.833Z",
+  "bloques": [
+    {
+      "id": "b_acerca_tit1",
+      "tipo": "titulo",
+      "contenido": "👋 ¡Bienvenido a LOT-LAB Sims 4!",
+      "nivel": 2,
+      "fontSize": "36px"
+    },
+    {
+      "id": "b_1790233726034",
+      "tipo": "espacio",
+      "altura": "20px"
+    },
+    {
+      "id": "b_1790238902642",
+      "tipo": "titulo",
+      "contenido": "🧪 Sobre LOT-LAB Sims 4",
+      "nivel": 3,
+      "fontSize": "28px"
+    },
+    {
+      "id": "b_acerca_txt1",
+      "tipo": "texto",
+      "contenido": "Esta página web ha sido creada para ayudarte a encontrar cualquier solar de Los Sims 4 de una forma rápida, cómoda e intuitiva.<br><br>Podrás buscar solares utilizando múltiples filtros, descubrir construcciones al azar, consultar el listado completo de solares del juego y disfrutar de un completo Modo Retos, pensado para poner a prueba tu creatividad como creador.<br><br>Toda la información se mantiene actualizada mediante una base de datos centralizada, permitiendo incorporar nuevos contenidos y packs de forma sencilla conforme el juego siga creciendo.",
+      "textAlign": "justify"
+    },
+    {
+      "id": "b_1791046902762_p1",
+      "tipo": "texto",
+      "contenido": "Texto adaptable en columna izquierda..."
+    },
+    {
+      "id": "b_1791066966459",
+      "tipo": "separador"
+    },
+    {
+      "id": "buscador_1791066872031",
+      "tipo": "buscador",
+      "placeholder": "Busca dentro de toda la web el termino que quieras.",
+      "ambito": "todo",
+      "ancho": "100%",
+      "alto": "62px"
+    },
+    {
+      "id": "b_1790233863943",
+      "tipo": "separador",
+      "ancho": "100%",
+      "alto": ""
+    },
+    {
+      "id": "b_1790238962370",
+      "tipo": "espacio",
+      "altura": "16px"
+    },
+    {
+      "id": "b_acerca_tit2",
+      "tipo": "titulo",
+      "contenido": "🎮 Sobre mí",
+      "nivel": 3,
+      "fontSize": "28px"
+    },
+    {
+      "id": "b_acerca_txt2",
+      "tipo": "texto",
+      "contenido": "¡Hola! Soy Ozono96, creador de contenido especializado en Los Sims 4 y un apasionado de la construcción.<br><br>En mi canal comparto tutoriales, retos, curiosidades, consejos y proyectos relacionados con el juego, además de herramientas como esta, creadas para ayudar a toda la comunidad.<br><br>Si te gusta construir o simplemente quieres descubrir nuevas ideas para tus partidas, estaré encantado de que te unas a la comunidad.<br><br>🎥 Puedes visitar mi canal de YouTube desde cualquiera de estos videos y también al final de la página encontrarás enlaces a otras redes sociales.",
+      "textAlign": "justify",
+      "ancho": "100%",
+      "alto": ""
+    },
+    {
+      "id": "b_acerca_sep1",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_acerca_videos",
+      "tipo": "carrusel-videos",
+      "titulo": "Vídeos destacados mi canal Ozono 96",
+      "videos": [
+        "p2AcmNNJyL4",
+        "9pZkYub2bUc",
+        "FfKn9KNWu2w",
+        "ZmaXZFk0iNs",
+        "tYRgqTsAj4w",
+        "Hxpdoo_lnwc",
+        "SdL7_hgM73A",
+        "mWw9CyfysMk",
+        "65n8_WzLhao",
+        "aq3f9XkyGXg",
+        "3KWwAJsUzhY",
+        "G2HRpJkjo0w"
+      ],
+      "items": [
+        {
+          "tipo": "video",
+          "youtubeId": "p2AcmNNJyL4"
+        },
+        {
+          "tipo": "video",
+          "youtubeId": "9pZkYub2bUc"
+        },
+        {
+          "tipo": "video",
+          "youtubeId": "FfKn9KNWu2w"
+        },
+        {
+          "tipo": "video",
+          "youtubeId": "ZmaXZFk0iNs"
+        },
+        {
+          "tipo": "video",
+          "youtubeId": "tYRgqTsAj4w"
+        },
+        {
+          "tipo": "video",
+          "youtubeId": "Hxpdoo_lnwc"
+        },
+        {
+          "tipo": "video",
+          "youtubeId": "SdL7_hgM73A"
+        },
+        {
+          "tipo": "video",
+          "youtubeId": "mWw9CyfysMk"
+        },
+        {
+          "tipo": "video",
+          "youtubeId": "65n8_WzLhao"
+        },
+        {
+          "tipo": "video",
+          "youtubeId": "aq3f9XkyGXg"
+        },
+        {
+          "tipo": "playlist",
+          "playlistId": "PL0f5dKZfLQcyGaz0OuS1XH1o5QQMlZ9ny",
+          "coverVideoId": "",
+          "playlistTitle": "sims 4 construcciones",
+          "titulo": "sims 4 construcciones",
+          "nombre": "sims 4 construcciones",
+          "coverUrl": "https://i.ytimg.com/vi/LQrFa5qzoOg/hqdefault.jpg"
+        },
+        {
+          "tipo": "video",
+          "youtubeId": "3KWwAJsUzhY"
+        },
+        {
+          "tipo": "video",
+          "youtubeId": "G2HRpJkjo0w"
+        }
+      ]
+    },
+    {
+      "id": "b_1790237312080",
+      "tipo": "separador"
+    }
+  ]
+}

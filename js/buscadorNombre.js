@@ -15,11 +15,22 @@ function hayBusquedaNombreActiva() {
     return busquedaNombreSolar.trim().length > 0;
 }
 
+function normalizarTextoBusquedaSolar(texto) {
+    if (!texto) return "";
+    return String(texto)
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[¡!¿?.,:;\-_'"«»“”‘’(){}\[\]\\\/|@#$%^&*+=<>~`]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
 function obtenerResultadosPorNombre() {
-    const termino = busquedaNombreSolar.trim().toLowerCase();
+    const termino = normalizarTextoBusquedaSolar(busquedaNombreSolar);
     if (!termino) return [];
     return database.solares.filter(solar =>
-        (solar.nombre || "").toLowerCase().includes(termino)
+        normalizarTextoBusquedaSolar(solar.nombre).includes(termino)
     );
 }
 

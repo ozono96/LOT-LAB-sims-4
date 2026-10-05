@@ -31,19 +31,20 @@ document.addEventListener("DOMContentLoaded", () => {
         const esNoche = body.classList.contains("modo-noche");
 
         if (esNoche) {
-
             body.classList.remove("modo-noche");
             body.classList.add("modo-dia");
             localStorage.setItem("modoTema", "dia");
-
         } else {
-
             body.classList.remove("modo-dia");
             body.classList.add("modo-noche");
             localStorage.setItem("modoTema", "noche");
-
         }
 
+        if (typeof window.ocultarResumenSolar === "function") window.ocultarResumenSolar();
+        const tf = document.getElementById("tooltipFiltro");
+        if (tf) tf.style.display = "none";
+        const to = document.getElementById("tooltipOpciones");
+        if (to) to.style.display = "none";
     });
 
 });

@@ -1,0 +1,178 @@
+{
+  "id": "trucos-cas",
+  "titulo": "💇 Trucos del CAS",
+  "slug": "trucos-cas",
+  "estado": "publicado",
+  "ruta": "herramientas/trucos/cas",
+  "creadoEl": "2026-09-25T14:10:09.677Z",
+  "modificadoEl": "2026-10-04T14:03:34.134Z",
+  "bloques": [
+    {
+      "id": "b_tcas_h2",
+      "tipo": "titulo",
+      "contenido": "💇 Trucos del CAS",
+      "nivel": 2
+    },
+    {
+      "id": "b_tcas_h3_intro",
+      "tipo": "titulo",
+      "contenido": "Trucos para Crear un Sim (CAS)",
+      "nivel": 3,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tcas_p_intro",
+      "tipo": "texto",
+      "contenido": "Uno de los mayores atractivos de Los Sims 4 es la enorme libertad que ofrece el editor Crear un Sim, conocido por la comunidad como CAS (Create A Sim). Gracias a él puedes personalizar prácticamente cualquier aspecto de tus personajes, desde el color de los ojos hasta la forma del rostro, la complexión física, la voz o el estilo de vestir.<br><br>Sin embargo, cuando un Sim ya forma parte de una partida, el juego limita muchas de estas opciones para evitar cambios que puedan afectar al desarrollo normal de la familia. Por ejemplo, no es posible modificar su edad, cambiar determinados rasgos o rehacer completamente su aspecto sin recurrir a los trucos.<br><br>Afortunadamente, existen varios comandos que eliminan estas restricciones y permiten acceder a funciones avanzadas del editor. Si te gusta crear historias, rediseñar personajes o corregir errores después de empezar una partida, estos son los códigos que debes conocer."
+    },
+    {
+      "id": "b_tcas_sep_1",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_tcas_h4_fulledit",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">cas.fulleditmode</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tcas_p_fulledit_desc",
+      "tipo": "texto",
+      "contenido": "Este es, sin duda, el truco más importante relacionado con Crear un Sim.<br><br>Al activarlo, el editor deja de estar limitado y permite modificar prácticamente cualquier aspecto de un Sim que ya exista en la partida.<br><br>Sin este comando, cuando utilizas un espejo o una cómoda únicamente puedes cambiar elementos estéticos como el peinado, el maquillaje o la ropa. En cambio, con cas.fulleditmode podrás acceder al editor completo, igual que si estuvieras creando un Sim desde cero."
+    },
+    {
+      "id": "b_tcas_p_fulledit_modifica",
+      "tipo": "texto",
+      "contenido": "<strong>¿Qué permite modificar?</strong><br>Con este truco podrás cambiar:"
+    },
+    {
+      "id": "b_tcas_p_fulledit_uso",
+      "tipo": "texto",
+      "contenido": "<strong>¿Cómo se utiliza?</strong><br>Primero activa:"
+    },
+    {
+      "id": "b_tcas_c_testing_1",
+      "tipo": "cuadro-copiable",
+      "contenido": "testingcheats true",
+      "alineacion": "center"
+    },
+    {
+      "id": "b_tcas_p_fulledit_paso2",
+      "tipo": "texto",
+      "contenido": "Después escribe:"
+    },
+    {
+      "id": "b_tcas_c_fulledit",
+      "tipo": "cuadro-copiable",
+      "contenido": "cas.fulleditmode",
+      "alineacion": "center"
+    },
+    {
+      "id": "b_tcas_p_fulledit_shift",
+      "tipo": "texto",
+      "contenido": "Ahora mantén pulsada la tecla Shift y haz clic sobre el Sim que quieras modificar.<br>Selecciona la opción Modificar en Crear un Sim.<br>Se abrirá el editor completo con todas las opciones desbloqueadas.<br><br><strong>¿Depende de otro truco?</strong><br>Sí. Debes activar previamente <span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">testingcheats true</span>.<br><br><strong>¿Cuándo utilizarlo?</strong><br>Es perfecto para:"
+    },
+    {
+      "id": "b_tcas_sep_2",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_tcas_h4_unlocktag",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">cas.unlockbytag</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tcas_p_unlocktag_desc",
+      "tipo": "texto",
+      "contenido": "Durante muchos años algunos peinados, accesorios y prendas permanecieron ocultos para los jugadores porque estaban ligados a determinados packs o eventos internos del juego.<br><br>Con la llegada de nuevos contenidos, Maxis añadió el comando cas.unlockbytag, que permite desbloquear parte de estos objetos utilizando las etiquetas internas de cada expansión.<br><br><strong>¿Qué desbloquea?</strong><br>Dependiendo del contenido instalado, este truco puede hacer visibles:"
+    },
+    {
+      "id": "b_tcas_c_tag_ep01",
+      "tipo": "cuadro-copiable",
+      "contenido": "cas.unlockbytag EP01",
+      "alineacion": "center"
+    },
+    {
+      "id": "b_tcas_p_tag_gp",
+      "tipo": "texto",
+      "contenido": "o bien"
+    },
+    {
+      "id": "b_tcas_c_tag_gp05",
+      "tipo": "cuadro-copiable",
+      "contenido": "cas.unlockbytag GP05",
+      "alineacion": "center"
+    },
+    {
+      "id": "b_tcas_p_tag_sp",
+      "tipo": "texto",
+      "contenido": "También funciona con packs de accesorios:"
+    },
+    {
+      "id": "b_tcas_c_tag_sp17",
+      "tipo": "cuadro-copiable",
+      "contenido": "cas.unlockbytag SP17",
+      "alineacion": "center"
+    },
+    {
+      "id": "b_tcas_p_tag_explicacion",
+      "tipo": "texto",
+      "contenido": "<strong>¿Qué significan EP, GP y SP?</strong><br>Los identificadores utilizados por el juego siguen una nomenclatura bastante sencilla:<br>EP corresponde a una expansión (Expansion Pack).<br>GP hace referencia a un pack de contenido (Game Pack).<br>SP identifica un pack de accesorios (Stuff Pack).<br>Cada uno va acompañado de un número que identifica el contenido concreto.<br><br><strong>¿Depende de otro truco?</strong><br>Sí. Necesita activar previamente <span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">testingcheats true</span>.<br><br><strong>Importante:</strong> Este comando no desbloquea absolutamente toda la ropa del juego. Solo funciona con el contenido que utiliza el sistema moderno de etiquetas implementado por Maxis. Por ello algunos atuendos antiguos continúan bloqueados y únicamente pueden obtenerse progresando en determinadas profesiones o mediante contenido personalizado."
+    },
+    {
+      "id": "b_tcas_sep_3",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_tcas_h4_careeroutfit",
+      "tipo": "titulo",
+      "contenido": "<span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">sims.modify_career_outfit_in_cas</span>",
+      "nivel": 4,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tcas_p_career_desc",
+      "tipo": "texto",
+      "contenido": "Este truco permite editar el uniforme de trabajo del Sim activo directamente desde Crear un Sim.<br><br>Es especialmente útil para quienes desean que sus personajes mantengan un estilo determinado incluso durante su jornada laboral.<br><br><strong>¿Qué puede modificarse?</strong><br>Podrás cambiar:"
+    },
+    {
+      "id": "b_tcas_p_career_uso",
+      "tipo": "texto",
+      "contenido": "<strong>¿Cómo utilizarlo?</strong><br>Activa primero testingcheats true y escribe:"
+    },
+    {
+      "id": "b_tcas_c_career",
+      "tipo": "cuadro-copiable",
+      "contenido": "sims.modify_career_outfit_in_cas",
+      "alineacion": "center"
+    },
+    {
+      "id": "b_tcas_p_career_profesiones",
+      "tipo": "texto",
+      "contenido": "El juego abrirá automáticamente el editor correspondiente al uniforme profesional.<br><br><strong>¿Depende de otro truco?</strong><br>Sí. Requiere <span class=\"truco-copiable\" data-tooltip=\"Pulsa para copiar\">testingcheats true</span>.<br><br><strong>¿En qué profesiones resulta más útil?</strong><br>Muchos jugadores lo utilizan con carreras como:"
+    },
+    {
+      "id": "b_tcas_sep_4",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_tcas_h3_faq",
+      "tipo": "titulo",
+      "contenido": "Preguntas frecuentes sobre los trucos de CAS",
+      "nivel": 3,
+      "fontSize": "1.4rem"
+    },
+    {
+      "id": "b_tcas_p_faq_galeria",
+      "tipo": "texto",
+      "contenido": "<strong>¿Puedo modificar un Sim descargado de la Galería?</strong><br>Sí. Una vez añadido a tu partida puedes utilizar cas.fulleditmode para cambiar cualquier aspecto de ese personaje.<br><br><strong>¿Se pierden las relaciones familiares?</strong><br>No. Modificar el aspecto físico o la personalidad de un Sim no elimina automáticamente sus relaciones familiares ni sus amistades.<br><br><strong>¿Puedo cambiar la edad?</strong><br>Sí. Es una de las funciones más utilizadas de cas.fulleditmode. Podrás convertir un anciano en adulto, un adulto en adolescente o modificar cualquier etapa de la vida.<br><br><strong>¿Existe un truco para desbloquear toda la ropa del juego?</strong><br>No exactamente. Muchos jugadores creen que existe un código universal para desbloquear todos los atuendos, pero actualmente no hay un comando oficial que haga esto con todas las prendas de todas las expansiones. Algunos objetos pueden desbloquearse mediante cas.unlockbytag, mientras que otros siguen estando asociados a profesiones concretas o a recompensas específicas del juego.<br><br><strong>¿Puedo cambiar los rasgos de personalidad?</strong><br>Sí. Siempre que hayas activado cas.fulleditmode, podrás modificar los rasgos, la aspiración principal y otros aspectos de la personalidad del Sim.<br><br>Con estos trucos de Crear un Sim podrás personalizar tus personajes con mucha más libertad y corregir prácticamente cualquier detalle de una partida ya iniciada."
+    },
+    {
+      "id": "b_tcas_sep_5",
+      "tipo": "separador"
+    }
+  ]
+}

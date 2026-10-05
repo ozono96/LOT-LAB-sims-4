@@ -91,7 +91,10 @@ async function capturarElemento(elemento, nombreArchivoBase = "LotLab_Captura") 
     if (!elemento) return;
 
     // Ocultar botones de compartir/captura/cerrar internos durante la captura
-    const botonesOcultar = elemento.querySelectorAll(".compartir, .captura, .compartirSeccion, .cabeceraVentana");
+    const selectorOcultar = (elemento.id === "ventanaTierList")
+        ? ".compartir, .captura, .cerrar, .compartirSeccion"
+        : ".compartir, .captura, .cerrar, .compartirSeccion, .cabeceraVentana";
+    const botonesOcultar = elemento.querySelectorAll(selectorOcultar);
     const estadosOriginales = [];
     botonesOcultar.forEach(btn => {
         estadosOriginales.push({ el: btn, display: btn.style.display });
@@ -123,8 +126,10 @@ async function capturarElemento(elemento, nombreArchivoBase = "LotLab_Captura") 
     });
 
     const paddingBottomOriginal = elemento.style.paddingBottom;
-    const computedPadBottom = parseFloat(window.getComputedStyle(elemento).paddingBottom) || 0;
-    elemento.style.paddingBottom = (computedPadBottom + 50) + "px";
+    // Calcular base solo desde el inline style previo, no desde computedStyle,
+    // para evitar que capturas sucesivas acumulen el padding CSS de la hoja.
+    const paddingBottomBase = parseFloat(paddingBottomOriginal) || 0;
+    elemento.style.paddingBottom = (paddingBottomBase + 36) + "px";
 
     // Añadir marca de agua derecha (Autor)
     const marcaAguaDerecha = document.createElement("div");

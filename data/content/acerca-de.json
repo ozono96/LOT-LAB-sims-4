@@ -5,7 +5,15 @@
   "estado": "publicado",
   "ruta": "inicio/acerca-de",
   "creadoEl": "2026-09-24T00:00:00.000Z",
-  "modificadoEl": "2026-10-03T22:36:10.833Z",
+  "modificadoEl": "2026-10-10T23:27:06.471Z",
+  "margenes": {
+    "heredar": false,
+    "superior": 31,
+    "inferior": 42,
+    "izquierdo": 53,
+    "derecho": 60,
+    "unidad": "px"
+  },
   "bloques": [
     {
       "id": "b_acerca_tit1",

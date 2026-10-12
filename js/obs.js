@@ -56,6 +56,19 @@
         if (!isObsMode) return;
         
         document.body.classList.add('modo-obs');
+        document.documentElement.classList.add('modo-obs');
+        document.documentElement.style.backgroundColor = 'transparent';
+        document.documentElement.style.backgroundImage = 'none';
+        document.body.style.backgroundColor = 'transparent';
+        document.body.style.backgroundImage = 'none';
+
+        // Eliminar del DOM capas decorativas de fondo y efectos ambientales para no capturarlos en OBS
+        const fondoCapas = document.getElementById('contenedorCapasFondo');
+        if (fondoCapas) fondoCapas.remove();
+        const efectosTema = document.getElementById('contenedorEfectosTema');
+        if (efectosTema) efectosTema.remove();
+        const dockTest = document.getElementById('lotlabDockTestTemas');
+        if (dockTest) dockTest.remove();
         // Clases visuales
         document.body.classList.remove('obs-pos-left', 'obs-pos-center', 'obs-pos-right');
         document.body.classList.add('obs-pos-' + (obsConfig.pos || 'right'));
@@ -856,20 +869,22 @@
         let uiTimeout = null;
 
         const observer = new MutationObserver(mutations => {
-            if (window.esSincronizacionOBS || !isMaster) return;
+            if (window.esSincronizacionOBS || !isMaster || conexionesActivas.length === 0) return;
 
             let changed = false;
+            const dynamicContainersToSync = new Set();
+            const containerSelector = DYNAMIC_HTML_CONTAINERS.map(id => "#" + id).join(", ");
 
             mutations.forEach(m => {
                 const target = m.target;
                 
                 // Ignorar cambios del propio observer (branding)
-                if (target.id === 'obsBrandingLayer' || target.closest('#obsBrandingLayer') || target.classList?.contains('obsBrandingLayer') || target.closest('.obsBrandingLayer')) return;
+                if (target.id === 'obsBrandingLayer' || (target.closest && target.closest('#obsBrandingLayer')) || target.classList?.contains('obsBrandingLayer') || (target.closest && target.closest('.obsBrandingLayer'))) return;
 
                 if (m.type === 'attributes') {
                     // Filtrar manualmente: solo nos interesan class y style
                     if (m.attributeName !== 'class' && m.attributeName !== 'style') return;
-                    if (target.matches(SYNC_SELECTORS)) {
+                    if (target.matches && target.matches(SYNC_SELECTORS)) {
                         const syncId = target.getAttribute('data-sync-id') || obtenerIdSyncDeterminista(target);
                         if (syncId) {
                             if (!target.getAttribute('data-sync-id')) target.setAttribute('data-sync-id', syncId);
@@ -881,15 +896,21 @@
                         }
                     }
                 } else if (m.type === 'childList' || m.type === 'characterData') {
-                    const dynamicContainer = target.closest(DYNAMIC_HTML_CONTAINERS.map(id => "#"+id).join(", "));
+                    const dynamicContainer = target.closest ? target.closest(containerSelector) : null;
                     if (dynamicContainer) {
-                        const syncId = dynamicContainer.getAttribute('data-sync-id') || dynamicContainer.id || obtenerIdSyncDeterminista(dynamicContainer);
-                        if (!dynamicContainer.getAttribute('data-sync-id')) dynamicContainer.setAttribute('data-sync-id', syncId);
-                        pendingHTML[syncId] = dynamicContainer.innerHTML;
+                        dynamicContainersToSync.add(dynamicContainer);
                         changed = true;
                     }
                 }
             });
+
+            if (dynamicContainersToSync.size > 0) {
+                dynamicContainersToSync.forEach(container => {
+                    const syncId = container.getAttribute('data-sync-id') || container.id || obtenerIdSyncDeterminista(container);
+                    if (!container.getAttribute('data-sync-id')) container.setAttribute('data-sync-id', syncId);
+                    pendingHTML[syncId] = container.innerHTML;
+                });
+            }
 
             if (changed) {
                 if (uiTimeout) clearTimeout(uiTimeout);
@@ -1017,7 +1038,10 @@
         document.querySelectorAll('.obsBtnBg').forEach(b => b.classList.toggle('activo', b.dataset.val === obsConfig.bg));
 
         const escalaActual = obsConfig.scale !== undefined ? parseInt(obsConfig.scale, 10) : 100;
-        if (sliderEscala) sliderEscala.value = escalaActual;
+        if (sliderEscala) {
+            sliderEscala.value = escalaActual;
+            if (typeof window.actualizarProgresoSlider === 'function') window.actualizarProgresoSlider(sliderEscala);
+        }
         if (valEscala) valEscala.textContent = escalaActual + '%';
 
         if (inputUrlOBS && peerSessionId) inputUrlOBS.value = generarUrlOBS();
@@ -1080,6 +1104,7 @@
                 const val = parseInt(this.value, 10) || 100;
                 obsConfig.scale = val;
                 if (valEscala) valEscala.textContent = val + '%';
+                if (typeof window.actualizarProgresoSlider === 'function') window.actualizarProgresoSlider(this);
                 guardarYNotificarConfigOBS();
             });
         }
@@ -1087,7 +1112,10 @@
         if (btnResetEscala) {
             btnResetEscala.addEventListener('click', function () {
                 obsConfig.scale = 100;
-                if (sliderEscala) sliderEscala.value = 100;
+                if (sliderEscala) {
+                    sliderEscala.value = 100;
+                    if (typeof window.actualizarProgresoSlider === 'function') window.actualizarProgresoSlider(sliderEscala);
+                }
                 if (valEscala) valEscala.textContent = '100%';
                 guardarYNotificarConfigOBS();
             });

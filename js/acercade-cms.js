@@ -137,7 +137,7 @@
                             html += '<p style="margin-bottom:12px;' + textoAlignStyle + textoDimStyle + '">' + pEsc + "</p>\n";
                         });
                     } else {
-                        html += '<p style="margin-bottom:12px;' + textoAlignStyle + textoDimStyle + '">' + contenidoTexto + "</p>\n";
+                        html += '<div class="bloque-texto-cms" style="margin-bottom:12px;' + textoAlignStyle + textoDimStyle + '">' + contenidoTexto + "</div>\n";
                     }
                     break;
 
@@ -576,7 +576,7 @@ case "galeria":
               ".ve-img-frame .ve-img-layer-hover { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; transition: opacity 0.22s ease; }\n" +
               ".ve-img-frame:hover .ve-img-layer-hover { opacity: 1 !important; }\n" +
               ".ve-img-frame.has-hover-glow, .has-hover-glow.ve-img-frame, a:has(.has-hover-glow) { transition: box-shadow 0.25s ease, transform 0.25s ease !important; }\n" +
-              ".ve-img-frame.has-hover-glow:hover, .has-hover-glow.ve-img-frame:hover { box-shadow: 0 0 20px rgba(46, 204, 113, 0.85), 0 0 0 2.5px #2ecc71 !important; transform: translateY(-2px); }\n" +
+              ".ve-img-frame.has-hover-glow:hover, .has-hover-glow.ve-img-frame:hover { box-shadow: 0 0 20px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.85), 0 0 0 2.5px var(--color-resaltado, #2ecc71) !important; transform: translateY(-2px); }\n" +
               "/* Alineación Unificada de Bloques */\n" +
               ".ve-tablon-align-center, .ve-galeria-align-center { margin-left: auto !important; margin-right: auto !important; align-self: center !important; justify-self: center !important; }\n" +
               ".ve-tablon-align-left, .ve-galeria-align-left { margin-left: 0 !important; margin-right: auto !important; align-self: flex-start !important; justify-self: start !important; }\n" +
@@ -598,6 +598,96 @@ case "galeria":
               ".lotlab-lightbox-caption { margin-top: 12px; font-size: 0.95rem; color: #ffd54a; background: rgba(15,17,23,0.85); padding: 6px 16px; border-radius: 20px; border: 1px solid rgba(255,213,74,0.3); text-align: center; max-width: 800px; }";
             document.head.appendChild(st);
         }
+    }
+
+    /* ── Gestión de márgenes configurables y adaptables ── */
+    var globalMargenes = {
+        superior: 20,
+        inferior: 35,
+        izquierdo: 25,
+        derecho: 25,
+        unidad: "px"
+    };
+    var cacheMargenesArchivos = {};
+
+    function cargarConfigMargenesGlobal() {
+        var ruta = "data/settings-margenes.json";
+        fetch(ruta + "?t=" + Date.now())
+            .then(function (r) {
+                if (!r.ok) throw new Error("HTTP " + r.status);
+                return r.json();
+            })
+            .then(function (cfg) {
+                if (cfg && typeof cfg === "object") {
+                    if (typeof cfg.superior === "number") globalMargenes.superior = cfg.superior;
+                    if (typeof cfg.inferior === "number") globalMargenes.inferior = cfg.inferior;
+                    if (typeof cfg.izquierdo === "number") globalMargenes.izquierdo = cfg.izquierdo;
+                    if (typeof cfg.derecho === "number") globalMargenes.derecho = cfg.derecho;
+                    aplicarMargenesGlobalesCSS();
+                }
+            })
+            .catch(function () {
+                // Fallback silencioso con valores por defecto
+            });
+    }
+
+    function aplicarMargenesGlobalesCSS() {
+        if (!document || !document.documentElement) return;
+        document.documentElement.style.setProperty("--margen-superior", globalMargenes.superior + "px");
+        document.documentElement.style.setProperty("--margen-inferior", globalMargenes.inferior + "px");
+        document.documentElement.style.setProperty("--margen-izquierdo", globalMargenes.izquierdo + "px");
+        document.documentElement.style.setProperty("--margen-derecho", globalMargenes.derecho + "px");
+    }
+
+    function aplicarMargenesAContenedor(contEl, cfgMargenes) {
+        if (!contEl) return;
+        if (!cfgMargenes || cfgMargenes.heredar !== false) {
+            // Heredar configuración general
+            contEl.style.removeProperty("--margen-superior");
+            contEl.style.removeProperty("--margen-inferior");
+            contEl.style.removeProperty("--margen-izquierdo");
+            contEl.style.removeProperty("--margen-derecho");
+            contEl.dataset.margenesHeredados = "true";
+        } else {
+            // Márgenes personalizados por página
+            var sup = (cfgMargenes.superior !== undefined && cfgMargenes.superior !== null) ? cfgMargenes.superior : globalMargenes.superior;
+            var inf = (cfgMargenes.inferior !== undefined && cfgMargenes.inferior !== null) ? cfgMargenes.inferior : globalMargenes.inferior;
+            var izq = (cfgMargenes.izquierdo !== undefined && cfgMargenes.izquierdo !== null) ? cfgMargenes.izquierdo : globalMargenes.izquierdo;
+            var der = (cfgMargenes.derecho !== undefined && cfgMargenes.derecho !== null) ? cfgMargenes.derecho : globalMargenes.derecho;
+            contEl.style.setProperty("--margen-superior", sup + "px");
+            contEl.style.setProperty("--margen-inferior", inf + "px");
+            contEl.style.setProperty("--margen-izquierdo", izq + "px");
+            contEl.style.setProperty("--margen-derecho", der + "px");
+            contEl.dataset.margenesHeredados = "false";
+        }
+    }
+
+    // Interceptar fetch de archivos de contenido para memorizar sus márgenes y aplicarlos
+    if (typeof window !== "undefined" && typeof window.fetch === "function") {
+        var _originalFetch = window.fetch;
+        window.fetch = function () {
+            var args = arguments;
+            var url = (args && args[0]) ? String(args[0]) : "";
+            var p = _originalFetch.apply(this, args);
+            if (url.indexOf("data/content/") !== -1 && url.indexOf(".json") !== -1) {
+                p.then(function (res) {
+                    try {
+                        res.clone().json().then(function (data) {
+                            if (data) {
+                                var baseName = url.split("?")[0].replace(/^.*\/data\/content\//, "");
+                                cacheMargenesArchivos[baseName] = data.margenes || { heredar: true };
+                                cacheMargenesArchivos[url.split("?")[0]] = data.margenes || { heredar: true };
+                                var contMatches = document.querySelectorAll('[data-archivo-cargado*="' + baseName + '"]');
+                                contMatches.forEach(function (c) {
+                                    aplicarMargenesAContenedor(c, data.margenes);
+                                });
+                            }
+                        }).catch(function () {});
+                    } catch (e) {}
+                });
+            }
+            return p;
+        };
     }
 
     /* ── Lógica principal de carga ── */
@@ -652,6 +742,7 @@ case "galeria":
 
     if (contenedor && bloquesContenido.length) {
         contenedor.innerHTML = renderizarBloques(bloquesContenido);
+        aplicarMargenesAContenedor(contenedor, data.margenes);
         inicializarGaleriasCMS(contenedor);
     }
 
@@ -742,6 +833,22 @@ case "galeria":
     /* ── Inicializador Interactivo de Galerías en Web Pública ── */
     function inicializarGaleriasCMS(root) {
         var base = root || document;
+        // Sincronizar márgenes en contenedor editable si está asociado a un archivo
+        var contEditable = (base.classList && (base.classList.contains("contenidoPaginaEditable") || base.id === "acercaDeContenido"))
+            ? base
+            : (base.querySelector ? base.querySelector(".contenidoPaginaEditable, #acercaDeContenido") : null);
+        if (contEditable) {
+            var rawArchivo = contEditable.dataset.archivoCargado || "";
+            if (rawArchivo) {
+                var nomSimple = rawArchivo.split("?")[0].replace(/^.*\/data\/content\//, "");
+                if (cacheMargenesArchivos[nomSimple]) {
+                    aplicarMargenesAContenedor(contEditable, cacheMargenesArchivos[nomSimple]);
+                } else if (cacheMargenesArchivos[rawArchivo.split("?")[0]]) {
+                    aplicarMargenesAContenedor(contEditable, cacheMargenesArchivos[rawArchivo.split("?")[0]]);
+                }
+            }
+        }
+
         if (typeof window.inicializarCarruselAcercaDe === "function") {
             window.inicializarCarruselAcercaDe(base);
         }
@@ -896,11 +1003,27 @@ case "galeria":
         inicializarGaleriasCMS: inicializarGaleriasCMS,
         renderImagenFramedPublic: renderImagenFramedPublic,
         abrirLightboxPublico: abrirLightboxPublico,
-        inyectarEstilosCMS: inyectarEstilosCMS
+        inyectarEstilosCMS: inyectarEstilosCMS,
+        aplicarMargenes: aplicarMargenesAContenedor,
+        obtenerMargenesGlobales: function () {
+            return Object.assign({}, globalMargenes);
+        },
+        establecerMargenesGlobales: function (nuevos) {
+            if (nuevos && typeof nuevos === "object") {
+                if (typeof nuevos.superior === "number") globalMargenes.superior = nuevos.superior;
+                if (typeof nuevos.inferior === "number") globalMargenes.inferior = nuevos.inferior;
+                if (typeof nuevos.izquierdo === "number") globalMargenes.izquierdo = nuevos.izquierdo;
+                if (typeof nuevos.derecho === "number") globalMargenes.derecho = nuevos.derecho;
+                aplicarMargenesGlobalesCSS();
+            }
+        }
     };
     window.renderizarBloquesCMS = renderizarBloques;
     window.inicializarGaleriasCMS = inicializarGaleriasCMS;
     window.inyectarEstilosCMS = inyectarEstilosCMS;
+
+    // Cargar configuración de márgenes globales de LOT-LAB inmediatamente
+    cargarConfigMargenesGlobal();
 
     /* ── Ejecutar tras DOMContentLoaded ── */
     if (document && document.readyState === "loading") {

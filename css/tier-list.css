@@ -92,8 +92,8 @@ body.modo-dia .tierlist-card-modo {
 
 .tierlist-card-modo.seleccionado {
     border-color: var(--color-resaltado, #2ECC71);
-    background: rgba(46, 204, 113, 0.1);
-    box-shadow: 0 0 0 1px var(--color-resaltado, #2ECC71), 0 8px 24px rgba(46, 204, 113, 0.25);
+    background: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.12);
+    box-shadow: 0 0 0 1px var(--color-resaltado, #2ECC71), 0 8px 24px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.25);
     transform: translateY(-2px);
 }
 
@@ -217,16 +217,29 @@ body.modo-dia .tierlist-selector-config {
     border-radius: 30px;
     border: none;
     cursor: pointer;
-    box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
     transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
     font-family: inherit;
     letter-spacing: 0.5px;
 }
 
 .tierlist-btn-entrar:hover {
-    background: #27ae60;
+    background: var(--color-resaltado, #2ECC71);
+    filter: brightness(1.1);
     transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 8px 26px rgba(46, 204, 113, 0.5);
+    box-shadow: 0 6px 20px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.45);
+}
+
+.tierlist-btn-entrar:focus-visible {
+    outline: 3px solid var(--color-resaltado, #2ECC71);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 4px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.35);
+}
+
+.tierlist-btn-entrar:active {
+    transform: translateY(0) scale(0.99);
+    filter: brightness(0.95);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* =========================================================

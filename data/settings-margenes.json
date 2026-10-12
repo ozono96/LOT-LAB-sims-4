@@ -1,0 +1,7 @@
+{
+  "superior": 20,
+  "inferior": 35,
+  "izquierdo": 25,
+  "derecho": 25,
+  "unidad": "px"
+}

@@ -1,0 +1,185 @@
+{
+  "modoActivoPredeterminado": "auto",
+  "modos": [
+    {
+      "id": "base",
+      "nombre": "Modo Base (Clásico)",
+      "icono": "🎮",
+      "activo": true,
+      "mostrarControlVisitante": false,
+      "colorResaltado": "#2ECC71",
+      "colorResaltadoRgb": "46, 204, 113",
+      "calendario": {
+        "tipo": "siempre"
+      },
+      "fondoDia": {
+        "colorFondo": "#F3EEE3",
+        "capas": [
+          {
+            "id": "capa_base_dia_1",
+            "nombre": "Mosaico clásico día",
+            "visible": true,
+            "imagen": "img/fondos/fondo_dia-1.webp",
+            "desplazamiento": "scroll",
+            "repeticion": "repeat",
+            "posicion": "top center",
+            "tamano": "100% auto",
+            "opacidad": 1,
+            "orden": 1
+          }
+        ]
+      },
+      "fondoNoche": {
+        "colorFondo": "#242868",
+        "capas": [
+          {
+            "id": "capa_base_noche_1",
+            "nombre": "Mosaico clásico noche",
+            "visible": true,
+            "imagen": "img/fondos/fondo_noche-1.webp",
+            "desplazamiento": "scroll",
+            "repeticion": "repeat",
+            "posicion": "top center",
+            "tamano": "100% auto",
+            "opacidad": 1,
+            "orden": 1
+          }
+        ]
+      },
+      "efectos": {
+        "activo": false,
+        "tipo": "ninguno"
+      }
+    },
+    {
+      "id": "halloween",
+      "nombre": "Halloween",
+      "icono": "🎃",
+      "activo": true,
+      "mostrarControlVisitante": true,
+      "colorResaltado": "#981aff",
+      "colorResaltadoRgb": "152, 26, 255",
+      "prioridad": 10,
+      "calendario": {
+        "tipo": "fechas",
+        "mesInicio": 10,
+        "diaInicio": 1,
+        "mesFin": 11,
+        "diaFin": 1
+      },
+      "fondoDia": {
+        "colorFondo": "#ef841f",
+        "capas": [
+          {
+            "id": "capa_hw_dia_base",
+            "nombre": "Fondo ambiente otoñal",
+            "visible": true,
+            "imagen": "img/fondos/fondo-dia-halloween.webp",
+            "desplazamiento": "scroll",
+            "repeticion": "repeat",
+            "posicion": "top center",
+            "tamano": "100% auto",
+            "opacidad": 0.85,
+            "orden": 1
+          }
+        ]
+      },
+      "fondoNoche": {
+        "colorFondo": "#150C1E",
+        "capas": [
+          {
+            "id": "capa_hw_noche_base",
+            "nombre": "Noche espeluznante",
+            "visible": true,
+            "imagen": "img/fondos/fondo-noche-halloween.webp",
+            "desplazamiento": "scroll",
+            "repeticion": "repeat",
+            "posicion": "top center",
+            "tamano": "100% auto",
+            "opacidad": 0.85,
+            "orden": 1
+          }
+        ]
+      },
+      "efectos": {
+        "activo": true,
+        "tipo": "murcielagos",
+        "lista": [
+          "murcielagos"
+        ],
+        "opacidad": 0.7
+      }
+    },
+    {
+      "id": "navidad",
+      "nombre": "Navidad",
+      "icono": "🎄",
+      "activo": true,
+      "mostrarControlVisitante": true,
+      "colorResaltado": "#c12110",
+      "colorResaltadoRgb": "193, 33, 16",
+      "prioridad": 20,
+      "calendario": {
+        "tipo": "fechas",
+        "mesInicio": 12,
+        "diaInicio": 1,
+        "mesFin": 1,
+        "diaFin": 6
+      },
+      "fondoDia": {
+        "colorFondo": "#fafbec",
+        "capas": [
+          {
+            "id": "capa_nav_dia_base",
+            "nombre": "Invierno nevado día",
+            "visible": true,
+            "imagen": "img/fondos/fondo-dia-navidad.webp",
+            "desplazamiento": "scroll",
+            "repeticion": "repeat",
+            "posicion": "top center",
+            "tamano": "100% auto",
+            "opacidad": 0.9,
+            "orden": 1
+          }
+        ]
+      },
+      "fondoNoche": {
+        "colorFondo": "#102e19",
+        "capas": [
+          {
+            "id": "capa_1791726013551",
+            "nombre": "Nueva Capa 2",
+            "visible": true,
+            "imagen": "img/fondos/fondo-noche-navidad-scroll-fijo.webp",
+            "desplazamiento": "fixed",
+            "repeticion": "no-repeat",
+            "posicion": "center center",
+            "tamano": "cover",
+            "opacidad": 1,
+            "orden": 1
+          },
+          {
+            "id": "capa_nav_noche_base",
+            "nombre": "Nochebuena invernal",
+            "visible": true,
+            "imagen": "img/fondos/fondo-noche-navidad-scroll.webp",
+            "desplazamiento": "scroll",
+            "repeticion": "repeat",
+            "posicion": "top center",
+            "tamano": "100% auto",
+            "opacidad": 0.9,
+            "orden": 2
+          }
+        ]
+      },
+      "efectos": {
+        "activo": true,
+        "tipo": "nieve",
+        "lista": [
+          "nieve"
+        ],
+        "opacidad": 0.75
+      }
+    }
+  ]
+}

@@ -174,6 +174,9 @@
                     var contTrucos = ventana.querySelector(".contenidoTrucos");
                     if (contTrucos && bloquesCuerpo.length > 0) {
                         contTrucos.innerHTML = renderizarBloquesTrucos(bloquesCuerpo);
+                        if (window.AcercaDeCMS && typeof window.AcercaDeCMS.aplicarMargenes === "function") {
+                            window.AcercaDeCMS.aplicarMargenes(contTrucos, data.margenes);
+                        }
                     }
                 })
                 .catch(function () {

@@ -20,17 +20,102 @@
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
 
-    <link rel="stylesheet" href="css/style.css?v=1.2.6.1">
-    <link rel="stylesheet" href="css/tier-list.css?v=1.2.6.1">
+    <link rel="stylesheet" href="css/style.css?v=1.2.7.1">
+    <link rel="stylesheet" href="css/tier-list.css?v=1.2.7.1">
 
     <!-- Garantizar scroll = 0 en cada carga/recarga, antes de que cualquier otro JS se ejecute -->
     <script>history.scrollRestoration = 'manual'; window.scrollTo(0, 0);</script>
-    <script src="js/sonido.js?v=1.2.6.1"></script>
+    <script src="js/sonido.js?v=1.2.7.1"></script>
 
 </head>
 
 <body class="modo-noche">
 
+    <div id="contenedorCapasFondo" class="contenedorCapasFondo" aria-hidden="true"></div>
+
+    <!-- Sincronización instantánea de tema y recursos de carga para evitar cualquier parpadeo -->
+    <script>
+        (function() {
+            try {
+                var params = new URLSearchParams(window.location.search);
+                var pModo = params.get('previewModo');
+                var pTema = params.get('previewTema');
+                var esDia = (pModo === 'dia') || (!pModo && localStorage.getItem('modoTema') === 'dia');
+
+                if (document.body) {
+                    if (esDia) {
+                        document.body.classList.remove('modo-noche');
+                        document.body.classList.add('modo-dia');
+                    } else {
+                        document.body.classList.remove('modo-dia');
+                        document.body.classList.add('modo-noche');
+                    }
+                }
+
+                var fecha = new Date();
+                var mes = fecha.getMonth() + 1;
+                var dia = fecha.getDate();
+                var esHalloween = ((mes === 10 && dia >= 1) || (mes === 11 && dia <= 1));
+                var esNavidad = ((mes === 12 && dia >= 1) || (mes === 1 && dia <= 6));
+
+                var temaId = 'base';
+                if (pTema) {
+                    temaId = pTema;
+                } else if (esNavidad && localStorage.getItem('lotlab_tema_desactivado_navidad') !== 'true') {
+                    temaId = 'navidad';
+                } else if (esHalloween && localStorage.getItem('lotlab_tema_desactivado_halloween') !== 'true') {
+                    temaId = 'halloween';
+                }
+
+                var colorFondo = esDia ? '#F3EEE3' : '#242868';
+                var imgCarga = esDia ? 'img/pantalla%20carga/carga%20Dia.webp' : 'img/pantalla%20carga/carga%20Noche.webp';
+                var colorResaltado = '#2ECC71';
+                var colorResaltadoRgb = '46, 204, 113';
+
+                if (temaId === 'halloween') {
+                    colorFondo = esDia ? '#ef841f' : '#150C1E';
+                    imgCarga = esDia ? 'img/fondos/fondo-dia-halloween.webp' : 'img/fondos/fondo-noche-halloween.webp';
+                    colorResaltado = '#981aff';
+                    colorResaltadoRgb = '152, 26, 255';
+                } else if (temaId === 'navidad') {
+                    colorFondo = esDia ? '#fafbec' : '#102e19';
+                    imgCarga = esDia ? 'img/fondos/fondo-dia-navidad.webp' : 'img/fondos/fondo-noche-navidad-scroll-fijo.webp';
+                    colorResaltado = '#c12110';
+                    colorResaltadoRgb = '193, 33, 16';
+                } else {
+                    try {
+                        var rawCache = localStorage.getItem('lotlab_settings_temas_cache');
+                        if (rawCache) {
+                            var parsed = JSON.parse(rawCache);
+                            var modoObj = parsed.modos && parsed.modos.find(function(m) { return m.id === temaId; });
+                            if (modoObj) {
+                                if (modoObj.colorResaltado) colorResaltado = modoObj.colorResaltado;
+                                if (modoObj.colorResaltadoRgb) colorResaltadoRgb = modoObj.colorResaltadoRgb;
+                                var confF = esDia ? (modoObj.fondoDia || modoObj.fondoNoche) : (modoObj.fondoNoche || modoObj.fondoDia);
+                                if (confF) {
+                                    if (confF.colorFondo) colorFondo = confF.colorFondo;
+                                    if (confF.imagenCarga) imgCarga = confF.imagenCarga;
+                                    else if (confF.capas && confF.capas[0]) imgCarga = confF.capas[0].imagen;
+                                }
+                            }
+                        }
+                    } catch(e) {}
+                }
+
+                if (document.body) {
+                    document.body.classList.add('tema-' + temaId);
+                }
+                var root = document.documentElement;
+                root.style.setProperty('--color-resaltado', colorResaltado);
+                root.style.setProperty('--color-resaltado-rgb', colorResaltadoRgb);
+                root.style.setProperty('--color-barra-carga', colorResaltado);
+                root.style.setProperty('--color-fondo-carga', colorFondo);
+                root.style.setProperty('--imagen-fondo-carga', "url('" + imgCarga + "')");
+                root.style.setProperty('--pixel-blur', '25px');
+                root.style.setProperty('--pixel-contrast', '135%');
+            } catch(e) {}
+        })();
+    </script>
     <div id="pantallaCarga">
         <div id="pantallaCargaFondo"></div>
 
@@ -3297,52 +3382,53 @@
 
     </main>
 
-    <script src="js/loading.js?v=1.2.6.1"></script>
-    <script src="js/config.js?v=1.2.6.1"></script>
-    <script src="js/database.js?v=1.2.6.1"></script>
-    <script src="js/sheets.js?v=1.2.6.1"></script>
-    <script src="js/render.js?v=1.2.6.1"></script>
-    <script src="js/solarFicha.js?v=1.2.6.1"></script>
-    <script src="js/ruleta-colores.js?v=1.2.6.1"></script>
-    <script src="js/dados.js?v=1.2.6.1"></script>
-    <script src="js/trucos.js?v=1.2.6.1"></script>
-    <script src="js/solarGaleria.js?v=1.2.6.1"></script>
-    <script src="js/filterInfo.js?v=1.2.6.1"></script>
-    <script src="js/filterLogic.js?v=1.2.6.1"></script>
-    <script src="js/filterUI.js?v=1.2.6.1"></script>
-    <script src="js/filterCore.js?v=1.2.6.1"></script>
-    <script src="js/buscadorNombre.js?v=1.2.6.1"></script>
-    <script src="js/filters.js?v=1.2.6.1"></script>
-    <script src="js/ruleta-desastres.js?v=1.2.6.1"></script>
-    <script src="js/navigation-config.js?v=1.2.6.1"></script>
-    <script src="js/navigation.js?v=1.2.6.1"></script>
-    <script src="js/analytics-navigation.js?v=1.2.6.1"></script>
-    <script src="js/retos.js?v=1.2.6.1"></script>
-    <script src="js/reto-modulos.js?v=1.2.6.1"></script>
-    <script src="js/reto-solar.js?v=1.2.6.1"></script>
-    <script src="js/reto-etapas.js?v=1.2.6.1"></script>
-    <script src="js/reto-limitantes.js?v=1.2.6.1"></script>
-    <script src="js/reto-submenus.js?v=1.2.6.1"></script>
-    <script src="js/reto-generador.js?v=1.2.6.1"></script>
-    <script src="js/reto-resultado-ui.js?v=1.2.6.1"></script>
-    <script src="js/temporizador.js?v=1.2.6.1"></script>
-    <script src="js/acercade-cms.js?v=1.2.6.1"></script>
-    <script src="js/trucos-cms.js?v=1.2.6.1"></script>
-    <script src="js/acercade.js?v=1.2.6.1"></script>
+    <script src="js/theme.js?v=1.2.7.1"></script>
+    <script src="js/temas-estacionales.js?v=1.2.7.1"></script>
+    <script src="js/loading.js?v=1.2.7.1"></script>
+    <script src="js/config.js?v=1.2.7.1"></script>
+    <script src="js/database.js?v=1.2.7.1"></script>
+    <script src="js/sheets.js?v=1.2.7.1"></script>
+    <script src="js/render.js?v=1.2.7.1"></script>
+    <script src="js/solarFicha.js?v=1.2.7.1"></script>
+    <script src="js/ruleta-colores.js?v=1.2.7.1"></script>
+    <script src="js/dados.js?v=1.2.7.1"></script>
+    <script src="js/trucos.js?v=1.2.7.1"></script>
+    <script src="js/solarGaleria.js?v=1.2.7.1"></script>
+    <script src="js/filterInfo.js?v=1.2.7.1"></script>
+    <script src="js/filterLogic.js?v=1.2.7.1"></script>
+    <script src="js/filterUI.js?v=1.2.7.1"></script>
+    <script src="js/filterCore.js?v=1.2.7.1"></script>
+    <script src="js/buscadorNombre.js?v=1.2.7.1"></script>
+    <script src="js/filters.js?v=1.2.7.1"></script>
+    <script src="js/ruleta-desastres.js?v=1.2.7.1"></script>
+    <script src="js/navigation-config.js?v=1.2.7.1"></script>
+    <script src="js/navigation.js?v=1.2.7.1"></script>
+    <script src="js/analytics-navigation.js?v=1.2.7.1"></script>
+    <script src="js/retos.js?v=1.2.7.1"></script>
+    <script src="js/reto-modulos.js?v=1.2.7.1"></script>
+    <script src="js/reto-solar.js?v=1.2.7.1"></script>
+    <script src="js/reto-etapas.js?v=1.2.7.1"></script>
+    <script src="js/reto-limitantes.js?v=1.2.7.1"></script>
+    <script src="js/reto-submenus.js?v=1.2.7.1"></script>
+    <script src="js/reto-generador.js?v=1.2.7.1"></script>
+    <script src="js/reto-resultado-ui.js?v=1.2.7.1"></script>
+    <script src="js/temporizador.js?v=1.2.7.1"></script>
+    <script src="js/acercade-cms.js?v=1.2.7.1"></script>
+    <script src="js/trucos-cms.js?v=1.2.7.1"></script>
+    <script src="js/acercade.js?v=1.2.7.1"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="js/compartir.js?v=1.2.6.1"></script>
-    <script src="js/estadisticas.js?v=1.2.6.1"></script>
-    <script src="js/carrusel-random.js?v=1.2.6.1"></script>
-    <script src="js/habilidades.js?v=1.2.6.1"></script>
-    <script src="js/packs-azar.js?v=1.2.6.1"></script>
-    <script src="js/mundos-azar.js?v=1.2.6.1"></script>
-    <script src="js/tier-list.js?v=1.2.6.1"></script>
-    <script src="js/tier-list-ui.js?v=1.2.6.1"></script>
-    <script src="js/app.js?v=1.2.6.1"></script>
-    <script src="js/theme.js?v=1.2.6.1"></script>
-    <script src="js/menu-flotante.js?v=1.2.6.1"></script>
+    <script src="js/compartir.js?v=1.2.7.1"></script>
+    <script src="js/estadisticas.js?v=1.2.7.1"></script>
+    <script src="js/carrusel-random.js?v=1.2.7.1"></script>
+    <script src="js/habilidades.js?v=1.2.7.1"></script>
+    <script src="js/packs-azar.js?v=1.2.7.1"></script>
+    <script src="js/mundos-azar.js?v=1.2.7.1"></script>
+    <script src="js/tier-list.js?v=1.2.7.1"></script>
+    <script src="js/tier-list-ui.js?v=1.2.7.1"></script>
+    <script src="js/app.js?v=1.2.7.1"></script>
+    <script src="js/menu-flotante.js?v=1.2.7.1"></script>
     <div id="google_translate_element" style="display:none;"></div>
-    <script src="js/idioma.js?v=1.2.6.1"></script>
+    <script src="js/idioma.js?v=1.2.7.1"></script>
     <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <footer class="footer">
@@ -3496,7 +3582,7 @@
             </div>
 
             <p>
-                El unico buscador de Solares y generador de retos para construir en Los Sims 4 - Versión 1.2.6
+                El unico buscador de Solares y generador de retos para construir en Los Sims 4 - Versión 1.2.7
 
 
             </p>
@@ -3730,8 +3816,8 @@
     </div>
 
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-    <script src="js/obs.js?v=1.2.6.1"></script>
-    <script src="js/agradecimientos.js?v=1.2.6.1"></script>
+    <script src="js/obs.js?v=1.2.7.1"></script>
+    <script src="js/agradecimientos.js?v=1.2.7.1"></script>
 </body>
 
 

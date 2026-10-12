@@ -1,185 +1,218 @@
 /* ==========================================================
    CONFIGURACIÓN Y REGISTRO CENTRALIZADO DE NAVEGACIÓN
    js/navigation-config.js
-   LOT-LAB Sims 4
+   LOT-LAB Sims 4 (Sincronizado desde CMS)
    ========================================================== */
 
 const REGISTRO_NAVEGACION = [
     {
-        id: "inicio",
-        nombre: "Inicio",
-        icono: "🏠",
-        herramientas: [
+        "id": "inicio",
+        "nombre": "Inicio",
+        "icono": "🏠",
+        "herramientas": [
             {
-                id: "acerca-de",
-                nombre: "Acerca de",
-                icono: "👋",
-                disponible: true,
-                descripcion: "Información y novedades de LOT-LAB"
+                "id": "acerca-de",
+                "nombre": "Acerca de",
+                "icono": "👋",
+                "disponible": true,
+                "descripcion": "Herramienta Acerca de",
+                "ruta": "inicio/acerca-de",
+                "archivo": "acerca-de.json"
             }
         ]
     },
     {
-        id: "solares",
-        nombre: "Solares",
-        icono: "🔍",
-        herramientas: [
+        "id": "solares",
+        "nombre": "Solares",
+        "icono": "🔍",
+        "herramientas": [
             {
-                id: "buscador",
-                nombre: "Filtrador de solares",
-                icono: "🔍",
-                disponible: true,
-                descripcion: "Busca y filtra solares del juego"
+                "id": "buscador",
+                "nombre": "Filtrador de solares",
+                "icono": "🔍",
+                "disponible": true,
+                "descripcion": "Herramienta Filtrador de solares",
+                "ruta": "solares/buscador",
+                "archivo": "buscador-solares.json"
             },
             {
-                id: "listado",
-                nombre: "Listado de solares",
-                icono: "📋",
-                disponible: true,
-                descripcion: "Listado completo de solares disponibles"
+                "id": "listado",
+                "nombre": "Listado de solares",
+                "icono": "📋",
+                "disponible": true,
+                "descripcion": "Herramienta Listado de solares",
+                "ruta": "solares/listado",
+                "archivo": "listado-solares.json"
             }
         ]
     },
     {
-        id: "generadores",
-        nombre: "Generadores",
-        icono: "🎲",
-        herramientas: [
+        "id": "generadores",
+        "nombre": "Generadores",
+        "icono": "🎲",
+        "herramientas": [
             {
-                id: "dados",
-                nombre: "Tirador de dados",
-                icono: "🎲",
-                disponible: true,
-                descripcion: "Lanza dados personalizables"
+                "id": "dados",
+                "nombre": "Tirador de dados",
+                "icono": "🎲",
+                "disponible": true,
+                "descripcion": "Herramienta Tirador de dados",
+                "ruta": "generadores/dados",
+                "archivo": "dados.json"
             },
             {
-                id: "ruleta-colores",
-                nombre: "Ruleta de colores",
-                icono: "🎨",
-                disponible: true,
-                descripcion: "Paletas de colores aleatorias para construir"
+                "id": "ruleta-colores",
+                "nombre": "Ruleta de colores",
+                "icono": "🎨",
+                "disponible": true,
+                "descripcion": "Herramienta Ruleta de colores",
+                "ruta": "generadores/ruleta-colores",
+                "archivo": "ruleta-colores.json"
             },
             {
-                id: "habilidades-azar",
-                nombre: "Habilidades al azar",
-                icono: "🧠",
-                disponible: true,
-                descripcion: "Habilidades aleatorias filtradas por pack"
+                "id": "habilidades-azar",
+                "nombre": "Habilidades al azar",
+                "icono": "🧠",
+                "disponible": true,
+                "descripcion": "Herramienta Habilidades al azar",
+                "ruta": "generadores/habilidades-azar",
+                "archivo": "habilidades-azar.json"
             },
             {
-                id: "packs-azar",
-                nombre: "Packs al azar",
-                icono: "🎁",
-                disponible: true,
-                descripcion: "Selección aleatoria de packs"
+                "id": "packs-azar",
+                "nombre": "Packs al azar",
+                "icono": "🎁",
+                "disponible": true,
+                "descripcion": "Herramienta Packs al azar",
+                "ruta": "generadores/packs-azar",
+                "archivo": "packs-azar.json"
             },
             {
-                id: "mundos-azar",
-                nombre: "Mundos al azar",
-                icono: "🌍",
-                disponible: true,
-                descripcion: "Selección aleatoria de mundos"
+                "id": "mundos-azar",
+                "nombre": "Mundos al azar",
+                "icono": "🌍",
+                "disponible": true,
+                "descripcion": "Herramienta Mundos al azar",
+                "ruta": "generadores/mundos-azar",
+                "archivo": "mundos-azar.json"
             }
         ]
     },
     {
-        id: "retos",
-        nombre: "Retos",
-        icono: "🏆",
-        herramientas: [
+        "id": "herramientas",
+        "nombre": "Herramientas",
+        "icono": "🛠️",
+        "herramientas": [
             {
-                id: "modo-retos",
-                nombre: "Modo retos",
-                icono: "🏆",
-                disponible: true,
-                descripcion: "Generador de retos de construcción"
+                "id": "trucos",
+                "nombre": "Trucos",
+                "icono": "🕹️",
+                "disponible": true,
+                "descripcion": "Sección Trucos",
+                "ruta": "herramientas/trucos"
             },
             {
-                id: "ruleta-desastres",
-                nombre: "Ruleta de desastres",
-                icono: "🎡",
-                disponible: true,
-                descripcion: "Desastres inesperados durante la partida"
+                "id": "temporizador",
+                "nombre": "Temporizador",
+                "icono": "⏱️",
+                "disponible": true,
+                "descripcion": "Herramienta Temporizador",
+                "ruta": "herramientas/temporizador",
+                "archivo": "temporizador.json"
+            },
+            {
+                "id": "tier-list",
+                "nombre": "Tier List",
+                "icono": "📊",
+                "disponible": true,
+                "descripcion": "Herramienta Tier List",
+                "ruta": "herramientas/tier-list",
+                "archivo": "tier-list.json"
             }
         ]
     },
     {
-        id: "herramientas",
-        nombre: "Herramientas",
-        icono: "🛠️",
-        herramientas: [
+        "id": "retos",
+        "nombre": "Retos",
+        "icono": "🏆",
+        "herramientas": [
             {
-                id: "temporizador",
-                nombre: "Temporizador",
-                icono: "⏱️",
-                disponible: true,
-                descripcion: "Temporizador para retos con alarmas"
+                "id": "modo-retos",
+                "nombre": "Modo retos",
+                "icono": "🏆",
+                "disponible": true,
+                "descripcion": "Herramienta Modo retos",
+                "ruta": "retos/modo-retos",
+                "archivo": "modo-retos.json"
             },
             {
-                id: "trucos",
-                nombre: "Trucos",
-                icono: "🕹️",
-                disponible: true,
-                descripcion: "Trucos útiles para Los Sims 4"
-            },
-            {
-                id: "tier-list",
-                nombre: "Tier List",
-                icono: "📊",
-                disponible: true,
-                descripcion: "Crea, clasifica y comparte tu propia Tier List"
+                "id": "ruleta-desastres",
+                "nombre": "Ruleta de desastres",
+                "icono": "🎡",
+                "disponible": true,
+                "descripcion": "Herramienta Ruleta de desastres",
+                "ruta": "retos/ruleta-desastres",
+                "archivo": "ruleta-desastres.json"
             }
         ]
     },
     {
-        id: "datos",
-        nombre: "Datos",
-        icono: "📈",
-        herramientas: [
+        "id": "datos",
+        "nombre": "Datos",
+        "icono": "📈",
+        "herramientas": [
             {
-                id: "estadisticas",
-                nombre: "Estadísticas Sims 4",
-                icono: "📈",
-                disponible: true,
-                descripcion: "Base de datos y estadísticas del juego"
+                "id": "estadisticas",
+                "nombre": "Estadísticas Sims 4",
+                "icono": "📈",
+                "disponible": true,
+                "descripcion": "Herramienta Estadísticas Sims 4",
+                "ruta": "datos/estadisticas",
+                "archivo": "estadisticas.json"
             }
         ]
     },
     {
-        id: "descargas",
-        nombre: "Descargas",
-        icono: "📥",
-        herramientas: [
+        "id": "descargas",
+        "nombre": "Descargas",
+        "icono": "📥",
+        "herramientas": [
             {
-                id: "cc",
-                nombre: "CC",
-                icono: "🎨",
-                disponible: false,
-                tooltip: "🏗️ Próximamente",
-                descripcion: "Contenido personalizado"
+                "id": "cc",
+                "nombre": "CC",
+                "icono": "🎨",
+                "disponible": false,
+                "descripcion": "Herramienta CC",
+                "ruta": "descargas/cc",
+                "archivo": "cc.json",
+                "tooltip": "🏗️ Próximamente"
             },
             {
-                id: "simfile",
-                nombre: "SimFile",
-                icono: "🏡",
-                disponible: false,
-                tooltip: "🏗️ Próximamente",
-                descripcion: "Archivos de guardado y partidas"
+                "id": "simfile",
+                "nombre": "SimFile",
+                "icono": "🏡",
+                "disponible": false,
+                "descripcion": "Herramienta SimFile",
+                "ruta": "descargas/simfile",
+                "archivo": "simfile.json",
+                "tooltip": "🏗️ Próximamente"
             }
         ]
     },
     {
-        id: "juegos",
-        nombre: "Juegos",
-        icono: "🎮",
-        herramientas: [
+        "id": "juegos",
+        "nombre": "Juegos",
+        "icono": "🎮",
+        "herramientas": [
             {
-                id: "proximamente-juegos",
-                nombre: "Próximamente",
-                icono: "🎮",
-                disponible: false,
-                tooltip: "🏗️ Próximamente",
-                descripcion: "Futuros minijuegos"
+                "id": "proximamente-juegos",
+                "nombre": "Próximamente",
+                "icono": "🎮",
+                "disponible": false,
+                "descripcion": "Herramienta Próximamente",
+                "ruta": "juegos/proximamente",
+                "archivo": "juegos-proximamente.json",
+                "tooltip": "🏗️ Próximamente"
             }
         ]
     }

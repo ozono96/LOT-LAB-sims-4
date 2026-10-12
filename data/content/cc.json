@@ -2,21 +2,110 @@
   "id": "cc",
   "titulo": "CC",
   "slug": "cc",
-  "ruta": "descargas/cc",
   "estado": "borrador",
+  "ruta": "descargas/cc",
   "creadoEl": "2026-10-04T08:56:34.937Z",
-  "modificadoEl": "2026-10-04T08:56:34.937Z",
+  "modificadoEl": "2026-10-11T17:07:01.907Z",
+  "margenes": {
+    "heredar": false,
+    "superior": 31,
+    "inferior": 42,
+    "izquierdo": 83,
+    "derecho": 60,
+    "unidad": "px"
+  },
   "bloques": [
     {
       "id": "b_1791104194937_tit",
       "tipo": "titulo",
       "contenido": "CC",
-      "nivel": 1
+      "nivel": 2
+    },
+    {
+      "id": "b_1791716528245",
+      "tipo": "imagen",
+      "url": "img/agradecimientos/0k6h2872zk8wmt0q6rq67j9cey.png",
+      "alt": "Imagen ilustrativa",
+      "alineacion": "center",
+      "forma": "original",
+      "zoom": 1.25,
+      "posX": 33,
+      "hoverGlow": true
+    },
+    {
+      "id": "b_1791672188659",
+      "tipo": "columnas",
+      "distribucion": "50-50",
+      "columnas": [
+        {
+          "id": "col_1791672188659_1",
+          "ancho": "50%",
+          "bloques": [
+            {
+              "id": "b_1791672188659_t1",
+              "tipo": "texto",
+              "contenido": "Título en Columna 1"
+            },
+            {
+              "id": "b_1791672188659_p1",
+              "tipo": "texto",
+              "contenido": "Texto adaptable en columna izquierda..."
+            },
+            {
+              "id": "b_1791672211666_9ael",
+              "tipo": "texto",
+              "contenido": "(<code>js/navigation.js</code>,&nbsp;<code>js/navigation-config.js</code>), sin dependencias externas y sin ejecutar operaciones Git. fgfg ukj"
+            },
+            {
+              "id": "b_1791672092432_c03h",
+              "tipo": "texto",
+              "contenido": "Se han rematado y completado las operaciones principales del editor visual sobre el código base local, sin alterar archivos protegidos",
+              "ancho": "",
+              "alto": "301px"
+            }
+          ]
+        },
+        {
+          "id": "col_1791672188659_2",
+          "ancho": "50%",
+          "bloques": [
+            {
+              "id": "b_1791672188659_img",
+              "tipo": "imagen",
+              "url": "",
+              "alt": "Imagen",
+              "caption": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b_1791672077190_qqz4",
+      "tipo": "titulo",
+      "contenido": "LOT-LAB CMS — Remate del Editor Visual: Separación de Texto y Conversifdfón Bidireccional Texto ↔ Título",
+      "nivel": 3,
+      "fontSize": "1.1rem"
+    },
+    {
+      "id": "b_1791672098914_qceo",
+      "tipo": "texto",
+      "contenido": "1. Cambios Realizados en el Código Local"
+    },
+    {
+      "id": "b_1791672105163_y9bm",
+      "tipo": "texto",
+      "contenido": "<h4 style=\"color:#fff;\">A. Separación de texto robusta y repetible (raíz y columnas)</h4><ul style=\"color:#fff;\"><li><strong>Historial pre-mutación</strong>: Se sincroniza y registra el snapshot con&nbsp;<code>handlers.onPushState()</code>&nbsp;<strong>antes</strong>&nbsp;de extraer el contenido del DOM con&nbsp;<code>range.extractContents()</code>. De este modo, si el usuario pulsa&nbsp;<em>Deshacer (Ctrl+Z)</em>, el bloque original recupera el 100% de su texto íntegro.</li><li><strong>Soporte dual (selección de fragmento o posición del cursor)</strong>: Al pulsar&nbsp;<code>✂ Separar bloque</code>, si hay texto seleccionado se extrae dicho fragmento al bloque superior; si el cursor está simplemente posicionado en un punto sin selección (caret), se divide el texto desde el inicio hasta el cursor hacia el nuevo bloque superior de forma natural. gfdhgr</li></ul>"
+    },
+    {
+      "id": "b_1791672113864_j10n",
+      "tipo": "texto",
+      "contenido": "<li><strong>Barra rápida del bloque (<code>.ve-bloque-toolbar</code>)</strong>: Se añadió&nbsp;<code>&lt;button class=\"ve-tool-btn btn-convert-text\"&gt;Convertir a texto&lt;/button&gt;</code>, visible al pasar el ratón sobre cualquier bloque de subtítulo, estilizado en&nbsp;&nbsp;con realce verde interactivo (<code>#2ecc71</code>).</li><li><strong>Barra fija superior (RTE)</strong>: Se añadió&nbsp;<code>&lt;button class=\"ve-rte-btn\" id=\"rteBtnConvertToText\"&gt;📝 Convertir a texto&lt;/button&gt;</code>, visible contextualmente solo cuando el bloque activo bajo edición es un subtítulo (<code>data-tipo=\"titulo\"</code>).</li>"
     },
     {
       "id": "b_1791104194937_txt",
       "tipo": "texto",
-      "contenido": "Contenido de CC. Puedes editar este texto o añadir nuevos bloques."
+      "contenido": "<h1 style=\"color: rgb(255, 255, 255);\"></h1><p style=\"color:#fff;\"></p><hr style=\"color:#fff;\"><h3 style=\"color:#fff;\"></h3><h4 style=\"color:#fff;\"></h4><ul style=\"color:#fff;\"><li></li><li><strong>Enfoque real de la ventana del iframe y posición del cursor</strong>: Al redibujar el lienzo, se activa&nbsp;<code>iframe.contentWindow.focus()</code>, se enfoca el elemento&nbsp;<code>.ve-text-editable</code>, se sitúa el cursor al final de forma colapsada y se ejecuta&nbsp;<code>scrollIntoView()</code>&nbsp;para que el usuario pueda&nbsp;<strong>escribir inmediatamente o volver a separar repetidamente</strong>&nbsp;cualquiera de los bloques resultantes sin perder el foco.</li><li><strong>Comportamiento en columnas</strong>: La inserción se realiza directamente en&nbsp;<code>col.bloques.splice(subIdx, 0, nuevoBloque)</code>&nbsp;dentro de la columna correspondiente. Los bloques resultantes permanecen dentro de su columna sin fugas hacia la raíz ni alteraciones en las demás columnas.</li></ul><h4 style=\"color:#fff;\">B. Conversión inversa de Título a Texto normal (Nueva función)</h4><ul style=\"color:#fff;\"><li><strong>Controles en la interfaz</strong>:<ol><li><strong></strong></li><li></li></ol></li><li><strong>Manejador&nbsp;<code>onConvertirTituloATexto(bloqueId)</code></strong>&nbsp;en&nbsp;:<ul><li>Cambia&nbsp;<code>b.tipo = \"texto\"</code>&nbsp;utilizando el tipo estándar existente en el CMS.</li><li>Elimina&nbsp;<code>b.nivel</code>&nbsp;y&nbsp;<code>b.fontSize</code>&nbsp;específico de título para que herede la tipografía estándar de párrafo.</li><li>Aplana etiquetas de encabezado&nbsp;<code>&lt;h1-6&gt;</code>&nbsp;si las hubiera, manteniendo limpio el HTML y conservando todos los formatos enriquecidos (negrita, cursiva, enlaces, trucos copiables, etc.).</li><li>Conserva el identificador único&nbsp;<code>b.id</code>, la alineación&nbsp;<code>b.textAlign</code>&nbsp;y su ubicación exacta (raíz o dentro de columna).</li><li>Registra el estado en el historial (<code>pushState(true)</code>), permitiendo Deshacer y Rehacer.</li><li>Redibuja y enfoca el bloque inmediatamente para continuar editándolo.</li><li>El bloque reconvertido a texto queda 100% habilitado para volver a ser separado en nuevos bloques o reconvertido a título.</li></ul></li></ul><hr style=\"color:#fff;\"><h3 style=\"color:#fff;\">2. Pruebas Automatizadas Ejecutadas</h3><p style=\"color:#fff;\">Se ejecutó la suite completa en&nbsp;&nbsp;con&nbsp;<strong>16 / 16 pruebas pasadas (100%)</strong>:</p><pre style=\"color:#fff;\"><div><div><div></div><div></div></div><div><div><div><div><div>=================================================</div></div><div><div>   LOT-LAB CMS — SUITE DE REPARACIÓN DEL EDITOR  </div></div><div><div>=================================================</div></div><div><div></div></div><div><div>  ✓ [PASS] 1. Separar un texto largo una vez y volver a editar ambos bloques</div></div><div><div>  ✓ [PASS] 2. Separar repetidamente los bloques resultantes</div></div><div><div>  ✓ [PASS] 3. Repetir operaciones de separación dentro de una columna</div></div><div><div>  ✓ [PASS] 4. Convertir texto en título y seguir editando el contenido</div></div><div><div>  ✓ [PASS] 5. Pegar texto con varios párrafos, negritas y cursivas manteniéndolo dentro del contenedor</div></div><div><div>  ✓ [PASS] 6. Comprobar que no aparecen marcas como &lt;!--StartFragment--&gt; ni &lt;!--EndFragment--&gt;</div></div><div><div>  ✓ [PASS] 7. Usar desplegables de fuente y tamaño conservando la selección</div></div><div><div>  ✓ [PASS] 8. Comprobar la fuente predeterminada 'The Sims Sans SC Bold' y carga HTTP</div></div><div><div>  ✓ [PASS] 9. Guardar, recargar y volver a editar</div></div><div><div>  ✓ [PASS] 10. Deshacer y rehacer las operaciones principales</div></div><div><div>  ✓ [PASS] 11. Comprobar la previsualización y el renderizado público de los bloques afectados</div></div><div><div>  ✓ [PASS] 12. Convertir título H3 en bloque de texto normal y seguir editándolo</div></div><div><div>  ✓ [PASS] 13. Convertir título a texto dentro de una columna sin alterar su posición ni otras columnas</div></div><div><div>  ✓ [PASS] 14. Separar texto de un bloque que previamente fue convertido desde título</div></div><div><div>  ✓ [PASS] 15. Deshacer y rehacer la conversión de título a texto</div></div><div><div>  ✓ [PASS] 16. Verificar presencia de controles de conversión inversa en el código del editor visual</div></div><div><div></div></div><div><div>=================================================</div></div><div><div> RESULTADOS: 16 / 16 PRUEBAS PASADAS (100%)</div></div><div><div>=================================================</div></div><div><div></div></div></div></div></div></div></pre><ul style=\"color:#fff;\"><li><strong>Sintaxis</strong>:&nbsp;<code>node.exe -c</code>&nbsp;verificado sobre todos los archivos del CMS sin errores.</li><li><strong>Regresión</strong>:&nbsp;&nbsp;ejecutado con&nbsp;<strong>25/25 comprobaciones pasadas (100%)</strong>.</li><li><strong>Documentación</strong>:&nbsp;&nbsp;actualizado con la Mejora 3 y la tabla de 16 pruebas.</li></ul><hr style=\"color:#fff;\"><h3 style=\"color:#fff;\">3. Estado del Entorno y Verificación Manual en el Navegador</h3><p style=\"color:#fff;\">El servidor local permanece activo en segundo plano en:&nbsp;<code>http://localhost:4000/editor-local/</code></p><div style=\"color:#fff;\"><p>NOTE</p><p>Debido a que el navegador de pruebas del entorno reporta una limitación externa para descargar el ejecutable de Playwright (<code>playwright-1.57.0-win32_x64.zip</code>&nbsp;error 404 del CDN), se priorizó la estabilidad y no se invirtió tiempo instalando dependencias redundantes. Las comprobaciones lógicas se validaron con la suite de 16 escenarios y puedes verificar las interacciones reales en tu navegador siguiendo estos pasos:</p></div><ol style=\"color:#fff;\"><li><strong>Separación repetida y edición</strong>:<ul><li>Abre el CMS en&nbsp;<code>http://localhost:4000/editor-local/</code>&nbsp;y entra a una página (ej.&nbsp;<em>Acerca de</em>).</li><li>Haz clic en un bloque de texto, selecciona un fragmento y pulsa&nbsp;<code>✂ Separar bloque</code>.</li><li>Comprueba que el nuevo bloque aparece encima con el fragmento seleccionado y el cursor queda activo.</li><li>Escribe en el bloque superior, selecciona una palabra y vuelve a pulsar&nbsp;<code>✂ Separar bloque</code>; se creará un tercer bloque encima sin bloquear el editor.</li><li>Haz clic en el bloque original inferior; escribe en él para comprobar que ambos continúan siendo editables.</li></ul></li><li><strong>Separación en columnas</strong>:<ul><li>Selecciona un texto dentro de una columna y pulsa&nbsp;<code>✂ Separar bloque</code>. Comprueba que el nuevo bloque se genera inmediatamente encima dentro de esa misma columna sin alterar la columna vecina.</li></ul></li><li><strong>Conversión Texto → Título H3</strong>:<ul><li>Pasa el ratón por el bloque de texto y pulsa el botón azul&nbsp;<code>H3 Título</code>&nbsp;(o&nbsp;<code>🏷️ A Título</code>&nbsp;en la barra superior). El bloque se transforma en subtítulo editable inmediatamente.</li></ul></li><li><strong>Conversión Título → Texto normal (Inversa)</strong>:<ul><li>Haz clic en el subtítulo: en la barra superior aparecerá el botón verde&nbsp;<code>📝 Convertir a texto</code>&nbsp;y en la tarjeta del bloque el botón&nbsp;<code>Convertir a texto</code>.</li><li>Haz clic en cualquiera de los dos: el bloque vuelve a ser un párrafo normal, conservando el texto y sus estilos internos compatibles, y queda listo para escribir de inmediato.</li></ul></li><li><strong>Guardar y Recargar</strong>:<ul><li>Pulsa el botón&nbsp;<code>Guardar</code>&nbsp;en la esquina superior derecha del CMS.</li><li>Recarga la página en el navegador (<code>F5</code>): comprueba que los bloques separados y convertidos se mantienen en su posición exacta y con sus tipos correspondientes.</li></ul></li></ol>"
     }
   ]
 }

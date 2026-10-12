@@ -78,6 +78,12 @@
 
     --color-titulo: #000000;
 
+    /* ========= MÁRGENES EDITORIALES (LOT-LAB CMS) ========= */
+    --margen-superior: 20px;
+    --margen-inferior: 35px;
+    --margen-izquierdo: 25px;
+    --margen-derecho: 25px;
+
 }
 
 
@@ -130,7 +136,7 @@ body.sin-transicion-nav *::after {
 
 body.modo-dia .submenuOpcion.popoverFlotante {
     background: rgba(250, 246, 238, 0.98) !important;
-    border-color: #27ae60;
+    border-color: var(--color-resaltado, #27ae60);
     box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
     color: #2b2b2b;
 }
@@ -162,7 +168,7 @@ body.modo-dia .submenuOpcion.popoverFlotante {
 
 .btnAceptarPopover:hover {
     transform: translateY(-1px);
-    background: #27ae60;
+    background: color-mix(in srgb, var(--color-resaltado, #27ae60) 85%, black);
 }
 
 .btnDesmarcarPopover {
@@ -211,17 +217,17 @@ body.modo-dia .opcionSubmenuTipoSolar {
 }
 
 .opcionSubmenuTipoSolar.seleccionada {
-    background: rgba(46, 204, 113, 0.22) !important;
-    border-color: #2ecc71 !important;
+    background: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.22) !important;
+    border-color: var(--color-resaltado, #2ecc71) !important;
     color: inherit !important;
     font-weight: bold;
-    box-shadow: 0 2px 8px rgba(46, 204, 113, 0.25);
+    box-shadow: 0 2px 8px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.25);
 }
 
 body.modo-dia .opcionSubmenuTipoSolar.seleccionada {
-    background: rgba(46, 204, 113, 0.25) !important;
-    border-color: #27ae60 !important;
-    color: #1e8449 !important;
+    background: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.25) !important;
+    border-color: var(--color-resaltado, #27ae60) !important;
+    color: var(--color-resaltado, #1e8449) !important;
 }
 
 .opcionSubmenuTipoSolar.deshabilitado {
@@ -264,7 +270,18 @@ body.modo-noche {
 
 @font-face {
     font-family: 'The Sims Sans SC Bold';
-    src: url('../font/The Sims Sans SC Bold.ttf') format('truetype');
+    src: url('../font/The Sims Sans SC Bold.ttf') format('truetype'),
+         url('/web/font/The Sims Sans SC Bold.ttf') format('truetype'),
+         url('/font/The Sims Sans SC Bold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'The Sims Sans SC Bold';
+    src: url('../font/The Sims Sans SC Bold.ttf') format('truetype'),
+         url('/web/font/The Sims Sans SC Bold.ttf') format('truetype'),
+         url('/font/The Sims Sans SC Bold.ttf') format('truetype');
     font-weight: bold;
     font-style: normal;
 }
@@ -294,6 +311,8 @@ html {
 
 body {
 
+    position: relative;
+
     min-height: 100vh;
 
     display: flex;
@@ -304,7 +323,7 @@ body {
 
     color: var(--color-texto);
 
-    background-color: var(--color-fondo);
+    background-color: var(--color-fondo-tema, var(--color-fondo));
 
     background-image: var(--imagen-fondo);
 
@@ -419,7 +438,8 @@ header p {
     scrollbar-width: none;
     -ms-overflow-style: none;
     -webkit-overflow-scrolling: touch;
-    padding: 4px 2px;
+    padding: 6px 8px 14px 8px;
+    margin: -2px 0 -8px 0;
 }
 
 .categorias-nav-clasica::-webkit-scrollbar {
@@ -432,7 +452,7 @@ header p {
     gap: 8px;
     padding: 10px 15px;
     border-radius: var(--radio-normal);
-    background: var(--color-principal);
+    background: rgba(255, 255, 255, 0.65);
     color: var(--color-texto);
     border: 1px solid var(--borde);
     font-size: 0.95rem;
@@ -447,17 +467,26 @@ header p {
     font-family: inherit;
 }
 
+body.modo-noche .btn-categoria-nav {
+    background: rgba(58, 58, 58, 0.70);
+}
+
 .btn-categoria-nav:hover {
-    background: var(--color-secundario);
+    background: rgba(255, 255, 255, 0.85);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 14px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.25);
+    border-color: var(--color-resaltado);
+}
+
+body.modo-noche .btn-categoria-nav:hover {
+    background: rgba(75, 75, 75, 0.85);
 }
 
 .btn-categoria-nav.activa {
     background: var(--color-resaltado) !important;
     color: #ffffff !important;
     border-color: var(--color-resaltado) !important;
-    box-shadow: 0 4px 14px rgba(46, 204, 113, 0.4) !important;
+    box-shadow: 0 4px 16px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.5) !important;
     transform: translateY(-2px);
 }
 
@@ -469,14 +498,19 @@ header p {
 /* Dropdown aero/glass inmediatamente asociado */
 .dropdown-nav-clasica {
     margin-top: 14px;
-    background: var(--color-tarjeta);
+    background: rgba(255, 255, 255, 0.52);
     border: 1.5px solid var(--borde);
     border-radius: var(--radio-normal);
     backdrop-filter: blur(var(--blur));
     -webkit-backdrop-filter: blur(var(--blur));
-    box-shadow: var(--sombra-fuerte);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
     padding: 16px;
     animation: animEntradaDropdown 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+body.modo-noche .dropdown-nav-clasica {
+    background: rgba(20, 20, 28, 0.65);
+    box-shadow: var(--sombra-fuerte);
 }
 
 @keyframes animEntradaDropdown {
@@ -514,24 +548,27 @@ header p {
     gap: 12px;
     padding: 12px 16px;
     border-radius: var(--radio-pequeno);
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.10);
     color: var(--color-texto);
-    border: 1px solid var(--borde);
+    border: 1.5px solid rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.28);
+    box-shadow: 0 2px 8px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.08);
     cursor: pointer;
     text-align: left;
     transition: all 0.2s ease;
     font-family: inherit;
 }
 
-body.modo-dia .btn-dropdown-tool {
-    background: rgba(0, 0, 0, 0.04);
+body.modo-noche .btn-dropdown-tool {
+    background: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.12);
+    border-color: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.38);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
 .btn-dropdown-tool:hover:not(.deshabilitado) {
-    background: rgba(46, 204, 113, 0.18);
+    background: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.22);
     border-color: var(--color-resaltado);
     transform: translateX(4px);
-    box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
+    box-shadow: 0 4px 14px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.25);
 }
 
 .btn-dropdown-tool.deshabilitado {
@@ -642,7 +679,7 @@ body.modo-nav-experimental .menu-principal {
     background: var(--color-secundario);
     border-color: var(--color-resaltado);
     transform: translateY(-4px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22), 0 0 18px rgba(46, 204, 113, 0.22);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22), 0 0 18px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.22);
 }
 
 .exp-cat-card-icono {
@@ -748,7 +785,7 @@ body.modo-nav-experimental .menu-principal {
     border-color: var(--color-resaltado);
     background: var(--color-secundario);
     transform: translateY(-3px);
-    box-shadow: 0 10px 24px rgba(46, 204, 113, 0.25);
+    box-shadow: 0 10px 24px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.25);
 }
 
 .exp-herramienta-card.deshabilitada {
@@ -1235,6 +1272,56 @@ body.modo-dia .sliderSwitch {
 
 }
 
+
+/* ==========================================================
+   MÁRGENES CONFIGURABLES Y ADAPTABLES DEL CONTENIDO EDITORIAL
+   ========================================================== */
+#acercaDeContenido,
+.cuerpoVentana.contenidoPaginaEditable,
+.contenedor-margenes-editorial {
+    box-sizing: border-box;
+    /* Neutralizar el padding base de .ventana (25px lateral, 50px inferior) y el margin de cabecera */
+    margin-left: -25px;
+    margin-right: -25px;
+    margin-bottom: -50px;
+    margin-top: -20px;
+    padding-top: var(--margen-superior, 20px);
+    padding-bottom: var(--margen-inferior, 35px);
+    padding-left: var(--margen-izquierdo, 25px);
+    padding-right: var(--margen-derecho, 25px);
+    width: auto;
+    overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+    #acercaDeContenido,
+    .cuerpoVentana.contenidoPaginaEditable,
+    .contenedor-margenes-editorial {
+        margin-left: -18px;
+        margin-right: -18px;
+        margin-bottom: -40px;
+        margin-top: -18px;
+        padding-top: min(var(--margen-superior, 20px), 24px);
+        padding-bottom: max(var(--margen-inferior, 35px), 28px);
+        padding-left: clamp(12px, var(--margen-izquierdo, 25px), 4vw);
+        padding-right: clamp(12px, var(--margen-derecho, 25px), 4vw);
+    }
+}
+
+@media (max-width: 480px) {
+    #acercaDeContenido,
+    .cuerpoVentana.contenidoPaginaEditable,
+    .contenedor-margenes-editorial {
+        margin-left: -14px;
+        margin-right: -14px;
+        margin-bottom: -36px;
+        margin-top: -14px;
+        padding-top: min(var(--margen-superior, 20px), 18px);
+        padding-bottom: max(var(--margen-inferior, 35px), 24px);
+        padding-left: clamp(10px, var(--margen-izquierdo, 25px), 3.5vw);
+        padding-right: clamp(10px, var(--margen-derecho, 25px), 3.5vw);
+    }
+}
 
 .ventanaPequena {
     max-width: 600px;
@@ -1975,6 +2062,120 @@ input[type="number"]:focus {
 }
 
 /* ==========================================================
+   DESLIZADORES (RANGE SLIDERS) ADAPTATIVOS AL TEMA
+   ========================================================== */
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 20px;
+    background: transparent;
+    cursor: pointer;
+    margin: 0;
+    vertical-align: middle;
+}
+
+input[type="range"]:focus {
+    outline: none;
+}
+
+/* Track en WebKit con relleno progresivo del color de tema */
+input[type="range"]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(
+        to right,
+        var(--color-resaltado, #2ecc71) 0%,
+        var(--color-resaltado, #2ecc71) var(--progreso-slider, 0%),
+        rgba(255, 255, 255, 0.22) var(--progreso-slider, 0%),
+        rgba(255, 255, 255, 0.22) 100%
+    );
+    border-radius: 6px;
+    border: none;
+    transition: none;
+}
+
+body.modo-dia input[type="range"]::-webkit-slider-runnable-track {
+    background: linear-gradient(
+        to right,
+        var(--color-resaltado, #2ecc71) 0%,
+        var(--color-resaltado, #2ecc71) var(--progreso-slider, 0%),
+        rgba(0, 0, 0, 0.16) var(--progreso-slider, 0%),
+        rgba(0, 0, 0, 0.16) 100%
+    );
+}
+
+/* Thumb en WebKit (centrado vertical matemático: (6px track - 18px thumb) / 2 = -6px) */
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--color-resaltado, #2ecc71);
+    border: 2px solid #ffffff;
+    margin-top: -6px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35), 0 0 8px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.55);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+input[type="range"]:hover::-webkit-slider-thumb {
+    transform: scale(1.12);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4), 0 0 12px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.75);
+}
+
+input[type="range"]:focus::-webkit-slider-thumb,
+input[type="range"]:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.4), 0 0 14px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.8);
+}
+
+/* Track en Firefox */
+input[type="range"]::-moz-range-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.22);
+    border-radius: 6px;
+    border: none;
+    transition: background 0.2s ease;
+}
+
+body.modo-dia input[type="range"]::-moz-range-track {
+    background: rgba(0, 0, 0, 0.16);
+}
+
+/* Relleno progresivo en Firefox */
+input[type="range"]::-moz-range-progress {
+    height: 6px;
+    background: var(--color-resaltado, #2ecc71);
+    border-radius: 6px 0 0 6px;
+}
+
+/* Thumb en Firefox (Firefox centra el thumb de forma nativa sobre el track) */
+input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--color-resaltado, #2ecc71);
+    border: 2px solid #ffffff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35), 0 0 8px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.55);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+input[type="range"]:hover::-moz-range-thumb {
+    transform: scale(1.12);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4), 0 0 12px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.75);
+}
+
+input[type="range"]:focus::-moz-range-thumb,
+input[type="range"]:focus-visible::-moz-range-thumb {
+    box-shadow: 0 0 0 3px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.4), 0 0 14px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.8);
+}
+
+/* ==========================================================
    CONTENIDO DEL PANEL
 ========================================================== */
 
@@ -2269,7 +2470,7 @@ body.modo-dia #tooltipFiltro hr {
 
     border-radius: 50%;
 
-    background: rgba(46, 204, 113, .55);
+    background: rgba(var(--color-resaltado-rgb, 46, 204, 113), .55);
 
     color: white;
 
@@ -2311,11 +2512,20 @@ body.modo-dia #tooltipFiltro hr {
 #subirResultados:hover,
 #bajarResultados:hover {
 
-    background: rgba(46, 204, 113, .80);
+    background: rgba(var(--color-resaltado-rgb, 46, 204, 113), .80);
 
     transform:
 
         translateY(-5px) scale(1.08);
+
+}
+
+#subirResultados:focus-visible,
+#bajarResultados:focus-visible {
+
+    outline: 2px solid var(--color-resaltado, #2ecc71);
+
+    outline-offset: 3px;
 
 }
 
@@ -3181,12 +3391,18 @@ body.modo-dia .tooltip {
 
 .badgeTipoReto {
     display: inline-block;
-    background: var(--color-principal);
-    color: var(--color-texto);
+    background: var(--color-resaltado, var(--color-principal));
+    color: #ffffff;
     padding: 6px 16px;
     border-radius: 20px;
     font-weight: bold;
     font-size: 1.1rem;
+    box-shadow: 0 2px 8px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.3);
+}
+
+body.modo-dia .badgeTipoReto {
+    background: var(--color-resaltado, #16763F);
+    color: #ffffff;
 }
 
 .tarjetaCategoriaReto {
@@ -4118,6 +4334,7 @@ body.modo-noche .tarjetaSolar.tarjetaSolarActiva .tarjetaSolarFotoDer .tarjetaSo
 ========================================================== */
 
 #pantallaCarga {
+    --color-barra-carga: var(--color-resaltado, #2ECC71);
 
     position: fixed;
 
@@ -4131,7 +4348,7 @@ body.modo-noche .tarjetaSolar.tarjetaSolarActiva .tarjetaSolarFotoDer .tarjetaSo
 
     z-index: 999999;
 
-    background-color: #0b1d33;
+    background-color: var(--color-fondo-carga, #0b1d33);
 
     display: flex;
 
@@ -4143,7 +4360,7 @@ body.modo-noche .tarjetaSolar.tarjetaSolarActiva .tarjetaSolarFotoDer .tarjetaSo
 
     padding: 40px 20px 6vh 20px;
 
-    transition: opacity .5s ease;
+    transition: opacity .5s ease, background-color .3s ease;
 
     overflow: hidden;
 
@@ -4163,7 +4380,7 @@ body.modo-noche .tarjetaSolar.tarjetaSolarActiva .tarjetaSolarFotoDer .tarjetaSo
 
     /* La imagen se aplica dinÃ¡micamente desde loading.js segÃºn el modo dÃ­a/noche.
        Esta URL actÃºa solo como fallback por si el JS aÃºn no ha actuado. */
-    background-image: url('../img/pantalla%20carga/Pantalla%20carga%20inicio.webp');
+    background-image: var(--imagen-fondo-carga, none);
 
 
     background-size: cover;
@@ -4190,6 +4407,17 @@ body.modo-noche .tarjetaSolar.tarjetaSolarActiva .tarjetaSolarFotoDer .tarjetaSo
 
     pointer-events: none;
 
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #pantallaCarga {
+        transition: opacity 0.15s ease !important;
+    }
+    #pantallaCargaFondo {
+        filter: none !important;
+        transform: none !important;
+        transition: none !important;
+    }
 }
 
 .pantallaCargaCentro {
@@ -4350,7 +4578,7 @@ body.modo-dia .pantallaCargaTexto p {
 }
 
 body.modo-dia .pantallaCargaBy {
-    color: #16763F;
+    color: var(--color-barra-carga, var(--color-resaltado, #16763F));
     text-shadow: 0 1px 4px rgba(255, 255, 255, 0.5);
 }
 
@@ -4449,7 +4677,7 @@ body.modo-dia .pantallaCargaLogo2 {
 
     width: 0%;
 
-    background: var(--color-resaltado);
+    background: var(--color-barra-carga, var(--color-resaltado, #2ECC71));
 
     border-radius: 20px;
 
@@ -5012,6 +5240,7 @@ body.galeria-ampliada .ventana {
 ========================================================== */
 
 .footer-controles {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -5112,7 +5341,7 @@ body.galeria-ampliada .ventana {
 
 html body {
     top: 0px !important;
-    position: static !important;
+    position: relative !important;
 }
 
 .goog-te-banner-frame,
@@ -5233,9 +5462,9 @@ body>.skiptranslate {
     background: var(--color-resaltado);
     color: white;
     box-shadow:
-        0 0 8px rgba(46, 204, 113, .60),
-        0 0 18px rgba(46, 204, 113, .45),
-        0 0 30px rgba(46, 204, 113, .25);
+        0 0 8px rgba(var(--color-resaltado-rgb), .60),
+        0 0 18px rgba(var(--color-resaltado-rgb), .45),
+        0 0 30px rgba(var(--color-resaltado-rgb), .25);
 }
 
 .btnGirarRuleta:disabled {
@@ -5377,7 +5606,7 @@ body>.skiptranslate {
 .ruletaColorInput:focus {
     outline: none;
     border-color: var(--color-resaltado);
-    box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.18);
+    box-shadow: 0 0 0 3px rgba(var(--color-resaltado-rgb), 0.18);
 }
 
 /* Contenedor de la rueda con halo luminoso posterior */
@@ -5408,13 +5637,13 @@ body>.skiptranslate {
     z-index: 2;
 }
 
-/* Halo verde: giro normal */
+/* Halo temático: giro normal */
 .ruletaColorWheelWrapperModerna.ruletaColorWheelWrapper--girando::before {
     opacity: 1;
     box-shadow:
-        0 0 16px rgba(46, 204, 113, 0.50),
-        0 0 35px rgba(46, 204, 113, 0.28);
-    animation: haloPulsoVerde 1.8s ease-in-out infinite alternate;
+        0 0 16px rgba(var(--color-resaltado-rgb), 0.50),
+        0 0 35px rgba(var(--color-resaltado-rgb), 0.28);
+    animation: haloPulsoTema 1.8s ease-in-out infinite alternate;
 }
 
 /* Halo naranja: giro acelerado */
@@ -5426,13 +5655,23 @@ body>.skiptranslate {
     animation: haloPulsoNaranja 0.75s ease-in-out infinite alternate;
 }
 
-@keyframes haloPulsoVerde {
+@keyframes haloPulsoTema {
     from {
-        box-shadow: 0 0 14px rgba(46, 204, 113, 0.40), 0 0 28px rgba(46, 204, 113, 0.20);
+        box-shadow: 0 0 14px rgba(var(--color-resaltado-rgb), 0.40), 0 0 28px rgba(var(--color-resaltado-rgb), 0.20);
     }
 
     to {
-        box-shadow: 0 0 22px rgba(46, 204, 113, 0.60), 0 0 44px rgba(46, 204, 113, 0.32);
+        box-shadow: 0 0 22px rgba(var(--color-resaltado-rgb), 0.60), 0 0 44px rgba(var(--color-resaltado-rgb), 0.32);
+    }
+}
+
+@keyframes haloPulsoVerde {
+    from {
+        box-shadow: 0 0 14px rgba(var(--color-resaltado-rgb), 0.40), 0 0 28px rgba(var(--color-resaltado-rgb), 0.20);
+    }
+
+    to {
+        box-shadow: 0 0 22px rgba(var(--color-resaltado-rgb), 0.60), 0 0 44px rgba(var(--color-resaltado-rgb), 0.32);
     }
 }
 
@@ -5469,8 +5708,8 @@ body.modo-dia .ruletaColorInput {
 
 body.modo-dia .ruletaColorWheelWrapperModerna.ruletaColorWheelWrapper--girando::before {
     box-shadow:
-        0 0 14px rgba(39, 174, 96, 0.40),
-        0 0 28px rgba(39, 174, 96, 0.22);
+        0 0 14px rgba(var(--color-resaltado-rgb), 0.40),
+        0 0 28px rgba(var(--color-resaltado-rgb), 0.22);
 }
 
 body.modo-dia .ruletaColorWheelWrapperModerna.ruletaColorWheelWrapper--acelerado::before {
@@ -5690,11 +5929,11 @@ body.modo-noche .fichaSolarIconoTipoSolar {
 }
 
 #inputBuscarNombreSolar {
-    width: min(100%, 420px);
-    padding: 14px 20px;
-    border-radius: var(--radio-normal);
-    border: 1px solid var(--borde);
-    background: var(--color-tarjeta);
+    width: min(100%, 440px);
+    padding: 12px 22px;
+    border-radius: var(--radio-grande, 22px);
+    border: 1.5px solid var(--borde);
+    background: rgba(0, 0, 0, 0.25);
     backdrop-filter: blur(var(--blur));
     -webkit-backdrop-filter: blur(var(--blur));
     color: var(--color-texto);
@@ -5702,17 +5941,31 @@ body.modo-noche .fichaSolarIconoTipoSolar {
     font-size: 1rem;
     box-shadow: var(--sombra-suave);
     outline: none;
-    transition: var(--transicion);
+    transition: all 0.25s ease;
+}
+
+body.modo-dia #inputBuscarNombreSolar {
+    background: rgba(255, 255, 255, 0.75);
 }
 
 #inputBuscarNombreSolar::placeholder {
-    color: var(--color-texto);
-    opacity: .65;
+    color: var(--color-subtexto, inherit);
+    opacity: 0.65;
+}
+
+body.modo-dia #inputBuscarNombreSolar::placeholder {
+    color: var(--color-texto-secundario, #555555);
+    opacity: 0.65;
 }
 
 #inputBuscarNombreSolar:focus {
     border-color: var(--color-resaltado);
-    box-shadow: 0 0 0 3px rgba(46, 204, 113, .25);
+    box-shadow: 0 0 15px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.35);
+    background: rgba(0, 0, 0, 0.32);
+}
+
+body.modo-dia #inputBuscarNombreSolar:focus {
+    background: rgba(255, 255, 255, 0.92);
 }
 
 .botonFiltro.filtroBloqueado {
@@ -6339,20 +6592,30 @@ body.modo-noche .fichaSolarIconoTipoSolar {
     align-items: center;
     gap: 8px;
     flex: 1 1 220px;
-    background: rgba(0, 0, 0, 0.12);
-    border: 1px solid var(--borde);
-    border-radius: var(--radio-pequeÃ±o);
-    padding: 8px 12px;
-    transition: border-color var(--transicion);
+    background: rgba(0, 0, 0, 0.25);
+    border: 1.5px solid var(--borde);
+    border-radius: var(--radio-pequeno);
+    padding: 8px 14px;
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    transition: all var(--transicion);
 }
 
 body.modo-dia .estatControlBusqueda {
-    background: rgba(255, 255, 255, 0.75);
+    background: rgba(255, 255, 255, 0.65);
+    border-color: var(--borde);
 }
 
 .estatControlBusqueda:focus-within {
     border-color: var(--color-resaltado);
-    box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.25);
+    box-shadow: 0 0 15px rgba(var(--color-resaltado-rgb), 0.35);
+    background: rgba(0, 0, 0, 0.32);
+}
+
+body.modo-dia .estatControlBusqueda:focus-within {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: var(--color-resaltado);
+    box-shadow: 0 0 15px rgba(var(--color-resaltado-rgb), 0.35);
 }
 
 .estatBusquedaIcono {
@@ -6372,7 +6635,13 @@ body.modo-dia .estatControlBusqueda {
 }
 
 .estatControlBusqueda input::placeholder {
-    opacity: 0.6;
+    color: var(--color-subtexto, inherit);
+    opacity: 0.65;
+}
+
+body.modo-dia .estatControlBusqueda input::placeholder {
+    color: var(--color-texto-secundario, #555555);
+    opacity: 0.65;
 }
 
 .estatControlGrupo {
@@ -6425,7 +6694,7 @@ body.modo-dia .estatInputPrecio {
 
 .estatCustomTriggerBtn:hover {
     border-color: var(--color-resaltado);
-    box-shadow: 0 2px 8px rgba(46, 204, 113, 0.2);
+    box-shadow: 0 2px 8px rgba(var(--color-resaltado-rgb), 0.2);
 }
 
 .estatTriggerArrow {
@@ -6453,7 +6722,7 @@ body.modo-dia .estatInputPrecio {
 
 .estatInputPrecio:focus {
     border-color: var(--color-resaltado);
-    box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.25);
+    box-shadow: 0 0 0 2px rgba(var(--color-resaltado-rgb), 0.25);
 }
 
 .estatSeparador {
@@ -6515,7 +6784,7 @@ body.modo-dia .estatCustomDropdown {
 }
 
 .estatDropdownItem:hover {
-    background: rgba(46, 204, 113, 0.18);
+    background: rgba(var(--color-resaltado-rgb), 0.18);
     color: var(--color-resaltado);
 }
 
@@ -6690,7 +6959,7 @@ body.modo-noche .estatPickerBtn {
     color: #ffffff !important;
     border-color: var(--color-resaltado);
     transform: translateY(-1px);
-    box-shadow: 0 3px 10px rgba(46, 204, 113, 0.3);
+    box-shadow: 0 3px 10px rgba(var(--color-resaltado-rgb), 0.3);
 }
 
 .estatPickerBtnDayHeader {
@@ -6748,7 +7017,7 @@ body.modo-noche #ventanaEstadisticas::-webkit-scrollbar-track {
 .graficoScrollHoriz::-webkit-scrollbar-thumb,
 .estatDatePickerBody::-webkit-scrollbar-thumb,
 #ventanaEstadisticas::-webkit-scrollbar-thumb {
-    background: rgba(46, 204, 113, 0.45);
+    background: rgba(var(--color-resaltado-rgb), 0.45);
     border-radius: 10px;
     border: 2px solid transparent;
     background-clip: padding-box;
@@ -6823,7 +7092,7 @@ body.modo-noche #ventanaEstadisticas::-webkit-scrollbar-track {
     color: #ffffff !important;
     border-color: var(--color-resaltado);
     opacity: 1;
-    box-shadow: 0 4px 15px rgba(46, 204, 113, 0.35);
+    box-shadow: 0 4px 15px rgba(var(--color-resaltado-rgb), 0.35);
 }
 
 /* â”€â”€ Vista Lista â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
@@ -7091,8 +7360,8 @@ body.modo-dia .packSolares {
 }
 
 .estatInstruccionesGraficos {
-    background: rgba(46, 204, 113, 0.12);
-    border: 1px solid rgba(46, 204, 113, 0.3);
+    background: rgba(var(--color-resaltado-rgb), 0.12);
+    border: 1px solid rgba(var(--color-resaltado-rgb), 0.3);
     border-radius: var(--radio-pequeÃ±o);
     padding: 10px 16px;
     margin-bottom: 16px;
@@ -7507,8 +7776,8 @@ body.modo-noche .graficoScrollHoriz::-webkit-scrollbar-thumb:hover {
 .estatPrecioTotalBanner {
     text-align: center;
     padding: 10px 16px;
-    background: rgba(46, 204, 113, 0.12);
-    border: 1px solid rgba(46, 204, 113, 0.3);
+    background: rgba(var(--color-resaltado-rgb), 0.12);
+    border: 1px solid rgba(var(--color-resaltado-rgb), 0.3);
     border-radius: var(--radio-pequeÃ±o);
     font-size: 0.95rem;
     color: var(--color-texto);
@@ -8003,18 +8272,31 @@ body.modo-dia .switchModoVista .sliderSwitchCAS {
 .cajaEntradaBuscadorTrucos {
     display: flex;
     align-items: center;
-    background: rgba(0, 0, 0, 0.2);
-    border: 2px solid var(--borde);
+    background: rgba(0, 0, 0, 0.25);
+    border: 1.5px solid var(--borde);
     border-radius: var(--radio-grande, 16px);
     padding: 8px 16px;
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
     transition: all 0.3s ease;
     box-shadow: var(--sombra-suave);
 }
 
+body.modo-dia .cajaEntradaBuscadorTrucos {
+    background: rgba(255, 255, 255, 0.65);
+    border-color: var(--borde);
+}
+
 .cajaEntradaBuscadorTrucos:focus-within {
     border-color: var(--color-resaltado);
-    box-shadow: 0 0 15px rgba(52, 152, 219, 0.35);
-    background: rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 15px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.35);
+    background: rgba(0, 0, 0, 0.32);
+}
+
+body.modo-dia .cajaEntradaBuscadorTrucos:focus-within {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: var(--color-resaltado);
+    box-shadow: 0 0 15px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.35);
 }
 
 .iconoLupaBuscadorTrucos {
@@ -8038,7 +8320,13 @@ body.modo-dia .switchModoVista .sliderSwitchCAS {
 .inputBuscadorTrucos::placeholder,
 #inputBuscadorTrucos::placeholder {
     color: var(--color-subtexto, inherit);
-    opacity: 0.6;
+    opacity: 0.65;
+}
+
+body.modo-dia .inputBuscadorTrucos::placeholder,
+body.modo-dia #inputBuscadorTrucos::placeholder {
+    color: var(--color-texto-secundario, #555555);
+    opacity: 0.65;
 }
 
 .btnLimpiarBuscador {
@@ -8170,13 +8458,13 @@ body.modo-dia .codigoResultadoTruco {
     opacity: 1;
 }
 
-/* â”€â”€ Estilos de Trucos Copiables â”€â”€ */
+/* ── Estilos de Trucos Copiables ── */
 .truco-copiable {
     font-family: 'Courier New', Courier, monospace;
     font-weight: bold;
-    background: rgba(46, 204, 113, 0.15);
-    border: 1.5px dashed #2ecc71;
-    color: #2ecc71;
+    background: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.15);
+    border: 1.5px dashed var(--color-resaltado, #2ecc71);
+    color: var(--color-resaltado, #2ecc71);
     padding: 4px 10px;
     border-radius: 6px;
     cursor: pointer;
@@ -8191,33 +8479,39 @@ body.modo-dia .codigoResultadoTruco {
 }
 
 .truco-copiable:hover {
-    background: #2ecc71;
+    background: var(--color-resaltado, #2ecc71);
     color: #ffffff;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
+    box-shadow: 0 4px 12px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.45);
     border-style: solid;
+}
+
+.truco-copiable:focus,
+.truco-copiable:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.35);
 }
 
 .truco-copiable:active {
     transform: translateY(0);
 }
 
-/* â”€â”€ AnimaciÃ³n de Resaltado al Redirigir a un Truco â”€â”€ */
+/* ── Animación de Resaltado al Redirigir a un Truco ── */
 @keyframes efectoFlashTruco {
     0% {
-        box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.8);
-        background: rgba(52, 152, 219, 0.35);
+        box-shadow: 0 0 0 0 rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.8);
+        background: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.35);
         transform: scale(1.02);
     }
 
     50% {
-        box-shadow: 0 0 25px 8px rgba(52, 152, 219, 0.6);
-        background: rgba(52, 152, 219, 0.45);
+        box-shadow: 0 0 25px 8px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.6);
+        background: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.45);
         transform: scale(1.03);
     }
 
     100% {
-        box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
+        box-shadow: 0 0 0 0 rgba(var(--color-resaltado-rgb, 46, 204, 113), 0);
         background: transparent;
         transform: scale(1);
     }
@@ -8314,19 +8608,19 @@ body.modo-dia .opcionFiltroReto {
 }
 
 .opcionFiltroReto.seleccionada {
-    background: rgba(46, 204, 113, 0.22) !important;
-    border-color: #2ecc71 !important;
+    background: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.22) !important;
+    border-color: var(--color-resaltado, #2ecc71) !important;
     color: inherit !important;
     opacity: 1 !important;
     font-weight: bold;
-    box-shadow: 0 4px 14px rgba(46, 204, 113, 0.25);
+    box-shadow: 0 4px 14px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.25);
 }
 
 body.modo-dia .opcionFiltroReto.seleccionada {
-    background: rgba(46, 204, 113, 0.25) !important;
-    border-color: #27ae60 !important;
-    color: #1e8449 !important;
-    box-shadow: 0 4px 14px rgba(39, 174, 96, 0.2);
+    background: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.25) !important;
+    border-color: var(--color-resaltado, #27ae60) !important;
+    color: var(--color-resaltado, #1e8449) !important;
+    box-shadow: 0 4px 14px rgba(var(--color-resaltado-rgb, 39, 174, 96), 0.2);
 }
 
 .iconoOpcionReto {
@@ -8454,19 +8748,19 @@ body.modo-dia .botonDesastreToggle {
 }
 
 .botonDesastreToggle.activo {
-    background: rgba(46, 204, 113, 0.22) !important;
-    border-color: #2ecc71 !important;
+    background: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.22) !important;
+    border-color: var(--color-resaltado, #2ecc71) !important;
     color: inherit !important;
     opacity: 1 !important;
     font-weight: bold;
-    box-shadow: 0 4px 14px rgba(46, 204, 113, 0.25);
+    box-shadow: 0 4px 14px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.25);
 }
 
 body.modo-dia .botonDesastreToggle.activo {
-    background: rgba(46, 204, 113, 0.25) !important;
-    border-color: #27ae60 !important;
-    color: #1e8449 !important;
-    box-shadow: 0 4px 14px rgba(39, 174, 96, 0.2);
+    background: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.25) !important;
+    border-color: var(--color-resaltado, #27ae60) !important;
+    color: var(--color-resaltado, #1e8449) !important;
+    box-shadow: 0 4px 14px rgba(var(--color-resaltado-rgb, 39, 174, 96), 0.2);
 }
 
 .botonDesastreToggle .iconoDesastre {
@@ -8531,7 +8825,7 @@ body.modo-dia .formCampo input {
 .radioModoItem input[type="radio"] {
     width: 18px;
     height: 18px;
-    accent-color: #2ecc71;
+    accent-color: var(--color-resaltado, #2ecc71);
     cursor: pointer;
 }
 
@@ -8542,12 +8836,12 @@ body.modo-dia .formCampo input {
 }
 
 .btnGirarDestacado {
-    background: linear-gradient(135deg, #2ecc71, #27ae60) !important;
+    background: linear-gradient(135deg, var(--color-resaltado, #2ecc71), color-mix(in srgb, var(--color-resaltado, #2ecc71) 75%, black)) !important;
     color: #fff !important;
     font-size: 1.2rem !important;
     padding: 14px 30px !important;
     border-radius: 30px !important;
-    box-shadow: 0 6px 20px rgba(46, 204, 113, 0.35) !important;
+    box-shadow: 0 6px 20px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.35) !important;
     border: none !important;
     cursor: pointer;
     transition: transform var(--transicion), box-shadow var(--transicion);
@@ -8555,7 +8849,7 @@ body.modo-dia .formCampo input {
 
 .btnGirarDestacado:hover {
     transform: translateY(-3px) scale(1.03) !important;
-    box-shadow: 0 8px 25px rgba(46, 204, 113, 0.5) !important;
+    box-shadow: 0 8px 25px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.5) !important;
 }
 
 /* Adaptación responsive para los botones de Opciones de Reto en móvil */
@@ -8608,8 +8902,8 @@ body.modo-dia .formCampo input {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: rgba(46, 204, 113, 0.15);
-    border: 1px solid rgba(46, 204, 113, 0.4);
+    background: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.15);
+    border: 1px solid rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.4);
     border-radius: 20px;
     padding: 8px 18px;
     font-weight: bold;
@@ -8626,7 +8920,7 @@ body.modo-dia .formCampo input {
 .timerDigits {
     font-family: monospace;
     font-size: 1.3rem;
-    color: #2ecc71;
+    color: var(--color-resaltado, #2ecc71);
     transition: color 0.3s ease;
 }
 
@@ -8635,7 +8929,7 @@ body.modo-dia .formCampo input {
 }
 
 body.modo-dia .timerDigits {
-    color: #27ae60;
+    color: var(--color-resaltado, #27ae60);
 }
 
 /* ==========================================================
@@ -8727,7 +9021,7 @@ body.modo-dia .desastreAnimacion::after {
     height: 124px;
     border: 3px solid var(--color-resaltado, #2ECC71);
     border-radius: var(--radio-normal, 14px);
-    box-shadow: 0 0 25px rgba(46, 204, 113, 0.45), inset 0 0 15px rgba(46, 204, 113, 0.2);
+    box-shadow: 0 0 25px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.45), inset 0 0 15px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.2);
     pointer-events: none;
     z-index: 10;
     box-sizing: border-box;
@@ -8748,13 +9042,13 @@ body.modo-dia .desastreAnimacion::after {
 .desastreSelectorPunteroIzq {
     left: -12px;
     border-left: 12px solid var(--color-resaltado, #2ECC71);
-    filter: drop-shadow(-2px 0 4px rgba(46, 204, 113, 0.6));
+    filter: drop-shadow(-2px 0 4px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.6));
 }
 
 .desastreSelectorPunteroDer {
     right: -12px;
     border-right: 12px solid var(--color-resaltado, #2ECC71);
-    filter: drop-shadow(2px 0 4px rgba(46, 204, 113, 0.6));
+    filter: drop-shadow(2px 0 4px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.6));
 }
 
 /* PISTA DE DESASTRES VERTICAL */
@@ -8798,12 +9092,12 @@ body.modo-dia .desastreAnim-item {
 
 .desastreAnim-item--elegida {
     border-color: var(--color-resaltado) !important;
-    background: rgba(46, 204, 113, 0.18) !important;
-    box-shadow: 0 0 22px rgba(46, 204, 113, 0.55) !important;
+    background: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.18) !important;
+    box-shadow: 0 0 22px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.55) !important;
 }
 
 body.modo-dia .desastreAnim-item--elegida {
-    background: rgba(46, 204, 113, 0.22) !important;
+    background: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.22) !important;
 }
 
 .desastreItemIcono {
@@ -8843,7 +9137,7 @@ body.modo-dia .desastreAnim-item--elegida {
 }
 
 body.modo-dia .desastreItemTitulo {
-    color: #27ae60;
+    color: var(--color-resaltado, #27ae60);
 }
 
 .desastreItemDesc {
@@ -9270,17 +9564,18 @@ body.modo-dia .displayTemporizadorDigital {
     font-weight: 800;
     border-radius: var(--radio-normal, 14px);
     border: 2px solid var(--color-resaltado);
-    background: linear-gradient(135deg, var(--color-resaltado), #1b9cfc);
+    background: linear-gradient(135deg, var(--color-resaltado), color-mix(in srgb, var(--color-resaltado) 72%, black));
     color: #ffffff;
     cursor: pointer;
-    box-shadow: 0 8px 25px rgba(46, 204, 113, 0.35);
+    box-shadow: 0 8px 25px rgba(var(--color-resaltado-rgb), 0.35);
     transition: all var(--transicion);
 }
 
 .habBtnTirar:hover:not(:disabled),
 #botonTirarDados:hover:not(:disabled) {
     transform: translateY(-3px) scale(1.03);
-    box-shadow: 0 12px 30px rgba(46, 204, 113, 0.5);
+    box-shadow: 0 12px 30px rgba(var(--color-resaltado-rgb), 0.5);
+    filter: brightness(1.08);
 }
 
 .habBtnTirar:disabled,
@@ -9364,7 +9659,7 @@ body.modo-dia .habAnimacion::after {
     background: linear-gradient(to left, rgba(243, 238, 227, 0.95), transparent);
 }
 
-/* Selector verde central fijo */
+/* Selector central fijo adaptado al tema */
 .habSelectorCentral {
     position: absolute;
     top: 8px;
@@ -9374,10 +9669,10 @@ body.modo-dia .habAnimacion::after {
     transform: translateX(-50%);
     border: 3px solid var(--color-resaltado, #2ECC71);
     border-radius: var(--radio-normal, 14px);
-    box-shadow: 0 0 20px rgba(46, 204, 113, 0.65), inset 0 0 15px rgba(46, 204, 113, 0.2);
+    box-shadow: 0 0 22px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.7), inset 0 0 15px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.25);
     z-index: 6;
     pointer-events: none;
-    background: rgba(46, 204, 113, 0.08);
+    background: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.08);
     box-sizing: border-box;
 }
 
@@ -9447,8 +9742,8 @@ body.modo-dia .habAnim-item {
 
 .habAnim-item--elegida {
     border-color: var(--color-resaltado) !important;
-    background: rgba(46, 204, 113, 0.25) !important;
-    box-shadow: 0 0 18px rgba(46, 204, 113, 0.6) !important;
+    background: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.28) !important;
+    box-shadow: 0 0 20px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.7) !important;
     transform: scale(1.04);
 }
 
@@ -9488,7 +9783,7 @@ body.modo-dia .habAnim-item {
     font-weight: 800;
     letter-spacing: 0.05em;
     color: var(--color-texto);
-    box-shadow: 0 4px 15px rgba(46, 204, 113, 0.25);
+    box-shadow: 0 4px 15px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.3);
     animation: pulsoBadgeHab 1.2s ease-in-out infinite alternate;
 }
 
@@ -9499,7 +9794,7 @@ body.modo-dia .habAnim-item {
 
     to {
         transform: scale(1.03);
-        box-shadow: 0 4px 20px rgba(46, 204, 113, 0.45);
+        box-shadow: 0 4px 20px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.55);
     }
 }
 
@@ -9515,7 +9810,9 @@ body.modo-dia .habAnim-item {
     margin: 14px 0 6px 0;
 }
 
-.habBtnAcelerar {
+.habBtnAcelerar,
+button.habBtnAcelerar,
+button:not(.cerrar).habBtnAcelerar {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -9531,28 +9828,34 @@ body.modo-dia .habAnim-item {
     transition: all var(--transicion);
 }
 
-.habBtnAcelerar:hover {
+.habBtnAcelerar:hover,
+button.habBtnAcelerar:hover,
+button:not(.cerrar).habBtnAcelerar:hover {
     transform: translateY(-2px) scale(1.03);
     box-shadow: 0 6px 20px rgba(241, 196, 15, 0.45);
     border-color: #f39c12;
     background: linear-gradient(135deg, rgba(241, 196, 15, 0.3), rgba(230, 126, 34, 0.35));
 }
 
-.habBtnAcelerar.habBtnAcelerar--activo {
-    border-color: var(--color-resaltado, #2ECC71);
-    background: linear-gradient(135deg, rgba(46, 204, 113, 0.3), rgba(39, 174, 96, 0.4));
-    color: #ffffff;
-    box-shadow: 0 0 20px rgba(46, 204, 113, 0.6);
+.habBtnAcelerar.habBtnAcelerar--activo,
+button.habBtnAcelerar.habBtnAcelerar--activo,
+button:not(.cerrar).habBtnAcelerar.habBtnAcelerar--activo {
+    border-width: 2px !important;
+    border-style: solid !important;
+    border-color: var(--color-resaltado) !important;
+    background: linear-gradient(135deg, rgba(var(--color-resaltado-rgb), 0.35), rgba(var(--color-resaltado-rgb), 0.55)) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 20px rgba(var(--color-resaltado-rgb), 0.6) !important;
     animation: brilloAcelerado 0.8s ease-in-out infinite alternate;
 }
 
 @keyframes brilloAcelerado {
     from {
-        box-shadow: 0 0 12px rgba(46, 204, 113, 0.4);
+        box-shadow: 0 0 12px rgba(var(--color-resaltado-rgb), 0.4);
     }
 
     to {
-        box-shadow: 0 0 25px rgba(46, 204, 113, 0.8);
+        box-shadow: 0 0 25px rgba(var(--color-resaltado-rgb), 0.8);
     }
 }
 
@@ -9862,15 +10165,28 @@ body.modo-dia .habAnim-item {
     color: #f39c12;
 }
 
-/* Estado En Marcha: VERDE */
+/* Estado En Marcha: TEMA ACTIVO */
 .displayTemporizadorDigital.enMarcha {
-    background: rgba(46, 204, 113, 0.12);
-    border: 1.5px solid rgba(46, 204, 113, 0.7);
-    box-shadow: 0 4px 16px rgba(46, 204, 113, 0.25);
+    background: rgba(var(--color-resaltado-rgb), 0.14);
+    border: 1.5px solid rgba(var(--color-resaltado-rgb), 0.7);
+    box-shadow: 0 4px 16px rgba(var(--color-resaltado-rgb), 0.3);
+    animation: pulsoTemporizadorEnMarcha 2s ease-in-out infinite alternate;
 }
 
 .displayTemporizadorDigital.enMarcha .digitosTiempo {
-    color: #2ecc71;
+    color: var(--color-resaltado);
+    text-shadow: 0 0 12px rgba(var(--color-resaltado-rgb), 0.5);
+}
+
+@keyframes pulsoTemporizadorEnMarcha {
+    from {
+        box-shadow: 0 4px 14px rgba(var(--color-resaltado-rgb), 0.25);
+        border-color: rgba(var(--color-resaltado-rgb), 0.6);
+    }
+    to {
+        box-shadow: 0 4px 22px rgba(var(--color-resaltado-rgb), 0.55), 0 0 10px rgba(var(--color-resaltado-rgb), 0.3);
+        border-color: rgba(var(--color-resaltado-rgb), 0.95);
+    }
 }
 
 /* Estado Tiempo Agotado: ROJO */
@@ -10134,7 +10450,7 @@ body.modo-noche .botonOBSBtn:hover {
     background: var(--color-resaltado, #2ECC71) !important;
     color: #ffffff !important;
     border-color: transparent !important;
-    box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+    box-shadow: 0 4px 12px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.35);
 }
 
 /* Control deslizante de Escala de ventanas OBS */
@@ -10199,10 +10515,17 @@ body.modo-noche .botonOBSBtn:hover {
     font-size: 0.85rem;
     border-radius: 8px;
     border: 1px solid var(--borde);
-    background: rgba(0, 0, 0, 0.3);
-    color: #33ff88;
+    background: rgba(0, 0, 0, 0.35);
+    color: var(--color-resaltado, #2ECC71);
     font-family: monospace;
     box-sizing: border-box;
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+body.modo-dia .inputUrlOBS {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.15);
+    color: var(--color-resaltado, #1e8449);
 }
 
 .obsAccionesFooter {
@@ -10212,7 +10535,49 @@ body.modo-noche .botonOBSBtn:hover {
     margin-top: 6px;
 }
 
-.obsBtnCopiar,
+.obsBtnCopiar {
+    flex: 1;
+    min-width: 180px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-resaltado, #2ECC71);
+    color: #ffffff;
+    font-weight: 700;
+    border: none;
+    padding: 12px 18px;
+    border-radius: var(--radio-normal);
+    box-shadow: 0 4px 14px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.35);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.obsBtnCopiar:hover {
+    background: var(--color-resaltado, #2ECC71);
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.45);
+}
+
+.obsBtnCopiar:focus-visible {
+    outline: 3px solid var(--color-resaltado, #2ECC71);
+    outline-offset: 2px;
+}
+
+.obsBtnCopiar:active {
+    transform: translateY(0);
+    filter: brightness(0.95);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.obsBtnCopiar.copiado {
+    background: var(--color-resaltado, #2ECC71) !important;
+    filter: brightness(0.9);
+    color: #fff !important;
+}
+
 .obsBtnProbar {
     flex: 1;
     min-width: 180px;
@@ -10221,11 +10586,6 @@ body.modo-noche .botonOBSBtn:hover {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-}
-
-.obsBtnCopiar.copiado {
-    background: #2ECC71 !important;
-    color: #fff !important;
 }
 
 .obsNotaRealtime {
@@ -10240,8 +10600,11 @@ body.modo-noche .botonOBSBtn:hover {
    ESTILOS EN MODO OBS OVERLAY (MODO-OBS EN BODY)
    ========================================================== */
 
+html:has(body.modo-obs),
+html.modo-obs,
 body.modo-obs {
     background: transparent !important;
+    background-color: transparent !important;
     background-image: none !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -10253,8 +10616,17 @@ body.modo-obs header,
 body.modo-obs #menuPrincipal,
 body.modo-obs footer,
 body.modo-obs #pantallaCarga,
-body.modo-obs #placeholderMenuPrincipal {
+body.modo-obs #placeholderMenuPrincipal,
+body.modo-obs #contenedorCapasFondo,
+body.modo-obs #contenedorEfectosTema,
+body.modo-obs .contenedorCapasFondo,
+body.modo-obs .contenedorEfectosTema,
+body.modo-obs .capa-fondo,
+body.modo-obs #lotlabDockTestTemas {
     display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }
 
 body.modo-obs section#app {
@@ -11482,11 +11854,12 @@ body {
 /* ── 5. NAV CLÁSICA — BOTONES EN FILA CON SCROLL HORIZONTAL  */
 @media (max-width: 700px) {
     .categorias-nav-clasica {
-        /* Ya tiene overflow-x: auto, garantizamos que no desborde */
+        /* Ya tiene overflow-x: auto, garantizamos que no desborde y evitamos recortes de sombra */
         max-width: 100%;
         box-sizing: border-box;
-        padding-bottom: 6px;
-        /* espacio para el scrollbar invisible */
+        padding-top: 6px;
+        padding-bottom: 14px;
+        margin: -2px 0 -8px 0;
     }
 
     .btn-categoria-nav {
@@ -11883,7 +12256,7 @@ body {
 .has-hover-glow:hover,
 .ve-img-frame.has-hover-glow:hover,
 a.ve-img-link:hover .ve-img-frame.has-hover-glow {
-  box-shadow: 0 0 20px rgba(46, 204, 113, 0.85), 0 0 0 2.5px #2ecc71 !important;
+  box-shadow: 0 0 20px rgba(var(--color-resaltado-rgb), 0.85), 0 0 0 2.5px var(--color-resaltado) !important;
   transform: translateY(-2px);
 }
 
@@ -12012,4 +12385,689 @@ a.ve-img-link:hover .ve-img-frame.has-hover-glow {
 .boton-lotlab.btn-block-full {
   width: 100%;
 }
+
+/* ==========================================================
+   TEMAS ESTACIONALES Y FONDOS MULTICAPA (LOT-LAB CMS)
+========================================================== */
+.contenedorCapasFondo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+body.tema-multicapa-activo {
+    background-image: none !important;
+}
+
+.capa-fondo {
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.capa-fondo-fija {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-attachment: fixed;
+}
+
+.capa-fondo-scroll {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100%;
+    height: 100%;
+    background-attachment: scroll;
+}
+
+/* Botones de control de temas estacionales para visitantes */
+.botonTemaEstacional {
+    font-size: 1.15rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
+}
+
+.botonTemaEstacional.tema-activo {
+    border: 2px solid var(--color-resaltado) !important;
+    box-shadow: 0 0 10px rgba(var(--color-resaltado-rgb), 0.45);
+}
+
+.botonTemaEstacional.tema-desactivado {
+    opacity: 0.5;
+    filter: grayscale(0.7);
+}
+
+.botonTemaEstacional:hover {
+    transform: scale(1.08);
+    opacity: 1;
+}
+
+/* Efectos decorativos temáticos */
+.contenedorEfectosTema {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+/* Nieve (Navidad) */
+.particula-nieve {
+    position: absolute;
+    top: -15px;
+    background: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+    animation: animacionNieve linear infinite;
+}
+
+@keyframes animacionNieve {
+    0% {
+        transform: translateY(-10px) translateX(0);
+    }
+    50% {
+        transform: translateY(50vh) translateX(25px);
+    }
+    100% {
+        transform: translateY(105vh) translateX(-15px);
+    }
+}
+
+/* Murciélagos y Bruja (Halloween) - Siluetas vectoriales y vuelo orgánico */
+.ente-halloween {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
+    will-change: transform;
+    user-select: none;
+}
+
+.murcielago-vuelo {
+    width: 56px;
+    height: 34px;
+}
+
+.bruja-vuelo {
+    width: 98px;
+    height: 63px;
+}
+
+/* Vuelo de murciélagos: orientados según sentido de desplazamiento */
+.murcielago-vuelo.izq-a-der.onda-alta {
+    animation: vueloMurcielagoIzqDerAlta var(--duracion-vuelo, 10s) linear forwards;
+}
+
+.murcielago-vuelo.izq-a-der.onda-baja {
+    animation: vueloMurcielagoIzqDerBaja var(--duracion-vuelo, 11s) linear forwards;
+}
+
+.murcielago-vuelo.der-a-izq.onda-alta {
+    animation: vueloMurcielagoDerIzqAlta var(--duracion-vuelo, 10s) linear forwards;
+}
+
+.murcielago-vuelo.der-a-izq.onda-baja {
+    animation: vueloMurcielagoDerIzqBaja var(--duracion-vuelo, 11s) linear forwards;
+}
+
+.bruja-vuelo.izq-a-der {
+    animation: vueloBrujaIzqDer var(--duracion-vuelo, 16s) ease-in-out forwards;
+}
+
+.bruja-vuelo.der-a-izq {
+    animation: vueloBrujaDerIzq var(--duracion-vuelo, 16s) ease-in-out forwards;
+}
+
+/* Trayectorias curvas suaves con micro-ondulaciones de altura */
+@keyframes vueloMurcielagoIzqDerAlta {
+    0% {
+        transform: translate3d(-10vw, 0, 0) scale(var(--escala-vuelo, 1)) rotate(4deg);
+    }
+    25% {
+        transform: translate3d(25vw, -35px, 0) scale(var(--escala-vuelo, 1)) rotate(-6deg);
+    }
+    50% {
+        transform: translate3d(55vw, 20px, 0) scale(var(--escala-vuelo, 1)) rotate(5deg);
+    }
+    75% {
+        transform: translate3d(85vw, -25px, 0) scale(var(--escala-vuelo, 1)) rotate(-4deg);
+    }
+    100% {
+        transform: translate3d(115vw, 15px, 0) scale(var(--escala-vuelo, 1)) rotate(3deg);
+    }
+}
+
+@keyframes vueloMurcielagoIzqDerBaja {
+    0% {
+        transform: translate3d(-10vw, 0, 0) scale(var(--escala-vuelo, 1)) rotate(-3deg);
+    }
+    30% {
+        transform: translate3d(30vw, 25px, 0) scale(var(--escala-vuelo, 1)) rotate(4deg);
+    }
+    60% {
+        transform: translate3d(65vw, -30px, 0) scale(var(--escala-vuelo, 1)) rotate(-5deg);
+    }
+    100% {
+        transform: translate3d(115vw, 0px, 0) scale(var(--escala-vuelo, 1)) rotate(2deg);
+    }
+}
+
+@keyframes vueloMurcielagoDerIzqAlta {
+    0% {
+        transform: translate3d(115vw, 0, 0) scaleX(-1) scale(var(--escala-vuelo, 1)) rotate(-4deg);
+    }
+    25% {
+        transform: translate3d(85vw, -35px, 0) scaleX(-1) scale(var(--escala-vuelo, 1)) rotate(6deg);
+    }
+    50% {
+        transform: translate3d(50vw, 25px, 0) scaleX(-1) scale(var(--escala-vuelo, 1)) rotate(-5deg);
+    }
+    75% {
+        transform: translate3d(20vw, -20px, 0) scaleX(-1) scale(var(--escala-vuelo, 1)) rotate(4deg);
+    }
+    100% {
+        transform: translate3d(-10vw, 10px, 0) scaleX(-1) scale(var(--escala-vuelo, 1)) rotate(-3deg);
+    }
+}
+
+@keyframes vueloMurcielagoDerIzqBaja {
+    0% {
+        transform: translate3d(115vw, 0, 0) scaleX(-1) scale(var(--escala-vuelo, 1)) rotate(3deg);
+    }
+    35% {
+        transform: translate3d(70vw, 30px, 0) scaleX(-1) scale(var(--escala-vuelo, 1)) rotate(-4deg);
+    }
+    70% {
+        transform: translate3d(35vw, -25px, 0) scaleX(-1) scale(var(--escala-vuelo, 1)) rotate(5deg);
+    }
+    100% {
+        transform: translate3d(-10vw, 5px, 0) scaleX(-1) scale(var(--escala-vuelo, 1)) rotate(-2deg);
+    }
+}
+
+/* Vuelo de la bruja: desplazamiento suave y majestuoso */
+@keyframes vueloBrujaIzqDer {
+    0% {
+        transform: translate3d(-15vw, 0, 0) scale(var(--escala-vuelo, 1)) rotate(-2deg);
+    }
+    30% {
+        transform: translate3d(30vw, -22px, 0) scale(var(--escala-vuelo, 1)) rotate(1deg);
+    }
+    70% {
+        transform: translate3d(70vw, 18px, 0) scale(var(--escala-vuelo, 1)) rotate(-1deg);
+    }
+    100% {
+        transform: translate3d(115vw, -10px, 0) scale(var(--escala-vuelo, 1)) rotate(0deg);
+    }
+}
+
+@keyframes vueloBrujaDerIzq {
+    0% {
+        transform: translate3d(115vw, 0, 0) scaleX(-1) scale(var(--escala-vuelo, 1)) rotate(2deg);
+    }
+    35% {
+        transform: translate3d(65vw, -20px, 0) scaleX(-1) scale(var(--escala-vuelo, 1)) rotate(-1deg);
+    }
+    75% {
+        transform: translate3d(25vw, 15px, 0) scaleX(-1) scale(var(--escala-vuelo, 1)) rotate(1deg);
+    }
+    100% {
+        transform: translate3d(-15vw, -8px, 0) scaleX(-1) scale(var(--escala-vuelo, 1)) rotate(0deg);
+    }
+}
+
+/* Murciélagos: Ciclo anatómico de 6 fases de aleteo quiróptero */
+.silueta-svg-murcielago {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.45));
+}
+
+.alas-fase-1 { animation: cicloFase1 var(--duracion-aleteo, 0.30s) steps(1) infinite; }
+.alas-fase-2 { animation: cicloFase2 var(--duracion-aleteo, 0.30s) steps(1) infinite; }
+.alas-fase-3 { animation: cicloFase3 var(--duracion-aleteo, 0.30s) steps(1) infinite; }
+.alas-fase-4 { animation: cicloFase4 var(--duracion-aleteo, 0.30s) steps(1) infinite; }
+.alas-fase-5 { animation: cicloFase5 var(--duracion-aleteo, 0.30s) steps(1) infinite; }
+.alas-fase-6 { animation: cicloFase6 var(--duracion-aleteo, 0.30s) steps(1) infinite; }
+
+@keyframes cicloFase1 {
+    0%, 100% { opacity: 1; visibility: visible; }
+    16.66% { opacity: 0; visibility: hidden; }
+}
+@keyframes cicloFase2 {
+    0%, 16.66% { opacity: 0; visibility: hidden; }
+    16.67%, 33.33% { opacity: 1; visibility: visible; }
+    33.34%, 100% { opacity: 0; visibility: hidden; }
+}
+@keyframes cicloFase3 {
+    0%, 33.33% { opacity: 0; visibility: hidden; }
+    33.34%, 50.00% { opacity: 1; visibility: visible; }
+    50.01%, 100% { opacity: 0; visibility: hidden; }
+}
+@keyframes cicloFase4 {
+    0%, 50.00% { opacity: 0; visibility: hidden; }
+    50.01%, 66.66% { opacity: 1; visibility: visible; }
+    66.67%, 100% { opacity: 0; visibility: hidden; }
+}
+@keyframes cicloFase5 {
+    0%, 66.66% { opacity: 0; visibility: hidden; }
+    66.67%, 83.33% { opacity: 1; visibility: visible; }
+    83.34%, 100% { opacity: 0; visibility: hidden; }
+}
+@keyframes cicloFase6 {
+    0%, 83.33% { opacity: 0; visibility: hidden; }
+    83.34%, 99.99% { opacity: 1; visibility: visible; }
+}
+
+.cuerpo-mamifero,
+.cuerpo-murcielago {
+    animation: cuerpoBob var(--duracion-aleteo, 0.30s) ease-in-out infinite alternate;
+}
+
+@keyframes cuerpoBob {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(-1.5px);
+    }
+}
+
+/* Oscilación suave y majestuosa para la bruja */
+.silueta-svg-bruja {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5));
+    animation: oscilacionBruja 2.4s ease-in-out infinite alternate;
+    transform-origin: 50% 50%;
+}
+
+@keyframes oscilacionBruja {
+    0% {
+        transform: translateY(0px) rotate(-2deg);
+    }
+    100% {
+        transform: translateY(-7px) rotate(2deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .contenedorEfectosTema,
+    .particula-nieve,
+    .ente-halloween,
+    .murcielago-vuelo,
+    .bruja-vuelo,
+    .silueta-svg-murcielago,
+    .silueta-svg-bruja,
+    .alas-fase-1,
+    .alas-fase-2,
+    .alas-fase-3,
+    .alas-fase-4,
+    .alas-fase-5,
+    .alas-fase-6,
+    .cuerpo-mamifero,
+    .cuerpo-murcielago {
+        display: none !important;
+        animation: none !important;
+    }
+}
+
+/* ==========================================================
+   BARRA DE TESTING LOCAL DE TEMAS (SOLO ENTORNO DEV / LOCALHOST)
+   ========================================================== */
+.lotlab-dock-test-temas {
+    position: fixed;
+    bottom: 18px;
+    left: 18px;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(18, 20, 30, 0.92);
+    border: 1.5px solid var(--color-resaltado, #2ecc71);
+    border-radius: 30px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    font-size: 0.82rem;
+    color: #ffffff;
+    user-select: none;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.lotlab-dock-test-temas .dock-label {
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    opacity: 0.85;
+    padding-right: 4px;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.lotlab-dock-btn {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    padding: 5px 10px;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.15s ease;
+}
+
+.lotlab-dock-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.lotlab-dock-btn.activo {
+    background: var(--color-resaltado, #2ecc71);
+    color: #ffffff;
+    border-color: var(--color-resaltado, #2ecc71);
+    box-shadow: 0 0 10px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.5);
+}
+
+.lotlab-dock-btn-reset {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.25);
+    opacity: 0.8;
+}
+
+.lotlab-dock-btn-reset:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.lotlab-dock-btn-cerrar {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 4px 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border-radius: 50%;
+    margin-left: 2px;
+}
+
+.lotlab-dock-btn-cerrar:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+}
+
+@media (max-width: 700px) {
+    .lotlab-dock-test-temas {
+        bottom: 12px;
+        left: 12px;
+        padding: 6px 10px;
+        gap: 6px;
+        font-size: 0.75rem;
+    }
+    .lotlab-dock-btn {
+        padding: 4px 8px;
+        font-size: 0.72rem;
+    }
+}
+
+/* ==========================================================
+   EFECTO DECORATIVO: GATO NEGRO Y RATÓN EN BARRA INFERIOR
+   ========================================================== */
+.contenedorGatoNegro {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    width: 100%;
+    height: 44px;
+    pointer-events: none;
+    overflow: visible;
+    z-index: 95;
+}
+
+.gato-barra-personaje {
+    position: absolute;
+    bottom: 0px;
+    height: 38px;
+    width: 80px;
+    pointer-events: none;
+    user-select: none;
+    will-change: transform, left;
+}
+
+.gato-capa {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    height: 100%;
+    width: auto;
+    opacity: 0;
+    transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: bottom center;
+    pointer-events: none;
+}
+
+.gato-capa svg {
+    display: block;
+    height: 100%;
+    width: auto;
+    overflow: visible;
+}
+
+.gato-capa-caminando {
+    height: 38px;
+    width: auto;
+}
+
+.gato-capa-sentado {
+    height: 38px;
+    width: auto;
+}
+
+.gato-capa-estirado {
+    height: 54px;
+    width: auto;
+}
+
+.gato-estado-caminando .gato-capa-caminando,
+.gato-estado-corriendo .gato-capa-caminando {
+    opacity: 1;
+}
+
+.gato-estado-sentado .gato-capa-sentado {
+    opacity: 1;
+}
+
+.gato-estado-estirado .gato-capa-estirado {
+    opacity: 1;
+}
+
+body.modo-dia .gato-barra-personaje svg path {
+    fill: #110e17;
+    filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.25));
+}
+
+body:not(.modo-dia) .gato-barra-personaje svg path {
+    fill: #110e17;
+    filter: drop-shadow(0 0 1.5px rgba(235, 225, 255, 0.65)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.7));
+}
+
+.gato-barra-personaje svg .pata-lejana {
+    opacity: 0.82;
+}
+
+.raton-barra-personaje {
+    position: absolute;
+    bottom: 0px;
+    height: 14px;
+    width: auto;
+    pointer-events: none;
+    user-select: none;
+    will-change: transform, left;
+    z-index: 94;
+}
+
+.raton-barra-personaje svg {
+    height: 100%;
+    width: auto;
+    display: block;
+    fill: #110e17;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+}
+
+body:not(.modo-dia) .raton-barra-personaje svg {
+    filter: drop-shadow(0 0 1.5px rgba(235, 225, 255, 0.65)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.7));
+}
+
+/* ==========================================================
+   ANIMACIONES ARTICULADAS: MARCHA Y CARRERA FELINA
+   ========================================================== */
+.gato-anim-caminando {
+    --gato-ciclo-paso: 0.72s;
+}
+
+.gato-anim-corriendo {
+    --gato-ciclo-paso: 0.28s;
+}
+
+/* 1. Cuerpo: sutil oscilación continua ligada al paso */
+.gato-anim-caminando .cuerpo-grupo,
+.gato-anim-corriendo .cuerpo-grupo {
+    animation: marchaCuerpoGato var(--gato-ciclo-paso, 0.72s) ease-in-out infinite;
+    transform-origin: 110px 50px;
+}
+
+/* 2. Pata delantera cercana (Del-1) */
+.gato-anim-caminando .pata-del-1,
+.gato-anim-corriendo .pata-del-1 {
+    animation: pasoDelantera1Gato var(--gato-ciclo-paso, 0.72s) ease-in-out infinite;
+    transform-origin: 154px 62px;
+}
+
+/* 3. Pata delantera lejana (Del-2) */
+.gato-anim-caminando .pata-del-2,
+.gato-anim-corriendo .pata-del-2 {
+    animation: pasoDelantera2Gato var(--gato-ciclo-paso, 0.72s) ease-in-out infinite;
+    transform-origin: 132px 62px;
+}
+
+/* 4. Pata trasera cercana (Tras-1) */
+.gato-anim-caminando .pata-tras-1,
+.gato-anim-corriendo .pata-tras-1 {
+    animation: pasoTrasera1Gato var(--gato-ciclo-paso, 0.72s) ease-in-out infinite;
+    transform-origin: 80px 65px;
+}
+
+/* 5. Pata trasera lejana (Tras-2) */
+.gato-anim-caminando .pata-tras-2,
+.gato-anim-corriendo .pata-tras-2 {
+    animation: pasoTrasera2Gato var(--gato-ciclo-paso, 0.72s) ease-in-out infinite;
+    transform-origin: 52px 60px;
+}
+
+/* 6. Cola: balanceo fluido orgánico */
+.gato-anim-caminando .cola-grupo,
+.gato-anim-corriendo .cola-grupo {
+    animation: balanceoColaGato calc(var(--gato-ciclo-paso, 0.72s) * 1.6) ease-in-out infinite alternate;
+    transform-origin: 48px 30px;
+}
+
+@keyframes marchaCuerpoGato {
+    0%, 50%, 100% { transform: translateY(0) rotate(0deg); }
+    25%           { transform: translateY(-0.8px) rotate(-0.5deg); }
+    75%           { transform: translateY(-0.8px) rotate(0.5deg); }
+}
+
+@keyframes pasoDelantera1Gato {
+    0%   { transform: rotate(14deg) translateY(0); }
+    25%  { transform: rotate(0deg) translateY(0); }
+    50%  { transform: rotate(-14deg) translateY(0); }
+    60%  { transform: rotate(-8deg) translateY(-6px); }
+    75%  { transform: rotate(4deg) translateY(-7.5px); }
+    90%  { transform: rotate(15deg) translateY(-2px); }
+    100% { transform: rotate(14deg) translateY(0); }
+}
+
+@keyframes pasoDelantera2Gato {
+    0%   { transform: rotate(-14deg) translateY(0); }
+    10%  { transform: rotate(-8deg) translateY(-6px); }
+    25%  { transform: rotate(4deg) translateY(-7.5px); }
+    40%  { transform: rotate(15deg) translateY(-2px); }
+    50%  { transform: rotate(14deg) translateY(0); }
+    75%  { transform: rotate(0deg) translateY(0); }
+    100% { transform: rotate(-14deg) translateY(0); }
+}
+
+@keyframes pasoTrasera1Gato {
+    0%   { transform: rotate(-2deg) translateY(0); }
+    25%  { transform: rotate(-15deg) translateY(0); }
+    35%  { transform: rotate(-6deg) translateY(-7px); }
+    50%  { transform: rotate(6deg) translateY(-8px); }
+    65%  { transform: rotate(14deg) translateY(-2px); }
+    75%  { transform: rotate(13deg) translateY(0); }
+    100% { transform: rotate(-2deg) translateY(0); }
+}
+
+@keyframes pasoTrasera2Gato {
+    0%   { transform: rotate(6deg) translateY(-8px); }
+    15%  { transform: rotate(14deg) translateY(-2px); }
+    25%  { transform: rotate(13deg) translateY(0); }
+    50%  { transform: rotate(-2deg) translateY(0); }
+    75%  { transform: rotate(-15deg) translateY(0); }
+    85%  { transform: rotate(-6deg) translateY(-7px); }
+    100% { transform: rotate(6deg) translateY(-8px); }
+}
+
+@keyframes balanceoColaGato {
+    0%   { transform: rotate(-8deg); }
+    100% { transform: rotate(10deg); }
+}
+
+@keyframes respiracionGatoSentado {
+    0%, 100% { transform: scaleY(1); }
+    50%      { transform: scaleY(1.02); }
+}
+
+@keyframes carreraRatonPaso {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-1.2px); }
+}
+
+.gato-anim-sentado {
+    animation: respiracionGatoSentado 3.2s ease-in-out infinite;
+    transform-origin: bottom center;
+}
+
+.raton-anim-corriendo {
+    animation: carreraRatonPaso 0.10s linear infinite;
+    transform-origin: bottom center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gato-barra-personaje *,
+    .raton-barra-personaje * {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+
+
 

@@ -6,7 +6,7 @@
     // ─── CONFIGURACIÓN E INICIALIZACIÓN ──────────────────────
     const OBS_STORAGE_KEY = 'lotlab_obs_settings';
     
-    let obsConfig = { pos: 'right', theme: 'noche', bg: 'transparent', scale: 100 };
+    let obsConfig = { pos: 'right', theme: 'noche', bg: 'transparent', scale: 100, temaVisual: 'auto' };
     try {
         const saved = localStorage.getItem(OBS_STORAGE_KEY);
         if (saved) obsConfig = Object.assign(obsConfig, JSON.parse(saved));
@@ -22,6 +22,8 @@
     if (urlParams.has('theme')) obsConfig.theme = urlParams.get('theme');
     if (urlParams.has('bg')) obsConfig.bg = urlParams.get('bg');
     if (urlParams.has('scale')) obsConfig.scale = parseInt(urlParams.get('scale'), 10) || 100;
+    if (urlParams.has('temaVisual')) obsConfig.temaVisual = urlParams.get('temaVisual');
+    if (urlParams.has('tema')) obsConfig.temaVisual = urlParams.get('tema');
 
     // Obtener la escala del usuario como número decimal entre 0.20 y 1.00 (por defecto 1.00 = 100%)
     function obtenerEscalaUsuarioOBS() {
@@ -69,16 +71,46 @@
         if (efectosTema) efectosTema.remove();
         const dockTest = document.getElementById('lotlabDockTestTemas');
         if (dockTest) dockTest.remove();
-        // Clases visuales
+        // Clases visuales de posición
         document.body.classList.remove('obs-pos-left', 'obs-pos-center', 'obs-pos-right');
         document.body.classList.add('obs-pos-' + (obsConfig.pos || 'right'));
         document.body.classList.remove('obs-bg-transparent', 'obs-bg-dark', 'obs-bg-light');
         document.body.classList.add('obs-bg-' + (obsConfig.bg || 'transparent'));
         
+        // 1. Determinar modo Día / Noche efectivo para OBS
+        let esDia = false;
+        if (obsConfig.theme === 'dia') {
+            esDia = true;
+        } else if (obsConfig.theme === 'noche') {
+            esDia = false;
+        } else {
+            // 'auto' -> Mismo que la web
+            if (typeof window._ultimoModoDiaNocheWeb === 'string') {
+                esDia = (window._ultimoModoDiaNocheWeb === 'dia');
+            } else {
+                esDia = (localStorage.getItem('modoTema') === 'dia');
+            }
+        }
+
         document.body.classList.remove('modo-dia', 'modo-noche', 'modo-obs-dia', 'modo-obs-noche');
-        if (obsConfig.theme === 'dia') document.body.classList.add('modo-dia', 'modo-obs-dia');
-        else if (obsConfig.theme === 'noche') document.body.classList.add('modo-noche', 'modo-obs-noche');
-        else document.body.classList.add(localStorage.getItem('modo-color') || 'modo-noche');
+        if (esDia) {
+            document.body.classList.add('modo-dia', 'modo-obs-dia');
+        } else {
+            document.body.classList.add('modo-noche', 'modo-obs-noche');
+        }
+
+        // 2. Determinar tema visual efectivo para OBS
+        let idTemaEfectivo = 'auto';
+        if (obsConfig.temaVisual && obsConfig.temaVisual !== 'auto') {
+            idTemaEfectivo = obsConfig.temaVisual;
+        } else {
+            idTemaEfectivo = window._ultimoTemaWeb || localStorage.getItem('lotlab_tema_seleccionado') || 'auto';
+        }
+
+        // Aplicar tema en OBS vía TemasEstacionales sin alterar la configuración de la web
+        if (window.TemasEstacionales && typeof window.TemasEstacionales.aplicarTemaOBS === 'function') {
+            window.TemasEstacionales.aplicarTemaOBS(idTemaEfectivo, esDia ? 'dia' : 'noche');
+        }
 
         // Aplicar la escala configurada
         aplicarEscalaOBSGlobal();
@@ -110,6 +142,7 @@
             }
         });
     }
+    window.aplicarBrandingOBS = aplicarBrandingOBS;
 
     if (isObsMode && document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', aplicarBrandingOBS);
@@ -354,6 +387,8 @@
                         tipo: "FULL_STATE",
                         estado: EstadoGlobal,
                         config: obsConfig,
+                        temaWeb: window.TemasEstacionales?.obtenerTemaActivo()?.id || localStorage.getItem('lotlab_tema_seleccionado') || 'base',
+                        modoDiaNocheWeb: document.body.classList.contains('modo-dia') ? 'dia' : 'noche',
                         timestamp: Date.now()
                     });
                 });
@@ -361,7 +396,14 @@
                 conn.on('data', data => {
                     if (data.tipo === "REQUEST_STATE") {
                         refrescarPacksEstadoGlobal();
-                        conn.send({ tipo: "FULL_STATE", estado: EstadoGlobal, config: obsConfig, timestamp: Date.now() });
+                        conn.send({
+                            tipo: "FULL_STATE",
+                            estado: EstadoGlobal,
+                            config: obsConfig,
+                            temaWeb: window.TemasEstacionales?.obtenerTemaActivo()?.id || localStorage.getItem('lotlab_tema_seleccionado') || 'base',
+                            modoDiaNocheWeb: document.body.classList.contains('modo-dia') ? 'dia' : 'noche',
+                            timestamp: Date.now()
+                        });
                     }
                 });
                 
@@ -432,10 +474,12 @@
         try {
             if (data.tipo === "FULL_STATE") {
                 versionEstadoLocal = data.estado.version;
+                if (data.temaWeb) window._ultimoTemaWeb = data.temaWeb;
+                if (data.modoDiaNocheWeb) window._ultimoModoDiaNocheWeb = data.modoDiaNocheWeb;
                 if (data.config) {
                     obsConfig = Object.assign(obsConfig, data.config);
-                    aplicarBrandingOBS();
                 }
+                aplicarBrandingOBS();
                 
                 // 1. Restaurar UI State (modales, clases, estilos internos - omitiendo .ventana)
                 if (data.estado.uiState) {
@@ -554,6 +598,12 @@
                         if (sem && sem.tierList && typeof window.restaurarTierListObs === 'function') {
                             window.restaurarTierListObs(sem.tierList.estado || sem.tierList);
                         }
+                    } else if (data.estado.ventanaActual && data.estado.ventanaActual.startsWith('ventana_pag_')) {
+                        const pageId = data.estado.ventanaActual.replace('ventana_pag_', '');
+                        const it = window.ITEMS_ESTRUCTURA_SITIO?.find(i => i.id === pageId);
+                        if (it && typeof window.cargarContenidoPaginaEditable === 'function') {
+                            window.cargarContenidoPaginaEditable(it, data.estado.ventanaActual);
+                        }
                     }
                 });
 
@@ -565,6 +615,18 @@
                     case 'SYNC_CONFIG':
                         if (data.config) {
                             obsConfig = Object.assign(obsConfig, data.config);
+                            aplicarBrandingOBS();
+                        }
+                        break;
+                    case 'SYNC_TEMA_WEB':
+                        if (data.temaId) window._ultimoTemaWeb = data.temaId;
+                        if (!obsConfig.temaVisual || obsConfig.temaVisual === 'auto') {
+                            aplicarBrandingOBS();
+                        }
+                        break;
+                    case 'SYNC_MODO_DIA_NOCHE':
+                        if (data.modoTema) window._ultimoModoDiaNocheWeb = data.modoTema;
+                        if (obsConfig.theme === 'auto') {
                             aplicarBrandingOBS();
                         }
                         break;
@@ -603,6 +665,12 @@
                             }
                         } else if (data.idVentana === 'ventanaTierList') {
                             if (typeof window.inicializarTierList === 'function') window.inicializarTierList();
+                        } else if (data.idVentana && data.idVentana.startsWith('ventana_pag_')) {
+                            const pageId = data.idVentana.replace('ventana_pag_', '');
+                            const it = window.ITEMS_ESTRUCTURA_SITIO?.find(i => i.id === pageId);
+                            if (it && typeof window.cargarContenidoPaginaEditable === 'function') {
+                                window.cargarContenidoPaginaEditable(it, data.idVentana);
+                            }
                         }
                         aplicarBrandingOBS();
                         break;
@@ -1025,7 +1093,75 @@
         if (obsConfig.scale && parseInt(obsConfig.scale, 10) !== 100) {
             params.set('scale', obsConfig.scale);
         }
+        if (obsConfig.temaVisual && obsConfig.temaVisual !== 'auto') {
+            params.set('temaVisual', obsConfig.temaVisual);
+        }
         return baseUrl + '?' + params.toString();
+    }
+
+    function renderizarSelectorTemasOBS() {
+        const contenedor = document.getElementById('obsGrupoTemaVisual');
+        if (!contenedor) return;
+
+        let disponibles = [];
+        if (window.TemasEstacionales && typeof window.TemasEstacionales.obtenerTemasDisponibles === 'function') {
+            disponibles = window.TemasEstacionales.obtenerTemasDisponibles();
+        } else {
+            disponibles = [{ id: 'base', nombre: 'Modo Base', icono: '🎮' }];
+        }
+
+        // Si el tema guardado en obsConfig es estacional y ya no está en temporada, fallback seguro a 'auto'
+        // Solo evaluar si la configuración completa de temas está disponible (evitar reset prematuro)
+        if (obsConfig.temaVisual && obsConfig.temaVisual !== 'auto') {
+            const todosModos = window.TemasEstacionales?.config?.modos;
+            if (Array.isArray(todosModos) && todosModos.length > 0) {
+                const modoConf = todosModos.find(m => m.id === obsConfig.temaVisual);
+                if (modoConf) {
+                    const esEstacional = modoConf.clasificacion === 'estacional' ||
+                        (!modoConf.clasificacion && modoConf.calendario?.tipo === 'fechas');
+                    if (esEstacional && window.TemasEstacionales && typeof window.TemasEstacionales.estaEnRangoAnual === 'function') {
+                        if (!window.TemasEstacionales.estaEnRangoAnual(new Date(), modoConf.calendario)) {
+                            obsConfig.temaVisual = 'auto';
+                            try { localStorage.setItem(OBS_STORAGE_KEY, JSON.stringify(obsConfig)); } catch (e) {}
+                        }
+                    }
+                } else if (!disponibles.some(m => m.id === obsConfig.temaVisual)) {
+                    obsConfig.temaVisual = 'auto';
+                    try { localStorage.setItem(OBS_STORAGE_KEY, JSON.stringify(obsConfig)); } catch (e) {}
+                }
+            }
+        }
+
+        const temaActual = obsConfig.temaVisual || 'auto';
+        contenedor.innerHTML = '';
+
+        // 1. Botón «Mismo que la web»
+        const btnAuto = document.createElement('button');
+        btnAuto.type = 'button';
+        btnAuto.className = 'obsBtnOption obsBtnTemaVisual' + (temaActual === 'auto' ? ' activo' : '');
+        btnAuto.dataset.val = 'auto';
+        btnAuto.innerHTML = '🔄 Mismo que la Web';
+        btnAuto.addEventListener('click', function () {
+            obsConfig.temaVisual = 'auto';
+            guardarYNotificarConfigOBS();
+        });
+        contenedor.appendChild(btnAuto);
+
+        // 2. Botones de temas disponibles (Base, Secundarios, y Estacionales activos)
+        disponibles.forEach(modo => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'obsBtnOption obsBtnTemaVisual' + (temaActual === modo.id ? ' activo' : '');
+            btn.dataset.val = modo.id;
+            const icono = modo.icono ? (modo.icono + ' ') : '';
+            const nombre = modo.id === 'base' ? 'Modo Base' : (modo.nombre || modo.id);
+            btn.innerHTML = `${icono}${nombre}`;
+            btn.addEventListener('click', function () {
+                obsConfig.temaVisual = modo.id;
+                guardarYNotificarConfigOBS();
+            });
+            contenedor.appendChild(btn);
+        });
     }
 
     window.actualizarModalOBSUI = function () {
@@ -1036,6 +1172,8 @@
         document.querySelectorAll('.obsBtnPos').forEach(b => b.classList.toggle('activo', b.dataset.val === obsConfig.pos));
         document.querySelectorAll('.obsBtnTheme').forEach(b => b.classList.toggle('activo', b.dataset.val === obsConfig.theme));
         document.querySelectorAll('.obsBtnBg').forEach(b => b.classList.toggle('activo', b.dataset.val === obsConfig.bg));
+
+        renderizarSelectorTemasOBS();
 
         const escalaActual = obsConfig.scale !== undefined ? parseInt(obsConfig.scale, 10) : 100;
         if (sliderEscala) {
@@ -1067,7 +1205,17 @@
         try { localStorage.setItem(OBS_STORAGE_KEY, JSON.stringify(obsConfig)); } catch (e) {}
         window.actualizarModalOBSUI();
         aplicarEscalaOBSGlobal();
+        if (isObsMode) {
+            aplicarBrandingOBS();
+        }
         window.emitirEventoOBS('SYNC_CONFIG', { config: obsConfig });
+        try {
+            if (typeof BroadcastChannel !== 'undefined') {
+                const canal = new BroadcastChannel('lotlab_canal_temas');
+                canal.postMessage({ tipo: 'LOTLAB_SYNC_OBS_CONFIG', config: obsConfig });
+                canal.close();
+            }
+        } catch (e) {}
     }
 
     function inicializarModalOBS() {
@@ -1172,16 +1320,44 @@
         }
     }
 
+    function iniciarCanalTemasBroadcast() {
+        if (typeof BroadcastChannel === 'undefined') return;
+        try {
+            const canal = new BroadcastChannel('lotlab_canal_temas');
+            canal.addEventListener('message', (e) => {
+                if (!e.data || typeof e.data !== 'object') return;
+                if (isObsMode) {
+                    if (e.data.tipo === 'LOTLAB_SYNC_OBS_CONFIG' && e.data.config) {
+                        obsConfig = Object.assign(obsConfig, e.data.config);
+                        aplicarBrandingOBS();
+                    } else if (e.data.tipo === 'SYNC_TEMA_WEB' || e.data.tipo === 'LOTLAB_SYNC_TEMA_WEB') {
+                        if (e.data.temaId) window._ultimoTemaWeb = e.data.temaId;
+                        if (!obsConfig.temaVisual || obsConfig.temaVisual === 'auto') {
+                            aplicarBrandingOBS();
+                        }
+                    } else if (e.data.tipo === 'SYNC_MODO_DIA_NOCHE' || e.data.tipo === 'LOTLAB_SYNC_MODO_DIA_NOCHE') {
+                        if (e.data.modoTema) window._ultimoModoDiaNocheWeb = e.data.modoTema;
+                        if (obsConfig.theme === 'auto') {
+                            aplicarBrandingOBS();
+                        }
+                    }
+                }
+            });
+        } catch (e) {}
+    }
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             inicializarModalOBS();
             iniciarSyncObserver();
             inicializarPeerJS();
+            iniciarCanalTemasBroadcast();
         });
     } else {
         inicializarModalOBS();
         iniciarSyncObserver();
         inicializarPeerJS();
+        iniciarCanalTemasBroadcast();
     }
 
 })();

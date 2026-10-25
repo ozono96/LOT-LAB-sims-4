@@ -1,0 +1,1594 @@
+{
+  "version": 2,
+  "categorias": [
+    {
+      "id": "cat_contenido",
+      "nombre": "Botones de contenido y base",
+      "orden": 0
+    },
+    {
+      "id": "cat_filtros",
+      "nombre": "Filtros y selección",
+      "orden": 1
+    },
+    {
+      "id": "cat_acciones",
+      "nombre": "Acciones y herramientas",
+      "orden": 2
+    },
+    {
+      "id": "cat_footer",
+      "nombre": "Controles del footer",
+      "orden": 3
+    }
+  ],
+  "estilos": [
+    {
+      "id": "est_lotlab_base",
+      "nombre": "LOT-LAB Estándar (Base / Filtros)",
+      "descripcion": "Fondo temático principal con sombra suave. Usado en filtros en reposo, retos, modales y acciones secundarias de apoyo.",
+      "categoriaId": "cat_contenido",
+      "alcance": "global",
+      "datos": {
+        "apariencia": {
+          "fondoColor": "#d6d6d6",
+          "textoColor": "var(--color-texto)",
+          "bordeGrosor": "3px",
+          "bordeEstilo": "solid",
+          "radio": "18px",
+          "sombra": true,
+          "sombraIntensidad": "suave",
+          "bordeColor": "var(--color-resaltado)",
+          "superficieEstilo": "glass_blur",
+          "blur": true,
+          "blurIntensidad": "media",
+          "opacidadFondo": 50,
+          "blurPx": 12,
+          "glow": false,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "tema",
+          "glowColor": "#2ecc71",
+          "glowIntensidad": "media"
+        },
+        "hover": {
+          "fondoColor": "var(--color-resaltado)",
+          "glow": false,
+          "escala": true,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "personalizado",
+          "glowColor": "var(--color-resaltado)",
+          "glowIntensidad": "media",
+          "textoColor": "#ffffff"
+        },
+        "activo": {
+          "fondoColor": "var(--color-resaltado)",
+          "textoColor": "#ffffff",
+          "glow": true,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "tema",
+          "glowColor": "#2ecc71",
+          "glowIntensidad": "media"
+        },
+        "tamano": {
+          "adaptativo": true,
+          "paddingH": 22,
+          "paddingV": 12,
+          "fontSize": "0.92rem"
+        }
+      },
+      "excepcionesDiaNoche": {
+        "noche": {
+          "fondoColor": "#383838",
+          "textoColor": "var(--color-texto)",
+          "bordeColor": "var(--color-resaltado)",
+          "hover": {
+            "glow": false,
+            "glowEfecto": "estandar",
+            "glowTipoColor": "personalizado",
+            "glowColor": "var(--color-resaltado)",
+            "glowIntensidad": "media",
+            "escala": true,
+            "fondoColor": "var(--color-resaltado)",
+            "textoColor": "#ffffff"
+          },
+          "activo": {
+            "fondoColor": "var(--color-resaltado)",
+            "textoColor": "var(--color-texto)",
+            "glow": true,
+            "glowEfecto": "estandar",
+            "glowTipoColor": "tema",
+            "glowColor": "#ffd54a",
+            "glowIntensidad": "media"
+          }
+        }
+      }
+    },
+    {
+      "id": "est_accion_destacada",
+      "nombre": "Acción Destacada / Resaltada",
+      "descripcion": "Botón principal de acción con degradado verde esmeralda y resplandor luminoso. Usado en ruletas, dados y popovers.",
+      "categoriaId": "cat_acciones",
+      "alcance": "global",
+      "datos": {
+        "apariencia": {
+          "fondoColor": "var(--color-resaltado)",
+          "textoColor": "#ffffff",
+          "bordeGrosor": "0px",
+          "bordeEstilo": "solid",
+          "radio": "26px",
+          "sombra": true,
+          "sombraIntensidad": "suave",
+          "bordeColor": "",
+          "opacidadFondo": 100,
+          "blurPx": 0,
+          "blur": false,
+          "superficieEstilo": "solido",
+          "glow": false,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "tema",
+          "glowColor": "var(--color-resaltado-noche)",
+          "glowIntensidad": "fuerte"
+        },
+        "hover": {
+          "glow": true,
+          "glowTipoColor": "tema",
+          "glowIntensidad": "fuerte",
+          "escala": true,
+          "glowEfecto": "halo_multicapa",
+          "glowColor": "var(--color-resaltado-noche)",
+          "fondoColor": "",
+          "textoColor": ""
+        },
+        "tamano": {
+          "adaptativo": true,
+          "paddingH": 33,
+          "paddingV": 14,
+          "fontSize": "1.2rem"
+        }
+      },
+      "excepcionesDiaNoche": {
+        "noche": {
+          "fondoColor": "linear-gradient(135deg, var(--color-resaltado, #2ecc71), color-mix(in srgb, var(--color-resaltado, #2ecc71) 75%, black))",
+          "textoColor": "#ffffff",
+          "hover": {
+            "glow": true,
+            "glowEfecto": "estandar",
+            "glowTipoColor": "tema",
+            "glowColor": "var(--color-resaltado-noche)",
+            "glowIntensidad": "fuerte",
+            "escala": true
+          }
+        }
+      }
+    },
+    {
+      "id": "est_secundario_borde",
+      "nombre": "Secundario con Borde",
+      "descripcion": "Botón con fondo transparente y borde sutil. Usado para alternar vistas o acciones de apoyo en paneles.",
+      "categoriaId": "cat_contenido",
+      "alcance": "global",
+      "datos": {
+        "apariencia": {
+          "fondoColor": "transparent",
+          "textoColor": "var(--color-texto)",
+          "bordeColor": "var(--borde)",
+          "bordeGrosor": "1px",
+          "bordeEstilo": "solid",
+          "radio": "16px",
+          "sombra": false
+        },
+        "hover": {
+          "fondoColor": "rgba(255, 255, 255, 0.15)",
+          "glow": false,
+          "escala": false
+        },
+        "tamano": {
+          "adaptativo": true,
+          "paddingH": 14,
+          "paddingV": 6,
+          "fontSize": "0.85rem"
+        }
+      },
+      "excepcionesDiaNoche": {
+        "dia": {
+          "hover": {
+            "fondoColor": "rgba(0, 0, 0, 0.08)"
+          }
+        }
+      }
+    },
+    {
+      "id": "est_control_circular_footer",
+      "nombre": "Control Circular Footer (Halo Dinámico)",
+      "descripcion": "Botón circular 56x56 con halo brillante adaptable: amarillo dorado en día y púrpura suave en noche.",
+      "categoriaId": "cat_footer",
+      "alcance": "global",
+      "datos": {
+        "apariencia": {
+          "fondoColor": "var(--color-resaltado-noche)",
+          "textoColor": "#2B2B2B",
+          "bordeGrosor": "0px",
+          "bordeEstilo": "solid",
+          "radio": "50%",
+          "sombra": false,
+          "bordeColor": "#ffd54a",
+          "sombraIntensidad": "suave",
+          "opacidadFondo": 100,
+          "blurPx": 0,
+          "blur": false,
+          "superficieEstilo": "solido"
+        },
+        "hover": {
+          "fondoColor": "var(--color-resaltado-noche)",
+          "glow": true,
+          "glowTipoColor": "personalizado",
+          "glowColor": "var(--color-resaltado-noche)",
+          "glowEfecto": "halo_multicapa",
+          "glowIntensidad": "fuerte",
+          "escala": true,
+          "textoColor": ""
+        },
+        "tamano": {
+          "adaptativo": false,
+          "ancho": 56,
+          "alto": 56,
+          "paddingH": 16,
+          "paddingV": 10,
+          "fontSize": "0.92rem"
+        }
+      },
+      "excepcionesDiaNoche": {
+        "noche": {
+          "fondoColor": "var(--color-resaltado-dia)",
+          "textoColor": "#EDEDED",
+          "hover": {
+            "glow": true,
+            "glowEfecto": "halo_multicapa",
+            "glowTipoColor": "personalizado",
+            "glowColor": "var(--color-resaltado-dia)",
+            "glowIntensidad": "media",
+            "escala": true,
+            "fondoColor": "var(--color-resaltado-dia)"
+          },
+          "bordeColor": "#ffd54a"
+        }
+      },
+      "excepcionesPorTema": {
+        "halloween": {
+          "dia": {
+            "fondoColor": "var(--color-resaltado-dia)",
+            "textoColor": "var(--color-principal)",
+            "bordeColor": "#ffd54a",
+            "glow": false,
+            "hover": {
+              "glow": true,
+              "glowEfecto": "halo_multicapa",
+              "glowTipoColor": "personalizado",
+              "glowColor": "#4e048b",
+              "glowIntensidad": "fuerte",
+              "escala": true,
+              "fondoColor": "var(--color-resaltado-dia)",
+              "textoColor": "#ffffff"
+            }
+          },
+          "noche": {
+            "fondoColor": "var(--color-resaltado-noche)",
+            "textoColor": "var(--color-texto)",
+            "bordeColor": "#ffd54a",
+            "glow": false,
+            "hover": {
+              "glow": true,
+              "glowEfecto": "halo_multicapa",
+              "glowTipoColor": "personalizado",
+              "glowColor": "#b14e0b",
+              "glowIntensidad": "media",
+              "escala": true,
+              "fondoColor": "var(--color-resaltado-noche)"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "est_chip_seleccion",
+      "nombre": "Chip / Tarjeta de Selección",
+      "descripcion": "Tarjeta interactiva seleccionable con borde suave y realce con el color de énfasis del tema al activarse.",
+      "categoriaId": "cat_filtros",
+      "alcance": "global",
+      "datos": {
+        "apariencia": {
+          "fondoColor": "rgba(0, 0, 0, 0.05)",
+          "textoColor": "var(--color-texto)",
+          "bordeColor": "var(--borde)",
+          "bordeGrosor": "1.5px",
+          "bordeEstilo": "solid",
+          "radio": "var(--radio-normal)",
+          "sombra": true,
+          "sombraIntensidad": "suave",
+          "glow": false,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "tema",
+          "glowColor": "#2ecc71",
+          "glowIntensidad": "media"
+        },
+        "hover": {
+          "bordeColor": "var(--color-secundario)",
+          "escala": true,
+          "glow": false,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "tema",
+          "glowColor": "#2ecc71",
+          "glowIntensidad": "media",
+          "fondoColor": "",
+          "textoColor": "#3a3a3a"
+        },
+        "activo": {
+          "fondoColor": "rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.25)",
+          "textoColor": "#ffffff",
+          "bordeColor": "var(--color-resaltado, #27ae60)",
+          "glow": true,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "tema",
+          "glowColor": "#2ecc71",
+          "glowIntensidad": "media"
+        },
+        "tamano": {
+          "adaptativo": true,
+          "paddingH": 16,
+          "paddingV": 12,
+          "fontSize": "0.92rem"
+        }
+      },
+      "excepcionesDiaNoche": {
+        "noche": {
+          "fondoColor": "rgba(255, 255, 255, 0.05)",
+          "textoColor": "var(--color-texto)",
+          "bordeColor": "var(--borde)",
+          "hover": {
+            "glow": false,
+            "glowEfecto": "estandar",
+            "glowTipoColor": "tema",
+            "glowColor": "#ffd54a",
+            "glowIntensidad": "media",
+            "escala": true,
+            "textoColor": "#ffffff"
+          },
+          "activo": {
+            "fondoColor": "rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.22)",
+            "textoColor": "inherit",
+            "bordeColor": "var(--color-resaltado, #2ecc71)",
+            "glow": true,
+            "glowEfecto": "estandar",
+            "glowTipoColor": "tema",
+            "glowColor": "#ffd54a",
+            "glowIntensidad": "media"
+          }
+        }
+      },
+      "excepcionesPorTema": {
+        "halloween": {
+          "dia": {
+            "fondoColor": "rgba(0, 0, 0, 0.05)",
+            "textoColor": "var(--color-texto)",
+            "bordeColor": "var(--borde)",
+            "glow": false,
+            "hover": {
+              "glow": false,
+              "glowEfecto": "estandar",
+              "glowTipoColor": "tema",
+              "glowIntensidad": "media",
+              "escala": true
+            },
+            "activo": {
+              "fondoColor": "rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.25)",
+              "textoColor": "var(--color-resaltado, #1e8449)",
+              "bordeColor": "var(--color-resaltado, #27ae60)",
+              "glow": true,
+              "glowEfecto": "estandar",
+              "glowTipoColor": "tema",
+              "glowColor": "",
+              "glowIntensidad": "media"
+            }
+          },
+          "noche": {
+            "fondoColor": "rgba(255, 255, 255, 0.05)",
+            "textoColor": "var(--color-texto)",
+            "bordeColor": "var(--borde)",
+            "glow": false,
+            "hover": {
+              "glow": false,
+              "glowEfecto": "estandar",
+              "glowTipoColor": "tema",
+              "glowIntensidad": "media",
+              "escala": true
+            },
+            "activo": {
+              "fondoColor": "rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.22)",
+              "textoColor": "inherit",
+              "bordeColor": "var(--color-resaltado, #2ecc71)",
+              "glow": true,
+              "glowEfecto": "estandar",
+              "glowTipoColor": "tema",
+              "glowColor": "",
+              "glowIntensidad": "media"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "est_peligro_borrado",
+      "nombre": "Peligro / Desmarcar / Borrado",
+      "descripcion": "Acción destructiva o de deselección masiva con borde rojo de aviso y fondo suave.",
+      "categoriaId": "cat_acciones",
+      "alcance": "global",
+      "datos": {
+        "apariencia": {
+          "fondoColor": "rgba(229, 57, 53, 0.12)",
+          "textoColor": "#c62828",
+          "bordeColor": "rgba(229, 57, 53, 0.3)",
+          "bordeGrosor": "1px",
+          "bordeEstilo": "solid",
+          "radio": "8px",
+          "sombra": false,
+          "glow": false,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "tema",
+          "glowColor": "#2ecc71",
+          "glowIntensidad": "media"
+        },
+        "hover": {
+          "fondoColor": "rgba(229, 57, 53, 0.28)",
+          "escala": true,
+          "glow": false,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "tema",
+          "glowColor": "#2ecc71",
+          "glowIntensidad": "media",
+          "textoColor": ""
+        },
+        "tamano": {
+          "adaptativo": true,
+          "paddingH": 16,
+          "paddingV": 7,
+          "fontSize": "0.88rem"
+        }
+      },
+      "excepcionesDiaNoche": {
+        "noche": {
+          "fondoColor": "rgba(229, 57, 53, 0.18)",
+          "textoColor": "#e53935",
+          "bordeColor": "rgba(229, 57, 53, 0.35)",
+          "hover": {
+            "glow": false,
+            "glowEfecto": "estandar",
+            "glowTipoColor": "tema",
+            "glowColor": "#ffd54a",
+            "glowIntensidad": "media",
+            "escala": true,
+            "fondoColor": "rgba(229, 57, 53, 0.28)"
+          }
+        }
+      }
+    },
+    {
+      "id": "est_discreto_limpiar",
+      "nombre": "Discreto / Limpiar Buscador",
+      "descripcion": "Botón transparente minimalista con opacidad suave que resalta al pasar el ratón.",
+      "categoriaId": "cat_filtros",
+      "alcance": "global",
+      "datos": {
+        "apariencia": {
+          "fondoColor": "transparent",
+          "textoColor": "var(--color-texto)",
+          "bordeGrosor": "0",
+          "bordeEstilo": "none",
+          "radio": "0",
+          "sombra": false,
+          "opacidad": 0.7
+        },
+        "hover": {
+          "glow": false,
+          "escala": false
+        },
+        "tamano": {
+          "adaptativo": true,
+          "paddingH": 8,
+          "paddingV": 4,
+          "fontSize": "1.1rem"
+        }
+      },
+      "excepcionesDiaNoche": {}
+    },
+    {
+      "id": "est_boton_cerrar",
+      "nombre": "Botón Cerrar Circular (Halo Rojo)",
+      "descripcion": "Botón circular 42x42 de cierre de modal o panel que despliega un halo luminoso rojo en hover.",
+      "categoriaId": "cat_contenido",
+      "alcance": "global",
+      "datos": {
+        "apariencia": {
+          "fondoColor": "transparent",
+          "textoColor": "var(--color-texto)",
+          "bordeGrosor": "0",
+          "bordeEstilo": "none",
+          "radio": "50%",
+          "sombra": false
+        },
+        "hover": {
+          "fondoColor": "rgba(229, 57, 53, 0.85)",
+          "glow": true,
+          "glowTipoColor": "personalizado",
+          "glowColor": "rgba(229, 57, 53, 0.85)",
+          "glowEfecto": "halo_multicapa",
+          "glowIntensidad": "fuerte",
+          "escala": true
+        },
+        "tamano": {
+          "adaptativo": false,
+          "ancho": 42,
+          "alto": 42,
+          "paddingH": 0,
+          "paddingV": 0,
+          "fontSize": "22px"
+        }
+      },
+      "excepcionesDiaNoche": {}
+    },
+    {
+      "id": "est_acelerador_oro",
+      "nombre": "Acelerador Dorado (Ruleta y Dados)",
+      "descripcion": "Botón especial con degradado ámbar/dorado y borde luminoso para acelerar tiradas.",
+      "categoriaId": "cat_acciones",
+      "alcance": "global",
+      "datos": {
+        "apariencia": {
+          "fondoColor": "#00c853",
+          "textoColor": "#ffffff",
+          "bordeColor": "#00e676",
+          "bordeGrosor": "3px",
+          "bordeEstilo": "solid",
+          "radio": "12px",
+          "sombra": true,
+          "sombraIntensidad": "suave"
+        },
+        "hover": {
+          "fondoColor": "#00e676",
+          "bordeColor": "#00c853",
+          "escala": true,
+          "glow": true,
+          "glowTipoColor": "personalizado",
+          "glowColor": "#f1c40f",
+          "glowIntensidad": "media",
+          "textoColor": "#ffffff"
+        },
+        "activo": {
+          "fondoColor": "#cf7017",
+          "bordeColor": "#e67e22",
+          "textoColor": "#ffffff",
+          "glowTipoColor": "tema"
+        },
+        "tamano": {
+          "adaptativo": true,
+          "paddingH": 24,
+          "paddingV": 9,
+          "fontSize": "0.95rem"
+        }
+      },
+      "excepcionesDiaNoche": {}
+    },
+    {
+      "id": "p_lotlab",
+      "nombre": "LOT-LAB Estándar",
+      "descripcion": "Estilo recuperado de preajustes guardados",
+      "categoriaId": "cat_contenido",
+      "alcance": "global",
+      "datos": {
+        "apariencia": {
+          "preset": "lotlab"
+        },
+        "tamano": {
+          "adaptativo": true
+        },
+        "hover": {
+          "glow": false
+        },
+        "sonido": {
+          "activo": true
+        }
+      },
+      "excepcionesDiaNoche": {}
+    },
+    {
+      "id": "p_primario",
+      "nombre": "Acción Principal",
+      "descripcion": "Estilo recuperado de preajustes guardados",
+      "categoriaId": "cat_contenido",
+      "alcance": "global",
+      "datos": {
+        "apariencia": {
+          "preset": "custom",
+          "fondoColor": "#4f8ef7",
+          "textoColor": "#fff",
+          "bordeColor": "#4f8ef7",
+          "bordeGrosor": "2px",
+          "radio": "10px",
+          "sombra": true,
+          "sombraIntensidad": "media"
+        },
+        "hover": {
+          "glow": true,
+          "glowColor": "#4f8ef7",
+          "fondoColor": "#3a7de0"
+        },
+        "tamano": {
+          "adaptativo": true
+        }
+      },
+      "excepcionesDiaNoche": {}
+    },
+    {
+      "id": "p_secundario",
+      "nombre": "Secundario",
+      "descripcion": "Estilo recuperado de preajustes guardados",
+      "categoriaId": "cat_contenido",
+      "alcance": "global",
+      "datos": {
+        "apariencia": {
+          "preset": "custom",
+          "fondoColor": "transparent",
+          "textoColor": "#ffd54a",
+          "bordeColor": "#ffd54a",
+          "bordeGrosor": "2px",
+          "radio": "10px"
+        },
+        "hover": {
+          "fondoColor": "rgba(255,213,74,0.12)"
+        },
+        "tamano": {
+          "adaptativo": true
+        }
+      },
+      "excepcionesDiaNoche": {}
+    },
+    {
+      "id": "p_destacado",
+      "nombre": "Destacado",
+      "descripcion": "Estilo recuperado de preajustes guardados",
+      "categoriaId": "cat_contenido",
+      "alcance": "global",
+      "datos": {
+        "apariencia": {
+          "preset": "custom",
+          "fondoColor": "#ffd54a",
+          "textoColor": "#1a1a2e",
+          "bordeGrosor": "0px",
+          "radio": "12px",
+          "sombra": true,
+          "sombraIntensidad": "fuerte"
+        },
+        "hover": {
+          "glow": true,
+          "glowColor": "#ffd54a",
+          "fondoColor": "#f5c500",
+          "escala": true
+        },
+        "sonido": {
+          "activo": true
+        },
+        "tamano": {
+          "adaptativo": true
+        }
+      },
+      "excepcionesDiaNoche": {}
+    },
+    {
+      "id": "p_desplegable",
+      "nombre": "Desplegable",
+      "descripcion": "Estilo recuperado de preajustes guardados",
+      "categoriaId": "cat_contenido",
+      "alcance": "global",
+      "datos": {
+        "apariencia": {
+          "preset": "lotlab"
+        },
+        "desplegable": {
+          "activo": true,
+          "posicion": "bottom",
+          "opciones": []
+        },
+        "sonido": {
+          "activo": true
+        }
+      },
+      "excepcionesDiaNoche": {}
+    },
+    {
+      "id": "est_buscarsolares",
+      "nombre": "Estilo: 🔍 Buscar",
+      "descripcion": "Estilo exclusivo creado para 🔍 Buscar (#buscarSolares)",
+      "categoriaId": "cat_contenido",
+      "alcance": "global",
+      "datos": {
+        "apariencia": {
+          "fondoColor": "var(--color-resaltado-dia)",
+          "textoColor": "var(--color-principal)",
+          "bordeGrosor": "0px",
+          "bordeEstilo": "dashed",
+          "radio": "26px",
+          "sombra": true,
+          "sombraIntensidad": "suave",
+          "bordeColor": "",
+          "opacidadFondo": 100,
+          "blurPx": 0,
+          "blur": false,
+          "superficieEstilo": "solido",
+          "glow": false,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "tema",
+          "glowColor": "#2ecc71",
+          "glowIntensidad": "media"
+        },
+        "hover": {
+          "fondoColor": "var(--color-resaltado-dia)",
+          "glow": true,
+          "escala": true,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "tema",
+          "glowColor": "var(--color-resaltado-dia)",
+          "glowIntensidad": "fuerte",
+          "textoColor": "var(--color-principal)"
+        },
+        "activo": {
+          "fondoColor": "var(--color-resaltado)",
+          "textoColor": "#ffffff",
+          "glow": true,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "tema",
+          "glowColor": "#2ecc71",
+          "glowIntensidad": "media"
+        },
+        "tamano": {
+          "adaptativo": true,
+          "paddingH": 18,
+          "paddingV": 12,
+          "fontSize": "1.2rem"
+        }
+      },
+      "excepcionesDiaNoche": {
+        "noche": {
+          "fondoColor": "var(--color-resaltado-noche)",
+          "textoColor": "var(--color-texto)",
+          "hover": {
+            "glow": true,
+            "glowEfecto": "halo_multicapa",
+            "glowTipoColor": "personalizado",
+            "glowColor": "var(--color-resaltado-noche)",
+            "glowIntensidad": "media",
+            "escala": true,
+            "fondoColor": "var(--color-resaltado-noche)",
+            "textoColor": "var(--color-texto)"
+          },
+          "activo": {
+            "fondoColor": "var(--color-resaltado)",
+            "textoColor": "#ffffff",
+            "glow": true,
+            "glowEfecto": "estandar",
+            "glowTipoColor": "tema",
+            "glowColor": "#ffd54a",
+            "glowIntensidad": "media"
+          }
+        }
+      }
+    },
+    {
+      "id": "est_habbtnvolver",
+      "nombre": "Estilo: 📦 Selector de Packs",
+      "descripcion": "Estilo exclusivo creado para 📦 Selector de Packs (#habBtnVolver)",
+      "categoriaId": "cat_contenido",
+      "alcance": "global",
+      "datos": {
+        "apariencia": {
+          "fondoColor": "var(--color-principal)",
+          "textoColor": "var(--color-texto)",
+          "bordeGrosor": "0",
+          "bordeEstilo": "none",
+          "radio": "var(--radio-normal)",
+          "sombra": true,
+          "sombraIntensidad": "suave"
+        },
+        "hover": {
+          "fondoColor": "var(--color-secundario)",
+          "glow": false,
+          "escala": false
+        },
+        "activo": {
+          "fondoColor": "var(--color-resaltado)",
+          "textoColor": "#ffffff",
+          "glowTipoColor": "tema"
+        },
+        "tamano": {
+          "adaptativo": true,
+          "paddingH": 18,
+          "paddingV": 12
+        }
+      },
+      "excepcionesDiaNoche": {
+        "noche": {
+          "fondoColor": "#3A3A3A",
+          "textoColor": "#EDEDED"
+        },
+        "dia": {
+          "fondoColor": "#D9D9D9",
+          "textoColor": "#2B2B2B"
+        }
+      }
+    },
+    {
+      "id": "est_filtro_____tipo_de_solar",
+      "nombre": "Estilo: Filtro: 🏠 Tipo de solar",
+      "descripcion": "Estilo exclusivo creado para Filtro: 🏠 Tipo de solar (.botonFiltro[data-filtro=\"tipoSolar\"])",
+      "categoriaId": "cat_contenido",
+      "alcance": "global",
+      "datos": {
+        "apariencia": {
+          "fondoColor": "var(--color-principal)",
+          "textoColor": "var(--color-texto)",
+          "bordeGrosor": "0",
+          "bordeEstilo": "none",
+          "radio": "var(--radio-normal)",
+          "sombra": true,
+          "sombraIntensidad": "suave"
+        },
+        "hover": {
+          "fondoColor": "var(--color-secundario)",
+          "glow": false,
+          "escala": false
+        },
+        "activo": {
+          "fondoColor": "var(--color-resaltado)",
+          "textoColor": "#ffffff",
+          "glowTipoColor": "tema"
+        },
+        "tamano": {
+          "adaptativo": true,
+          "paddingH": 18,
+          "paddingV": 12
+        }
+      },
+      "excepcionesDiaNoche": {
+        "noche": {
+          "fondoColor": "#3A3A3A",
+          "textoColor": "#EDEDED"
+        },
+        "dia": {
+          "fondoColor": "#D9D9D9",
+          "textoColor": "#2B2B2B"
+        }
+      }
+    },
+    {
+      "id": "est_1792269703269_1839",
+      "nombre": "Confirmar",
+      "descripcion": "Acción destructiva o de deselección masiva con borde rojo de aviso y fondo suave.",
+      "categoriaId": "cat_acciones",
+      "alcance": "global",
+      "datos": {
+        "apariencia": {
+          "fondoColor": "#51cc24",
+          "textoColor": "#2c8d11",
+          "bordeColor": "#13a034",
+          "bordeGrosor": "2px",
+          "bordeEstilo": "solid",
+          "radio": "8px",
+          "sombra": false,
+          "sombraIntensidad": "suave",
+          "opacidadFondo": 55,
+          "blurPx": 0,
+          "blur": false,
+          "superficieEstilo": "traslucido"
+        },
+        "hover": {
+          "fondoColor": "",
+          "escala": true,
+          "glow": false,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "personalizado",
+          "glowColor": "#2ecc71",
+          "glowIntensidad": "media",
+          "textoColor": ""
+        },
+        "tamano": {
+          "adaptativo": true,
+          "paddingH": 16,
+          "paddingV": 7,
+          "fontSize": "0.88rem"
+        }
+      },
+      "excepcionesDiaNoche": {
+        "noche": {
+          "fondoColor": "#5aaf3c",
+          "textoColor": "#51de35",
+          "bordeColor": "#599b69",
+          "hover": {
+            "glow": false,
+            "glowEfecto": "estandar",
+            "glowTipoColor": "personalizado",
+            "glowColor": "#2ecc71",
+            "glowIntensidad": "media",
+            "escala": true,
+            "fondoColor": "#5ae534"
+          }
+        }
+      }
+    },
+    {
+      "id": "est_1792279629898_672",
+      "nombre": "Continuar",
+      "descripcion": "Fondo temático principal con sombra suave. Usado en filtros en reposo, retos, modales y acciones secundarias de apoyo.",
+      "categoriaId": "cat_contenido",
+      "alcance": "global",
+      "datos": {
+        "apariencia": {
+          "fondoColor": "#d6d6d6",
+          "textoColor": "var(--color-texto)",
+          "bordeGrosor": "3px",
+          "bordeEstilo": "solid",
+          "radio": "18px",
+          "sombra": true,
+          "sombraIntensidad": "suave",
+          "bordeColor": "var(--color-resaltado)",
+          "superficieEstilo": "glass_blur",
+          "blur": true,
+          "blurIntensidad": "media",
+          "opacidadFondo": 50,
+          "blurPx": 12,
+          "glow": false,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "tema",
+          "glowColor": "#2ecc71",
+          "glowIntensidad": "media"
+        },
+        "hover": {
+          "fondoColor": "var(--color-resaltado)",
+          "glow": false,
+          "escala": true,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "personalizado",
+          "glowColor": "var(--color-resaltado)",
+          "glowIntensidad": "media",
+          "textoColor": "#ffffff"
+        },
+        "activo": {
+          "fondoColor": "var(--color-resaltado)",
+          "textoColor": "#ffffff",
+          "glow": true,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "tema",
+          "glowColor": "#2ecc71",
+          "glowIntensidad": "media"
+        },
+        "tamano": {
+          "adaptativo": true,
+          "paddingH": 22,
+          "paddingV": 12,
+          "fontSize": "1.2rem"
+        }
+      },
+      "excepcionesDiaNoche": {
+        "noche": {
+          "fondoColor": "#383838",
+          "textoColor": "var(--color-texto)",
+          "bordeColor": "var(--color-resaltado)",
+          "hover": {
+            "glow": false,
+            "glowEfecto": "estandar",
+            "glowTipoColor": "personalizado",
+            "glowColor": "var(--color-resaltado)",
+            "glowIntensidad": "media",
+            "escala": true,
+            "fondoColor": "var(--color-resaltado)",
+            "textoColor": "#ffffff"
+          },
+          "activo": {
+            "fondoColor": "var(--color-resaltado)",
+            "textoColor": "var(--color-texto)",
+            "glow": true,
+            "glowEfecto": "estandar",
+            "glowTipoColor": "tema",
+            "glowColor": "#ffd54a",
+            "glowIntensidad": "media"
+          }
+        }
+      }
+    },
+    {
+      "id": "est_navegaci_n____inicio",
+      "nombre": "Estilo: Navegación: 🏠Inicio",
+      "descripcion": "Estilo exclusivo creado para Navegación: 🏠Inicio (.btn-categoria-nav[data-cat-id=\"inicio\"])",
+      "categoriaId": "cat_contenido",
+      "alcance": "global",
+      "datos": {
+        "apariencia": {
+          "fondoColor": "#d6d6d6",
+          "textoColor": "var(--color-texto)",
+          "bordeGrosor": "0px",
+          "bordeEstilo": "solid",
+          "radio": "26px",
+          "sombra": true,
+          "sombraIntensidad": "suave",
+          "bordeColor": "var(--color-resaltado)",
+          "superficieEstilo": "glass_blur",
+          "blur": true,
+          "blurIntensidad": "media",
+          "opacidadFondo": 60,
+          "blurPx": 12,
+          "glow": false,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "tema",
+          "glowColor": "#2ecc71",
+          "glowIntensidad": "media"
+        },
+        "hover": {
+          "fondoColor": "var(--color-resaltado)",
+          "glow": false,
+          "escala": true,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "personalizado",
+          "glowColor": "var(--color-resaltado)",
+          "glowIntensidad": "media",
+          "textoColor": "#ffffff"
+        },
+        "activo": {
+          "fondoColor": "var(--color-resaltado)",
+          "textoColor": "#ffffff",
+          "glow": true,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "tema",
+          "glowColor": "#2ecc71",
+          "glowIntensidad": "media"
+        },
+        "tamano": {
+          "adaptativo": true,
+          "paddingH": 22,
+          "paddingV": 12,
+          "fontSize": "0.92rem"
+        }
+      },
+      "excepcionesDiaNoche": {
+        "noche": {
+          "fondoColor": "var(--color-resaltado-noche)",
+          "textoColor": "var(--color-texto)",
+          "bordeColor": "var(--color-resaltado)",
+          "hover": {
+            "glow": false,
+            "glowEfecto": "estandar",
+            "glowTipoColor": "personalizado",
+            "glowColor": "var(--color-resaltado)",
+            "glowIntensidad": "media",
+            "escala": true,
+            "fondoColor": "var(--color-resaltado)",
+            "textoColor": "#ffffff"
+          },
+          "activo": {
+            "fondoColor": "var(--color-resaltado)",
+            "textoColor": "#ffffff",
+            "glow": true,
+            "glowEfecto": "estandar",
+            "glowTipoColor": "tema",
+            "glowColor": "#2ecc71",
+            "glowIntensidad": "media"
+          }
+        }
+      }
+    },
+    {
+      "id": "est_pausartemporizador",
+      "nombre": "Estilo: ⏸️Pausar",
+      "descripcion": "Estilo exclusivo creado para ⏸️Pausar (#pausarTemporizador)",
+      "categoriaId": "cat_contenido",
+      "alcance": "global",
+      "datos": {
+        "apariencia": {
+          "fondoColor": "#cf7017",
+          "textoColor": "#ffffff",
+          "bordeGrosor": "3px",
+          "bordeEstilo": "solid",
+          "radio": "18px",
+          "sombra": true,
+          "sombraIntensidad": "suave",
+          "bordeColor": "#cf7017",
+          "superficieEstilo": "glass_blur",
+          "blur": true,
+          "blurIntensidad": "media",
+          "opacidadFondo": 100,
+          "blurPx": 12,
+          "glow": false,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "tema",
+          "glowColor": "#2ecc71",
+          "glowIntensidad": "media"
+        },
+        "hover": {
+          "fondoColor": "#e67e22",
+          "glow": false,
+          "escala": true,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "personalizado",
+          "glowColor": "#cf7017",
+          "glowIntensidad": "media",
+          "textoColor": "#ffffff",
+          "bordeColor": "#e67e22"
+        },
+        "activo": {
+          "fondoColor": "#cf7017",
+          "textoColor": "#ffffff",
+          "glow": true,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "tema",
+          "glowColor": "#2ecc71",
+          "glowIntensidad": "media",
+          "bordeColor": "#cf7017"
+        },
+        "tamano": {
+          "adaptativo": true,
+          "paddingH": 22,
+          "paddingV": 12,
+          "fontSize": "0.92rem"
+        }
+      },
+      "excepcionesDiaNoche": {
+        "dia": {
+          "fondoColor": "#cf7017",
+          "textoColor": "#ffffff",
+          "bordeColor": "#cf7017",
+          "hover": {
+            "glow": false,
+            "glowEfecto": "estandar",
+            "glowTipoColor": "personalizado",
+            "glowColor": "#cf7017",
+            "glowIntensidad": "media",
+            "escala": true,
+            "fondoColor": "#e67e22",
+            "textoColor": "#ffffff",
+            "bordeColor": "#e67e22"
+          },
+          "activo": {
+            "fondoColor": "#cf7017",
+            "textoColor": "#ffffff",
+            "bordeColor": "#cf7017",
+            "glow": true,
+            "glowEfecto": "estandar",
+            "glowTipoColor": "tema",
+            "glowColor": "#2ecc71",
+            "glowIntensidad": "media"
+          },
+          "opacidadFondo": 100
+        },
+        "noche": {
+          "fondoColor": "#cf7017",
+          "textoColor": "#ffffff",
+          "bordeColor": "#cf7017",
+          "hover": {
+            "glow": false,
+            "glowEfecto": "estandar",
+            "glowTipoColor": "personalizado",
+            "glowColor": "#cf7017",
+            "glowIntensidad": "media",
+            "escala": true,
+            "fondoColor": "#e67e22",
+            "textoColor": "#ffffff",
+            "bordeColor": "#e67e22"
+          },
+          "activo": {
+            "fondoColor": "#cf7017",
+            "textoColor": "#ffffff",
+            "bordeColor": "#cf7017",
+            "glow": true,
+            "glowEfecto": "estandar",
+            "glowTipoColor": "tema",
+            "glowColor": "#2ecc71",
+            "glowIntensidad": "media"
+          },
+          "opacidadFondo": 100
+        }
+      }
+    },
+    {
+      "id": "est_detenertemporizador",
+      "nombre": "Estilo: ⏹️ Detener",
+      "descripcion": "Estilo exclusivo creado para ⏹️ Detener (#detenerTemporizador)",
+      "categoriaId": "cat_contenido",
+      "alcance": "global",
+      "datos": {
+        "apariencia": {
+          "fondoColor": "#e60000",
+          "textoColor": "#ffffff",
+          "bordeGrosor": "3px",
+          "bordeEstilo": "solid",
+          "radio": "18px",
+          "sombra": true,
+          "sombraIntensidad": "suave",
+          "bordeColor": "#cc2e2e",
+          "superficieEstilo": "glass_blur",
+          "blur": true,
+          "blurIntensidad": "media",
+          "opacidadFondo": 100,
+          "blurPx": 12,
+          "glow": false,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "tema",
+          "glowColor": "#2ecc71",
+          "glowIntensidad": "media"
+        },
+        "hover": {
+          "fondoColor": "#ff1a1a",
+          "glow": false,
+          "escala": true,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "personalizado",
+          "glowColor": "#cc2e2e",
+          "glowIntensidad": "media",
+          "textoColor": "#ffffff",
+          "bordeColor": "#e60000"
+        },
+        "activo": {
+          "fondoColor": "#e60000",
+          "textoColor": "#ffffff",
+          "glow": true,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "tema",
+          "glowColor": "#2ecc71",
+          "glowIntensidad": "media",
+          "bordeColor": "#cc2e2e"
+        },
+        "tamano": {
+          "adaptativo": true,
+          "paddingH": 22,
+          "paddingV": 12,
+          "fontSize": "0.92rem"
+        }
+      },
+      "excepcionesDiaNoche": {
+        "dia": {
+          "fondoColor": "#e60000",
+          "textoColor": "#ffffff",
+          "bordeColor": "#cc2e2e",
+          "hover": {
+            "glow": false,
+            "glowEfecto": "estandar",
+            "glowTipoColor": "personalizado",
+            "glowColor": "#cc2e2e",
+            "glowIntensidad": "media",
+            "escala": true,
+            "fondoColor": "#ff1a1a",
+            "textoColor": "#ffffff",
+            "bordeColor": "#e60000"
+          },
+          "activo": {
+            "fondoColor": "#cc2e2e",
+            "textoColor": "#ffffff",
+            "glow": true,
+            "glowEfecto": "estandar",
+            "glowTipoColor": "tema",
+            "glowColor": "#2ecc71",
+            "glowIntensidad": "media"
+          },
+          "opacidadFondo": 100
+        },
+        "noche": {
+          "fondoColor": "#e60000",
+          "textoColor": "#ffffff",
+          "bordeColor": "#cc2e2e",
+          "hover": {
+            "glow": false,
+            "glowEfecto": "estandar",
+            "glowTipoColor": "personalizado",
+            "glowColor": "#cc2e2e",
+            "glowIntensidad": "media",
+            "escala": true,
+            "fondoColor": "#ff1a1a",
+            "textoColor": "#ffffff",
+            "bordeColor": "#e60000"
+          },
+          "activo": {
+            "fondoColor": "#cc2e2e",
+            "textoColor": "#ffffff",
+            "glow": true,
+            "glowEfecto": "estandar",
+            "glowTipoColor": "tema",
+            "glowColor": "#2ecc71",
+            "glowIntensidad": "media"
+          },
+          "opacidadFondo": 100
+        }
+      }
+    },
+    {
+      "id": "est_ruleta_girar_circular",
+      "nombre": "Botón Girar Ruleta de Colores",
+      "descripcion": "Botón 100% circular de 64x64 con marquito blanco interno y fondo con el color de resaltado.",
+      "categoriaId": "cat_acciones",
+      "alcance": "global",
+      "datos": {
+        "apariencia": {
+          "fondoColor": "var(--color-resaltado)",
+          "textoColor": "#ffffff",
+          "bordeGrosor": "3px",
+          "bordeEstilo": "solid",
+          "bordeColor": "#ffffff",
+          "radio": "50%",
+          "sombra": true,
+          "sombraIntensidad": "suave",
+          "opacidadFondo": 100,
+          "blurPx": 0,
+          "blur": false,
+          "superficieEstilo": "solido"
+        },
+        "hover": {
+          "fondoColor": "var(--color-resaltado)",
+          "textoColor": "#ffffff",
+          "bordeColor": "#ffffff",
+          "glow": true,
+          "glowTipoColor": "tema",
+          "glowColor": "var(--color-resaltado)",
+          "glowEfecto": "estandar",
+          "glowIntensidad": "fuerte",
+          "escala": false
+        },
+        "tamano": {
+          "adaptativo": false,
+          "ancho": 64,
+          "alto": 64,
+          "paddingH": 0,
+          "paddingV": 0,
+          "fontSize": "0.95rem"
+        }
+      },
+      "excepcionesDiaNoche": {
+        "dia": {
+          "fondoColor": "var(--color-resaltado)",
+          "textoColor": "#ffffff",
+          "bordeColor": "#ffffff",
+          "opacidadFondo": 100
+        },
+        "noche": {
+          "fondoColor": "var(--color-resaltado)",
+          "textoColor": "#ffffff",
+          "bordeColor": "#ffffff",
+          "opacidadFondo": 100
+        }
+      }
+    },
+    {
+      "id": "est_eliminarfiltro",
+      "nombre": "Estilo: 🗑️ Eliminar filtro",
+      "descripcion": "Estilo exclusivo creado para 🗑️ Eliminar filtro (#eliminarFiltro)",
+      "categoriaId": "cat_acciones",
+      "alcance": "global",
+      "datos": {
+        "apariencia": {
+          "fondoColor": "rgba(229, 57, 53, 0.12)",
+          "textoColor": "#c62828",
+          "bordeColor": "rgba(229, 57, 53, 0.3)",
+          "bordeGrosor": "1px",
+          "bordeEstilo": "solid",
+          "radio": "8px",
+          "sombra": false,
+          "glow": false,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "tema",
+          "glowColor": "#2ecc71",
+          "glowIntensidad": "media"
+        },
+        "hover": {
+          "fondoColor": "rgba(229, 57, 53, 0.28)",
+          "escala": true,
+          "glow": false,
+          "glowEfecto": "estandar",
+          "glowTipoColor": "tema",
+          "glowColor": "#2ecc71",
+          "glowIntensidad": "media",
+          "textoColor": ""
+        },
+        "tamano": {
+          "adaptativo": true,
+          "paddingH": 12,
+          "paddingV": 7,
+          "fontSize": "0.88rem"
+        }
+      },
+      "excepcionesDiaNoche": {
+        "noche": {
+          "fondoColor": "rgba(229, 57, 53, 0.12)",
+          "textoColor": "#c62828",
+          "bordeColor": "rgba(229, 57, 53, 0.3)",
+          "hover": {
+            "glow": false,
+            "glowEfecto": "estandar",
+            "glowTipoColor": "tema",
+            "glowColor": "#2ecc71",
+            "glowIntensidad": "media",
+            "escala": true,
+            "fondoColor": "rgba(229, 57, 53, 0.28)"
+          }
+        }
+      }
+    }
+  ],
+  "asignacionesFuncionales": {
+    "botonFiltro": {
+      "estiloId": "est_lotlab_base"
+    },
+    "opcionFiltro": {
+      "estiloId": "est_chip_seleccion"
+    },
+    "botonSecundario": {
+      "estiloId": "est_secundario_borde"
+    },
+    "btnReroll": {
+      "estiloId": "est_accion_destacada"
+    },
+    "btnGirarRuleta": {
+      "estiloId": "est_ruleta_girar_circular"
+    },
+    "btnGirarDestacado": {
+      "estiloId": "est_accion_destacada"
+    },
+    "botonDesastreToggle": {
+      "estiloId": "est_chip_seleccion"
+    },
+    "btnLimpiarBuscador": {
+      "estiloId": "est_discreto_limpiar"
+    },
+    "botonLotlab": {
+      "estiloId": "est_lotlab_base"
+    },
+    "botonModo": {
+      "estiloId": "est_control_circular_footer"
+    },
+    "botonSelectorTemas": {
+      "estiloId": "est_control_circular_footer"
+    },
+    "botonSonido": {
+      "estiloId": "est_control_circular_footer"
+    },
+    "botonSelectorModoNav": {
+      "estiloId": "est_control_circular_footer"
+    },
+    "botonOBS": {
+      "estiloId": "est_control_circular_footer"
+    },
+    "botonAgradecimientos": {
+      "estiloId": "est_control_circular_footer"
+    },
+    "botonIdioma": {
+      "estiloId": "est_control_circular_footer"
+    },
+    "btnCerrarModal": {
+      "estiloId": "est_boton_cerrar"
+    },
+    "btnPeligroBorrado": {
+      "estiloId": "est_peligro_borrado"
+    },
+    "btnAcelerar": {
+      "estiloId": "est_acelerador_oro"
+    },
+    "btnTimerPausar": {
+      "estiloId": "est_lotlab_base"
+    },
+    "btnTimerDetener": {
+      "estiloId": "est_peligro_borrado"
+    },
+    "#buscarSolares": {
+      "estiloId": "est_accion_destacada",
+      "selector": "#buscarSolares",
+      "nombre": "🔍 Buscar"
+    },
+    "#habBtnVolver": {
+      "estiloId": "est_secundario_borde",
+      "selector": "#habBtnVolver",
+      "nombre": "📦 Selector de Packs"
+    },
+    "#confirmarFiltro": {
+      "estiloId": "est_1792269703269_1839",
+      "selector": "#confirmarFiltro",
+      "nombre": "✅ Confirmar"
+    },
+    "#eliminarFiltro": {
+      "estiloId": "est_eliminarfiltro",
+      "selector": "#eliminarFiltro",
+      "nombre": "🗑️ Eliminar filtro"
+    },
+    "#generarRetoBtn": {
+      "estiloId": "est_buscarsolares",
+      "selector": "#generarRetoBtn",
+      "nombre": "🎲 Generar Reto"
+    },
+    "#botonTrucosConstruir": {
+      "estiloId": "est_lotlab_base",
+      "selector": "#botonTrucosConstruir",
+      "nombre": "🏗️ Trucos de Construir"
+    },
+    "#botonTrucosCAS": {
+      "estiloId": "est_lotlab_base",
+      "selector": "#botonTrucosCAS",
+      "nombre": "💇 Trucos del CAS"
+    },
+    "#botonTrucosVivir": {
+      "estiloId": "est_lotlab_base",
+      "selector": "#botonTrucosVivir",
+      "nombre": "🏠 Trucos del Modo Vivir"
+    },
+    "#botonTrucosPacks": {
+      "estiloId": "est_lotlab_base",
+      "selector": "#botonTrucosPacks",
+      "nombre": "📦 Trucos de Packs"
+    },
+    "#ventanaTrucosVivir button.botonVolverTrucos": {
+      "estiloId": "est_lotlab_base",
+      "selector": "#ventanaTrucosVivir button.botonVolverTrucos",
+      "nombre": "⬅️ Volver a Trucos (en #ventanaTrucosVivir)"
+    },
+    "#ventanaTrucosConstruir button.botonVolverTrucos": {
+      "estiloId": "est_lotlab_base",
+      "selector": "#ventanaTrucosConstruir button.botonVolverTrucos",
+      "nombre": "⬅️ Volver a Trucos (en #ventanaTrucosConstruir)"
+    },
+    "#ventanaTrucosPacks button.botonVolverTrucos": {
+      "estiloId": "est_lotlab_base",
+      "selector": "#ventanaTrucosPacks button.botonVolverTrucos",
+      "nombre": "⬅️ Volver a Trucos (en #ventanaTrucosPacks)"
+    },
+    "#ventanaTrucosCAS button.botonVolverTrucos": {
+      "estiloId": "est_lotlab_base",
+      "selector": "#ventanaTrucosCAS button.botonVolverTrucos",
+      "nombre": "⬅️ Volver a Trucos (en #ventanaTrucosCAS)"
+    },
+    "#aceptarPacksRetos": {
+      "estiloId": "est_1792279629898_672",
+      "selector": "#aceptarPacksRetos",
+      "nombre": "Continuar ➡️"
+    },
+    "#pausarTemporizador": {
+      "estiloId": "est_pausartemporizador",
+      "selector": "#pausarTemporizador",
+      "nombre": "⏸️Pausar"
+    },
+    "#detenerTemporizador": {
+      "estiloId": "est_detenertemporizador",
+      "selector": "#detenerTemporizador",
+      "nombre": "⏹️ Detener"
+    },
+    "#tierlistBtnExportarLab": {
+      "estiloId": "est_lotlab_base",
+      "selector": "#tierlistBtnExportarLab",
+      "nombre": "💾Guardar .lotlab"
+    },
+    "#tierlistBtnImportarLab": {
+      "estiloId": "est_lotlab_base",
+      "selector": "#tierlistBtnImportarLab",
+      "nombre": "📂Cargar .lotlab"
+    },
+    "#tierlistBtnResetear": {
+      "estiloId": "est_peligro_borrado",
+      "selector": "#tierlistBtnResetear",
+      "nombre": "🔄Limpiar"
+    },
+    "#volverOpcionesBtn": {
+      "estiloId": "est_lotlab_base",
+      "selector": "#volverOpcionesBtn",
+      "nombre": "⬅️ Volver a opciones"
+    },
+    "#toggleTemporizadorRetoBtn": {
+      "estiloId": "est_lotlab_base",
+      "selector": "#toggleTemporizadorRetoBtn",
+      "nombre": "⏱️ Abrir temporizador"
+    },
+    "#btnLimpiarHistorialDesastres": {
+      "estiloId": "est_eliminarfiltro",
+      "selector": "#btnLimpiarHistorialDesastres",
+      "nombre": "🗑️ Limpiar"
+    }
+  }
+}

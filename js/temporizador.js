@@ -7,6 +7,10 @@ let tiempoRestanteEnSegundos = 0;
 let estaPausado = false;
 let pausadoPorNavegacion = false;
 
+const ICONO_PLAY_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="vertical-align: -3px;" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+const ICONO_PAUSE_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="vertical-align: -3px;" aria-hidden="true"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+const ICONO_STOP_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="vertical-align: -3px;" aria-hidden="true"><path d="M6 6h12v12H6z"/></svg>';
+
 document.addEventListener("DOMContentLoaded", () => {
     const botonTemporizadorMenu = document.getElementById("botonTemporizador");
     const botonIniciar = document.getElementById("iniciarTemporizador");
@@ -132,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
             pausadoPorNavegacion = false;
             
             if (botonPausar) {
-                botonPausar.innerHTML = '<span class="iconoTimerAction">⏸️</span><span class="textoTimerAction">Pausar</span>';
+                botonPausar.innerHTML = `<span class="iconoTimerAction">${ICONO_PAUSE_SVG}</span><span class="textoTimerAction">Pausar</span>`;
                 botonPausar.setAttribute("data-tooltip", "Pausar temporizador");
                 botonPausar.classList.remove("enPausa");
             }
@@ -164,7 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (estaPausado) {
                 // Reanudar -> Verde
                 estaPausado = false;
-                botonPausar.innerHTML = '<span class="iconoTimerAction">⏸️</span><span class="textoTimerAction">Pausar</span>';
+                botonPausar.innerHTML = `<span class="iconoTimerAction">${ICONO_PAUSE_SVG}</span><span class="textoTimerAction">Pausar</span>`;
                 botonPausar.setAttribute("data-tooltip", "Pausar temporizador");
                 botonPausar.classList.remove("enPausa");
                 displayTemporizador.classList.remove("pausado", "tiempoAgotado");
@@ -177,7 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
             } else {
                 // Pausar -> Naranja
                 estaPausado = true;
-                botonPausar.innerHTML = '<span class="iconoTimerAction">▶️</span><span class="textoTimerAction">Reanudar</span>';
+                botonPausar.innerHTML = `<span class="iconoTimerAction">${ICONO_PLAY_SVG}</span><span class="textoTimerAction">Reanudar</span>`;
                 botonPausar.setAttribute("data-tooltip", "Reanudar temporizador");
                 botonPausar.classList.add("enPausa");
                 displayTemporizador.classList.remove("enMarcha", "tiempoAgotado");
@@ -312,7 +316,7 @@ document.addEventListener("DOMContentLoaded", () => {
         pausadoPorNavegacion = false;
 
         if (botonPausar) {
-            botonPausar.innerHTML = '<span class="iconoTimerAction">⏸️</span><span class="textoTimerAction">Pausar</span>';
+            botonPausar.innerHTML = `<span class="iconoTimerAction">${ICONO_PAUSE_SVG}</span><span class="textoTimerAction">Pausar</span>`;
             botonPausar.setAttribute("data-tooltip", "Pausar temporizador");
             botonPausar.classList.remove("enPausa");
         }
@@ -362,7 +366,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 displayTemporizador.classList.add("enMarcha");
             }
             if (botonPausar) {
-                botonPausar.innerHTML = '<span class="iconoTimerAction">⏸️</span><span class="textoTimerAction">Pausar</span>';
+                botonPausar.innerHTML = `<span class="iconoTimerAction">${ICONO_PAUSE_SVG}</span><span class="textoTimerAction">Pausar</span>`;
                 botonPausar.setAttribute("data-tooltip", "Pausar temporizador");
                 botonPausar.classList.remove("enPausa");
             }

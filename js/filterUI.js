@@ -241,6 +241,8 @@ function mostrarPanelFiltro() {
         });
     }
 
+    actualizarBotonesFiltros();
+
 }
 
 
@@ -333,6 +335,8 @@ function cerrarPanelFiltro() {
 
     cerrarFiltro();
 
+    actualizarBotonesFiltros();
+
     if (!window.esSincronizacionOBS && typeof window.emitirEventoOBS === "function") {
         window.emitirEventoOBS("SYNC_ACCION", {
             accion: "FILTRO_SOLARES_PANEL",
@@ -347,6 +351,7 @@ function cerrarPanelFiltro() {
 function actualizarBotonesFiltros() {
 
     const tooltip = document.getElementById("tooltipFiltro");
+    const filtroAbiertoActual = (typeof obtenerFiltroAbierto === "function") ? obtenerFiltroAbierto() : null;
 
     // ── Dependencia: Barrio solo disponible si hay Mundo filtrado ──
     const botonBarrio = document.querySelector('.botonFiltro[data-filtro="barrio"]');
@@ -370,6 +375,7 @@ function actualizarBotonesFiltros() {
             const nombre = boton.dataset.filtro;
 
             const total = contarValoresFiltro(nombre);
+            const estaAbierto = (filtroAbiertoActual !== null && filtroAbiertoActual === nombre);
 
             boton.classList.remove("activo");
 
@@ -381,9 +387,13 @@ function actualizarBotonesFiltros() {
 
         `;
 
-            if (total > 0) {
+            if (total > 0 || estaAbierto) {
 
                 boton.classList.add("activo");
+
+            }
+
+            if (total > 0) {
 
                 boton.innerHTML += `
 

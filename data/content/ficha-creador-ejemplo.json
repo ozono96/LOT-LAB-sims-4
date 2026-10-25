@@ -1,0 +1,163 @@
+{
+  "id": "ficha-creador-ejemplo",
+  "titulo": "Creador CC Ejemplo",
+  "slug": "creador-ejemplo",
+  "ruta": "descargas/creador-ejemplo",
+  "estado": "ficha",
+  "creadoEl": "2026-10-18T06:00:00.000Z",
+  "modificadoEl": "2026-10-18T06:00:00.000Z",
+  "bloques": [
+    {
+      "id": "b_tit_1",
+      "tipo": "titulo",
+      "contenido": "Ficha Pública de Creador CC",
+      "nivel": 2
+    },
+    {
+      "id": "b_txt_1",
+      "tipo": "texto",
+      "contenido": "Esta es una ficha pública creada en el nuevo estado **Ficha**. Es accesible directamente mediante su URL propia (#descargas/creador-ejemplo o #ficha-creador-ejemplo) y puede ser enlazada desde cualquier página o directorio, pero no aparece en los menús de navegación pública."
+    },
+    {
+      "id": "b_subtit_1",
+      "tipo": "titulo",
+      "contenido": "Subtítulo H3 de Sección",
+      "nivel": 3,
+      "fontSize": "1.3rem"
+    },
+    {
+      "id": "b_sep_1",
+      "tipo": "separador"
+    },
+    {
+      "id": "b_esp_1",
+      "tipo": "espacio",
+      "altura": "24px"
+    },
+    {
+      "id": "b_img_1",
+      "tipo": "imagen",
+      "url": "img/iconos-menu/descargas.webp",
+      "alt": "Icono de Descargas",
+      "forma": "cuadrado",
+      "ancho": "120px",
+      "zoom": 1,
+      "posX": 50,
+      "posY": 50,
+      "hoverGlow": true,
+      "caption": "Marco cuadrado con resplandor hover de tema",
+      "alineacion": "center"
+    },
+    {
+      "id": "b_btn_1",
+      "tipo": "boton",
+      "texto": "Visitar Inicio de Trucos",
+      "emoji": "🕹️",
+      "emojiPos": "left",
+      "tipoDestino": "interna",
+      "destinoInterno": "trucos",
+      "alineacion": "center"
+    },
+    {
+      "id": "b_copiable_1",
+      "tipo": "cuadro-copiable",
+      "contenido": "bb.moveobjects on",
+      "alineacion": "center"
+    },
+    {
+      "id": "b_buscador_1",
+      "tipo": "buscador",
+      "placeholder": "Buscar en el catálogo de trucos...",
+      "ambito": "arbol"
+    },
+    {
+      "id": "b_tablon_1",
+      "tipo": "tablon",
+      "alineacion": "center",
+      "ancho": "100%",
+      "filas": [
+        {
+          "id": "fila_1",
+          "items": [
+            {
+              "url": "img/iconos-menu/inicio.webp",
+              "alt": "Inicio",
+              "caption": "Elemento Tablón 1",
+              "forma": "cuadrado",
+              "zoom": 1,
+              "flex": 1
+            },
+            {
+              "url": "img/iconos-menu/solares.webp",
+              "alt": "Solares",
+              "caption": "Elemento Tablón 2",
+              "forma": "cuadrado",
+              "zoom": 1,
+              "flex": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b_galeria_1",
+      "tipo": "galeria",
+      "titulo": "Galería de creaciones",
+      "alineacion": "center",
+      "imagenes": [
+        {
+          "url": "img/fondos/Fondo_dia.webp",
+          "alt": "Creación 1",
+          "caption": "Vista previa 1 de la creación"
+        },
+        {
+          "url": "img/fondos/Fondo_noche.webp",
+          "alt": "Creación 2",
+          "caption": "Vista previa 2 de la creación"
+        }
+      ]
+    },
+    {
+      "id": "b_video_1",
+      "tipo": "carrusel-videos",
+      "titulo": "Vídeos recomendados",
+      "items": [
+        {
+          "tipo": "video",
+          "youtubeId": "dQw4w9WgXcQ"
+        }
+      ]
+    },
+    {
+      "id": "b_cols_1",
+      "tipo": "columnas",
+      "distribucion": "50-50",
+      "columnas": [
+        {
+          "ancho": "50%",
+          "bloques": [
+            {
+              "id": "b_col1_txt",
+              "tipo": "texto",
+              "contenido": "Columna Izquierda con texto explicativo del creador."
+            }
+          ]
+        },
+        {
+          "ancho": "50%",
+          "bloques": [
+            {
+              "id": "b_col2_btn",
+              "tipo": "boton",
+              "texto": "Ver solares",
+              "emoji": "🏡",
+              "tipoDestino": "interna",
+              "destinoInterno": "buscador",
+              "alineacion": "center"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

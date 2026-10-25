@@ -181,11 +181,10 @@ const REGISTRO_NAVEGACION = [
                 "id": "cc",
                 "nombre": "CC",
                 "icono": "🎨",
-                "disponible": false,
+                "disponible": true,
                 "descripcion": "Herramienta CC",
                 "ruta": "descargas/cc",
-                "archivo": "cc.json",
-                "tooltip": "🏗️ Próximamente"
+                "archivo": "cc.json"
             },
             {
                 "id": "simfile",
@@ -196,6 +195,15 @@ const REGISTRO_NAVEGACION = [
                 "ruta": "descargas/simfile",
                 "archivo": "simfile.json",
                 "tooltip": "🏗️ Próximamente"
+            },
+            {
+                "id": "ficha-creador-ejemplo",
+                "nombre": "Creador CC Ejemplo",
+                "icono": "🎨",
+                "disponible": true,
+                "descripcion": "Herramienta Creador CC Ejemplo",
+                "ruta": "descargas/creador-ejemplo",
+                "archivo": "ficha-creador-ejemplo.json"
             }
         ]
     },

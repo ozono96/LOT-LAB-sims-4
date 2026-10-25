@@ -25,7 +25,16 @@ function iniciarFiltros() {
 
         boton.addEventListener("click", () => {
 
-            abrirFiltro(boton.dataset.filtro);
+            const nombre = boton.dataset.filtro;
+
+            if (typeof obtenerFiltroAbierto === "function" && obtenerFiltroAbierto() === nombre) {
+                if (typeof cerrarPanelFiltro === "function") {
+                    cerrarPanelFiltro();
+                    return;
+                }
+            }
+
+            abrirFiltro(nombre);
 
             mostrarPanelFiltro();
 

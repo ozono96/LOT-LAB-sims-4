@@ -7,13 +7,20 @@
       "icono": "🎮",
       "activo": true,
       "mostrarControlVisitante": false,
-      "colorResaltado": "#2ECC71",
-      "colorResaltadoRgb": "46, 204, 113",
+      "colorResaltado": "#020258",
+      "colorResaltadoRgb": "2, 2, 88",
+      "colorResaltadoDia": "#020258",
+      "colorResaltadoDiaRgb": "2, 2, 88",
+      "colorResaltadoNoche": "#00cc33",
+      "colorResaltadoNocheRgb": "0, 204, 51",
       "calendario": {
         "tipo": "siempre"
       },
       "fondoDia": {
-        "colorFondo": "#F3EEE3",
+        "colorFondo": "#fbf8ee",
+        "colorVentana": "#ffffff",
+        "opacidadSuperficie": 0.5,
+        "blurVentana": true,
         "capas": [
           {
             "id": "capa_base_dia_1",
@@ -27,10 +34,16 @@
             "opacidad": 1,
             "orden": 1
           }
-        ]
+        ],
+        "blurFooter": true,
+        "blurHeader": true,
+        "blurNav": true
       },
       "fondoNoche": {
-        "colorFondo": "#242868",
+        "colorFondo": "#1f2571",
+        "colorVentana": "#191919",
+        "opacidadSuperficie": 0.75,
+        "blurVentana": true,
         "capas": [
           {
             "id": "capa_base_noche_1",
@@ -57,8 +70,12 @@
       "icono": "🎃",
       "activo": true,
       "mostrarControlVisitante": true,
-      "colorResaltado": "#981aff",
-      "colorResaltadoRgb": "152, 26, 255",
+      "colorResaltado": "#670bb1",
+      "colorResaltadoRgb": "103, 11, 177",
+      "colorResaltadoDia": "#670bb1",
+      "colorResaltadoDiaRgb": "103, 11, 177",
+      "colorResaltadoNoche": "#e16708",
+      "colorResaltadoNocheRgb": "225, 103, 8",
       "prioridad": 10,
       "calendario": {
         "tipo": "fechas",
@@ -68,7 +85,10 @@
         "diaFin": 1
       },
       "fondoDia": {
-        "colorFondo": "#ef841f",
+        "colorFondo": "#e06607",
+        "colorVentana": "#b8b9c7",
+        "opacidadSuperficie": 0.37,
+        "blurVentana": true,
         "capas": [
           {
             "id": "capa_hw_dia_base",
@@ -85,7 +105,10 @@
         ]
       },
       "fondoNoche": {
-        "colorFondo": "#150C1E",
+        "colorFondo": "#36163e",
+        "colorVentana": "#190e06",
+        "opacidadSuperficie": 0.75,
+        "blurVentana": true,
         "capas": [
           {
             "id": "capa_hw_noche_base",
@@ -118,6 +141,10 @@
       "mostrarControlVisitante": true,
       "colorResaltado": "#c12110",
       "colorResaltadoRgb": "193, 33, 16",
+      "colorResaltadoDia": "#c12110",
+      "colorResaltadoDiaRgb": "193, 33, 16",
+      "colorResaltadoNoche": "#447447",
+      "colorResaltadoNocheRgb": "68, 116, 71",
       "prioridad": 20,
       "calendario": {
         "tipo": "fechas",
@@ -127,7 +154,10 @@
         "diaFin": 6
       },
       "fondoDia": {
-        "colorFondo": "#fafbec",
+        "colorFondo": "#fbfceb",
+        "colorVentana": "#ffffff",
+        "opacidadSuperficie": 0.5,
+        "blurVentana": true,
         "capas": [
           {
             "id": "capa_nav_dia_base",
@@ -145,6 +175,9 @@
       },
       "fondoNoche": {
         "colorFondo": "#102e19",
+        "colorVentana": "#191919",
+        "opacidadSuperficie": 0.75,
+        "blurVentana": true,
         "capas": [
           {
             "id": "capa_1791726013551",
@@ -180,6 +213,78 @@
         ],
         "opacidad": 0.75
       }
+    },
+    {
+      "id": "dulce",
+      "nombre": "Dulce",
+      "icono": "🧁",
+      "activo": true,
+      "mostrarControlVisitante": true,
+      "colorResaltado": "#4fb4b5",
+      "colorResaltadoRgb": "79, 180, 181",
+      "colorResaltadoDia": "#4fb4b5",
+      "colorResaltadoDiaRgb": "79, 180, 181",
+      "colorResaltadoNoche": "#429ff5",
+      "colorResaltadoNocheRgb": "66, 159, 245",
+      "calendario": {
+        "tipo": "rango_anual",
+        "mesInicio": 3,
+        "diaInicio": 20,
+        "mesFin": 4,
+        "diaFin": 25
+      },
+      "fondoDia": {
+        "colorFondo": "#c683c1",
+        "colorVentana": "#ffc2c2",
+        "opacidadSuperficie": 0.5,
+        "blurVentana": true,
+        "blurHeader": true,
+        "blurNav": true,
+        "blurFooter": true,
+        "capas": [
+          {
+            "id": "capa_1791946072602",
+            "nombre": "Nueva Capa 1",
+            "visible": true,
+            "imagen": "img/fondos/fondo-dia-rosita.webp",
+            "desplazamiento": "scroll",
+            "repeticion": "repeat",
+            "posicion": "center center",
+            "tamano": "100% auto",
+            "opacidad": 1,
+            "orden": 1
+          }
+        ]
+      },
+      "fondoNoche": {
+        "colorFondo": "#b53179",
+        "colorVentana": "#5a1c39",
+        "opacidadSuperficie": 0.75,
+        "blurVentana": true,
+        "blurHeader": true,
+        "blurNav": true,
+        "blurFooter": true,
+        "capas": [
+          {
+            "id": "capa_1791946102639",
+            "nombre": "Nueva Capa 1",
+            "visible": true,
+            "imagen": "img/fondos/fondo-noche-rosita.webp",
+            "desplazamiento": "scroll",
+            "repeticion": "repeat",
+            "posicion": "center center",
+            "tamano": "100% auto",
+            "opacidad": 1,
+            "orden": 1
+          }
+        ]
+      },
+      "efectos": {
+        "activo": false,
+        "tipo": "ninguno",
+        "lista": []
+      },
+      "clasificacion": "secundario"
     }
   ]
 }

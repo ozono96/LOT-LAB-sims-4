@@ -90,9 +90,11 @@ function abrirFichaSolar(idSolar){
               `
             : `<span class="fichaSolarIconoFallback">${fallbackEmoji}</span>`;
 
+        const esTipoSolar = claseImgExtra && claseImgExtra.includes("fichaSolarIconoTipoSolar");
+        const claseWrapExtra = esTipoSolar ? " fichaSolarIconoWrapTipoSolar" : "";
         return `
             <div class="fichaSolarItem fichaSolarItemConIcono">
-                <div class="fichaSolarIconoWrap">${iconoHtml}</div>
+                <div class="fichaSolarIconoWrap${claseWrapExtra}">${iconoHtml}</div>
                 <div class="fichaSolarTexto">${fallbackEmoji} <strong>${etiqueta}:</strong> ${valor}</div>
             </div>
         `;

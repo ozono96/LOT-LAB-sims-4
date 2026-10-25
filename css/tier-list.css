@@ -77,11 +77,13 @@
     align-items: center;
     gap: 10px;
     user-select: none;
+    backdrop-filter: blur(var(--blur, 10px));
+    -webkit-backdrop-filter: blur(var(--blur, 10px));
 }
 
 body.modo-dia .tierlist-card-modo {
-    border-color: rgba(0, 0, 0, 0.1);
-    background: rgba(255, 255, 255, 0.6);
+    border-color: var(--borde, rgba(0, 0, 0, 0.1));
+    background: var(--color-tarjeta, rgba(255, 255, 255, 0.55));
 }
 
 .tierlist-card-modo:hover {
@@ -90,11 +92,38 @@ body.modo-dia .tierlist-card-modo {
     box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3);
 }
 
+body.modo-dia .tierlist-card-modo:hover:not(.seleccionado) {
+    border-color: rgba(0, 0, 0, 0.25);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+}
+
 .tierlist-card-modo.seleccionado {
     border-color: var(--color-resaltado, #2ECC71);
     background: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.12);
     box-shadow: 0 0 0 1px var(--color-resaltado, #2ECC71), 0 8px 24px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.25);
     transform: translateY(-2px);
+}
+
+body.modo-dia .tierlist-card-modo.seleccionado {
+    border-color: var(--color-resaltado, #2ECC71);
+    background: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.14);
+    box-shadow: 0 0 0 1px var(--color-resaltado, #2ECC71), 0 8px 24px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.30);
+    transform: translateY(-2px);
+}
+
+.tierlist-card-modo.seleccionado:hover {
+    border-color: var(--color-resaltado, #2ECC71);
+    background: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.16);
+    box-shadow: 0 0 0 1px var(--color-resaltado, #2ECC71), 0 10px 28px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.35);
+    transform: translateY(-3px);
+}
+
+body.modo-dia .tierlist-card-modo.seleccionado:hover {
+    border-color: var(--color-resaltado, #2ECC71);
+    background: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.18);
+    box-shadow: 0 0 0 1px var(--color-resaltado, #2ECC71), 0 10px 28px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.40);
+    transform: translateY(-3px);
 }
 
 .tierlist-card-icono {

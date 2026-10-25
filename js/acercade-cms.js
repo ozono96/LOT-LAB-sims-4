@@ -406,6 +406,33 @@ case "galeria":
                     // ── Alineación contenedor ──
                     var bAlignContStyle = bAlign === "full" ? "text-align:center;" : ("text-align:" + bAlign + ";");
 
+                    // ── Resolución estiloId: referencia viva al catálogo ──
+                    if (b.estiloId && window.LotLabCatalogo) {
+                        var _estilos = window.LotLabCatalogo.estilos || [];
+                        var _estCat = null;
+                        for (var _ei = 0; _ei < _estilos.length; _ei++) {
+                            if (_estilos[_ei].id === b.estiloId) { _estCat = _estilos[_ei]; break; }
+                        }
+                        if (_estCat && _estCat.datos) {
+                            var _alcOK = true;
+                            if (_estCat.alcance && _estCat.alcance !== "global" && Array.isArray(_estCat.alcance)) {
+                                var _tid = (window.TemasEstacionales && typeof window.TemasEstacionales.obtenerModoActivo === "function")
+                                    ? ((window.TemasEstacionales.obtenerModoActivo() || {}).id || null) : null;
+                                _alcOK = !_tid || _estCat.alcance.indexOf(_tid) !== -1;
+                            }
+                            if (_alcOK) {
+                                var _dp = _estCat.datos;
+                                if (_dp.apariencia) bAp = Object.assign({}, bAp, _dp.apariencia);
+                                if (_dp.hover)      bHv = Object.assign({}, bHv, _dp.hover);
+                                if (_dp.tamano)     bTm = Object.assign({}, bTm, _dp.tamano);
+                                if (_dp.excepcionesDiaNoche) {
+                                    var _mCat = (document.body && document.body.classList.contains("modo-dia")) ? "dia" : "noche";
+                                    if (_dp.excepcionesDiaNoche[_mCat]) bAp = Object.assign({}, bAp, _dp.excepcionesDiaNoche[_mCat]);
+                                }
+                            }
+                        }
+                    }
+
                     // ── Estilo inline del botón ──
                     var bIsCustom = bAp.preset === "custom";
                     var bInlineStyle = "";

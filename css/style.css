@@ -22,10 +22,23 @@
     --color-error: #E53935;
 
     --color-resaltado: #2ECC71;
+    --color-resaltado-rgb: 46, 204, 113;
+    --color-resaltado-dia: #2ECC71;
+    --color-resaltado-dia-rgb: 46, 204, 113;
+    --color-resaltado-noche: #2ECC71;
+    --color-resaltado-noche-rgb: 46, 204, 113;
 
     --color-fondo: #0D3B66;
 
     --color-tarjeta: rgba(255, 255, 255, .50);
+
+    --superficie-bg: var(--color-tarjeta);
+
+    --superficie-carril: rgba(255, 255, 255, .15);
+
+    --superficie-indicador: rgba(255, 255, 255, .45);
+
+    --superficie-indicador-hover: rgba(255, 255, 255, .65);
 
     --color-texto: #2B2B2B;
 
@@ -98,6 +111,8 @@ body.modo-dia {
     --color-fondo: #F3EEE3;
 
     --color-titulo: #000000;
+
+    --superficie-bg: var(--color-tarjeta);
 
     --borde: rgba(0, 0, 0, .22);
 
@@ -259,6 +274,8 @@ body.modo-noche {
 
     --color-tarjeta: rgba(25, 25, 25, .75);
 
+    --superficie-bg: var(--color-tarjeta);
+
     --borde: rgba(255, 255, 255, .12);
 
 }
@@ -370,9 +387,9 @@ header {
     margin-top: 0;
     margin-bottom: 35px;
     padding: 25px 20px;
-    background: var(--color-tarjeta);
-    backdrop-filter: blur(var(--blur));
-    -webkit-backdrop-filter: blur(var(--blur));
+    background: var(--superficie-bg, var(--color-tarjeta));
+    backdrop-filter: blur(var(--barra-header-blur, var(--blur)));
+    -webkit-backdrop-filter: blur(var(--barra-header-blur, var(--blur)));
     border-bottom: 1px solid var(--borde);
     color: var(--color-texto);
     text-align: center;
@@ -414,9 +431,9 @@ header p {
     z-index: 900;
     padding: 14px 20px;
     border-radius: var(--radio-grande);
-    background: var(--color-tarjeta);
-    backdrop-filter: blur(var(--blur));
-    -webkit-backdrop-filter: blur(var(--blur));
+    background: var(--superficie-bg, var(--color-tarjeta));
+    backdrop-filter: blur(var(--barra-nav-blur, var(--blur)));
+    -webkit-backdrop-filter: blur(var(--barra-nav-blur, var(--blur)));
     border: 1px solid var(--borde);
     box-shadow: var(--sombra-normal);
     transition: padding .25s ease, border-radius .25s ease, box-shadow .25s ease, max-width .25s ease;
@@ -846,7 +863,8 @@ body:not(.modo-nav-experimental) #ventanaAcercaDe .cerrar {
 }
 
 .popoverSonido,
-.popoverModoNav {
+.popoverModoNav,
+.popoverTemas {
     position: absolute;
     bottom: calc(100% + 12px);
     left: 50%;
@@ -870,7 +888,8 @@ body:not(.modo-nav-experimental) #ventanaAcercaDe .cerrar {
 }
 
 .popoverSonido.abierto,
-.popoverModoNav.abierto {
+.popoverModoNav.abierto,
+.popoverTemas.abierto {
     display: flex;
     opacity: 1;
     pointer-events: auto;
@@ -943,16 +962,16 @@ body.modo-dia .opcionModoNav {
 }
 
 .opcionModoNav:hover:not(.activa) {
-    background: rgba(46, 204, 113, 0.15);
+    background: rgba(var(--color-resaltado-rgb), 0.12);
     color: var(--color-resaltado);
-    transform: translateX(3px);
+    box-shadow: inset 0 0 0 1.5px rgba(var(--color-resaltado-rgb), 0.3);
 }
 
 .opcionModoNav.activa {
     color: #ffffff !important;
     font-weight: 700;
     background: var(--color-resaltado) !important;
-    box-shadow: 0 4px 14px rgba(46, 204, 113, 0.45);
+    box-shadow: 0 4px 14px rgba(var(--color-resaltado-rgb), 0.45);
     border-color: rgba(255, 255, 255, 0.3);
 }
 
@@ -1251,11 +1270,11 @@ body.modo-dia .sliderSwitch {
 
     border-radius: var(--radio-grande);
 
-    background: var(--color-tarjeta);
+    background: var(--superficie-bg, var(--color-tarjeta));
 
-    backdrop-filter: blur(var(--blur));
+    backdrop-filter: blur(var(--ventana-blur, var(--blur)));
 
-    -webkit-backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--ventana-blur, var(--blur)));
 
     border: 1px solid var(--borde);
 
@@ -1873,7 +1892,6 @@ button:hover {
 #botonTemporizador,
 #iniciarTemporizador,
 #cerrarTiempoAgotado,
-#pausarTemporizador,
 #botonRuletaDesastres,
 #botonTirarDados,
 #botonHabilidades,
@@ -1907,8 +1925,7 @@ button.deshabilitado:hover {
 
 #retoAleatorioBtn,
 #eliminarFiltro,
-#cancelarBorrar,
-#detenerTemporizador {
+#cancelarBorrar {
     background: var(--color-secundario);
     color: var(--color-texto);
     box-shadow: var(--sombra-suave);
@@ -1924,7 +1941,6 @@ button.deshabilitado:hover {
 #toggleTemporizadorRetoBtn:hover,
 #botonTemporizador:hover,
 #iniciarTemporizador:hover,
-#pausarTemporizador:hover,
 #botonRuletaDesastres:hover,
 #botonTirarDados:hover,
 #botonHabilidades:hover,
@@ -2573,11 +2589,11 @@ body.modo-dia #tooltipFiltro hr {
 
     padding: 30px 20px;
 
-    background: var(--color-tarjeta);
+    background: var(--superficie-bg, var(--color-tarjeta));
 
-    backdrop-filter: blur(var(--blur));
+    backdrop-filter: blur(var(--barra-footer-blur, var(--blur)));
 
-    -webkit-backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--barra-footer-blur, var(--blur)));
 
     border-top: 1px solid var(--borde);
 
@@ -2725,36 +2741,33 @@ body.modo-dia #tooltipFiltro hr {
 
 
 /* ==========================================================
-   SCROLL
+   SCROLL (RECUPERADO: GROSOR Y BORDES ORIGINALES, SIN FLECHAS)
+   Sincronizado con el color de superficie de «Temas y fondos»
 ========================================================== */
 
 ::-webkit-scrollbar {
-
     width: 12px;
-
+    height: 12px;
 }
 
+::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+}
 
 ::-webkit-scrollbar-track {
-
-    background: rgba(255, 255, 255, .08);
-
+    background: var(--superficie-carril, rgba(255, 255, 255, .15));
+    border-radius: 20px;
 }
-
 
 ::-webkit-scrollbar-thumb {
-
-    background: rgba(255, 255, 255, .35);
-
+    background: var(--superficie-indicador, var(--superficie-bg, rgba(255, 255, 255, .45)));
     border-radius: 20px;
-
 }
 
-
 ::-webkit-scrollbar-thumb:hover {
-
-    background: rgba(255, 255, 255, .55);
-
+    background: var(--superficie-indicador-hover, var(--superficie-bg, rgba(255, 255, 255, .65)));
 }
 
 
@@ -3516,8 +3529,16 @@ body.modo-dia .badgeTipoReto {
    ICONOS DE PACKS
 ========================================================== */
 
-/* BotÃ³n de pack con icono (selector de packs del reto) */
-.btnPackIcono {
+/* Botón de pack con icono (selector de packs del reto, mundos, barrios) */
+.btnPackIcono,
+.btnPackIcono:hover,
+.btnPackIcono:focus,
+.btnPackIcono:focus-visible,
+.btnPackIcono.seleccionada,
+.btnPackIcono.activo,
+.btnPackIcono.seleccionada:hover,
+.btnPackIcono.seleccionada:focus,
+.btnPackIcono.seleccionada:focus-visible {
     width: 88px;
     height: 88px;
     padding: 0 !important;
@@ -3525,6 +3546,7 @@ body.modo-dia .badgeTipoReto {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
+    outline: none !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -3566,6 +3588,15 @@ body.modo-dia .badgeTipoReto {
 
 .btnPackIcono.seleccionada:hover img.iconoPack {
     filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.9)) drop-shadow(0 4px 10px rgba(0, 0, 0, 0.4));
+}
+
+/* Accesibilidad en foco de teclado: drop-shadow en el contorno del icono, sin marco rectangular */
+.btnPackIcono:focus-visible img.iconoPack {
+    filter: drop-shadow(0 0 6px var(--color-resaltado, #2ecc71)) drop-shadow(0 0 12px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.5));
+}
+
+.btnPackIcono.seleccionada:focus-visible img.iconoPack {
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 14px var(--color-resaltado, #2ecc71));
 }
 
 /* Tooltip del nombre al hacer hover */
@@ -3968,33 +3999,23 @@ body.modo-dia .tarjetaSolarFoto {
 }
 
 .tarjetaSolarTipoBadge {
-
     position: absolute;
-
     bottom: 8px;
-
     right: 8px;
-
     z-index: 2;
-
+    width: 25px;
+    height: 25px;
     display: flex;
-
     align-items: center;
-
     justify-content: center;
-
     line-height: 1;
-
     pointer-events: none;
-
+    overflow: hidden;
 }
 
 .tarjetaSolarTipoBadge .tarjetaSolarTipoIcono {
-
     width: 25px;
-
     height: 25px;
-
 }
 
 .tarjetaSolarTipoBadge .tarjetaSolarTipoFallback {
@@ -4088,108 +4109,78 @@ body.modo-dia .tarjetaSolarFoto {
 
 /* Esquina inferior derecha sobre la foto: Tipo de solar */
 .tarjetaSolarFotoDer {
-
     position: absolute;
-
     bottom: 8px;
-
     right: 8px;
-
     z-index: 3;
-
+    width: 25px;
+    height: 25px;
     display: flex;
-
     align-items: center;
-
     justify-content: center;
-
     pointer-events: none;
-
+    overflow: hidden;
 }
 
 /* Iconos sobre la foto: sin cajas, sin bordes, con drop-shadow nítido */
 .tarjetaSolarFotoMiniIcono {
-
     width: 25px;
-
     height: 25px;
-
     object-fit: contain;
-
     display: block;
-
     filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.85));
-
 }
 
 .tarjetaSolarFotoMiniFallback {
-
     font-size: 1.15rem;
-
     line-height: 1;
-
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.85));
-
 }
 
-/* Tratamiento día/noche para icono de tipo de solar (respetando regla existente) */
+/* Tratamiento día/noche para icono de tipo de solar con el color de resaltado del tema */
 .tarjetaSolarTipoIcono {
-
-    width: 25px;
-
-    height: 25px;
-
+    width: 25px !important;
+    height: 25px !important;
+    max-width: 25px !important;
+    max-height: 25px !important;
     object-fit: contain;
-
     display: block;
-
+    position: relative;
+    left: -60px;
+    filter: drop-shadow(60px 0 0 var(--color-resaltado));
     transition: filter var(--transicion, 0.25s ease);
-
 }
 
 /* Tamaño fijo del tipo icono dentro de la capa hover: nunca debe crecer */
 .tarjetaSolarFotoDer .tarjetaSolarTipoIcono {
-
     width: 25px !important;
-
     height: 25px !important;
-
     flex-shrink: 0;
-
     transform: none !important;
-
 }
 
-/* Modo Día: aspecto normal con drop shadow para contraste */
+/* Modo Día: icono con el color de resaltado del tema y sombra suave de contraste */
 body.modo-dia .tarjetaSolarTipoIcono {
-
-    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.45));
-
+    filter: drop-shadow(60px 0 0 var(--color-resaltado)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.45));
 }
 
-/* Modo Noche: icono blanco luminoso sobre fondo oscuro (reutilizando exactamente la regla existente) */
+/* Modo Noche: icono con el color de resaltado del tema y resplandor luminoso sobre fondo oscuro */
 body.modo-noche .tarjetaSolarTipoIcono {
-
-    filter: brightness(0) invert(1) drop-shadow(0 0 4px rgba(255, 255, 255, 0.35)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.7));
-
+    filter: drop-shadow(60px 0 0 var(--color-resaltado)) drop-shadow(0 0 4px var(--color-resaltado)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.7));
 }
 
 /* Resplandor del tipo icono SOLO durante hover/pulsación — sobre la foto nítida */
 
-/* Modo Día → resplandor blanco suave */
+/* Modo Día → resplandor temático con halo blanco suave */
 body.modo-dia .tarjetaSolar:hover .tarjetaSolarFotoDer .tarjetaSolarTipoIcono,
 body.modo-dia .tarjetaSolar.tarjetaSolarActiva .tarjetaSolarFotoDer .tarjetaSolarTipoIcono {
-
-    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 12px rgba(255, 255, 255, 0.7));
-
+    filter: drop-shadow(60px 0 0 var(--color-resaltado)) drop-shadow(0 0 5px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 10px var(--color-resaltado));
 }
 
-/* Modo Noche → icono blanco + resplandor azul marino intenso */
+/* Modo Noche → resplandor temático intenso y halo oscuro */
 body.modo-noche .tarjetaSolar:hover .tarjetaSolarFotoDer .tarjetaSolarTipoIcono,
 body.modo-noche .tarjetaSolar.tarjetaSolarActiva .tarjetaSolarFotoDer .tarjetaSolarTipoIcono {
-
-    filter: brightness(0) invert(1) drop-shadow(0 0 4px #001a4d) drop-shadow(0 0 8px #002266) drop-shadow(0 0 14px #001f5c);
-
+    filter: drop-shadow(60px 0 0 var(--color-resaltado)) drop-shadow(0 0 4px var(--color-resaltado)) drop-shadow(0 0 8px var(--color-resaltado)) drop-shadow(0 0 14px rgba(0, 0, 0, 0.9));
 }
 
 /* Nombre del solar debajo del área visual: limpio y centrado */
@@ -4434,11 +4425,11 @@ body.modo-noche .tarjetaSolar.tarjetaSolarActiva .tarjetaSolarFotoDer .tarjetaSo
 
     padding: 45px 65px;
 
-    background: rgba(0, 0, 0, 0.50);
+    background: var(--superficie-bg, rgba(0, 0, 0, 0.50));
 
-    backdrop-filter: blur(14px);
+    backdrop-filter: blur(var(--ventana-blur, var(--blur)));
 
-    -webkit-backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(var(--ventana-blur, var(--blur)));
 
     border-radius: var(--radio-grande);
 
@@ -4563,7 +4554,6 @@ body.modo-noche .fraseCarga {
 
 /* â”€â”€ Modo dÃ­a: textos oscuros â”€â”€ */
 body.modo-dia .pantallaCargaCentro {
-    background: rgba(255, 255, 255, 0.45);
     border-color: rgba(0, 0, 0, 0.15);
 }
 
@@ -5431,45 +5421,65 @@ body>.skiptranslate {
 }
 
 .btnGirarRuleta,
+#botonGirarRuleta,
 .btnGirarRuleta:hover,
+#botonGirarRuleta:hover,
 .btnGirarRuleta:focus,
-.btnGirarRuleta:active {
-    position: absolute;
-    top: calc(50% - 32px);
-    left: calc(50% - 32px);
+#botonGirarRuleta:focus,
+.btnGirarRuleta:active,
+#botonGirarRuleta:active {
+    position: absolute !important;
+    top: calc(50% - 32px) !important;
+    left: calc(50% - 32px) !important;
     transform: none !important;
-    width: 64px;
-    height: 64px;
-    min-width: 64px;
-    min-height: 64px;
+    width: 64px !important;
+    height: 64px !important;
+    min-width: 64px !important;
+    min-height: 64px !important;
+    max-width: 64px !important;
+    max-height: 64px !important;
+    aspect-ratio: 1 / 1 !important;
     border-radius: 50% !important;
-    border: 3px solid rgba(255, 255, 255, .85);
-    background: var(--color-principal);
-    color: var(--color-texto);
+    border: 3.5px solid #ffffff !important;
+    border-color: #ffffff !important;
+    background: var(--color-resaltado) !important;
+    color: #ffffff !important;
     font-weight: bold;
     font-size: 0.95rem;
     cursor: pointer;
-    box-shadow: var(--sombra-suave);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .35), inset 0 0 0 1.5px rgba(255, 255, 255, .35) !important;
     z-index: 6;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background .25s, color .25s, box-shadow .25s;
+    transition: background .25s, color .25s, box-shadow .25s, transform .15s;
     padding: 0 !important;
+    box-sizing: border-box !important;
 }
 
-.btnGirarRuleta:hover:not(:disabled) {
-    background: var(--color-resaltado);
-    color: white;
+.btnGirarRuleta:hover:not(:disabled),
+#botonGirarRuleta:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--color-resaltado) 88%, white) !important;
+    color: #ffffff !important;
+    border: 3.5px solid #ffffff !important;
+    border-color: #ffffff !important;
     box-shadow:
-        0 0 8px rgba(var(--color-resaltado-rgb), .60),
-        0 0 18px rgba(var(--color-resaltado-rgb), .45),
-        0 0 30px rgba(var(--color-resaltado-rgb), .25);
+        0 0 12px rgba(var(--color-resaltado-rgb), .65),
+        0 0 24px rgba(var(--color-resaltado-rgb), .45),
+        0 4px 14px rgba(0, 0, 0, .35),
+        inset 0 0 0 1.5px rgba(255, 255, 255, .5) !important;
+    transform: scale(1.04) !important;
 }
 
-.btnGirarRuleta:disabled {
-    opacity: .6;
-    cursor: not-allowed;
+.btnGirarRuleta:active:not(:disabled),
+#botonGirarRuleta:active:not(:disabled) {
+    transform: scale(0.96) !important;
+}
+
+.btnGirarRuleta:disabled,
+#botonGirarRuleta:disabled {
+    opacity: .6 !important;
+    cursor: not-allowed !important;
 }
 
 
@@ -5507,14 +5517,20 @@ body>.skiptranslate {
         height: 220px !important;
     }
 
-    .btnGirarRuleta {
-        width: 54px;
-        height: 54px;
-        min-width: 54px;
-        min-height: 54px;
+    .btnGirarRuleta,
+    #botonGirarRuleta {
+        width: 54px !important;
+        height: 54px !important;
+        min-width: 54px !important;
+        min-height: 54px !important;
+        max-width: 54px !important;
+        max-height: 54px !important;
+        aspect-ratio: 1 / 1 !important;
+        border-radius: 50% !important;
         font-size: .85rem;
-        top: calc(50% - 27px);
-        left: calc(50% - 27px);
+        top: calc(50% - 27px) !important;
+        left: calc(50% - 27px) !important;
+        padding: 0 !important;
     }
 }
 
@@ -5757,57 +5773,64 @@ body.modo-dia .ruletaColorWheelWrapperModerna.ruletaColorWheelWrapper--acelerado
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     justify-content: center;
     background: var(--color-tarjeta);
-    border: 1px solid var(--borde);
-    border-radius: var(--radio-normal);
-    padding: 14px 18px;
+    border: 1.5px solid var(--borde);
+    border-radius: var(--radio-grande, 20px);
+    padding: 20px 28px;
     box-shadow: var(--sombra-suave);
+    box-sizing: border-box;
 }
 
 .filaTiradaDados .dadosEnFila {
     display: flex;
     flex-direction: row;
-    gap: 12px;
+    gap: 20px;
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
 }
 
 .dadoCara {
-    width: 56px;
-    height: 56px;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.6rem;
+    font-size: 5rem;
     line-height: 1;
     color: var(--color-texto);
-    background: var(--color-principal);
-    border: 2px solid var(--borde);
-    border-radius: 12px;
-    box-shadow: var(--sombra-suave);
-    transition: transform .15s;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 0 !important;
+    transition: transform .15s ease;
+    user-select: none;
 }
 
 .dadoCara.rodando {
-    filter: blur(.3px);
+    filter: blur(.6px);
+    transform: scale(1.08) rotate(4deg);
 }
 
 .etiquetaTiradaDados {
-    font-weight: bold;
-    font-size: 1rem;
+    font-weight: 700;
+    font-size: 1.15rem;
     color: var(--color-texto);
     text-align: center;
     width: 100%;
+    margin-top: 6px;
+    letter-spacing: 0.01em;
 }
 
 @media(max-width:700px) {
     .dadoCara {
-        width: 46px;
-        height: 46px;
-        font-size: 2.1rem;
+        font-size: 4rem;
+    }
+    .filaTiradaDados {
+        padding: 16px 20px;
     }
 }
 
@@ -5902,19 +5925,36 @@ html {
 }
 
 /* Icono de Tipo de solar en la Ficha del Solar (Modo Día / Modo Noche reactivo) */
+.fichaSolarIconoWrapTipoSolar,
+.fichaSolarIconoWrap:has(.fichaSolarIconoTipoSolar) {
+    width: 46px !important;
+    height: 46px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    position: relative !important;
+}
+
 .fichaSolarIconoTipoSolar {
-    width: 46px;
-    height: 46px;
+    width: 46px !important;
+    height: 46px !important;
+    max-width: 46px !important;
+    max-height: 46px !important;
     object-fit: contain;
+    display: block;
+    position: relative;
+    left: -80px;
+    filter: drop-shadow(80px 0 0 var(--color-resaltado));
     transition: filter var(--transicion, 0.25s ease);
 }
 
 body.modo-dia .fichaSolarIconoTipoSolar {
-    filter: none;
+    filter: drop-shadow(80px 0 0 var(--color-resaltado)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35));
 }
 
 body.modo-noche .fichaSolarIconoTipoSolar {
-    filter: brightness(0) invert(1) drop-shadow(0 0 4px rgba(255, 255, 255, 0.35));
+    filter: drop-shadow(80px 0 0 var(--color-resaltado)) drop-shadow(0 0 6px var(--color-resaltado));
 }
 
 
@@ -6590,15 +6630,17 @@ body.modo-dia #inputBuscarNombreSolar:focus {
 .estatControlBusqueda {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     flex: 1 1 220px;
     background: rgba(0, 0, 0, 0.25);
     border: 1.5px solid var(--borde);
-    border-radius: var(--radio-pequeno);
-    padding: 8px 14px;
+    border-radius: var(--radio-grande, 16px);
+    padding: 8px 16px;
     backdrop-filter: blur(var(--blur));
     -webkit-backdrop-filter: blur(var(--blur));
-    transition: all var(--transicion);
+    transition: all 0.3s ease;
+    box-shadow: var(--sombra-suave);
+    box-sizing: border-box;
 }
 
 body.modo-dia .estatControlBusqueda {
@@ -6606,40 +6648,48 @@ body.modo-dia .estatControlBusqueda {
     border-color: var(--borde);
 }
 
+.estatControlBusqueda:hover {
+    border-color: var(--color-resaltado);
+}
+
 .estatControlBusqueda:focus-within {
     border-color: var(--color-resaltado);
-    box-shadow: 0 0 15px rgba(var(--color-resaltado-rgb), 0.35);
+    box-shadow: 0 0 15px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.35);
     background: rgba(0, 0, 0, 0.32);
 }
 
 body.modo-dia .estatControlBusqueda:focus-within {
     background: rgba(255, 255, 255, 0.85);
     border-color: var(--color-resaltado);
-    box-shadow: 0 0 15px rgba(var(--color-resaltado-rgb), 0.35);
+    box-shadow: 0 0 15px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.35);
 }
 
 .estatBusquedaIcono {
-    font-size: 1rem;
-    opacity: 0.7;
+    font-size: 1.15rem;
+    opacity: 0.8;
     flex-shrink: 0;
 }
 
-.estatControlBusqueda input {
+.estatControlBusqueda input,
+#estatBuscarTexto {
     border: none;
     background: transparent;
     outline: none;
     width: 100%;
-    font-size: 0.92rem;
+    font-size: 1rem;
     color: var(--color-texto);
     font-family: inherit;
+    padding: 4px 0;
 }
 
-.estatControlBusqueda input::placeholder {
+.estatControlBusqueda input::placeholder,
+#estatBuscarTexto::placeholder {
     color: var(--color-subtexto, inherit);
     opacity: 0.65;
 }
 
-body.modo-dia .estatControlBusqueda input::placeholder {
+body.modo-dia .estatControlBusqueda input::placeholder,
+body.modo-dia #estatBuscarTexto::placeholder {
     color: var(--color-texto-secundario, #555555);
     opacity: 0.65;
 }
@@ -6993,7 +7043,7 @@ body.modo-noche .estatPickerBtn {
     opacity: 1;
 }
 
-/* â”€â”€ Barras deslizadoras Aero / Chrome â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Barras deslizadoras Aero / Chrome ─────────────────── */
 .graficoScrollHoriz::-webkit-scrollbar,
 .estatDatePickerBody::-webkit-scrollbar,
 #ventanaEstadisticas::-webkit-scrollbar {
@@ -7017,7 +7067,7 @@ body.modo-noche #ventanaEstadisticas::-webkit-scrollbar-track {
 .graficoScrollHoriz::-webkit-scrollbar-thumb,
 .estatDatePickerBody::-webkit-scrollbar-thumb,
 #ventanaEstadisticas::-webkit-scrollbar-thumb {
-    background: rgba(var(--color-resaltado-rgb), 0.45);
+    background: var(--superficie-indicador, rgba(var(--color-resaltado-rgb), 0.45));
     border-radius: 10px;
     border: 2px solid transparent;
     background-clip: padding-box;
@@ -7027,7 +7077,7 @@ body.modo-noche #ventanaEstadisticas::-webkit-scrollbar-track {
 .graficoScrollHoriz::-webkit-scrollbar-thumb:hover,
 .estatDatePickerBody::-webkit-scrollbar-thumb:hover,
 #ventanaEstadisticas::-webkit-scrollbar-thumb:hover {
-    background: var(--color-resaltado);
+    background: var(--superficie-indicador-hover, var(--color-resaltado));
 }
 
 .estatBtnBorrar {
@@ -7690,7 +7740,7 @@ body.modo-noche .estatDetallePackCard:hover {
     overflow-x: auto;
     overflow-y: hidden;
     box-sizing: border-box;
-    /* Scrollbar Aero: gris traslÃºcido (Chrome 121+, Firefox) */
+    /* Scrollbar Aero: gris traslúcido (Chrome 121+, Firefox) */
     scrollbar-width: thin;
     scrollbar-color: rgba(120, 120, 120, 0.40) transparent;
     padding-bottom: 10px;
@@ -7710,7 +7760,7 @@ body.modo-noche .graficoScrollHoriz {
     cursor: grabbing;
 }
 
-/* â”€â”€ Barras deslizadoras Aero (gris traslÃºcido estilo Chrome) â”€â”€ */
+/* ── Barras deslizadoras Aero (gris traslúcido estilo Chrome) ── */
 .graficoScrollHoriz::-webkit-scrollbar {
     height: 8px;
 }
@@ -7720,7 +7770,7 @@ body.modo-noche .graficoScrollHoriz {
     border-radius: 10px;
 }
 
-/* â”€â”€ Tooltip flotante para grÃ¡ficos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Tooltip flotante para gráficos ────────────────── */
 .estatGraficoTooltip {
     position: fixed;
     z-index: 100000;
@@ -7728,7 +7778,7 @@ body.modo-noche .graficoScrollHoriz {
     background: rgba(20, 24, 33, 0.94);
     color: #ffffff;
     border: 1px solid rgba(255, 255, 255, 0.22);
-    border-radius: var(--radio-pequeÃ±o);
+    border-radius: var(--radio-pequeño);
     font-size: 0.84rem;
     font-family: inherit;
     pointer-events: none;
@@ -7882,9 +7932,13 @@ body.modo-dia .estatBtnLinea.activa {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.70);
+    background: rgba(0, 0, 0, 0.55);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
+}
+
+body.modo-dia .overlayPacksFlotante {
+    background: rgba(0, 0, 0, 0.25);
 }
 
 .cardPacksFlotante {
@@ -7893,24 +7947,26 @@ body.modo-dia .estatBtnLinea.activa {
     width: 92%;
     max-width: 680px;
     max-height: 85vh;
-    background: var(--color-tarjeta, rgba(26, 28, 45, 0.96));
+    background: var(--superficie-bg, var(--color-tarjeta));
     border: 1px solid var(--borde);
-    border-radius: var(--radio-grande, 16px);
-    box-shadow: var(--sombra-fuerte);
+    border-radius: var(--radio-grande, 20px);
+    box-shadow: var(--sombra-fuerte, 0 20px 50px rgba(0, 0, 0, 0.35));
     display: flex;
     flex-direction: column;
     overflow: hidden;
     animation: animModalPacks 0.25s ease-out;
     color: var(--color-texto);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(var(--ventana-blur, var(--blur, 18px)));
+    -webkit-backdrop-filter: blur(var(--ventana-blur, var(--blur, 18px)));
 }
 
 body.modo-dia .cardPacksFlotante {
-    background: rgba(246, 242, 234, 0.98);
-    border-color: rgba(0, 0, 0, 0.18);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
-    color: #2b2b2b;
+    background: var(--superficie-bg, var(--color-tarjeta));
+    border-color: var(--borde);
+    box-shadow: var(--sombra-fuerte, 0 20px 50px rgba(0, 0, 0, 0.15));
+    color: var(--color-texto);
+    backdrop-filter: blur(var(--ventana-blur, var(--blur, 18px)));
+    -webkit-backdrop-filter: blur(var(--ventana-blur, var(--blur, 18px)));
 }
 
 .headerPacksFlotante {
@@ -8980,7 +9036,7 @@ body.modo-dia .timerDigits {
     box-sizing: border-box;
 }
 
-/* DEGRADADOS SUPERIOR E INFERIOR PARA ENMASCARAR EN VERTICAL */
+/* DEGRADADOS SUPERIOR E INFERIOR PARA ENMASCARAR EN VERTICAL (DESTELLOS COLOR RESALTADO) */
 .desastreAnimacion::before,
 .desastreAnimacion::after {
     content: "";
@@ -8994,20 +9050,34 @@ body.modo-dia .timerDigits {
 
 .desastreAnimacion::before {
     top: 0;
-    background: linear-gradient(to bottom, rgba(13, 59, 102, 0.96), transparent);
+    background: linear-gradient(to bottom, rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.85), transparent);
+    background: linear-gradient(to bottom, color-mix(in srgb, var(--color-resaltado, #2ECC71) 85%, transparent), transparent);
 }
 
 .desastreAnimacion::after {
     bottom: 0;
-    background: linear-gradient(to top, rgba(13, 59, 102, 0.96), transparent);
+    background: linear-gradient(to top, rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.85), transparent);
+    background: linear-gradient(to top, color-mix(in srgb, var(--color-resaltado, #2ECC71) 85%, transparent), transparent);
 }
 
 body.modo-dia .desastreAnimacion::before {
-    background: linear-gradient(to bottom, rgba(243, 238, 227, 0.96), transparent);
+    background: linear-gradient(to bottom, rgba(var(--color-resaltado-dia-rgb, var(--color-resaltado-rgb, 46, 204, 113)), 0.85), transparent);
+    background: linear-gradient(to bottom, color-mix(in srgb, var(--color-resaltado-dia, var(--color-resaltado, #2ECC71)) 85%, transparent), transparent);
 }
 
 body.modo-dia .desastreAnimacion::after {
-    background: linear-gradient(to top, rgba(243, 238, 227, 0.96), transparent);
+    background: linear-gradient(to top, rgba(var(--color-resaltado-dia-rgb, var(--color-resaltado-rgb, 46, 204, 113)), 0.85), transparent);
+    background: linear-gradient(to top, color-mix(in srgb, var(--color-resaltado-dia, var(--color-resaltado, #2ECC71)) 85%, transparent), transparent);
+}
+
+body.modo-noche .desastreAnimacion::before {
+    background: linear-gradient(to bottom, rgba(var(--color-resaltado-noche-rgb, var(--color-resaltado-rgb, 46, 204, 113)), 0.85), transparent);
+    background: linear-gradient(to bottom, color-mix(in srgb, var(--color-resaltado-noche, var(--color-resaltado, #2ECC71)) 85%, transparent), transparent);
+}
+
+body.modo-noche .desastreAnimacion::after {
+    background: linear-gradient(to top, rgba(var(--color-resaltado-noche-rgb, var(--color-resaltado-rgb, 46, 204, 113)), 0.85), transparent);
+    background: linear-gradient(to top, color-mix(in srgb, var(--color-resaltado-noche, var(--color-resaltado, #2ECC71)) 85%, transparent), transparent);
 }
 
 /* MARCO / SELECTOR VERDE CENTRAL FIJO (ENFOQUE VERTICAL) */
@@ -9357,16 +9427,18 @@ body.modo-dia .controlMinutosWrapper {
 }
 
 body.modo-dia .displayTemporizadorDigital {
-    background: rgba(255, 255, 255, 0.85);
+    background: rgba(0, 0, 0, 0.04);
     color: #27ae60;
-    border-color: rgba(39, 174, 96, 0.6);
-    box-shadow: 0 6px 20px rgba(39, 174, 96, 0.2);
+    border-color: rgba(39, 174, 96, 0.45);
+    box-shadow: 0 4px 14px rgba(39, 174, 96, 0.12);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 .displayTemporizadorDigital.pausado {
-    color: #f39c12 !important;
-    border-color: rgba(243, 156, 18, 0.6) !important;
-    box-shadow: 0 0 24px rgba(243, 156, 18, 0.25) !important;
+    color: #cf7017 !important;
+    border-color: rgba(207, 112, 23, 0.6) !important;
+    box-shadow: 0 0 24px rgba(207, 112, 23, 0.25) !important;
 }
 
 .iconoRelojDigital {
@@ -9410,49 +9482,100 @@ body.modo-dia .displayTemporizadorDigital {
     }
 }
 
-/* BotÃ³n Pausar / Reanudar */
-.btnTimerPause {
-    background: rgba(46, 204, 113, 0.15);
-    border-color: #2ecc71;
-    color: var(--color-texto);
+/* Botón Pausar (estado normal/en marcha) -> NARANJA en Modo Día y Modo Noche */
+#pausarTemporizador,
+.btnTimerPause,
+body.modo-dia #pausarTemporizador,
+body.modo-noche #pausarTemporizador,
+body.modo-dia .btnTimerPause,
+body.modo-noche .btnTimerPause {
+    background: #cf7017 !important;
+    border: 3px solid #cf7017 !important;
+    border-color: #cf7017 !important;
+    color: #ffffff !important;
 }
 
-.btnTimerPause:hover {
-    background: #2ecc71;
-    color: #ffffff;
+#pausarTemporizador:hover,
+.btnTimerPause:hover,
+body.modo-dia #pausarTemporizador:hover,
+body.modo-noche #pausarTemporizador:hover,
+body.modo-dia .btnTimerPause:hover,
+body.modo-noche .btnTimerPause:hover {
+    background: #e67e22 !important;
+    border: 3px solid #e67e22 !important;
+    border-color: #e67e22 !important;
+    color: #ffffff !important;
     transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(46, 204, 113, 0.35);
+    box-shadow: 0 0 16px rgba(207, 112, 23, 0.6) !important;
 }
 
-.btnTimerPause.enPausa {
-    background: rgba(243, 156, 18, 0.2);
-    border-color: #f39c12;
-    color: var(--color-texto);
+/* Botón Reanudar (estado en pausa) -> VERDE ELÉCTRICO en Modo Día y Modo Noche */
+#pausarTemporizador.enPausa,
+.btnTimerPause.enPausa,
+body.modo-dia #pausarTemporizador.enPausa,
+body.modo-noche #pausarTemporizador.enPausa,
+body.modo-dia .btnTimerPause.enPausa,
+body.modo-noche .btnTimerPause.enPausa {
+    background: #00c853 !important;
+    border: 3px solid #00e676 !important;
+    border-color: #00e676 !important;
+    color: #ffffff !important;
 }
 
-.btnTimerPause.enPausa:hover {
-    background: #f39c12;
-    color: #ffffff;
-    box-shadow: 0 6px 18px rgba(243, 156, 18, 0.35);
-}
-
-/* BotÃ³n Detener */
-.btnTimerStop {
-    background: rgba(231, 76, 60, 0.15);
-    border-color: #e74c3c;
-    color: var(--color-texto);
-}
-
-.btnTimerStop:hover {
-    background: #e74c3c;
-    color: #ffffff;
+#pausarTemporizador.enPausa:hover,
+.btnTimerPause.enPausa:hover,
+body.modo-dia #pausarTemporizador.enPausa:hover,
+body.modo-noche #pausarTemporizador.enPausa:hover,
+body.modo-dia .btnTimerPause.enPausa:hover,
+body.modo-noche .btnTimerPause.enPausa:hover {
+    background: #00e676 !important;
+    border: 3px solid #00c853 !important;
+    border-color: #00c853 !important;
+    color: #ffffff !important;
     transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(231, 76, 60, 0.35);
+    box-shadow: 0 0 16px rgba(0, 230, 118, 0.65) !important;
+}
+
+/* Botón Detener -> ROJO en Modo Día y Modo Noche */
+#detenerTemporizador,
+.btnTimerStop,
+body.modo-dia #detenerTemporizador,
+body.modo-noche #detenerTemporizador,
+body.modo-dia .btnTimerStop,
+body.modo-noche .btnTimerStop {
+    background: #e60000 !important;
+    border: 3px solid #cc2e2e !important;
+    border-color: #cc2e2e !important;
+    color: #ffffff !important;
+}
+
+#detenerTemporizador:hover,
+.btnTimerStop:hover,
+body.modo-dia #detenerTemporizador:hover,
+body.modo-noche #detenerTemporizador:hover,
+body.modo-dia .btnTimerStop:hover,
+body.modo-noche .btnTimerStop:hover {
+    background: #ff1a1a !important;
+    border: 3px solid #e60000 !important;
+    border-color: #e60000 !important;
+    color: #ffffff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 0 16px rgba(230, 0, 0, 0.6) !important;
 }
 
 .iconoTimerAction {
-    font-size: 1.3rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
     line-height: 1;
+}
+
+.iconoTimerAction svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+    display: block;
 }
 
 /* ==========================================================
@@ -9643,20 +9766,34 @@ body.modo-dia .displayTemporizadorDigital {
 
 .habAnimacion::before {
     left: 0;
-    background: linear-gradient(to right, rgba(13, 59, 102, 0.9), transparent);
+    background: linear-gradient(to right, rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.85), transparent);
+    background: linear-gradient(to right, color-mix(in srgb, var(--color-resaltado, #2ECC71) 85%, transparent), transparent);
 }
 
 .habAnimacion::after {
     right: 0;
-    background: linear-gradient(to left, rgba(13, 59, 102, 0.9), transparent);
+    background: linear-gradient(to left, rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.85), transparent);
+    background: linear-gradient(to left, color-mix(in srgb, var(--color-resaltado, #2ECC71) 85%, transparent), transparent);
 }
 
 body.modo-dia .habAnimacion::before {
-    background: linear-gradient(to right, rgba(243, 238, 227, 0.95), transparent);
+    background: linear-gradient(to right, rgba(var(--color-resaltado-dia-rgb, var(--color-resaltado-rgb, 46, 204, 113)), 0.85), transparent);
+    background: linear-gradient(to right, color-mix(in srgb, var(--color-resaltado-dia, var(--color-resaltado, #2ECC71)) 85%, transparent), transparent);
 }
 
 body.modo-dia .habAnimacion::after {
-    background: linear-gradient(to left, rgba(243, 238, 227, 0.95), transparent);
+    background: linear-gradient(to left, rgba(var(--color-resaltado-dia-rgb, var(--color-resaltado-rgb, 46, 204, 113)), 0.85), transparent);
+    background: linear-gradient(to left, color-mix(in srgb, var(--color-resaltado-dia, var(--color-resaltado, #2ECC71)) 85%, transparent), transparent);
+}
+
+body.modo-noche .habAnimacion::before {
+    background: linear-gradient(to right, rgba(var(--color-resaltado-noche-rgb, var(--color-resaltado-rgb, 46, 204, 113)), 0.85), transparent);
+    background: linear-gradient(to right, color-mix(in srgb, var(--color-resaltado-noche, var(--color-resaltado, #2ECC71)) 85%, transparent), transparent);
+}
+
+body.modo-noche .habAnimacion::after {
+    background: linear-gradient(to left, rgba(var(--color-resaltado-noche-rgb, var(--color-resaltado-rgb, 46, 204, 113)), 0.85), transparent);
+    background: linear-gradient(to left, color-mix(in srgb, var(--color-resaltado-noche, var(--color-resaltado, #2ECC71)) 85%, transparent), transparent);
 }
 
 /* Selector central fijo adaptado al tema */
@@ -9820,42 +9957,55 @@ button:not(.cerrar).habBtnAcelerar {
     font-size: 0.95rem;
     font-weight: 800;
     border-radius: var(--radio-normal, 12px);
-    border: 2px solid #f1c40f;
-    background: linear-gradient(135deg, rgba(241, 196, 15, 0.18), rgba(230, 126, 34, 0.22));
-    color: var(--color-texto);
+    border: 3px solid #00e676 !important;
+    background: #00c853 !important;
+    color: #ffffff !important;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(241, 196, 15, 0.25);
-    transition: all var(--transicion);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 0 16px rgba(0, 230, 118, 0.5) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    transition: background 0.25s, border-color 0.25s, box-shadow 0.25s, transform 0.15s;
 }
 
 .habBtnAcelerar:hover,
 button.habBtnAcelerar:hover,
 button:not(.cerrar).habBtnAcelerar:hover {
     transform: translateY(-2px) scale(1.03);
-    box-shadow: 0 6px 20px rgba(241, 196, 15, 0.45);
-    border-color: #f39c12;
-    background: linear-gradient(135deg, rgba(241, 196, 15, 0.3), rgba(230, 126, 34, 0.35));
+    background: #00e676 !important;
+    border-color: #00c853 !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4), 0 0 24px rgba(0, 230, 118, 0.75) !important;
 }
 
 .habBtnAcelerar.habBtnAcelerar--activo,
+.habBtnAcelerar.activo,
 button.habBtnAcelerar.habBtnAcelerar--activo,
-button:not(.cerrar).habBtnAcelerar.habBtnAcelerar--activo {
-    border-width: 2px !important;
-    border-style: solid !important;
-    border-color: var(--color-resaltado) !important;
-    background: linear-gradient(135deg, rgba(var(--color-resaltado-rgb), 0.35), rgba(var(--color-resaltado-rgb), 0.55)) !important;
+button.habBtnAcelerar.activo,
+button:not(.cerrar).habBtnAcelerar.habBtnAcelerar--activo,
+button:not(.cerrar).habBtnAcelerar.activo {
+    border: 3px solid #e67e22 !important;
+    background: #cf7017 !important;
     color: #ffffff !important;
-    box-shadow: 0 0 20px rgba(var(--color-resaltado-rgb), 0.6) !important;
-    animation: brilloAcelerado 0.8s ease-in-out infinite alternate;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 0 24px rgba(230, 126, 34, 0.85), 0 0 45px rgba(207, 112, 23, 0.5) !important;
+    animation: brilloAceleradoNaranja 0.8s ease-in-out infinite alternate !important;
 }
 
-@keyframes brilloAcelerado {
+.habBtnAcelerar.habBtnAcelerar--activo:hover,
+.habBtnAcelerar.activo:hover,
+button.habBtnAcelerar.habBtnAcelerar--activo:hover,
+button.habBtnAcelerar.activo:hover {
+    background: #e67e22 !important;
+    border-color: #cf7017 !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45), 0 0 32px rgba(230, 126, 34, 0.95), 0 0 60px rgba(207, 112, 23, 0.65) !important;
+}
+
+@keyframes brilloAceleradoNaranja {
     from {
-        box-shadow: 0 0 12px rgba(var(--color-resaltado-rgb), 0.4);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 0 16px rgba(207, 112, 23, 0.6), 0 0 30px rgba(230, 126, 34, 0.4);
     }
 
     to {
-        box-shadow: 0 0 25px rgba(var(--color-resaltado-rgb), 0.8);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), 0 0 30px rgba(230, 126, 34, 0.95), 0 0 55px rgba(207, 112, 23, 0.65);
     }
 }
 
@@ -10148,11 +10298,13 @@ button:not(.cerrar).habBtnAcelerar.habBtnAcelerar--activo {
     width: 100%;
     margin: 16px 0;
     padding: 16px 20px;
-    background: rgba(243, 156, 18, 0.12);
-    border: 1.5px solid rgba(243, 156, 18, 0.7);
+    background: rgba(207, 112, 23, 0.12);
+    border: 1.5px solid rgba(207, 112, 23, 0.7);
     border-radius: var(--radio-normal, 12px);
-    box-shadow: 0 4px 16px rgba(243, 156, 18, 0.2);
+    box-shadow: 0 4px 16px rgba(207, 112, 23, 0.2);
     box-sizing: border-box;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     /* Solo animar fondo y borde, NO usar 'all' para evitar repaints cruzados en modo paralelo */
     transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
     /* Aislar los repaints de esta caja al propio elemento */
@@ -10160,22 +10312,61 @@ button:not(.cerrar).habBtnAcelerar.habBtnAcelerar--activo {
     will-change: background, border-color;
 }
 
+body.modo-dia .displayTemporizadorDigital,
+body.modo-dia .displayTemporizadorDigital.pausado {
+    background: rgba(207, 112, 23, 0.08);
+    border-color: rgba(207, 112, 23, 0.45);
+    box-shadow: 0 4px 14px rgba(207, 112, 23, 0.12);
+}
+
 .displayTemporizadorDigital .digitosTiempo,
 .displayTemporizadorDigital.pausado .digitosTiempo {
-    color: #f39c12;
+    color: #cf7017;
 }
 
 /* Estado En Marcha: TEMA ACTIVO */
 .displayTemporizadorDigital.enMarcha {
-    background: rgba(var(--color-resaltado-rgb), 0.14);
-    border: 1.5px solid rgba(var(--color-resaltado-rgb), 0.7);
-    box-shadow: 0 4px 16px rgba(var(--color-resaltado-rgb), 0.3);
+    background: rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.14) !important;
+    border: 1.5px solid rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.7) !important;
+    box-shadow: 0 4px 16px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.3) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     animation: pulsoTemporizadorEnMarcha 2s ease-in-out infinite alternate;
+}
+
+body.modo-dia .displayTemporizadorDigital.enMarcha {
+    background: rgba(var(--color-resaltado-rgb, 39, 174, 96), 0.08) !important;
+    border-color: rgba(var(--color-resaltado-rgb, 39, 174, 96), 0.5) !important;
+    box-shadow: 0 4px 14px rgba(var(--color-resaltado-rgb, 39, 174, 96), 0.15) !important;
 }
 
 .displayTemporizadorDigital.enMarcha .digitosTiempo {
     color: var(--color-resaltado);
-    text-shadow: 0 0 12px rgba(var(--color-resaltado-rgb), 0.5);
+    text-shadow: 0 0 12px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.5);
+    display: inline-block;
+    will-change: transform;
+    animation: latidoSutilNumeros 1s ease-in-out infinite;
+}
+
+@keyframes latidoSutilNumeros {
+    0% {
+        transform: scale(1);
+    }
+    14% {
+        transform: scale(1.025);
+    }
+    28% {
+        transform: scale(1);
+    }
+    42% {
+        transform: scale(1.015);
+    }
+    56% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 @keyframes pulsoTemporizadorEnMarcha {
@@ -10303,17 +10494,37 @@ body.modo-noche .botonOBSBtn:hover {
 }
 
 .modalOBSCard {
-    max-width: 650px !important;
-    width: 92% !important;
+    max-width: 780px !important;
+    width: 94% !important;
     max-height: 90vh;
     overflow-y: auto;
+    background: var(--superficie-bg, var(--color-tarjeta)) !important;
+    backdrop-filter: blur(var(--ventana-blur, var(--blur, 18px))) !important;
+    -webkit-backdrop-filter: blur(var(--ventana-blur, var(--blur, 18px))) !important;
+    border: 1px solid var(--borde) !important;
+    border-radius: var(--radio-grande, 20px) !important;
+    color: var(--color-texto) !important;
+    box-shadow: var(--sombra-fuerte, 0 20px 50px rgba(0, 0, 0, 0.35)) !important;
+}
+
+body.modo-dia .modalOBSCard {
+    background: var(--superficie-bg, var(--color-tarjeta)) !important;
+    backdrop-filter: blur(var(--ventana-blur, var(--blur, 18px))) !important;
+    -webkit-backdrop-filter: blur(var(--ventana-blur, var(--blur, 18px))) !important;
+    border-color: var(--borde) !important;
+    color: var(--color-texto) !important;
+    box-shadow: var(--sombra-fuerte, 0 20px 50px rgba(0, 0, 0, 0.15)) !important;
+}
+
+.modalOBSCard .headerPacksFlotante {
+    padding: 18px 32px;
 }
 
 .cuerpoModalOBS {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    padding: 16px 0;
+    gap: 18px;
+    padding: 24px 34px 34px;
 }
 
 .obsGuiaTexto {
@@ -10328,6 +10539,12 @@ body.modo-noche .botonOBSBtn:hover {
     border: 1px solid var(--borde);
     border-radius: 10px;
     padding: 12px 18px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+body.modo-dia .obsPasosBox {
+    background: rgba(0, 0, 0, 0.04);
 }
 
 .obsPasosBox ol {
@@ -10342,6 +10559,11 @@ body.modo-noche .botonOBSBtn:hover {
     padding: 2px 6px;
     border-radius: 4px;
     font-weight: bold;
+}
+
+body.modo-dia .obsPasosBox code {
+    background: rgba(0, 0, 0, 0.07);
+    color: var(--color-texto);
 }
 
 .obsMetodosBox {
@@ -10361,6 +10583,12 @@ body.modo-noche .botonOBSBtn:hover {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+body.modo-dia .obsMetodo {
+    background: rgba(0, 0, 0, 0.04);
 }
 
 .obsMetodoRecomendado {
@@ -10399,10 +10627,16 @@ body.modo-noche .botonOBSBtn:hover {
     display: flex;
     flex-direction: column;
     gap: 14px;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.15);
     border: 1px solid var(--borde);
     border-radius: 12px;
     padding: 16px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+body.modo-dia .obsSeccionOpciones {
+    background: rgba(0, 0, 0, 0.03);
 }
 
 .obsSeccionOpciones h4 {
@@ -10436,14 +10670,22 @@ body.modo-noche .botonOBSBtn:hover {
     font-weight: 700;
     border-radius: 8px;
     border: 1.5px solid var(--borde);
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
     color: var(--color-texto);
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
+body.modo-dia .obsBtnOption {
+    background: rgba(0, 0, 0, 0.04);
+}
+
 .obsBtnOption:hover {
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.20);
+}
+
+body.modo-dia .obsBtnOption:hover {
+    background: rgba(0, 0, 0, 0.08);
 }
 
 .obsBtnOption.activo {
@@ -10462,6 +10704,12 @@ body.modo-noche .botonOBSBtn:hover {
     border: 1px solid var(--borde);
     border-radius: 10px;
     padding: 8px 14px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+body.modo-dia .obsSliderContainer {
+    background: rgba(0, 0, 0, 0.04);
 }
 
 .obsSliderInput {
@@ -10608,8 +10856,17 @@ body.modo-obs {
     background-image: none !important;
     margin: 0 !important;
     padding: 0 !important;
-    width: 100vw !important;
+    width: 100% !important;
     min-height: 100vh !important;
+    overflow: hidden !important;
+}
+
+body.modo-obs main {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: block !important;
 }
 
 body.modo-obs header,
@@ -10630,7 +10887,7 @@ body.modo-obs #lotlabDockTestTemas {
 }
 
 body.modo-obs section#app {
-    width: 100vw !important;
+    width: 100% !important;
     min-height: 100vh !important;
     height: auto !important;
     padding: 0 !important;
@@ -10685,9 +10942,9 @@ body.modo-obs.obs-pos-right section#app>.ventana {
 
 /* Fondo de ventanas según la configuración escogida */
 body.modo-obs.obs-bg-transparent .ventana {
-    background: rgba(20, 25, 35, 0.88) !important;
-    backdrop-filter: blur(14px) !important;
-    -webkit-backdrop-filter: blur(14px) !important;
+    background: var(--superficie-bg, rgba(20, 25, 35, 0.88)) !important;
+    backdrop-filter: blur(var(--ventana-blur, 14px)) !important;
+    -webkit-backdrop-filter: blur(var(--ventana-blur, 14px)) !important;
 }
 
 body.modo-obs.obs-bg-dark .ventana {
@@ -10697,23 +10954,26 @@ body.modo-obs.obs-bg-dark .ventana {
 /* Sobrescribir tema Día / Noche independientemente de la web */
 body.modo-obs.modo-obs-dia {
     --color-fondo: #F3EEE3;
-    --color-tarjeta: rgba(255, 255, 255, 0.95);
+    --color-tarjeta: var(--superficie-bg, rgba(255, 255, 255, 0.95));
     --color-texto: #2B2B2B;
     --color-texto-secundario: #444444;
     --borde: rgba(0, 0, 0, 0.22);
 }
 
 body.modo-obs.modo-obs-dia .ventana {
-    background: rgba(255, 255, 255, 0.92) !important;
     color: #2b2b2b !important;
 }
 
 body.modo-obs.modo-obs-noche {
     --color-fondo: #0D3B66;
-    --color-tarjeta: rgba(20, 25, 35, 0.9);
+    --color-tarjeta: var(--superficie-bg, rgba(20, 25, 35, 0.9));
     --color-texto: #ffffff;
     --color-texto-secundario: #cccccc;
     --borde: rgba(255, 255, 255, 0.35);
+}
+
+body.modo-obs.modo-obs-noche .ventana {
+    color: #ffffff !important;
 }
 
 /* ─── Modo Normal (No OBS) ────────────────────────────────────────── */
@@ -10868,26 +11128,30 @@ body.modo-obs.modo-obs-noche {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    overflow: hidden !important;
+    position: relative !important;
 }
 
 .iconoTipoSolarReto {
-    width: 100%;
-    height: 100%;
+    width: 44px;
+    height: 44px;
     max-width: 44px;
     max-height: 44px;
     object-fit: contain;
     display: block;
+    position: relative;
+    left: -80px;
+    filter: drop-shadow(80px 0 0 var(--color-resaltado));
     transition: filter var(--transicion, 0.25s ease), transform var(--transicion, 0.25s ease);
 }
 
-/* Modo Día: Imagen original sin modificar colores ni filtros */
+/* Modo Día y Modo Noche: Los iconos toman el color de resaltado del tema */
 body.modo-dia .iconoTipoSolarReto {
-    filter: none;
+    filter: drop-shadow(80px 0 0 var(--color-resaltado)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35));
 }
 
-/* Modo Noche: Blanco luminoso sobre fondo oscuro */
 body.modo-noche .iconoTipoSolarReto {
-    filter: brightness(0) invert(1) drop-shadow(0 0 4px rgba(255, 255, 255, 0.35));
+    filter: drop-shadow(80px 0 0 var(--color-resaltado)) drop-shadow(0 0 6px var(--color-resaltado));
 }
 
 /* ─── Botones de Tipo de Solar en el Filtrador de Solares ─── */
@@ -10907,37 +11171,43 @@ body.modo-noche .iconoTipoSolarReto {
     justify-content: center;
     flex-shrink: 0;
     pointer-events: none;
+    overflow: hidden;
+    position: relative;
 }
 
 .iconoTipoSolarFiltro {
-    width: 100%;
-    height: 100%;
+    width: 32px;
+    height: 32px;
     max-width: 32px;
     max-height: 32px;
     object-fit: contain;
     display: block;
     pointer-events: none;
-    transition: filter var(--transicion, 0.25s ease), transform var(--transicion, 0.25s ease);
+    position: relative;
+    left: -60px;
+    filter: drop-shadow(60px 0 0 var(--color-resaltado));
+    transition: filter var(--transicion, 0.25s ease);
 }
 
-/* Modo Día: Imagen original sin modificar */
+/* Modo Día y Modo Noche: Los iconos toman el color de resaltado del tema */
 body.modo-dia .iconoTipoSolarFiltro {
-    filter: none;
+    filter: drop-shadow(60px 0 0 var(--color-resaltado));
 }
 
-/* Modo Día seleccionado: Blanco para resaltar sobre el fondo verde */
-body.modo-dia .opcionFiltro.seleccionada .iconoTipoSolarFiltro {
-    filter: brightness(0) invert(1);
-}
-
-/* Modo Noche: Blanco luminoso sobre fondo oscuro */
 body.modo-noche .iconoTipoSolarFiltro {
-    filter: brightness(0) invert(1) drop-shadow(0 0 4px rgba(255, 255, 255, 0.35));
+    filter: drop-shadow(60px 0 0 var(--color-resaltado));
 }
 
-/* Modo Noche seleccionado: Blanco */
+/* Estado Hover: Sutil brillo del color de resaltado al pasar el ratón */
+.opcionFiltro:hover:not(.seleccionada) .iconoTipoSolarFiltro {
+    filter: drop-shadow(60px 0 0 var(--color-resaltado)) drop-shadow(0 0 3px var(--color-resaltado));
+}
+
+/* Estado Seleccionado: Blanco puro para contrastar sobre el fondo resaltado */
+.opcionFiltro.seleccionada .iconoTipoSolarFiltro,
+body.modo-dia .opcionFiltro.seleccionada .iconoTipoSolarFiltro,
 body.modo-noche .opcionFiltro.seleccionada .iconoTipoSolarFiltro {
-    filter: brightness(0) invert(1);
+    filter: drop-shadow(60px 0 0 #ffffff) !important;
 }
 
 
@@ -10991,26 +11261,26 @@ body.modo-obs.obs-pos-center:has(#ventanaRuletaDesastres:not([style*="display: n
 }
 
 body.modo-obs.obs-pos-right #wrapperPosicionOBS {
-    right: calc(24px - 680px * (1 - var(--escala-obs, 1))) !important;
+    right: 24px !important;
     left: auto !important;
     transform: none !important;
 }
 
 body.modo-obs.obs-pos-right #app.modo-paralelo #wrapperPosicionOBS,
 body.modo-obs.obs-pos-right #wrapperPosicionOBS:has(#ventanaTemporizador:not([style*="display: none"])) {
-    right: calc(24px - 480px * (1 - var(--escala-obs, 1))) !important;
+    right: 24px !important;
     left: auto !important;
     transform: none !important;
 }
 
 body.modo-obs.obs-pos-right:has(#ventanaRuletaDesastres:not([style*="display: none"])) #wrapperPosicionOBS {
-    right: calc(24px - 680px * (1 - var(--escala-obs, 1))) !important;
+    right: 24px !important;
     left: auto !important;
     transform: none !important;
 }
 
 body.modo-obs.obs-pos-right:has(#ventanaRuletaDesastres:not([style*="display: none"])):has(#ventanaTemporizador:not([style*="display: none"])) #wrapperPosicionOBS {
-    right: calc(24px - 480px * (1 - var(--escala-obs, 1))) !important;
+    right: 24px !important;
     left: auto !important;
     transform: none !important;
 }
@@ -11142,13 +11412,9 @@ body.modo-obs .obsBrandingTextoDer {
 .botonAgradecimientosBtn .icono-corazon {
     width: 26px;
     height: 26px;
-    fill: #ffffff;
+    fill: currentColor !important;
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
     display: block;
-}
-
-body.modo-dia .botonAgradecimientosBtn .icono-corazon {
-    fill: #000000;
 }
 
 /* Tarjeta del modal */
@@ -11159,6 +11425,22 @@ body.modo-dia .botonAgradecimientosBtn .icono-corazon {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    background: var(--superficie-bg, var(--color-tarjeta)) !important;
+    backdrop-filter: blur(var(--ventana-blur, var(--blur, 18px))) !important;
+    -webkit-backdrop-filter: blur(var(--ventana-blur, var(--blur, 18px))) !important;
+    border: 1px solid var(--borde) !important;
+    border-radius: var(--radio-grande, 20px) !important;
+    color: var(--color-texto) !important;
+    box-shadow: var(--sombra-fuerte, 0 20px 50px rgba(0, 0, 0, 0.35)) !important;
+}
+
+body.modo-dia .modalAgradecimientosCard {
+    background: var(--superficie-bg, var(--color-tarjeta)) !important;
+    backdrop-filter: blur(var(--ventana-blur, var(--blur, 18px))) !important;
+    -webkit-backdrop-filter: blur(var(--ventana-blur, var(--blur, 18px))) !important;
+    border-color: var(--borde) !important;
+    color: var(--color-texto) !important;
+    box-shadow: var(--sombra-fuerte, 0 20px 50px rgba(0, 0, 0, 0.15)) !important;
 }
 
 /* Cabecera y controles */
@@ -11244,7 +11526,6 @@ body.modo-dia .btnSaltarAnimacion:hover {
     overflow-x: hidden;
     max-height: calc(88vh - 72px);
     scrollbar-width: thin;
-    scrollbar-color: var(--borde) transparent;
 }
 
 /* Animación cinematográfica de créditos */
@@ -11329,6 +11610,8 @@ body.modo-dia .btnSaltarAnimacion:hover {
     border-radius: var(--radio-normal, 12px);
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid var(--borde);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     max-width: 420px;
     width: 100%;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
@@ -11462,13 +11745,22 @@ body.modo-dia .enlaceTexto:hover {
 
 /* Adaptación responsive */
 @media (max-width: 600px) {
-    .cuerpoModalAgradecimientos {
-        padding: 18px 16px 30px;
-    }
-
+    .modalOBSCard,
     .modalAgradecimientosCard {
         width: 95% !important;
         max-height: 92vh;
+    }
+
+    .modalOBSCard .headerPacksFlotante {
+        padding: 14px 18px;
+    }
+
+    .cuerpoModalOBS {
+        padding: 18px 16px 28px;
+    }
+
+    .cuerpoModalAgradecimientos {
+        padding: 18px 16px 30px;
     }
 
     .gridPioneros {
@@ -12032,11 +12324,12 @@ body {
     }
 }
 
-/* ── 12. FOOTER — POPOVERS DE SONIDO Y MODO NAV CENTRADOS ── */
 .controlSonidoWrapper:has(.abierto),
 .selectorModoNavWrapper:has(.abierto),
+.selectorTemasWrapper:has(.abierto),
 .controlSonidoWrapper.popover-abierto,
-.selectorModoNavWrapper.popover-abierto {
+.selectorModoNavWrapper.popover-abierto,
+.selectorTemasWrapper.popover-abierto {
     z-index: 10001;
 }
 
@@ -12044,13 +12337,16 @@ body {
 
     .controlSonidoWrapper:has(.abierto),
     .selectorModoNavWrapper:has(.abierto),
+    .selectorTemasWrapper:has(.abierto),
     .controlSonidoWrapper.popover-abierto,
-    .selectorModoNavWrapper.popover-abierto {
+    .selectorModoNavWrapper.popover-abierto,
+    .selectorTemasWrapper.popover-abierto {
         z-index: 10001;
     }
 
     .popoverSonido,
-    .popoverModoNav {
+    .popoverModoNav,
+    .popoverTemas {
         position: fixed;
         left: 50%;
         right: auto;
@@ -12064,7 +12360,8 @@ body {
     }
 
     .popoverSonido.abierto,
-    .popoverModoNav.abierto {
+    .popoverModoNav.abierto,
+    .popoverTemas.abierto {
         transform: translateX(-50%) translateY(0);
     }
 }
@@ -12450,6 +12747,38 @@ body.tema-multicapa-activo {
 .botonTemaEstacional:hover {
     transform: scale(1.08);
     opacity: 1;
+}
+
+/* ── Selector único de temas ── */
+.selectorTemasWrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Iguala el espaciado entre botones de «Tema visual» al de «Cambiar modo de navegación» */
+#listaTemas {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.botonSelectorTemasBtn {
+    font-size: 1.15rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.botonSelectorTemasBtn.tema-activo {
+    border: 2px solid var(--color-resaltado) !important;
+    box-shadow: 0 0 10px rgba(var(--color-resaltado-rgb), 0.35);
+}
+
+.botonSelectorTemasBtn:hover {
+    transform: scale(1.08);
 }
 
 /* Efectos decorativos temáticos */
@@ -13071,3 +13400,15 @@ body:not(.modo-dia) .raton-barra-personaje svg {
 
 
 
+
+/* ================================================================
+   LOT-LAB — Catálogo de estilos: variables CSS por familia funcional
+   Estas variables son sobreescritas por catalogo-estilos.js cuando
+   el usuario asigna un estilo del catálogo. Los valores por defecto
+   reproducen exactamente el aspecto actual de cada familia.
+   ================================================================ */
+
+/* Las variables se definen vacías por defecto.
+   catalogo-estilos.js inyecta el valor real cuando hay asignación.
+   Si no hay inyección, los botones usan sus estilos CSS originales
+   (reglas anteriores en esta hoja de estilos). No se sobreescribe nada. */

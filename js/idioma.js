@@ -158,6 +158,13 @@ document.addEventListener("DOMContentLoaded", () => {
     botonIdioma.addEventListener("click", (e) => {
         e.stopPropagation();
         listaIdiomas.classList.toggle("abierta");
+        // Cerrar otros popovers del footer si estuvieran abiertos
+        document.getElementById('popoverModoNav')?.classList.remove('abierto');
+        document.getElementById('selectorModoNavWrapper')?.classList.remove('popover-abierto');
+        document.getElementById('popoverSonido')?.classList.remove('abierto');
+        document.getElementById('controlSonidoWrapper')?.classList.remove('popover-abierto');
+        document.getElementById('popoverTemas')?.classList.remove('abierto');
+        document.getElementById('selectorTemasWrapper')?.classList.remove('popover-abierto');
     });
 
     // Cerrar la lista si se hace click fuera

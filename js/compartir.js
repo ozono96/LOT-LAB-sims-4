@@ -43,12 +43,21 @@ function generarIconoBlancoDataURL(imgElemento) {
 
 function debeConvertirseABlanco(imgElemento) {
     if (!imgElemento) return false;
-    const esModoNoche = document.body.classList.contains("modo-noche");
-    if (esModoNoche) return true;
 
-    // En modo día, si el botón padre está seleccionado (fondo verde), el icono se ve blanco
+    // Si el botón padre está seleccionado (fondo resaltado), el icono se ve blanco
     const btnSeleccionado = imgElemento.closest(".opcionFiltro.seleccionada, .tarjetaCategoriaReto.seleccionada");
     if (btnSeleccionado) return true;
+
+    // Para iconos de tipo de solar que usan color-resaltado reactivo del tema, no convertir a blanco genérico
+    const esIconoTipoSolar = imgElemento.classList.contains("iconoTipoSolarReto") ||
+                            imgElemento.classList.contains("iconoTipoSolarFiltro") ||
+                            imgElemento.classList.contains("fichaSolarIconoTipoSolar") ||
+                            imgElemento.classList.contains("tarjetaSolarTipoIcono") ||
+                            (imgElemento.src && imgElemento.src.includes("iconos-tipo-solar"));
+    if (esIconoTipoSolar) return false;
+
+    const esModoNoche = document.body.classList.contains("modo-noche");
+    if (esModoNoche) return true;
 
     // Comprobar si el computedStyle de filter incluye invert o brightness
     try {
@@ -74,6 +83,7 @@ function procesarIconosParaCaptura(elementoOriginal, elementoClonado) {
         const esIconoTipoSolar = imgClon.classList.contains("iconoTipoSolarReto") ||
                                 imgClon.classList.contains("iconoTipoSolarFiltro") ||
                                 imgClon.classList.contains("fichaSolarIconoTipoSolar") ||
+                                imgClon.classList.contains("tarjetaSolarTipoIcono") ||
                                 (imgClon.src && imgClon.src.includes("iconos-tipo-solar"));
 
         if (esIconoTipoSolar && debeConvertirseABlanco(imgOrig)) {
@@ -81,11 +91,78 @@ function procesarIconosParaCaptura(elementoOriginal, elementoClonado) {
             if (dataURL) {
                 imgClon.src = dataURL;
                 imgClon.style.filter = "none";
+                imgClon.style.left = "0";
             }
         }
     });
 }
 window.procesarIconosParaCaptura = procesarIconosParaCaptura;
+
+// ── Sanitización de formatos de color CSS Color 4 para compatibilidad con html2canvas ──
+function colorSrgbToRgba(str) {
+    if (!str || typeof str !== 'string' || !str.includes('color(')) return str;
+    return str.replace(/color\(srgb\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.]+))?\)/gi, (_, r, g, b, a) => {
+        const red = Math.round(parseFloat(r) * 255);
+        const green = Math.round(parseFloat(g) * 255);
+        const blue = Math.round(parseFloat(b) * 255);
+        const alpha = a !== undefined ? parseFloat(a) : 1;
+        return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+    });
+}
+
+function sanitizarColoresClonados(clonedDoc) {
+    if (!clonedDoc) return;
+
+    // 1. Sanitizar elementos <style> clonados
+    try {
+        const styles = clonedDoc.querySelectorAll('style');
+        styles.forEach(st => {
+            if (st.textContent && st.textContent.includes('color(')) {
+                st.textContent = colorSrgbToRgba(st.textContent);
+            }
+        });
+    } catch (e) {}
+
+    // 2. Sanitizar reglas CSS en las hojas de estilo del documento clonado
+    try {
+        for (let sheet of clonedDoc.styleSheets) {
+            try {
+                const rules = sheet.cssRules || sheet.rules;
+                if (!rules) continue;
+                for (let rule of rules) {
+                    if (rule.style && rule.style.cssText && rule.style.cssText.includes('color(')) {
+                        rule.style.cssText = colorSrgbToRgba(rule.style.cssText);
+                    }
+                }
+            } catch (sheetErr) {}
+        }
+    } catch (e) {}
+
+    // 3. Sanitizar estilos inline y computados de los elementos en el documento clonado
+    try {
+        const checkProps = [
+            'box-shadow', 'background-image', 'background', 'background-color',
+            'color', 'border-color', 'border-top-color', 'border-right-color',
+            'border-bottom-color', 'border-left-color', 'outline-color', 'text-shadow'
+        ];
+        const allElements = clonedDoc.querySelectorAll('*');
+        const win = clonedDoc.defaultView || window;
+        allElements.forEach(el => {
+            if (el.style && el.style.cssText && el.style.cssText.includes('color(')) {
+                el.style.cssText = colorSrgbToRgba(el.style.cssText);
+            }
+            const comp = win.getComputedStyle ? win.getComputedStyle(el) : null;
+            if (comp) {
+                for (const prop of checkProps) {
+                    const val = comp.getPropertyValue(prop);
+                    if (val && val.includes('color(')) {
+                        el.style.setProperty(prop, colorSrgbToRgba(val), 'important');
+                    }
+                }
+            }
+        });
+    } catch (e) {}
+}
 
 async function capturarElemento(elemento, nombreArchivoBase = "LotLab_Captura") {
     if (!elemento) return;
@@ -173,6 +250,7 @@ async function capturarElemento(elemento, nombreArchivoBase = "LotLab_Captura") 
             backgroundColor: null,
             useCORS: true,
             onclone: (clonedDoc) => {
+                sanitizarColoresClonados(clonedDoc);
                 const elClonado = (elemento.id ? clonedDoc.getElementById(elemento.id) : null) || clonedDoc.body;
                 procesarIconosParaCaptura(elemento, elClonado);
             }

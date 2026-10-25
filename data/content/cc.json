@@ -5,7 +5,7 @@
   "estado": "borrador",
   "ruta": "descargas/cc",
   "creadoEl": "2026-10-04T08:56:34.937Z",
-  "modificadoEl": "2026-10-11T17:07:01.907Z",
+  "modificadoEl": "2026-10-18T04:27:47.138Z",
   "margenes": {
     "heredar": false,
     "superior": 31,
@@ -75,6 +75,81 @@
               "url": "",
               "alt": "Imagen",
               "caption": ""
+            },
+            {
+              "id": "boton_1792297647543",
+              "tipo": "boton",
+              "texto": "Botón",
+              "tipoDestino": "interna",
+              "destinoInterno": "ficha-creador-ejemplo",
+              "url": "",
+              "alineacion": "center",
+              "apariencia": {
+                "preset": "lotlab",
+                "fondoColor": "",
+                "textoColor": "",
+                "bordeColor": "",
+                "bordeGrosor": "",
+                "bordeEstilo": "solid",
+                "radio": "",
+                "sombra": false,
+                "sombraIntensidad": "media",
+                "opacidad": 1
+              },
+              "tamano": {
+                "adaptativo": true,
+                "ancho": "",
+                "anchoUnidad": "px",
+                "alto": "",
+                "altoUnidad": "px",
+                "paddingH": "",
+                "paddingV": "",
+                "fontSize": "",
+                "emojiSize": ""
+              },
+              "imagen": {
+                "activa": false,
+                "url": "",
+                "alt": "",
+                "forma": "original",
+                "zoom": 100,
+                "posX": 50,
+                "posY": 50
+              },
+              "hover": {
+                "fondoColor": "",
+                "bordeColor": "",
+                "escala": false,
+                "opacidad": 1,
+                "glow": false,
+                "glowColor": "#ffd54a",
+                "glowIntensidad": "media",
+                "transicion": "0.25s",
+                "imagenHover": {
+                  "activa": false,
+                  "url": "",
+                  "alt": "",
+                  "zoom": 100,
+                  "posX": 50,
+                  "posY": 50
+                }
+              },
+              "tooltip": {
+                "activo": false,
+                "texto": ""
+              },
+              "sonido": {
+                "activo": true
+              },
+              "desplegable": {
+                "activo": false,
+                "posicion": "bottom",
+                "opciones": []
+              },
+              "emoji": "",
+              "emojiPos": "left",
+              "estiloId": "",
+              "abrirNuevaPestana": false
             }
           ]
         }

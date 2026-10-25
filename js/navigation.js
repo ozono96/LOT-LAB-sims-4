@@ -652,11 +652,11 @@ function procesarRutaURL() {
             itemEditable = window.ITEMS_ESTRUCTURA_SITIO?.find(it => it.id === lastPart || it.ruta === slug);
         }
         if (itemEditable) {
-            // Bloquear acceso público a páginas que no están publicadas.
+            // Bloquear acceso público a páginas que no están publicadas ni son fichas públicas.
             // Borrador y Oculta se tratan igual que ruta inexistente para el visitante.
             const estadoEditable = itemEditable.estado || "";
-            const esPublicada = (estadoEditable === "publicado" || estadoEditable === "publicada");
-            if (!esPublicada) {
+            const esPublica = (estadoEditable === "publicado" || estadoEditable === "publicada" || estadoEditable === "ficha");
+            if (!esPublica) {
                 mostrarError404(slug);
                 return;
             }
@@ -673,6 +673,14 @@ function procesarRutaURL() {
         if (idVentana.startsWith("ventana_pag_")) {
             const pageId = idVentana.replace("ventana_pag_", "");
             const it = window.ITEMS_ESTRUCTURA_SITIO?.find(i => i.id === pageId);
+            if (it) {
+                const estadoEditable = it.estado || "";
+                const esPublica = (estadoEditable === "publicado" || estadoEditable === "publicada" || estadoEditable === "ficha");
+                if (!esPublica) {
+                    mostrarError404(slug);
+                    return;
+                }
+            }
             if (it && typeof cargarContenidoPaginaEditable === "function") {
                 cargarContenidoPaginaEditable(it, idVentana);
             }
@@ -1092,10 +1100,10 @@ function ejecutarAccionHerramienta(idHerramienta) {
                 item = window.ITEMS_ESTRUCTURA_SITIO?.find(it => it.id === last || it.ruta === idHerramienta);
             }
             if (item && typeof abrirPaginaEditable === "function") {
-                // Bloquear acceso público a páginas que no están publicadas.
+                // Bloquear acceso público a páginas que no están publicadas ni son fichas públicas.
                 const estadoItem = item.estado || "";
-                const esPublicadaItem = (estadoItem === "publicado" || estadoItem === "publicada");
-                if (!esPublicadaItem) {
+                const esPublicaItem = (estadoItem === "publicado" || estadoItem === "publicada" || estadoItem === "ficha");
+                if (!esPublicaItem) {
                     mostrarError404(idHerramienta);
                     return;
                 }
@@ -1190,6 +1198,8 @@ function obtenerCategoriaPorVentana(idVentana) {
         const pageId = idVentana.replace("ventana_pag_", "");
         const it = window.ITEMS_ESTRUCTURA_SITIO?.find(i => i.id === pageId);
         if (it) {
+            // Las fichas públicas no activan ninguna categoría en las ramas de navegación
+            if (it.estado === "ficha") return null;
             let pId = it.padreId;
             let hops = 0;
             while (pId && hops < 10) {
@@ -1227,7 +1237,10 @@ function obtenerCategoriaPorVentana(idVentana) {
         case "ventanaTrucosPacks":
         case "ventanaTierList": return "herramientas";
         case "ventanaEstadisticas": return "datos";
-        default: return "inicio";
+        default: {
+            if (idVentana.startsWith("ventana_pag_")) return null;
+            return "inicio";
+        }
     }
 }
 window.obtenerCategoriaPorVentana = obtenerCategoriaPorVentana;
@@ -1414,12 +1427,12 @@ function sincronizarEstructuraDesdeJSON() {
             registrarPaginasEditables(items);
 
             const raices = items
-                .filter(it => !it.padreId && it.tipo === "seccion" && it.estado !== "oculta" && it.estado !== "oculto")
+                .filter(it => !it.padreId && it.tipo === "seccion" && it.estado !== "oculta" && it.estado !== "oculto" && it.estado !== "ficha")
                 .sort((a, b) => (a.orden || 0) - (b.orden || 0));
 
             const registro = raices.map(raiz => {
                 const hijos = items
-                    .filter(it => it.padreId === raiz.id && it.estado !== "oculta" && it.estado !== "oculto")
+                    .filter(it => it.padreId === raiz.id && it.estado !== "oculta" && it.estado !== "oculto" && it.estado !== "ficha")
                     .sort((a, b) => (a.orden || 0) - (b.orden || 0));
 
                 const herramientas = hijos.map(h => {
@@ -2090,6 +2103,8 @@ function inicializarNuevoSistemaNavegacion() {
             document.getElementById("listaIdiomas")?.classList.remove("abierta");
             document.getElementById("popoverSonido")?.classList.remove("abierto");
             document.getElementById("controlSonidoWrapper")?.classList.remove("popover-abierto");
+            document.getElementById("popoverTemas")?.classList.remove("abierto");
+            document.getElementById("selectorTemasWrapper")?.classList.remove("popover-abierto");
         }
     });
 

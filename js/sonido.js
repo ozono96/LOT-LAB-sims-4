@@ -257,6 +257,8 @@ Gestiona el sistema de sonido jerárquico de LOT-LAB:
                 document.getElementById('listaIdiomas')?.classList.remove('abierta');
                 document.getElementById('popoverModoNav')?.classList.remove('abierto');
                 document.getElementById('selectorModoNavWrapper')?.classList.remove('popover-abierto');
+                document.getElementById('popoverTemas')?.classList.remove('abierto');
+                document.getElementById('selectorTemasWrapper')?.classList.remove('popover-abierto');
                 actualizarUI();
             }
         });

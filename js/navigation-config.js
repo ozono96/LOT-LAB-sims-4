@@ -181,10 +181,11 @@ const REGISTRO_NAVEGACION = [
                 "id": "cc",
                 "nombre": "CC",
                 "icono": "🎨",
-                "disponible": true,
+                "disponible": false,
                 "descripcion": "Herramienta CC",
                 "ruta": "descargas/cc",
-                "archivo": "cc.json"
+                "archivo": "cc.json",
+                "tooltip": "🏗️ Próximamente"
             },
             {
                 "id": "simfile",
@@ -213,14 +214,13 @@ const REGISTRO_NAVEGACION = [
         "icono": "🎮",
         "herramientas": [
             {
-                "id": "proximamente-juegos",
-                "nombre": "Próximamente",
-                "icono": "🎮",
-                "disponible": false,
-                "descripcion": "Herramienta Próximamente",
-                "ruta": "juegos/proximamente",
-                "archivo": "juegos-proximamente.json",
-                "tooltip": "🏗️ Próximamente"
+                "id": "conoces-los-solares",
+                "nombre": "¿Conoces los solares?",
+                "icono": "🏘️",
+                "disponible": true,
+                "descripcion": "Herramienta ¿Conoces los solares?",
+                "ruta": "juegos/conoces-los-solares",
+                "archivo": "conoces-los-solares.json"
             }
         ]
     }

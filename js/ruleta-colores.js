@@ -2,6 +2,7 @@
 const RULETA_COLOR = {
     acelerado: false
 };
+let ruletaColorAudioGiro = null;
 
 document.addEventListener("DOMContentLoaded", () => {
     const botonRuleta = document.getElementById("botonRuletaColor");
@@ -20,9 +21,33 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener("datosCargados", () => {
         inicializarRuletaColor(false);
     });
+
+    const ventanaRuletaColor = document.getElementById("ventanaRuletaColor");
+    if (ventanaRuletaColor) {
+        ventanaRuletaColor.querySelector(".cabeceraVentana .cerrar")?.addEventListener("click", () => {
+            if (ruletaColorAudioGiro) {
+                ruletaColorAudioGiro.cancelar();
+                ruletaColorAudioGiro = null;
+            }
+        });
+
+        const obsRuletaColor = new MutationObserver(() => {
+            if (ventanaRuletaColor.style.display === "none" || getComputedStyle(ventanaRuletaColor).display === "none") {
+                if (ruletaColorAudioGiro) {
+                    ruletaColorAudioGiro.cancelar();
+                    ruletaColorAudioGiro = null;
+                }
+            }
+        });
+        obsRuletaColor.observe(ventanaRuletaColor, { attributes: true, attributeFilter: ["style", "class"] });
+    }
 });
 
 function inicializarRuletaColor(forzarLimpieza = false) {
+    if (ruletaColorAudioGiro) {
+        ruletaColorAudioGiro.cancelar();
+        ruletaColorAudioGiro = null;
+    }
     const wheel = document.getElementById("ruletaColorWheel");
     const mensaje = document.getElementById("mensajeRuletaColor");
     const resultados = document.getElementById("resultadoRuletaColor");
@@ -173,7 +198,17 @@ function animarRuletaColor(tiradas, cantidad, mensaje, resultados, botonGirar, w
         rotacionActual = rotacionObjetivo;
         wheel.dataset.rotacion = String(rotacionActual);
 
+        if (ruletaColorAudioGiro) {
+            ruletaColorAudioGiro.cancelar();
+            ruletaColorAudioGiro = null;
+        }
+        ruletaColorAudioGiro = window.SonidoGlobal?.iniciarSecuenciaGiroAudio({
+            duracionMs: duracionMs,
+            cantidadTicks: esAcel ? 8 : 22
+        });
+
         window.setTimeout(() => {
+            ruletaColorAudioGiro = null;
             const chip = document.createElement("div");
             chip.className = "chipColorRuleta";
             chip.innerHTML = `

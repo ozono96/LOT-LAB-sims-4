@@ -20,12 +20,13 @@
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
 
-    <link rel="stylesheet" href="css/style.css?v=1.2.8.1">
-    <link rel="stylesheet" href="css/tier-list.css?v=1.2.8.1">
+    <link rel="stylesheet" href="css/style.css?v=1.2.8.2">
+    <link rel="stylesheet" href="css/tier-list.css?v=1.2.8.2">
+    <link rel="stylesheet" href="css/conoces-los-solares.css?v=1.2.8.2">
 
     <!-- Garantizar scroll = 0 en cada carga/recarga, antes de que cualquier otro JS se ejecute -->
     <script>history.scrollRestoration = 'manual'; window.scrollTo(0, 0);</script>
-    <script src="js/sonido.js?v=1.2.8.1"></script>
+    <script src="js/sonido.js?v=1.2.8.2"></script>
 
 </head>
 
@@ -338,9 +339,7 @@
                 <!-- Nivel 2: Vista de herramientas de categoría -->
                 <div class="exp-nivel exp-nivel-2" id="expNivel2" style="display: none;">
                     <div class="exp-nivel2-header">
-                        <button type="button" class="exp-btn-volver" id="expBtnVolverInicio">
-                            ← Volver al inicio
-                        </button>
+                        <button type="button" class="btnVolverInicioExp" id="expBtnVolverInicio" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
                         <h3 class="exp-categoria-titulo" id="expCategoriaTitulo"></h3>
                     </div>
                     <div class="exp-herramientas-grid" id="expHerramientasGrid">
@@ -363,6 +362,7 @@
             <div id="ventanaBuscador" class="ventana">
 
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
 
                     <button class="compartir" data-tooltip="Compartir enlace" aria-label="Compartir enlace">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -455,6 +455,7 @@
             <div id="ventanaResultados" class="ventana">
 
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
 
                     <button class="compartir" data-tooltip="Compartir enlace" aria-label="Compartir enlace">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -485,6 +486,7 @@
             <div id="ventanaFichaSolar" class="ventana">
 
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
 
                     <button class="compartir" data-tooltip="Compartir enlace" aria-label="Compartir enlace">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -515,6 +517,7 @@
             <div id="ventanaListado" class="ventana">
 
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
 
                     <button class="compartir" data-tooltip="Compartir enlace" aria-label="Compartir enlace">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -545,6 +548,7 @@
             <div id="ventanaRetos" class="ventana">
 
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
 
                     <button class="compartir" data-tooltip="Compartir enlace" aria-label="Compartir enlace">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -622,6 +626,7 @@
             <div id="ventanaRetosOpciones" class="ventana">
 
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
                     <button class="compartir" data-tooltip="Compartir enlace" aria-label="Compartir enlace">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
                             <path
@@ -941,6 +946,7 @@
                     <div id="ventanaRetoResultado" class="ventana">
 
                         <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
                             <button class="compartir" data-tooltip="Compartir enlace" aria-label="Compartir enlace">
                                 <svg viewBox="0 0 24 24" aria-hidden="true">
                                     <path
@@ -976,6 +982,7 @@
                     <!-- ==================== VENTANA RULETA DE DESASTRES ==================== -->
                     <div id="ventanaRuletaDesastres" class="ventana" style="display: none;">
                         <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
                             <button class="compartir" data-tooltip="Compartir enlace" aria-label="Compartir enlace">
                                 <svg viewBox="0 0 24 24" aria-hidden="true">
                                     <path
@@ -1159,6 +1166,7 @@
                     <div id="ventanaTemporizador" class="ventana ventanaPequena">
 
                         <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
                             <button class="cerrar" data-tooltip="Cerrar temporizador">✕</button>
 
                             <h2>⏱️ Temporizador de Retos</h2>
@@ -1219,6 +1227,7 @@
             <div id="ventanaConfirmarBorrar" class="ventana ventanaPequena">
 
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
                     <button class="cerrar">✕</button>
                     <h3>⚠️ Confirmar borrado</h3>
                 </div>
@@ -1244,6 +1253,7 @@
             <div id="ventanaTiempoAgotado" class="ventana ventanaPequena">
 
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
                     <button class="cerrar">✕</button>
                 </div>
 
@@ -1262,6 +1272,7 @@
             <div id="ventanaAcercaDe" class="ventana">
 
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
                     <button class="cerrar">
                         ✕
                     </button>
@@ -1310,6 +1321,7 @@
             <div id="ventanaAvisoFiltros" class="ventana ventanaPequena">
 
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
                     <button class="cerrar">✕</button>
                     <h3>⚠️ No hay filtros aplicados</h3>
                 </div>
@@ -1331,6 +1343,7 @@
             <div id="ventanaAvisoDificultadReto" class="ventana ventanaPequena">
 
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
                     <button class="cerrar">✕</button>
                     <h3>⚠️ No se puede generar el reto</h3>
                 </div>
@@ -1348,6 +1361,7 @@
             <div id="ventanaAvisoDesastres" class="ventana ventanaPequena">
 
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
                     <button class="cerrar">✕</button>
                     <h3>⚠️ Activa algún desastre</h3>
                 </div>
@@ -1372,17 +1386,18 @@
 
             <div id="tooltipSolar"></div>
 
-            <button id="bajarResultados" title="Ir abajo">
+            <button id="bajarResultados" data-tooltip="Ir abajo" aria-label="Ir abajo">
                 ⬇
             </button>
 
-            <button id="subirResultados" title="Volver arriba">
+            <button id="subirResultados" data-tooltip="Ir arriba" aria-label="Ir arriba">
                 ⬆
             </button>
 
             <div id="ventanaRuletaColor" class="ventana ventanaEstrecha ventanaRuletaColorModerna">
 
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
 
                     <button class="compartir" data-tooltip="Compartir enlace" aria-label="Compartir enlace">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -1438,6 +1453,7 @@
             <div id="ventanaDados" class="ventana ventanaEstrecha">
 
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
 
                     <button class="compartir" data-tooltip="Compartir enlace" aria-label="Compartir enlace">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -1489,6 +1505,7 @@
             <div id="ventanaTrucos" class="ventana">
 
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
                     <button class="compartir" data-tooltip="Compartir enlace" aria-label="Compartir enlace">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
                             <path
@@ -1614,6 +1631,7 @@
             <div id="ventanaTrucosConstruir" class="ventana">
 
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
                     <button class="compartir" data-tooltip="Compartir enlace" aria-label="Compartir enlace">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
                             <path
@@ -1909,6 +1927,7 @@
             <div id="ventanaTrucosCAS" class="ventana">
 
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
                     <button class="compartir" data-tooltip="Compartir enlace" aria-label="Compartir enlace">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
                             <path
@@ -2185,6 +2204,7 @@
             <div id="ventanaTrucosVivir" class="ventana">
 
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
                     <button class="compartir" data-tooltip="Compartir enlace" aria-label="Compartir enlace">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
                             <path
@@ -2533,6 +2553,7 @@
             <div id="ventanaTrucosPacks" class="ventana">
 
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
                     <button class="compartir" data-tooltip="Compartir enlace" aria-label="Compartir enlace">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
                             <path
@@ -2779,6 +2800,7 @@
             <div id="ventanaEstadisticas" class="ventana">
 
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
                     <button class="compartir" data-tooltip="Compartir enlace" aria-label="Compartir enlace">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
                             <path
@@ -3225,6 +3247,7 @@
             <!-- ==================== VENTANA HABILIDADES: GENERADOR ==================== -->
             <div id="ventanaHabilidadesGenerador" class="ventana">
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
                     <button class="compartir" data-tooltip="Compartir enlace" aria-label="Compartir enlace">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
                             <path
@@ -3306,6 +3329,7 @@
             <!-- ==================== VENTANA PACKS AL AZAR GENERADOR ==================== -->
             <div id="ventanaPacksGenerador" class="ventana" style="display:none;">
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
                     <button class="compartir" data-tooltip="Compartir enlace" aria-label="Compartir enlace">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
                             <path
@@ -3387,6 +3411,7 @@
             <!-- ==================== VENTANA MUNDOS AL AZAR GENERADOR ==================== -->
             <div id="ventanaMundosGenerador" class="ventana" style="display:none;">
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
                     <button class="compartir" data-tooltip="Compartir enlace" aria-label="Compartir enlace">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
                             <path
@@ -3468,6 +3493,7 @@
             <!-- ==================== VENTANA 404: PÁGINA NO ENCONTRADA ==================== -->
             <div id="ventana404" class="ventana" style="display:none;">
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
                     <button class="cerrar" title="Cerrar">✕</button>
                 </div>
                 <div class="contenido404">
@@ -3491,6 +3517,7 @@
             <div id="ventanaTierList" class="ventana" style="display:none;">
 
                 <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
                     <button class="compartir" id="tierlistBtnCompartir" data-tooltip="Compartir enlace"
                         aria-label="Compartir enlace" style="display:none;">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -3516,58 +3543,418 @@
             </div>
             <!-- ==================== FIN VENTANA TIER LIST ==================== -->
 
+            <!-- ==================== VENTANA ¿CONOCES LOS SOLARES? ==================== -->
+            <div id="ventanaConocesSolares" class="ventana" style="display:none;">
+
+                <div class="cabeceraVentana">
+                    <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
+                    <button class="compartir" data-tooltip="Compartir enlace" aria-label="Compartir enlace">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z" />
+                        </svg>
+                    </button>
+                    <button class="captura" data-tooltip="Capturar ventana" aria-label="Capturar ventana">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" />
+                            <path
+                                d="M9 3 7.17 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.17L15 3H9zm3 14a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" />
+                        </svg>
+                    </button>
+                    <button class="cerrar" aria-label="Cerrar">✕</button>
+
+                    <h2><span id="cjsHeaderIconoAnimado" class="cjs-header-icono-animado">🏘️</span> ¿Conoces los solares?</h2>
+                </div>
+
+                <p id="cjsSubtituloJuego" class="subtituloVentana">Pon a prueba tus conocimientos sobre los mundos y solares de Los Sims 4</p>
+
+                <div class="cjs-contenedor">
+
+                    <!-- PANTALLA 1: CONFIGURACIÓN -->
+                    <div id="cjsPanelConfig" class="cjs-config-panel">
+
+                        <!-- Selección de Modo -->
+                        <div class="cjs-seccion-config">
+                            <h3 class="cjs-titulo-seccion">Modo de juego</h3>
+                            <div class="cjs-segment-group cjs-modo-group">
+                                <button type="button" id="cjsBtnModoIndiv" class="cjs-segment-btn activo">
+                                    <span>👤 Modo individual</span>
+                                </button>
+                                <button type="button" id="cjsBtnModo2J" class="cjs-segment-btn">
+                                    <span>👥 Modo dos jugadores</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Selección de Rondas / Duración -->
+                        <div class="cjs-seccion-config">
+                            <h3 class="cjs-titulo-seccion">Duración de la partida</h3>
+                            <div class="cjs-segment-group cjs-rondas-group">
+                                <button type="button" id="cjsBtnRondasHastaFallar" class="cjs-segment-btn activo">
+                                    Hasta fallar
+                                </button>
+                                <button type="button" id="cjsBtnRondas5" class="cjs-segment-btn">
+                                    5 rondas
+                                </button>
+                                <button type="button" id="cjsBtnRondas10" class="cjs-segment-btn">
+                                    10 rondas
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Temporizador por Pregunta (Opcional) -->
+                        <div class="cjs-seccion-config">
+                            <h3 class="cjs-titulo-seccion">Temporizador por pregunta</h3>
+                            <div class="cjs-segment-group cjs-timer-options" role="radiogroup" aria-label="Temporizador por pregunta">
+                                <button type="button" id="cjsBtnTimerOff" class="cjs-segment-btn activo" data-timer="0" role="radio" aria-checked="true">
+                                    <span>♾️ Sin tiempo</span>
+                                    <span class="cjs-segment-subtext">Juega con calma</span>
+                                </button>
+                                <button type="button" id="cjsBtnTimer60" class="cjs-segment-btn" data-timer="60" role="radio" aria-checked="false">
+                                    <span>⏱️ 60 segundos</span>
+                                    <span class="cjs-segment-subtext">Ritmo estándar</span>
+                                </button>
+                                <button type="button" id="cjsBtnTimer30" class="cjs-segment-btn" data-timer="30" role="radio" aria-checked="false">
+                                    <span>⚡ 30 segundos</span>
+                                    <span class="cjs-segment-subtext">Desafío rápido</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Personalización de Jugadores -->
+                        <div class="cjs-seccion-config">
+                            <h3 class="cjs-titulo-seccion">Jugadores y colores</h3>
+
+                            <!-- Modo Individual: Nombre + Selector de Color -->
+                            <div id="cjsWrapJugadorIndiv" class="cjs-jugador-card">
+                                <div class="cjs-jugador-card-header">
+                                    <span>Personalización del jugador</span>
+                                    <span id="cjsBadgeIndiv" class="cjs-jugador-badge-preview" style="background-color: #2563eb;">Azul Zafiro</span>
+                                </div>
+                                <div class="cjs-campo-texto">
+                                    <label for="cjsInputNombreIndiv">Nombre del jugador:</label>
+                                    <input type="text" id="cjsInputNombreIndiv" class="cjs-input-nombre" value="Simmer" maxlength="25" placeholder="Tu nombre...">
+                                </div>
+                                <div class="cjs-colores-wrapper">
+                                    <label>Color distintivo:</label>
+                                    <div id="cjsColoresIndiv" class="cjs-colores-lista"></div>
+                                </div>
+                            </div>
+
+                            <!-- Modo 2 Jugadores -->
+                            <div id="cjsWrapJugadores2J" class="cjs-jugadores-grid" style="display: none;">
+                                <!-- Jugador 1 -->
+                                <div class="cjs-jugador-card">
+                                    <div class="cjs-jugador-card-header">
+                                        <span>Jugador 1</span>
+                                        <span id="cjsBadgeJ1" class="cjs-jugador-badge-preview" style="background-color: #2563eb;">Azul Zafiro</span>
+                                    </div>
+                                    <div class="cjs-campo-texto">
+                                        <label for="cjsInputNombreJ1">Nombre:</label>
+                                        <input type="text" id="cjsInputNombreJ1" class="cjs-input-nombre" value="Jugador 1" maxlength="20">
+                                    </div>
+                                    <div class="cjs-colores-wrapper">
+                                        <label>Color distintivo:</label>
+                                        <div id="cjsColoresJ1" class="cjs-colores-lista"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Jugador 2 -->
+                                <div class="cjs-jugador-card">
+                                    <div class="cjs-jugador-card-header">
+                                        <span>Jugador 2</span>
+                                        <span id="cjsBadgeJ2" class="cjs-jugador-badge-preview" style="background-color: #d97706;">Ámbar Cobre</span>
+                                    </div>
+                                    <div class="cjs-campo-texto">
+                                        <label for="cjsInputNombreJ2">Nombre:</label>
+                                        <input type="text" id="cjsInputNombreJ2" class="cjs-input-nombre" value="Jugador 2" maxlength="20">
+                                    </div>
+                                    <div class="cjs-colores-wrapper">
+                                        <label>Color distintivo:</label>
+                                        <div id="cjsColoresJ2" class="cjs-colores-lista"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Alerta de colores duplicados -->
+                            <div id="cjsAlertaColores" class="cjs-alerta-colores"></div>
+                        </div>
+
+                        <!-- Sección Cómo Jugar (Acordeón) -->
+                        <details class="cjs-instrucciones-detalles">
+                            <summary class="cjs-instrucciones-summary">
+                                <span>📖 Cómo jugar y reglas</span>
+                                <span>▼</span>
+                            </summary>
+                            <div class="cjs-instrucciones-contenido">
+                                <div class="cjs-regla-bloque">
+                                    <strong>🎯 Objetivo del juego:</strong>
+                                    <span>En cada pregunta aparecerá el nombre de un solar real de Los Sims 4. Deberás adivinar en qué mundo se encuentra entre cuatro opciones posibles.</span>
+                                </div>
+                                <div class="cjs-regla-bloque">
+                                    <strong>💡 Sistema de pistas (hasta 4 por pregunta):</strong>
+                                    <span>Puedes pedir pistas en orden si dudas. Cada pista usada resta 100 puntos a la recompensa de esa pregunta:</span>
+                                    <ol class="cjs-pistas-resumen-lista">
+                                        <li><strong>Pista 1:</strong> Tipo de solar (Residencial, Parque, Bar...).</li>
+                                        <li><strong>Pista 2:</strong> Pack de origen (categoría: Juego base, Expansión o Contenido).</li>
+                                        <li><strong>Pista 3:</strong> Foto del solar (imagen real de la galería del solar).</li>
+                                        <li><strong>Pista 4:</strong> Descarte 50/50 (elimina 2 opciones incorrectas con destello cálido).</li>
+                                    </ol>
+                                </div>
+                                <div class="cjs-regla-bloque">
+                                    <strong>🏆 Puntuación y estrellas:</strong>
+                                    <span>Respuesta correcta sin pistas: <strong>500 puntos</strong>. Con cada pista se restan 100 puntos (recompensas: 400, 300, 200 y 100 puntos). Respuesta incorrecta o tiempo agotado: <strong>0 puntos</strong>.</span>
+                                </div>
+                                <div class="cjs-regla-bloque">
+                                    <strong>👥 Reglas del Modo dos jugadores y desempate:</strong>
+                                    <span>Empieza el Jugador 1. <strong>Si aciertas, conservas el turno</strong>. <strong>Si fallas o se agota el tiempo, el turno pasa al rival</strong>. Cada jugador dispone de su propio cupo de respuestas (5 respuestas c/u en 5 rondas = 10 preguntas totales; 10 c/u en 10 rondas = 20 preguntas). En caso de empate, podréis desempatar por <strong>muerte súbita</strong> tras una tirada de dado.</span>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- Botón Empezar con triángulo de reproducción sencillo -->
+                        <button type="button" id="cjsBtnIniciarPartida" class="cjs-btn-iniciar">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg> Empezar partida
+                        </button>
+
+                    </div>
+
+                    <!-- PANTALLA 2: JUEGO EN CURSO -->
+                    <div id="cjsPanelJuego" class="cjs-juego-panel">
+
+                        <!-- Acciones superiores durante la partida -->
+                        <div class="cjs-juego-top-acciones">
+                            <button type="button" id="cjsBtnAbandonarPartida" class="cjs-btn-abandonar">✕ Cancelar partida</button>
+                        </div>
+
+                        <!-- Barra de Estado / Marcador -->
+                        <div class="cjs-marcador-barra">
+                            <span id="cjsInfoRonda" class="cjs-marcador-info-ronda">Pregunta 1 de 5</span>
+                            <span id="cjsMarcadorTurno" class="cjs-marcador-turno">Jugador 1</span>
+                            
+                            <div class="cjs-marcador-derecha-wrap">
+                                <span id="cjsPuntosEnJuego" class="cjs-marcador-puntos-pregunta">Recompensa: 500 puntos</span>
+                                <div id="cjsTimerDisplay" class="cjs-timer-badge" style="display: none;">
+                                    <span class="cjs-timer-icono">⏱️</span>
+                                    <span id="cjsTimerTexto" class="cjs-timer-digitos">60s</span>
+                                </div>
+                            </div>
+
+                            <div id="cjsMarcadorDosJugadores" class="cjs-marcador-dos-jugadores" style="display: none;"></div>
+                        </div>
+
+                        <!-- Tarjeta de Pregunta -->
+                        <div class="cjs-pregunta-card">
+                            <div id="cjsBadgeMuerteSubita" class="cjs-badge-muerte-subita" style="display: none;">
+                                ⚔️ Muerte Súbita — Desempate
+                            </div>
+                            <p class="cjs-pregunta-subtitulo">¿En qué mundo se encuentra este solar?</p>
+                            <h3 id="cjsSolarNombre" class="cjs-solar-nombre-destacado">Cabaña Calambre</h3>
+
+                            <!-- Foto real del solar revelada tras responder (proporción 16:9 idéntica a Pista 3, sin marco añadido) -->
+                            <div id="cjsSolarFotoReveladaWrap" class="cjs-solar-foto-revelada-wrap" aria-hidden="true">
+                                <img id="cjsSolarFotoReveladaImg" class="cjs-solar-foto-revelada-img" alt="Fotografía del solar" loading="eager">
+                            </div>
+
+                            <!-- Cuadrícula de 4 Opciones con imágenes reales -->
+                            <div id="cjsOpcionesGrid" class="cjs-opciones-grid"></div>
+                        </div>
+
+                        <!-- Zona de Pistas -->
+                        <div id="cjsPistasWrapper" class="cjs-pistas-wrapper">
+                            <div class="cjs-pistas-header">
+                                <div class="cjs-pistas-indicadores">
+                                    <span style="font-size: 0.88rem; font-weight: 700; margin-right: 4px;">Pistas:</span>
+                                    <span id="cjsPistaDot1" class="cjs-pista-dot" title="Pista 1: Tipo de solar"></span>
+                                    <span id="cjsPistaDot2" class="cjs-pista-dot" title="Pista 2: Pack de origen"></span>
+                                    <span id="cjsPistaDot3" class="cjs-pista-dot" title="Pista 3: Foto del solar"></span>
+                                    <span id="cjsPistaDot4" class="cjs-pista-dot" title="Pista 4: Descarte 50/50"></span>
+                                </div>
+
+                                <button type="button" id="cjsBtnPedirPista" class="cjs-btn-pista">
+                                    💡 Pedir pista (1 de 4) <span style="font-size: 0.82rem; opacity: 0.85;">[-100 pts]</span>
+                                </button>
+                            </div>
+
+                            <div id="cjsListaPistasReveladas" class="cjs-lista-pistas-reveladas"></div>
+                        </div>
+
+                    </div>
+
+                    <!-- PANTALLA 3: RESULTADOS FINALES -->
+                    <div id="cjsPanelFinal" class="cjs-final-panel">
+
+                        <div id="cjsTarjetaResumenFinal" class="cjs-tarjeta-resumen-final"></div>
+
+                        <div class="cjs-acciones-finales">
+                            <button type="button" id="cjsBtnJugarOtraVez" class="cjs-btn-accion primario">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg> Jugar otra vez
+                            </button>
+                            <button type="button" id="cjsBtnCambiarConfig" class="cjs-btn-accion botonReto">
+                                <span>⚙️</span> Cambiar configuración
+                            </button>
+                            <button type="button" id="cjsBtnCompartirFinal" class="cjs-btn-accion compartir-destacado">
+                                <span>📢</span> Compartir resultado
+                            </button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+            <!-- ==================== FIN VENTANA ¿CONOCES LOS SOLARES? ==================== -->
+
+            <!-- MODAL: PROPUESTA Y TIRADA DE DESEMPATE (MUERTE SÚBITA) -->
+            <div id="cjsModalDesempate" class="cjs-modal-backdrop" style="display: none;">
+                <div class="cjs-modal-dialog cjs-dialog-desempate" role="dialog" aria-modal="true" aria-labelledby="cjsDesempateTitulo">
+                    <!-- Fase 1: Preguntar si quieren desempatar -->
+                    <div id="cjsDesempateFasePropuesta">
+                        <div class="cjs-final-titulo-icono">🤝</div>
+                        <h3 id="cjsDesempateTitulo">¡Empate emocionante!</h3>
+                        <p id="cjsDesempateMensajePuntos" style="line-height: 1.5; font-size: 1rem;">Ambos jugadores habéis obtenido la misma puntuación. ¿Queréis jugar una ronda de desempate por muerte súbita?</p>
+                        <div class="cjs-confirmar-botones">
+                            <button type="button" id="cjsBtnAceptarDesempate" class="cjs-btn-accion primario">⚔️ Jugar desempate</button>
+                            <button type="button" id="cjsBtnRechazarDesempate" class="cjs-btn-accion secundario">🤝 Finalizar en empate</button>
+                        </div>
+                    </div>
+
+                    <!-- Fase 2: Elección Par / Impar y Tirada de Dado -->
+                    <div id="cjsDesempateFaseDado" style="display: none;">
+                        <div class="cjs-final-titulo-icono">🎲</div>
+                        <h3>Tirada de dado — Orden de salida</h3>
+                        <p style="font-size: 0.95rem; line-height: 1.5; margin-bottom: 16px;">Elegid quién apuesta por <strong>PAR</strong> y quién por <strong>IMPAR</strong> para decidir quién responderá primero en la muerte súbita:</p>
+                        
+                        <div class="cjs-desempate-eleccion-grid">
+                            <div class="cjs-desempate-jugador-opcion">
+                                <span id="cjsDesempateBadgeJ1" class="cjs-jugador-resumen-badge">Jugador 1</span>
+                                <div class="cjs-par-impar-toggle">
+                                    <button type="button" id="cjsBtnJ1Par" class="cjs-btn-parimpar activo">PAR (2, 4, 6)</button>
+                                    <button type="button" id="cjsBtnJ1Impar" class="cjs-btn-parimpar">IMPAR (1, 3, 5)</button>
+                                </div>
+                            </div>
+                            <div class="cjs-desempate-jugador-opcion">
+                                <span id="cjsDesempateBadgeJ2" class="cjs-jugador-resumen-badge">Jugador 2</span>
+                                <div id="cjsDesempateInfoJ2" class="cjs-par-impar-fijo">IMPAR (1, 3, 5)</div>
+                            </div>
+                        </div>
+
+                        <div class="cjs-dado-area">
+                            <div id="cjsDadoCaja" class="dadoCara">⚀</div>
+                            <div id="cjsDadoResultadoTexto" class="cjs-dado-resultado-texto">Pulsa el botón para lanzar el dado</div>
+                        </div>
+
+                        <div class="cjs-confirmar-botones">
+                            <button type="button" id="cjsBtnLanzarDado" class="cjs-btn-accion primario">🎲 Tirar dado</button>
+                            <button type="button" id="cjsBtnComenzarMuerteSubita" class="cjs-btn-accion primario" style="display: none;">⚔️ Comenzar muerte súbita</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL CONFIRMACIÓN: CANCELAR PARTIDA -->
+            <div id="cjsModalConfirmarCancelar" class="cjs-modal-backdrop" style="display: none;">
+                <div class="cjs-modal-dialog cjs-dialog-confirmar" role="alertdialog" aria-modal="true" aria-labelledby="cjsConfirmarTitulo">
+                    <h3 id="cjsConfirmarTitulo">¿Cancelar la partida en curso?</h3>
+                    <p>Se perderá el progreso y los puntos acumulados de esta partida. Volverás a la pantalla de configuración.</p>
+                    <div class="cjs-confirmar-botones">
+                        <button type="button" id="cjsBtnReanudarPartida" class="cjs-btn-accion secundario">Continuar jugando</button>
+                        <button type="button" id="cjsBtnConfirmarCancelar" class="cjs-btn-accion peligro">Sí, cancelar partida</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL DEDICADO: COMPARTIR RESULTADO -->
+            <div id="cjsModalCompartir" class="cjs-modal-backdrop" style="display: none;">
+                <div class="cjs-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="cjsModalTitulo">
+                    <div class="cjs-modal-header">
+                        <h3 id="cjsModalTitulo"><span>📢</span> Compartir resultado</h3>
+                        <button type="button" id="cjsModalBtnCerrar" class="cerrar" aria-label="Cerrar ventana de compartir">✕</button>
+                    </div>
+
+                    <div class="cjs-modal-textarea-wrap">
+                        <div class="cjs-modal-textarea-header">
+                            <label for="cjsTextoCompartir">Texto preparado para compartir:</label>
+                            <span id="cjsCharCount" class="cjs-char-count">0 / 256</span>
+                        </div>
+                        <textarea id="cjsTextoCompartir" class="cjs-modal-textarea" maxlength="256" rows="3"></textarea>
+                    </div>
+
+                    <!-- 3 Botones redondos para X, Bluesky y Facebook -->
+                    <div class="cjs-redes-circulares">
+                        <button type="button" id="cjsBtnCompartirX" class="cjs-btn-red-circular red-x" aria-label="Compartir en X (Twitter)" title="Compartir en X">
+                            <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </button>
+                        <button type="button" id="cjsBtnCompartirBsky" class="cjs-btn-red-circular red-bsky" aria-label="Compartir en Bluesky" title="Compartir en Bluesky">
+                            <svg viewBox="0 0 568 501" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M123.121 33.664C188.241 82.552 258.281 181.68 284 234.873c25.719-53.192 95.759-152.32 160.879-201.21C491.866-1.611 568-28.906 568 57.947c0 17.346-9.945 145.713-15.778 166.555-20.275 72.453-94.155 90.933-159.875 79.748C507.222 323.8 536.444 388.56 473.333 453.32c-119.25 122.38-169.333-31.52-189.333-93.52-20 62-70.083 215.9-189.333 93.52-63.111-64.76-33.889-129.52 80.986-149.07-65.72 11.185-139.6-7.295-159.875-79.748C9.945 203.659 0 75.291 0 57.946 0-28.906 76.135-1.612 123.121 33.664Z"/></svg>
+                        </button>
+                        <button type="button" id="cjsBtnCompartirFb" class="cjs-btn-red-circular red-fb" aria-label="Compartir en Facebook" title="Compartir en Facebook">
+                            <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Acciones inferiores: copiar enlace -->
+                    <div class="cjs-modal-acciones-inferiores">
+                        <button type="button" id="cjsBtnCopiarEnlace" class="cjs-btn-accion secundario">
+                            <span>🔗</span> Copiar enlace
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </section>
 
     </main>
 
-    <script src="js/theme.js?v=1.2.8.1"></script>
-    <script src="js/temas-estacionales.js?v=1.2.8.1"></script>
-    <script src="js/catalogo-estilos.js?v=1.2.8.1"></script>
-    <script src="js/loading.js?v=1.2.8.1"></script>
-    <script src="js/config.js?v=1.2.8.1"></script>
-    <script src="js/database.js?v=1.2.8.1"></script>
-    <script src="js/sheets.js?v=1.2.8.1"></script>
-    <script src="js/render.js?v=1.2.8.1"></script>
-    <script src="js/solarFicha.js?v=1.2.8.1"></script>
-    <script src="js/ruleta-colores.js?v=1.2.8.1"></script>
-    <script src="js/dados.js?v=1.2.8.1"></script>
-    <script src="js/trucos.js?v=1.2.8.1"></script>
-    <script src="js/solarGaleria.js?v=1.2.8.1"></script>
-    <script src="js/filterInfo.js?v=1.2.8.1"></script>
-    <script src="js/filterLogic.js?v=1.2.8.1"></script>
-    <script src="js/filterUI.js?v=1.2.8.1"></script>
-    <script src="js/filterCore.js?v=1.2.8.1"></script>
-    <script src="js/buscadorNombre.js?v=1.2.8.1"></script>
-    <script src="js/filters.js?v=1.2.8.1"></script>
-    <script src="js/ruleta-desastres.js?v=1.2.8.1"></script>
-    <script src="js/navigation-config.js?v=1.2.8.1"></script>
-    <script src="js/navigation.js?v=1.2.8.1"></script>
-    <script src="js/analytics-navigation.js?v=1.2.8.1"></script>
-    <script src="js/retos.js?v=1.2.8.1"></script>
-    <script src="js/reto-modulos.js?v=1.2.8.1"></script>
-    <script src="js/reto-solar.js?v=1.2.8.1"></script>
-    <script src="js/reto-etapas.js?v=1.2.8.1"></script>
-    <script src="js/reto-limitantes.js?v=1.2.8.1"></script>
-    <script src="js/reto-submenus.js?v=1.2.8.1"></script>
-    <script src="js/reto-generador.js?v=1.2.8.1"></script>
-    <script src="js/reto-resultado-ui.js?v=1.2.8.1"></script>
-    <script src="js/temporizador.js?v=1.2.8.1"></script>
-    <script src="js/acercade-cms.js?v=1.2.8.1"></script>
-    <script src="js/trucos-cms.js?v=1.2.8.1"></script>
-    <script src="js/acercade.js?v=1.2.8.1"></script>
+    <script src="js/theme.js?v=1.2.8.2"></script>
+    <script src="js/temas-estacionales.js?v=1.2.8.2"></script>
+    <script src="js/catalogo-estilos.js?v=1.2.8.2"></script>
+    <script src="js/loading.js?v=1.2.8.2"></script>
+    <script src="js/config.js?v=1.2.8.2"></script>
+    <script src="js/database.js?v=1.2.8.2"></script>
+    <script src="js/sheets.js?v=1.2.8.2"></script>
+    <script src="js/render.js?v=1.2.8.2"></script>
+    <script src="js/solarFicha.js?v=1.2.8.2"></script>
+    <script src="js/ruleta-colores.js?v=1.2.8.2"></script>
+    <script src="js/dados.js?v=1.2.8.2"></script>
+    <script src="js/trucos.js?v=1.2.8.2"></script>
+    <script src="js/solarGaleria.js?v=1.2.8.2"></script>
+    <script src="js/filterInfo.js?v=1.2.8.2"></script>
+    <script src="js/filterLogic.js?v=1.2.8.2"></script>
+    <script src="js/filterUI.js?v=1.2.8.2"></script>
+    <script src="js/filterCore.js?v=1.2.8.2"></script>
+    <script src="js/buscadorNombre.js?v=1.2.8.2"></script>
+    <script src="js/filters.js?v=1.2.8.2"></script>
+    <script src="js/ruleta-desastres.js?v=1.2.8.2"></script>
+    <script src="js/navigation-config.js?v=1.2.8.2"></script>
+    <script src="js/navigation.js?v=1.2.8.2"></script>
+    <script src="js/analytics-navigation.js?v=1.2.8.2"></script>
+    <script src="js/retos.js?v=1.2.8.2"></script>
+    <script src="js/reto-modulos.js?v=1.2.8.2"></script>
+    <script src="js/reto-solar.js?v=1.2.8.2"></script>
+    <script src="js/reto-etapas.js?v=1.2.8.2"></script>
+    <script src="js/reto-limitantes.js?v=1.2.8.2"></script>
+    <script src="js/reto-submenus.js?v=1.2.8.2"></script>
+    <script src="js/reto-generador.js?v=1.2.8.2"></script>
+    <script src="js/reto-resultado-ui.js?v=1.2.8.2"></script>
+    <script src="js/temporizador.js?v=1.2.8.2"></script>
+    <script src="js/acercade-cms.js?v=1.2.8.2"></script>
+    <script src="js/trucos-cms.js?v=1.2.8.2"></script>
+    <script src="js/acercade.js?v=1.2.8.2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="js/compartir.js?v=1.2.8.1"></script>
-    <script src="js/estadisticas.js?v=1.2.8.1"></script>
-    <script src="js/carrusel-random.js?v=1.2.8.1"></script>
-    <script src="js/habilidades.js?v=1.2.8.1"></script>
-    <script src="js/packs-azar.js?v=1.2.8.1"></script>
-    <script src="js/mundos-azar.js?v=1.2.8.1"></script>
-    <script src="js/tier-list.js?v=1.2.8.1"></script>
-    <script src="js/tier-list-ui.js?v=1.2.8.1"></script>
-    <script src="js/app.js?v=1.2.8.1"></script>
-    <script src="js/menu-flotante.js?v=1.2.8.1"></script>
+    <script src="js/compartir.js?v=1.2.8.2"></script>
+    <script src="js/estadisticas.js?v=1.2.8.2"></script>
+    <script src="js/carrusel-random.js?v=1.2.8.2"></script>
+    <script src="js/habilidades.js?v=1.2.8.2"></script>
+    <script src="js/packs-azar.js?v=1.2.8.2"></script>
+    <script src="js/mundos-azar.js?v=1.2.8.2"></script>
+    <script src="js/tier-list.js?v=1.2.8.2"></script>
+    <script src="js/tier-list-ui.js?v=1.2.8.2"></script>
+    <script src="js/conoces-los-solares.js?v=1.2.8.2"></script>
+    <script src="js/app.js?v=1.2.8.2"></script>
+    <script src="js/menu-flotante.js?v=1.2.8.2"></script>
     <div id="google_translate_element" style="display:none;"></div>
-    <script src="js/idioma.js?v=1.2.8.1"></script>
+    <script src="js/idioma.js?v=1.2.8.2"></script>
     <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <footer class="footer">
@@ -3657,11 +4044,24 @@
                                 <span class="popoverSonidoIcono">⏰</span>
                                 <div class="popoverSonidoTexto">
                                     <span class="popoverSonidoTitulo">Sonidos de alertas</span>
-                                    <span class="popoverSonidoDesc">Temporizador y ruletas</span>
+                                    <span class="popoverSonidoDesc">Temporizador y alarmas</span>
                                 </div>
                             </div>
                             <label class="switchSonido" title="Activar/desactivar sonidos de alertas">
                                 <input type="checkbox" id="switchSonidoAlertas" checked>
+                                <span class="sliderSwitch"></span>
+                            </label>
+                        </div>
+                        <div class="popoverSonidoFila filaSecundaria" id="filaSonidoMinijuegos">
+                            <div class="popoverSonidoInfo">
+                                <span class="popoverSonidoIcono">🎮</span>
+                                <div class="popoverSonidoTexto">
+                                    <span class="popoverSonidoTitulo">Sonidos de minijuegos</span>
+                                    <span class="popoverSonidoDesc">Aciertos y errores</span>
+                                </div>
+                            </div>
+                            <label class="switchSonido" title="Activar/desactivar sonidos de minijuegos">
+                                <input type="checkbox" id="switchSonidoMinijuegos" checked>
                                 <span class="sliderSwitch"></span>
                             </label>
                         </div>
@@ -3975,9 +4375,9 @@
     </div>
 
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-    <script src="js/obs.js?v=1.2.8.1"></script>
-    <script src="js/agradecimientos.js?v=1.2.8.1"></script>
-    <script src="js/catalogo-estilos.js?v=1.2.8.1"></script>
+    <script src="js/obs.js?v=1.2.8.2"></script>
+    <script src="js/agradecimientos.js?v=1.2.8.2"></script>
+    <script src="js/catalogo-estilos.js?v=1.2.8.2"></script>
 </body>
 
 

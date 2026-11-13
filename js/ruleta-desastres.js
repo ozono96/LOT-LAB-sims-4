@@ -407,6 +407,26 @@ function inicializarUIRuletaDesastres() {
         });
     }
 
+    const ventanaRuletaDesastres = document.getElementById("ventanaRuletaDesastres");
+    if (ventanaRuletaDesastres) {
+        ventanaRuletaDesastres.querySelector(".cabeceraVentana .cerrar")?.addEventListener("click", () => {
+            if (ruletaDesastresAudioGiro) {
+                ruletaDesastresAudioGiro.cancelar();
+                ruletaDesastresAudioGiro = null;
+            }
+        });
+
+        const obsDesastres = new MutationObserver(() => {
+            if (ventanaRuletaDesastres.style.display === "none" || getComputedStyle(ventanaRuletaDesastres).display === "none") {
+                if (ruletaDesastresAudioGiro) {
+                    ruletaDesastresAudioGiro.cancelar();
+                    ruletaDesastresAudioGiro = null;
+                }
+            }
+        });
+        obsDesastres.observe(ventanaRuletaDesastres, { attributes: true, attributeFilter: ["style", "class"] });
+    }
+
     // Manejo de cambio de modo (Manual / Auto)
     const radioManual = document.getElementById("modoManualRuletaDesastres");
     const radioAuto = document.getElementById("modoAutoRuletaDesastres");
@@ -646,6 +666,10 @@ function mostrarPantallaConfiguracionDesastres() {
     if (ruletaDesastresInterval) clearInterval(ruletaDesastresInterval);
     ruletaDesastresInterval = null;
     ruletaPausadaPorNavegacion = false;
+    if (ruletaDesastresAudioGiro) {
+        ruletaDesastresAudioGiro.cancelar();
+        ruletaDesastresAudioGiro = null;
+    }
 
     const pantallaConfig = document.getElementById("pantallaConfigRuletaDesastres");
     const pantallaJuego = document.getElementById("pantallaJuegoRuletaDesastres");
@@ -870,6 +894,7 @@ function sonarFanfarriaFinTiradas() {
 // ── Variables de animación vertical ──
 let ruletaDesastresAnimando = false;
 let ruletaDesastresAnimTimer = null;
+let ruletaDesastresAudioGiro = null;
 
 function generarDesastreValidoAleatorio() {
     const activasKeys = Object.keys(EstadoRuletaDesastres.categoriasActivas).filter(id => EstadoRuletaDesastres.categoriasActivas[id]);
@@ -910,6 +935,10 @@ function animarGiroRuletaDesastres(targetDesastre) {
     if (ruletaDesastresAnimTimer) {
         clearTimeout(ruletaDesastresAnimTimer);
         ruletaDesastresAnimTimer = null;
+    }
+    if (ruletaDesastresAudioGiro) {
+        ruletaDesastresAudioGiro.cancelar();
+        ruletaDesastresAudioGiro = null;
     }
 
     const btnGirar = document.getElementById("btnGirarRuletaDesastres");
@@ -966,7 +995,17 @@ function animarGiroRuletaDesastres(targetDesastre) {
             pista.style.transition = "transform " + (duracionMs / 1000) + "s " + curva;
             pista.style.transform = "translateY(" + targetY + "px)";
 
+            if (ruletaDesastresAudioGiro) {
+                ruletaDesastresAudioGiro.cancelar();
+                ruletaDesastresAudioGiro = null;
+            }
+            ruletaDesastresAudioGiro = window.SonidoGlobal?.iniciarSecuenciaGiroAudio({
+                duracionMs: duracionMs,
+                cantidadTicks: 22
+            });
+
             ruletaDesastresAnimTimer = setTimeout(() => {
+                ruletaDesastresAudioGiro = null;
                 const itemLanded = pista.querySelector(".desastreAnim-item[data-idx='" + targetIndex + "']");
                 if (itemLanded) itemLanded.classList.add("desastreAnim-item--elegida");
 

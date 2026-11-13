@@ -1,0 +1,22 @@
+{
+  "id": "conoces-los-solares",
+  "titulo": "🏘️ ¿Conoces los solares?",
+  "slug": "conoces-los-solares",
+  "estado": "publicado",
+  "ruta": "juegos/conoces-los-solares",
+  "creadoEl": "2026-10-18T18:00:00.000Z",
+  "modificadoEl": "2026-10-18T18:00:00.000Z",
+  "bloques": [
+    {
+      "id": "b_cjs_tit",
+      "tipo": "titulo",
+      "contenido": "🏘️ ¿Conoces los solares?",
+      "nivel": 2
+    },
+    {
+      "id": "b_cjs_desc",
+      "tipo": "texto",
+      "contenido": "Minijuego interactivo de adivinanzas sobre los solares y mundos de Los Sims 4."
+    }
+  ]
+}

@@ -16,7 +16,13 @@ window.ejecutarGiroSecuencialSlot = function (config) {
         onFinish            // opcional () => void
     } = config;
 
-    if (!estado.animacionActiva) return;
+    if (!estado.animacionActiva) {
+        if (estado.audioGiro) {
+            estado.audioGiro.cancelar();
+            estado.audioGiro = null;
+        }
+        return;
+    }
 
     const animacion = document.getElementById(ids.animacion);
     const pista = document.getElementById(ids.pista);
@@ -27,6 +33,42 @@ window.ejecutarGiroSecuencialSlot = function (config) {
     const acelerarWrap = document.getElementById(ids.acelerarWrap);
 
     if (!animacion || !pista) return;
+
+    const ventanaSlot = animacion.closest('.ventana');
+    if (ventanaSlot) {
+        if (ventanaSlot.style.display === 'none' || getComputedStyle(ventanaSlot).display === 'none') {
+            if (estado.audioGiro) {
+                estado.audioGiro.cancelar();
+                estado.audioGiro = null;
+            }
+            estado.animacionActiva = false;
+            return;
+        }
+
+        if (!ventanaSlot._carruselAudioObserverConfigurado) {
+            ventanaSlot._carruselAudioObserverConfigurado = true;
+            const limpiarSlot = () => {
+                if (estado.audioGiro) {
+                    estado.audioGiro.cancelar();
+                    estado.audioGiro = null;
+                }
+                if (estado.animTimer) {
+                    clearTimeout(estado.animTimer);
+                    estado.animTimer = null;
+                }
+                estado.animacionActiva = false;
+            };
+
+            ventanaSlot.querySelector('.cabeceraVentana .cerrar')?.addEventListener('click', limpiarSlot);
+
+            const obs = new MutationObserver(() => {
+                if (ventanaSlot.style.display === 'none' || getComputedStyle(ventanaSlot).display === 'none') {
+                    limpiarSlot();
+                }
+            });
+            obs.observe(ventanaSlot, { attributes: true, attributeFilter: ['style', 'class'] });
+        }
+    }
 
     // Actualizar texto del badge en selecciones múltiples
     if (progresoTexto && elegidas.length > 1) {
@@ -93,7 +135,18 @@ window.ejecutarGiroSecuencialSlot = function (config) {
             pista.style.transition = "transform " + (duracionMs / 1000) + "s " + curva;
             pista.style.transform = "translateX(" + targetX + "px)";
 
+            if (estado.audioGiro) {
+                estado.audioGiro.cancelar();
+                estado.audioGiro = null;
+            }
+            const cantidadTicks = esAcel ? 8 : Math.min(24, Math.max(10, targetIndex));
+            estado.audioGiro = window.SonidoGlobal?.iniciarSecuenciaGiroAudio({
+                duracionMs: duracionMs,
+                cantidadTicks: cantidadTicks
+            });
+
             estado.animTimer = setTimeout(() => {
+                estado.audioGiro = null;
                 // Iluminar la casilla seleccionada
                 const itemLanded = pista.querySelector(".habAnim-item[data-idx='" + targetIndex + "']");
                 if (itemLanded) itemLanded.classList.add("habAnim-item--elegida");

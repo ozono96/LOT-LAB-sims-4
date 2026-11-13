@@ -110,7 +110,7 @@ function colorSrgbToRgba(str) {
     });
 }
 
-function sanitizarColoresClonados(clonedDoc) {
+function sanitizarColoresClonados(clonedDoc, elClonado = null) {
     if (!clonedDoc) return;
 
     // 1. Sanitizar elementos <style> clonados
@@ -138,14 +138,15 @@ function sanitizarColoresClonados(clonedDoc) {
         }
     } catch (e) {}
 
-    // 3. Sanitizar estilos inline y computados de los elementos en el documento clonado
+    // 3. Sanitizar estilos inline y computados de los elementos en el árbol a capturar
     try {
         const checkProps = [
             'box-shadow', 'background-image', 'background', 'background-color',
             'color', 'border-color', 'border-top-color', 'border-right-color',
             'border-bottom-color', 'border-left-color', 'outline-color', 'text-shadow'
         ];
-        const allElements = clonedDoc.querySelectorAll('*');
+        const root = elClonado || (clonedDoc.body);
+        const allElements = root ? [root, ...Array.from(root.querySelectorAll('*'))] : clonedDoc.querySelectorAll('*');
         const win = clonedDoc.defaultView || window;
         allElements.forEach(el => {
             if (el.style && el.style.cssText && el.style.cssText.includes('color(')) {
@@ -164,79 +165,47 @@ function sanitizarColoresClonados(clonedDoc) {
     } catch (e) {}
 }
 
+let _capturaEnCurso = false;
+
+function esElementoIgnorableParaCaptura(node, elementoObjetivo) {
+    if (!node || !elementoObjetivo) return false;
+    // Nunca ignorar el elemento a capturar ni sus ancestros (necesarios para preservar layout y herencia CSS)
+    if (node === elementoObjetivo || node.contains(elementoObjetivo)) return false;
+    // Si está dentro del elemento a capturar, no ignorar
+    if (elementoObjetivo.contains(node)) return false;
+
+    // Ignorar etiquetas pesadas externas al objetivo que no aportan contenido visual
+    const tag = node.tagName;
+    if (tag === 'SCRIPT' || tag === 'AUDIO' || tag === 'VIDEO' || tag === 'NOSCRIPT') {
+        return true;
+    }
+
+    // Ignorar otras ventanas completas, lanzadores o modales externos que no forman parte de la captura
+    if (node.classList && (
+        node.classList.contains('ventana') ||
+        node.classList.contains('launcher-experimental') ||
+        node.classList.contains('cjs-modal-backdrop') ||
+        node.classList.contains('overlayModal')
+    )) {
+        return true;
+    }
+
+    return false;
+}
+
 async function capturarElemento(elemento, nombreArchivoBase = "LotLab_Captura") {
-    if (!elemento) return;
+    if (!elemento || _capturaEnCurso) return;
+    _capturaEnCurso = true;
 
-    // Ocultar botones de compartir/captura/cerrar internos durante la captura
-    const selectorOcultar = (elemento.id === "ventanaTierList")
-        ? ".compartir, .captura, .cerrar, .compartirSeccion"
-        : ".compartir, .captura, .cerrar, .compartirSeccion, .cabeceraVentana";
-    const botonesOcultar = elemento.querySelectorAll(selectorOcultar);
-    const estadosOriginales = [];
-    botonesOcultar.forEach(btn => {
-        estadosOriginales.push({ el: btn, display: btn.style.display });
-        btn.style.display = "none";
-    });
+    // Feedback visual del cursor sin alterar elementos de la interfaz
+    const cursorPrevio = document.body.style.cursor;
+    document.body.style.cursor = "wait";
 
-    const posOriginal = elemento.style.position;
-    const computedPos = window.getComputedStyle(elemento).position;
-    if (computedPos === "static") {
-        elemento.style.position = "relative";
-    }
-
-    const boxshadowOriginal = elemento.style.boxShadow;
-    elemento.style.boxShadow = "none";
-
-    // Para tarjetas modales con scroll o max-height, permitir expansión completa durante captura
-    const maxHeightOriginal = elemento.style.maxHeight;
-    const overflowOriginal = elemento.style.overflow;
-    const scrollablesInternos = elemento.querySelectorAll(".cuerpoModalAgradecimientos, [style*='overflow']");
-    const scrollablesEstados = [];
-    if (window.getComputedStyle(elemento).maxHeight !== "none") {
-        elemento.style.maxHeight = "none";
-        elemento.style.overflow = "visible";
-    }
-    scrollablesInternos.forEach(s => {
-        scrollablesEstados.push({ el: s, mh: s.style.maxHeight, ov: s.style.overflow });
-        s.style.maxHeight = "none";
-        s.style.overflow = "visible";
-    });
-
-    const paddingBottomOriginal = elemento.style.paddingBottom;
-    // Calcular base solo desde el inline style previo, no desde computedStyle,
-    // para evitar que capturas sucesivas acumulen el padding CSS de la hoja.
-    const paddingBottomBase = parseFloat(paddingBottomOriginal) || 0;
-    elemento.style.paddingBottom = (paddingBottomBase + 36) + "px";
-
-    // Añadir marca de agua derecha (Autor)
-    const marcaAguaDerecha = document.createElement("div");
-    marcaAguaDerecha.textContent = "Creado por Ozono 96";
-    marcaAguaDerecha.style.position = "absolute";
-    marcaAguaDerecha.style.bottom = "12px";
-    marcaAguaDerecha.style.right = "15px";
-    marcaAguaDerecha.style.fontSize = "0.9rem";
-    marcaAguaDerecha.style.opacity = "0.75";
-    marcaAguaDerecha.style.color = "var(--color-texto)";
-    marcaAguaDerecha.style.fontWeight = "bold";
-    marcaAguaDerecha.style.zIndex = "9999";
-    marcaAguaDerecha.style.pointerEvents = "none";
-    elemento.appendChild(marcaAguaDerecha);
-
-    // Añadir marca de agua izquierda (Nombre de la app)
-    const marcaAguaIzquierda = document.createElement("div");
-    marcaAguaIzquierda.textContent = "LOT-LAB Sims 4";
-    marcaAguaIzquierda.style.position = "absolute";
-    marcaAguaIzquierda.style.bottom = "12px";
-    marcaAguaIzquierda.style.left = "15px";
-    marcaAguaIzquierda.style.fontSize = "0.9rem";
-    marcaAguaIzquierda.style.opacity = "0.75";
-    marcaAguaIzquierda.style.color = "var(--color-texto)";
-    marcaAguaIzquierda.style.fontWeight = "bold";
-    marcaAguaIzquierda.style.zIndex = "9999";
-    marcaAguaIzquierda.style.pointerEvents = "none";
-    elemento.appendChild(marcaAguaIzquierda);
-
-    await new Promise(r => setTimeout(r, 100));
+    // Capturar propiedades computadas del elemento en vivo (solo lectura, sin mutación)
+    const computedStyle = window.getComputedStyle(elemento);
+    const computedPos = computedStyle.position;
+    const computedMaxH = computedStyle.maxHeight;
+    const paddingBottomBase = parseFloat(computedStyle.paddingBottom) || 0;
 
     try {
         if (typeof html2canvas === 'undefined') {
@@ -249,9 +218,73 @@ async function capturarElemento(elemento, nombreArchivoBase = "LotLab_Captura") 
             scale: 2,
             backgroundColor: null,
             useCORS: true,
+            logging: false,
+            ignoreElements: (node) => esElementoIgnorableParaCaptura(node, elemento),
             onclone: (clonedDoc) => {
-                sanitizarColoresClonados(clonedDoc);
                 const elClonado = (elemento.id ? clonedDoc.getElementById(elemento.id) : null) || clonedDoc.body;
+                if (!elClonado) return;
+
+                // 1. Ocultar botones internos en el elemento clonado (no en el DOM en vivo)
+                const selectorOcultar = (elemento.id === "ventanaTierList")
+                    ? ".compartir, .captura, .cerrar, .compartirSeccion"
+                    : ".compartir, .captura, .cerrar, .compartirSeccion, .cabeceraVentana";
+                const botonesOcultar = elClonado.querySelectorAll(selectorOcultar);
+                botonesOcultar.forEach(btn => {
+                    btn.style.display = "none";
+                });
+
+                // 2. Estilos del contenedor en el clon
+                elClonado.style.boxShadow = "none";
+                if (computedPos === "static") {
+                    elClonado.style.position = "relative";
+                }
+
+                // 3. Tarjetas o modales con scroll o max-height: expandir en el clon
+                if (computedMaxH !== "none") {
+                    elClonado.style.maxHeight = "none";
+                    elClonado.style.overflow = "visible";
+                }
+                const scrollablesInternos = elClonado.querySelectorAll(".cuerpoModalAgradecimientos, [style*='overflow']");
+                scrollablesInternos.forEach(s => {
+                    s.style.maxHeight = "none";
+                    s.style.overflow = "visible";
+                });
+
+                // 4. Padding inferior en el clon para ubicar las marcas de agua
+                elClonado.style.paddingBottom = (paddingBottomBase + 36) + "px";
+
+                // 5. Añadir marca de agua derecha (Autor) en el clon
+                const marcaAguaDerecha = clonedDoc.createElement("div");
+                marcaAguaDerecha.textContent = "Creado por Ozono 96";
+                marcaAguaDerecha.style.position = "absolute";
+                marcaAguaDerecha.style.bottom = "12px";
+                marcaAguaDerecha.style.right = "15px";
+                marcaAguaDerecha.style.fontSize = "0.9rem";
+                marcaAguaDerecha.style.opacity = "0.75";
+                marcaAguaDerecha.style.color = "var(--color-texto)";
+                marcaAguaDerecha.style.fontWeight = "bold";
+                marcaAguaDerecha.style.zIndex = "9999";
+                marcaAguaDerecha.style.pointerEvents = "none";
+                elClonado.appendChild(marcaAguaDerecha);
+
+                // 6. Añadir marca de agua izquierda (Nombre de la app) en el clon
+                const marcaAguaIzquierda = clonedDoc.createElement("div");
+                marcaAguaIzquierda.textContent = "LOT-LAB Sims 4";
+                marcaAguaIzquierda.style.position = "absolute";
+                marcaAguaIzquierda.style.bottom = "12px";
+                marcaAguaIzquierda.style.left = "15px";
+                marcaAguaIzquierda.style.fontSize = "0.9rem";
+                marcaAguaIzquierda.style.opacity = "0.75";
+                marcaAguaIzquierda.style.color = "var(--color-texto)";
+                marcaAguaIzquierda.style.fontWeight = "bold";
+                marcaAguaIzquierda.style.zIndex = "9999";
+                marcaAguaIzquierda.style.pointerEvents = "none";
+                elClonado.appendChild(marcaAguaIzquierda);
+
+                // 7. Sanitizar colores compatibles con html2canvas en el árbol clonado
+                sanitizarColoresClonados(clonedDoc, elClonado);
+
+                // 8. Procesar iconos para captura fiel
                 procesarIconosParaCaptura(elemento, elClonado);
             }
         });
@@ -264,27 +297,16 @@ async function capturarElemento(elemento, nombreArchivoBase = "LotLab_Captura") 
 
         document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link);
+        if (link.parentNode) {
+            link.parentNode.removeChild(link);
+        }
 
     } catch (error) {
         console.error("Error al capturar la pantalla: ", error);
         alert("Ocurrió un error al intentar capturar la pantalla. Comprueba la consola.");
     } finally {
-        // Restaurar visibilidad de botones y estilos
-        estadosOriginales.forEach(item => {
-            item.el.style.display = item.display;
-        });
-        elemento.style.position = posOriginal;
-        elemento.style.boxShadow = boxshadowOriginal;
-        elemento.style.paddingBottom = paddingBottomOriginal;
-        elemento.style.maxHeight = maxHeightOriginal;
-        elemento.style.overflow = overflowOriginal;
-        scrollablesEstados.forEach(item => {
-            item.el.style.maxHeight = item.mh;
-            item.el.style.overflow = item.ov;
-        });
-        if (marcaAguaDerecha.parentNode) marcaAguaDerecha.parentNode.removeChild(marcaAguaDerecha);
-        if (marcaAguaIzquierda.parentNode) marcaAguaIzquierda.parentNode.removeChild(marcaAguaIzquierda);
+        document.body.style.cursor = cursorPrevio;
+        _capturaEnCurso = false;
     }
 }
 

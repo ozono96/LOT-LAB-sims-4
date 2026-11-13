@@ -1279,6 +1279,7 @@ function asegurarVentanaPaginaEditable(item) {
 
         ventanaEl.innerHTML = `
             <div class="cabeceraVentana">
+                <button type="button" class="btnVolverInicioExp" data-tooltip="Volver al inicio" aria-label="Volver al inicio">&lt;&lt;</button>
                 <button class="cerrar" type="button" aria-label="Cerrar">✕</button>
                 <h2 id="h2_${idVentana}">${iconoHtml}${tituloHtml}</h2>
             </div>
@@ -2137,12 +2138,43 @@ function inicializarNuevoSistemaNavegacion() {
     });
 
     // Botones volver de la navegación experimental
-    document.getElementById("expBtnVolverInicio")?.addEventListener("click", () => {
+    function volverAInicioExperimental() {
         if (typeof reproducirSonidoUI === "function") reproducirSonidoUI("volver");
+
+        // Ocultar todas las ventanas abiertas y resetear estados
+        document.querySelectorAll(".ventana").forEach(v => {
+            v.style.display = "none";
+        });
+        if (typeof cerrarTemporizadorAcoplado === "function") {
+            cerrarTemporizadorAcoplado();
+        }
+        window.solarFichaActual = null;
+        window.ventanaActual = null;
+        try {
+            localStorage.removeItem("lotlab_current_window");
+        } catch (_) {}
+
+        const menu = document.getElementById("menuPrincipal");
+        const launcher = document.getElementById("launcherExperimental");
+        if (menu) menu.style.display = "block";
+        if (launcher) launcher.style.display = "block";
+
         EstadoExperimental.nivel = 1;
         EstadoExperimental.categoriaId = null;
         EstadoExperimental.herramientaId = null;
+
         renderizarNavegacionExperimental();
+    }
+    window.volverAInicioExperimental = volverAInicioExperimental;
+
+    // Delegación para cualquier botón '<<' (tanto en ventanas como en menús de nivel 2)
+    document.addEventListener("click", (e) => {
+        const btn = e.target.closest(".btnVolverInicioExp, #expBtnVolverInicio");
+        if (btn) {
+            e.preventDefault();
+            e.stopPropagation();
+            volverAInicioExperimental();
+        }
     });
 
     document.getElementById("expBtnVolverCategoria")?.addEventListener("click", () => {
@@ -2251,6 +2283,30 @@ document.addEventListener("DOMContentLoaded", function () {
                 tooltipGlobal.style.display = "block";
             }
         }, true);
+        function posicionarTooltipGlobal(clientX, clientY) {
+            const rect = tooltipGlobal.getBoundingClientRect();
+            const halfW = rect.width / 2;
+            let posX = clientX;
+            let posY = clientY - 10;
+            const margin = 12;
+
+            if (posX - halfW < margin) {
+                posX = halfW + margin;
+            } else if (posX + halfW > window.innerWidth - margin) {
+                posX = window.innerWidth - margin - halfW;
+            }
+
+            if (posY - rect.height < margin) {
+                posY = clientY + 28;
+                tooltipGlobal.style.transform = "translate(-50%, 0)";
+            } else {
+                tooltipGlobal.style.transform = "translate(-50%, -120%)";
+            }
+
+            tooltipGlobal.style.left = Math.round(posX) + "px";
+            tooltipGlobal.style.top = Math.round(posY) + "px";
+        }
+
         document.body.addEventListener("mousemove", (e) => {
             if (window._tooltipCopiadoTimeout) return;
             const el = e.target.closest("[data-tooltip]");
@@ -2259,9 +2315,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (text) {
                     tooltipGlobal.textContent = text;
                     tooltipGlobal.style.display = "block";
-                    // position:fixed usa coordenadas del viewport (clientX/clientY), NO pageX/pageY
-                    tooltipGlobal.style.left = e.clientX + "px";
-                    tooltipGlobal.style.top = (e.clientY - 10) + "px";
+                    posicionarTooltipGlobal(e.clientX, e.clientY);
                 } else {
                     tooltipGlobal.style.display = "none";
                 }
@@ -2283,9 +2337,8 @@ document.addEventListener("DOMContentLoaded", function () {
             if (el) {
                 const touch = e.touches[0];
                 tooltipGlobal.textContent = el.getAttribute("data-tooltip");
-                tooltipGlobal.style.left = touch.clientX + "px";
-                tooltipGlobal.style.top = (touch.clientY - 10) + "px";
                 tooltipGlobal.style.display = "block";
+                posicionarTooltipGlobal(touch.clientX, touch.clientY);
             }
         }, { capture: true, passive: true });
 

@@ -1,0 +1,1866 @@
+/* ==========================================================
+   ¿CONOCES LOS SOLARES? - MINIJUEGO LOT-LAB
+   css/conoces-los-solares.css
+   Estilos modulares y adaptables a temas y modos día/noche
+   ========================================================== */
+
+#ventanaConocesSolares {
+    max-width: 900px;
+    margin: 0 auto 30px auto;
+    position: relative;
+    box-sizing: border-box;
+}
+
+#ventanaConocesSolares .subtituloVentana {
+    text-align: center;
+    margin: 0 auto 24px auto;
+    max-width: 650px;
+    font-size: 1.05rem;
+    line-height: 1.5;
+}
+
+/* ─── CONTENEDOR PRINCIPAL DEL JUEGO ─────────────────────── */
+.cjs-contenedor {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    width: 100%;
+    box-sizing: border-box;
+    color: var(--color-texto);
+}
+
+/* ─── PANTALLA 1: CONFIGURACIÓN ─────────────────────────── */
+.cjs-config-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.cjs-seccion-config {
+    background: var(--superficie-carril, rgba(255, 255, 255, 0.08));
+    border: 1px solid var(--borde, rgba(255, 255, 255, 0.2));
+    border-radius: var(--radio-normal, 14px);
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+body.modo-dia .cjs-seccion-config {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.12);
+}
+
+.cjs-titulo-seccion {
+    margin: 0 0 6px 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+    color: var(--color-titulo, var(--color-texto));
+}
+
+/* Selector segmentado (Modo y Rondas) */
+.cjs-segment-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+}
+
+/* Alineación para Modo de juego (2 columnas) y Duración de la partida (3 columnas) */
+.cjs-segment-group.cjs-modo-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    max-width: 450px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.cjs-segment-group.cjs-rondas-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    max-width: 500px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.cjs-segment-group.cjs-modo-group .cjs-segment-btn,
+.cjs-segment-group.cjs-rondas-group .cjs-segment-btn {
+    width: 100%;
+    min-width: 0;
+    padding: 12px 10px;
+    text-align: center;
+}
+
+.cjs-segment-btn {
+    background: var(--color-tarjeta, rgba(255, 255, 255, 0.15));
+    color: var(--color-texto);
+    border: 2px solid transparent;
+    border-radius: var(--radio-pequeño, 10px);
+    padding: 14px 16px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    text-align: center;
+}
+
+.cjs-segment-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+}
+
+body.modo-dia .cjs-segment-btn:hover:not(.activo) {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+/* Resplandor equilibrado reactivo al tema activo */
+.cjs-segment-btn.activo {
+    background: var(--color-resaltado, #2ecc71);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 14px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.45);
+}
+
+.cjs-segment-subtext {
+    font-size: 0.85rem;
+    font-weight: 400;
+    opacity: 0.92;
+}
+
+/* Inputs de Jugadores */
+.cjs-jugadores-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.cjs-jugador-card {
+    background: color-mix(in srgb, var(--color-tarjeta, rgba(255, 255, 255, 0.12)) 65%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--borde, rgba(255, 255, 255, 0.2));
+    border-radius: var(--radio-pequeño, 10px);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+body.modo-dia .cjs-jugador-card {
+    background: color-mix(in srgb, var(--color-tarjeta, var(--color-ventana, #ffffff)) 48%, rgba(255, 255, 255, 0.42));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--borde, rgba(0, 0, 0, 0.12));
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+body.modo-dia .cjs-input-nombre {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(0, 0, 0, 0.18);
+    color: #1a1a1a;
+}
+
+.cjs-jugador-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.cjs-jugador-badge-preview {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.cjs-campo-texto {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cjs-campo-texto label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--color-texto-secundario, #666);
+}
+
+.cjs-input-nombre {
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--borde, rgba(255, 255, 255, 0.2));
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--color-texto);
+    font-size: 1rem;
+    font-weight: 600;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+body.modo-dia .cjs-input-nombre {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+.cjs-input-nombre:focus {
+    border-color: var(--color-resaltado, #2ecc71);
+    box-shadow: 0 0 0 3px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.3);
+}
+
+/* Paleta de colores */
+.cjs-colores-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cjs-colores-wrapper label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--color-texto-secundario, #666);
+}
+
+.cjs-colores-lista {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.cjs-color-opcion {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    padding: 0;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.cjs-color-opcion:hover {
+    transform: scale(1.15);
+}
+
+.cjs-color-opcion.seleccionado {
+    border-color: #ffffff;
+    box-shadow: 0 0 0 2px var(--color-texto), 0 0 8px rgba(0, 0, 0, 0.4);
+    transform: scale(1.1);
+}
+
+.cjs-alerta-colores {
+    background: rgba(229, 57, 53, 0.15);
+    border: 1px solid var(--color-error, #e53935);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--color-error, #e53935);
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: none;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Acordeón Cómo jugar */
+.cjs-instrucciones-detalles {
+    border: 1px solid var(--borde, rgba(255, 255, 255, 0.2));
+    border-radius: var(--radio-pequeño, 10px);
+    overflow: hidden;
+    background: var(--superficie-carril, rgba(255, 255, 255, 0.05));
+}
+
+body.modo-dia .cjs-instrucciones-detalles {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+.cjs-instrucciones-summary {
+    padding: 14px 18px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+    transition: background 0.2s ease;
+}
+
+.cjs-instrucciones-summary::-webkit-details-marker {
+    display: none;
+}
+
+.cjs-instrucciones-summary:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+body.modo-dia .cjs-instrucciones-summary:hover {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.cjs-instrucciones-contenido {
+    padding: 16px 20px;
+    border-top: 1px solid var(--borde, rgba(255, 255, 255, 0.1));
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    font-size: 0.95rem;
+    line-height: 1.55;
+}
+
+.cjs-regla-bloque {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cjs-regla-bloque strong {
+    color: var(--color-titulo, var(--color-texto));
+}
+
+.cjs-pistas-resumen-lista {
+    margin: 4px 0 0 16px;
+    padding: 0;
+}
+
+.cjs-pistas-resumen-lista li {
+    margin-bottom: 4px;
+}
+
+/* Botón Iniciar Partida: halo equilibrado y reactivo al tema */
+.cjs-btn-iniciar {
+    background: var(--color-resaltado, #2ecc71);
+    color: #ffffff;
+    font-size: 1.25rem;
+    font-weight: 800;
+    padding: 16px 30px;
+    border: none;
+    border-radius: var(--radio-normal, 14px);
+    cursor: pointer;
+    box-shadow: 0 0 14px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.4);
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.cjs-btn-iniciar:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 0 22px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.65);
+    filter: brightness(1.06);
+}
+
+.cjs-btn-iniciar:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.cjs-btn-iniciar:disabled {
+    background: #888888;
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* ─── PANTALLA 2: JUEGO EN CURSO ─────────────────────────── */
+.cjs-juego-panel {
+    display: none;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.cjs-juego-top-acciones {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.cjs-btn-abandonar {
+    background: rgba(255, 118, 117, 0.12);
+    color: #ff8a80 !important;
+    border: 1.5px solid rgba(255, 118, 117, 0.35) !important;
+    border-radius: 8px;
+    padding: 7px 15px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cjs-btn-abandonar:hover {
+    background: rgba(255, 118, 117, 0.22) !important;
+    border-color: #FF7675 !important;
+    transform: translateY(-1px);
+}
+
+body.modo-dia .cjs-btn-abandonar {
+    background: rgba(220, 38, 38, 0.08);
+    color: #dc2626 !important;
+    border-color: rgba(220, 38, 38, 0.35) !important;
+}
+
+body.modo-dia .cjs-btn-abandonar:hover {
+    background: rgba(220, 38, 38, 0.16) !important;
+    border-color: #dc2626 !important;
+}
+
+/* Barra de estado / Marcador: layout centrado en 3 columnas */
+.cjs-marcador-barra {
+    background: var(--superficie-bg, var(--color-tarjeta));
+    border: 1px solid var(--borde, rgba(255, 255, 255, 0.25));
+    border-radius: var(--radio-normal, 14px);
+    padding: 12px 20px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 12px;
+    box-shadow: var(--sombra-suave);
+}
+
+.cjs-marcador-info-ronda {
+    font-size: 1rem;
+    font-weight: 700;
+    justify-self: start;
+}
+
+.cjs-marcador-turno {
+    justify-self: center;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    transition: all 0.3s ease;
+}
+
+.cjs-marcador-derecha-wrap {
+    justify-self: end;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.cjs-marcador-puntos-pregunta {
+    font-size: 0.95rem;
+    font-weight: 700;
+    background: rgba(0, 0, 0, 0.15);
+    padding: 6px 14px;
+    border-radius: 8px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    text-align: center;
+}
+
+body.modo-dia .cjs-marcador-puntos-pregunta {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* Marcador 2 Jugadores */
+.cjs-marcador-dos-jugadores {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: space-between;
+    padding-top: 10px;
+    margin-top: 6px;
+    border-top: 1px dashed var(--borde, rgba(255, 255, 255, 0.2));
+}
+
+.cjs-jugador-marcador-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #ffffff;
+    opacity: 0.7;
+    transition: all 0.25s ease;
+}
+
+.cjs-jugador-marcador-item.turno-activo {
+    opacity: 1;
+    transform: scale(1.05);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    outline: 2px solid #ffffff;
+}
+
+/* Tarjeta de la Pregunta y Marco con color del jugador activo */
+.cjs-pregunta-card {
+    background: var(--superficie-bg, var(--color-tarjeta));
+    border: 2.5px solid var(--cjs-color-jugador-activo, var(--borde, rgba(255, 255, 255, 0.25)));
+    border-radius: var(--radio-grande, 22px);
+    padding: 24px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--cjs-color-jugador-activo, transparent) 40%, transparent),
+                0 8px 28px color-mix(in srgb, var(--cjs-color-jugador-activo, transparent) 22%, rgba(0, 0, 0, 0.28));
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+body.modo-dia .cjs-pregunta-card {
+    border-color: var(--cjs-color-jugador-activo, rgba(0, 0, 0, 0.16));
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--cjs-color-jugador-activo, transparent) 35%, transparent),
+                0 6px 22px color-mix(in srgb, var(--cjs-color-jugador-activo, transparent) 16%, rgba(0, 0, 0, 0.08));
+}
+
+/* Contraste adaptativo perfecto para la pregunta */
+.cjs-pregunta-subtitulo {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--color-texto);
+    margin: 0;
+}
+
+body.modo-noche .cjs-pregunta-subtitulo {
+    color: #f8fafc;
+}
+
+body.modo-dia .cjs-pregunta-subtitulo {
+    color: #1e293b;
+}
+
+.cjs-solar-nombre-destacado {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--color-titulo, var(--color-texto));
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--borde, rgba(255, 255, 255, 0.2));
+    border-radius: var(--radio-normal, 14px);
+    padding: 12px 24px;
+    margin: 0;
+    max-width: 100%;
+    word-break: break-word;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    min-height: 52px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+body.modo-dia .cjs-solar-nombre-destacado {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+/* MEJORA 2: Contenedor desplegable para la foto del solar al responder (Visualización 16:9 idéntica a Pista 3 sin marco añadido) */
+.cjs-solar-foto-revelada-wrap {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transform: scaleY(0.94);
+    transform-origin: top center;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.3s ease,
+                transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                margin 0.4s ease;
+    margin: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cjs-solar-foto-revelada-wrap.expandido {
+    max-height: 320px;
+    opacity: 1;
+    transform: scaleY(1);
+    margin: 12px 0 16px 0;
+}
+
+.cjs-solar-foto-revelada-img {
+    width: 100%;
+    max-width: 480px;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    border-radius: var(--radio-pequeño, 10px);
+}
+
+@media (max-width: 600px) {
+    .cjs-solar-foto-revelada-wrap.expandido {
+        max-height: 250px;
+        margin: 10px 0 14px 0;
+    }
+    .cjs-solar-foto-revelada-img {
+        max-width: 100%;
+    }
+}
+
+.cjs-transicion-solar-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+}
+
+.cjs-transicion-solar-label {
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    opacity: 0.9;
+    color: var(--color-texto);
+}
+
+.cjs-transicion-solar-num {
+    font-size: 2.2rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--color-resaltado, #2ecc71);
+    text-shadow: 0 0 12px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.45);
+}
+
+/* Opciones de respuesta con imágenes reales y superficies más claras */
+.cjs-opciones-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    width: 100%;
+    margin-top: 8px;
+}
+
+button.cjs-btn-opcion,
+.cjs-btn-opcion {
+    background: color-mix(in srgb, var(--color-tarjeta, rgba(255, 255, 255, 0.12)) 48%, rgba(255, 255, 255, 0.08));
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: var(--color-texto);
+    border: 2.5px solid var(--borde, rgba(255, 255, 255, 0.25)) !important;
+    border-radius: var(--radio-normal, 14px);
+    padding: 10px 16px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, opacity 0.35s ease, visibility 0.35s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    text-align: left;
+    min-height: 56px;
+    box-sizing: border-box;
+}
+
+body.modo-dia button.cjs-btn-opcion,
+body.modo-dia .cjs-btn-opcion {
+    background: color-mix(in srgb, var(--color-tarjeta, var(--color-ventana, #ffffff)) 50%, rgba(255, 255, 255, 0.45));
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-color: var(--borde, rgba(0, 0, 0, 0.16)) !important;
+    color: var(--color-texto, #1a1a1a);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* MEJORA 1: Hover de respuestas reforzado con el color personalizado del jugador activo */
+@media (hover: hover) {
+    button.cjs-btn-opcion:hover:not(:disabled):not(.correcta):not(.incorrecta):not(.descartada),
+    .cjs-btn-opcion:hover:not(:disabled):not(.correcta):not(.incorrecta):not(.descartada) {
+        background: color-mix(in srgb, var(--cjs-color-jugador-activo, var(--color-resaltado, #2ecc71)) 30%, var(--color-tarjeta, rgba(255, 255, 255, 0.14)));
+        border-color: var(--cjs-color-jugador-activo, var(--color-resaltado, #2ecc71)) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 0 0 1px var(--cjs-color-jugador-activo, var(--color-resaltado, #2ecc71)),
+                    0 6px 20px color-mix(in srgb, var(--cjs-color-jugador-activo, var(--color-resaltado, #2ecc71)) 42%, transparent);
+    }
+
+    body.modo-dia button.cjs-btn-opcion:hover:not(:disabled):not(.correcta):not(.incorrecta):not(.descartada),
+    body.modo-dia .cjs-btn-opcion:hover:not(:disabled):not(.correcta):not(.incorrecta):not(.descartada) {
+        background: color-mix(in srgb, var(--cjs-color-jugador-activo, var(--color-resaltado, #2ecc71)) 24%, #ffffff);
+        border-color: var(--cjs-color-jugador-activo, var(--color-resaltado, #2ecc71)) !important;
+        box-shadow: 0 0 0 1px var(--cjs-color-jugador-activo, var(--color-resaltado, #2ecc71)),
+                    0 6px 18px color-mix(in srgb, var(--cjs-color-jugador-activo, var(--color-resaltado, #2ecc71)) 36%, transparent);
+    }
+
+    button.cjs-btn-opcion:hover:not(:disabled):not(.correcta):not(.incorrecta):not(.descartada) .cjs-opcion-mundo-img,
+    .cjs-btn-opcion:hover:not(:disabled):not(.correcta):not(.incorrecta):not(.descartada) .cjs-opcion-mundo-img {
+        border-color: var(--cjs-color-jugador-activo, var(--color-resaltado, #2ecc71));
+        box-shadow: 0 0 12px color-mix(in srgb, var(--cjs-color-jugador-activo, var(--color-resaltado, #2ecc71)) 65%, transparent);
+    }
+}
+
+/* Halo circular para iconos de mundos usando el color de énfasis del tema */
+.cjs-opcion-mundo-img {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    border-radius: 50% !important;
+    object-fit: cover;
+    background: transparent;
+    border: 2px solid rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.45);
+    box-shadow: 0 0 10px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.35);
+    flex-shrink: 0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cjs-opcion-mundo-fallback {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    border-radius: 50% !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.45);
+    box-shadow: 0 0 10px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.35);
+    font-size: 1.3rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.cjs-opcion-mundo-nombre {
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.3;
+    flex: 1;
+}
+
+/* Estados de feedback en opciones */
+.cjs-btn-opcion.correcta {
+    background: #16a34a !important;
+    border-color: #22c55e !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 16px rgba(34, 197, 94, 0.5) !important;
+    transform: scale(1.02);
+}
+
+.cjs-btn-opcion.incorrecta {
+    background: #dc2626 !important;
+    border-color: #ef4444 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.5) !important;
+}
+
+/* Destello cálido 50/50: parpadeo suave amarillo/anaranjado */
+@keyframes cjsDestelloCalido {
+    0%, 100% {
+        box-shadow: 0 0 0 rgba(245, 158, 11, 0);
+    }
+    30%, 70% {
+        background: rgba(245, 158, 11, 0.28) !important;
+        border-color: #f59e0b !important;
+        box-shadow: 0 0 20px rgba(245, 158, 11, 0.65) !important;
+        transform: scale(0.98);
+    }
+}
+
+.cjs-btn-opcion.descarte-parpadeo {
+    animation: cjsDestelloCalido 0.7s ease-in-out forwards;
+}
+
+/* Descarte 50/50: desvanecimiento suave y deshabilitado */
+.cjs-btn-opcion.descartada {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transform: scale(0.92) !important;
+    transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s ease !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cjs-btn-opcion.descarte-parpadeo {
+        animation: none !important;
+    }
+    .cjs-btn-opcion.descartada {
+        transition: none !important;
+    }
+}
+
+/* Cuenta atrás de transición automática (3, 2, 1) */
+.cjs-transicion-cuenta-atras {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 8px 18px;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--borde, rgba(255, 255, 255, 0.2));
+    margin-top: 12px;
+    animation: cjsFadeSlide 0.25s ease;
+}
+
+body.modo-dia .cjs-transicion-cuenta-atras {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+.cjs-transicion-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.cjs-transicion-digito {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--color-resaltado, #2ecc71);
+    min-width: 20px;
+    text-align: center;
+    animation: cjsPulsoDigito 1s ease infinite;
+}
+
+@keyframes cjsPulsoDigito {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cjs-transicion-digito {
+        animation: none !important;
+    }
+}
+
+/* Badge del Temporizador en Marcador */
+.cjs-timer-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1.5px solid var(--color-resaltado, #2ecc71);
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--color-texto);
+    box-shadow: 0 0 10px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.25);
+    transition: all 0.25s ease;
+    white-space: nowrap;
+}
+
+body.modo-dia .cjs-timer-badge {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.cjs-timer-badge.tiempo-critico {
+    border-color: #ef4444 !important;
+    color: #ef4444 !important;
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.45) !important;
+    animation: cjsPulsoCritico 1s infinite;
+}
+
+@keyframes cjsPulsoCritico {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cjs-timer-badge.tiempo-critico {
+        animation: none !important;
+    }
+}
+
+/* Badge de Muerte Súbita */
+.cjs-badge-muerte-subita {
+    display: inline-block;
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid #ef4444;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+/* ─── ZONA DE PISTAS ─────────────────────────────────────── */
+.cjs-pistas-wrapper {
+    background: var(--superficie-bg, var(--color-tarjeta));
+    border: 1px solid var(--borde, rgba(255, 255, 255, 0.25));
+    border-radius: var(--radio-normal, 14px);
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 800px;
+    opacity: 1;
+    overflow: hidden;
+    transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.35s ease,
+                padding 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                margin 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.35s ease;
+}
+
+.cjs-pistas-wrapper.contraida {
+    max-height: 0 !important;
+    opacity: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: -20px !important;
+    margin-bottom: 0 !important;
+    border-top-width: 0 !important;
+    border-bottom-width: 0 !important;
+    border-color: transparent !important;
+    pointer-events: none !important;
+}
+
+.cjs-pistas-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.cjs-pistas-indicadores {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cjs-pista-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.25);
+    transition: all 0.2s ease;
+}
+
+body.modo-dia .cjs-pista-dot {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.cjs-pista-dot.usada {
+    background: var(--color-advertencia, #ffd54a);
+    box-shadow: 0 0 6px rgba(255, 213, 74, 0.6);
+}
+
+.cjs-btn-pista {
+    background: rgba(255, 213, 74, 0.2);
+    color: var(--color-texto);
+    border: 1px solid var(--color-advertencia, #ffd54a);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cjs-btn-pista:hover:not(:disabled) {
+    background: var(--color-advertencia, #ffd54a);
+    color: #1a1a1a;
+    transform: translateY(-1px);
+}
+
+.cjs-btn-pista:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.cjs-lista-pistas-reveladas {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cjs-pista-item {
+    background: rgba(255, 255, 255, 0.08);
+    border-left: 4px solid var(--color-advertencia, #ffd54a);
+    border-radius: 4px 8px 8px 4px;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    animation: cjsFadeSlide 0.3s ease;
+}
+
+body.modo-dia .cjs-pista-item {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+@keyframes cjsFadeSlide {
+    0% { opacity: 0; transform: translateY(-6px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.cjs-pista-item-imagen {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    text-align: center;
+}
+
+.cjs-pista-img-preview {
+    max-width: 100%;
+    max-height: 260px;
+    border-radius: var(--radio-pequeño, 10px);
+    border: 1px solid var(--borde, rgba(255, 255, 255, 0.2));
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    object-fit: cover;
+}
+
+/* Banner feedback post-respuesta */
+.cjs-feedback-banner {
+    display: none;
+    border-radius: var(--radio-normal, 14px);
+    padding: 16px 20px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    animation: cjsFadeSlide 0.3s ease;
+}
+
+.cjs-feedback-banner.exito {
+    display: flex;
+    background: rgba(22, 163, 74, 0.2);
+    border: 1px solid #16a34a;
+    color: var(--color-texto);
+}
+
+.cjs-feedback-banner.fallo {
+    display: flex;
+    background: rgba(220, 38, 38, 0.2);
+    border: 1px solid #dc2626;
+    color: var(--color-texto);
+}
+
+.cjs-feedback-texto {
+    font-size: 1.05rem;
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.cjs-feedback-subtexto {
+    font-size: 0.88rem;
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+/* Botón Siguiente pregunta: solo texto, halo adaptativo */
+.cjs-btn-siguiente {
+    background: var(--color-resaltado, #2ecc71);
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 10px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.35);
+}
+
+.cjs-btn-siguiente:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 16px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.55);
+    filter: brightness(1.08);
+}
+
+/* ─── PANTALLA 3: RESULTADOS FINALES ─────────────────────── */
+.cjs-final-panel {
+    display: none;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.animacion-entrada-pantalla-final {
+    animation: cjsEntradaFinal 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes cjsEntradaFinal {
+    0% {
+        opacity: 0;
+        transform: translateY(18px) scale(0.98);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .animacion-entrada-pantalla-final,
+    .cjs-pista-item,
+    .cjs-feedback-banner {
+        animation: none !important;
+        transform: none !important;
+    }
+}
+
+.cjs-tarjeta-resumen-final {
+    background: var(--superficie-bg, var(--color-tarjeta));
+    border: 1px solid var(--borde, rgba(255, 255, 255, 0.25));
+    border-radius: var(--radio-grande, 22px);
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+    box-shadow: var(--sombra-fuerte);
+    position: relative;
+    overflow: hidden;
+}
+
+.cjs-final-titulo-icono {
+    font-size: 3rem;
+    line-height: 1;
+}
+
+.cjs-final-cabecera h3 {
+    margin: 8px 0 4px 0;
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--color-titulo, var(--color-texto));
+}
+
+.cjs-final-cabecera p {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--color-texto-secundario, #666);
+}
+
+/* Puntuación destacada sin ceros de relleno */
+.cjs-puntos-cero-destacados {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--borde, rgba(255, 255, 255, 0.2));
+    border-radius: var(--radio-normal, 14px);
+    padding: 16px 28px;
+    width: fit-content;
+    max-width: 100%;
+}
+
+body.modo-dia .cjs-puntos-cero-destacados {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.cjs-puntos-cero-valor {
+    font-size: 2.3rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: var(--color-resaltado, #2ecc71);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.cjs-puntos-cero-maximo {
+    font-size: 0.95rem;
+    font-weight: 600;
+    opacity: 0.85;
+}
+
+/* Estrellas gráficas */
+.cjs-estrellas-contenedor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin: 6px 0;
+}
+
+.cjs-estrellas-iconos {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.cjs-estrella-svg {
+    width: 28px;
+    height: 28px;
+    display: inline-block;
+    vertical-align: middle;
+    filter: drop-shadow(0 2px 4px rgba(243, 156, 18, 0.35));
+}
+
+.cjs-estrellas-texto {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-texto-secundario, #888);
+}
+
+.cjs-mensaje-final-bracket {
+    font-size: 1.15rem;
+    font-weight: 700;
+    max-width: 600px;
+    margin: 0;
+    line-height: 1.5;
+    padding: 0 10px;
+}
+
+/* Resultados 2 Jugadores */
+.cjs-comparativa-dos-jugadores {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    width: 100%;
+    margin-top: 8px;
+}
+
+.cjs-jugador-resumen-card {
+    background: rgba(0, 0, 0, 0.12);
+    border: 2px solid transparent;
+    border-radius: var(--radio-normal, 14px);
+    padding: 18px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+body.modo-dia .cjs-jugador-resumen-card {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.cjs-jugador-resumen-card.es-ganador {
+    border-color: #ffd54a;
+    box-shadow: 0 0 16px rgba(255, 213, 74, 0.35);
+    background: rgba(255, 213, 74, 0.12);
+}
+
+.cjs-jugador-resumen-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.cjs-jugador-resumen-puntos {
+    font-size: 1.75rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.cjs-ganador-banner-destacado {
+    background: rgba(255, 213, 74, 0.18);
+    border: 1px solid var(--color-advertencia, #ffd54a);
+    border-radius: var(--radio-normal, 14px);
+    padding: 12px 20px;
+    font-size: 1.25rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Botones de acción final: halo equilibrado */
+.cjs-acciones-finales {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.cjs-btn-accion {
+    padding: 12px 22px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    border-radius: var(--radio-pequeño, 10px);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+}
+
+.cjs-btn-accion.primario {
+    background: var(--color-resaltado, #2ecc71);
+    color: #ffffff;
+    box-shadow: 0 0 14px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.4);
+}
+
+.cjs-btn-accion.primario:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.6);
+    filter: brightness(1.08);
+}
+
+.cjs-btn-accion.secundario {
+    background: color-mix(in srgb, var(--color-resaltado, #2ecc71) 18%, var(--color-tarjeta, rgba(255, 255, 255, 0.08)));
+    color: #ffffff;
+    border: 2px solid var(--color-resaltado, #2ecc71);
+    border-radius: var(--radio-normal, 12px);
+    font-weight: 700;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.cjs-btn-accion.secundario:hover {
+    background: var(--color-resaltado, #2ecc71);
+    color: #ffffff;
+    box-shadow: 0 0 16px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.5);
+    transform: translateY(-2px);
+}
+
+body.modo-dia .cjs-btn-accion.secundario {
+    background: color-mix(in srgb, var(--color-resaltado, #27ae60) 16%, var(--color-tarjeta, rgba(255, 255, 255, 0.45)));
+    color: color-mix(in srgb, var(--color-resaltado, #1e8449) 75%, #111111);
+    border-color: var(--color-resaltado, #27ae60);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+body.modo-dia .cjs-btn-accion.secundario:hover {
+    background: var(--color-resaltado, #27ae60);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(var(--color-resaltado-rgb, 39, 174, 96), 0.35);
+}
+
+.cjs-btn-accion.compartir-destacado {
+    background: var(--color-resaltado, #2ecc71);
+    color: #ffffff;
+    box-shadow: 0 0 14px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.4);
+    border-radius: var(--radio-normal, 12px);
+    padding: 10px 20px;
+    font-weight: 700;
+}
+
+.cjs-btn-accion.compartir-destacado:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(var(--color-resaltado-rgb, 46, 204, 113), 0.6);
+    filter: brightness(1.08);
+}
+
+.cjs-btn-accion.peligro {
+    background: rgba(229, 57, 53, 0.28);
+    color: #ff8a80;
+    border: 2px solid #e53935;
+    border-radius: var(--radio-normal, 12px);
+    font-weight: 700;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.cjs-btn-accion.peligro:hover {
+    background: #e53935;
+    color: #ffffff;
+    box-shadow: 0 0 18px rgba(229, 57, 53, 0.65);
+    transform: translateY(-2px);
+}
+
+body.modo-dia .cjs-btn-accion.peligro {
+    background: rgba(229, 57, 53, 0.20);
+    color: #b71c1c;
+    border-color: #d32f2f;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+body.modo-dia .cjs-btn-accion.peligro:hover {
+    background: #d32f2f;
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(211, 47, 47, 0.35);
+}
+
+/* ─── MODALES: TRASLUCIDEZ, BLUR Y TEMA VISUAL LOT-LAB ───── */
+.cjs-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+body.modo-dia .cjs-modal-backdrop {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.cjs-modal-dialog {
+    background: color-mix(in srgb, var(--color-tarjeta, rgba(25, 25, 25, 0.85)) 62%, rgba(18, 22, 30, 0.55));
+    color: var(--color-texto, #ffffff);
+    border: 1px solid var(--borde, rgba(255, 255, 255, 0.2));
+    border-radius: var(--radio-grande, 22px);
+    padding: 24px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    box-sizing: border-box;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+    backdrop-filter: blur(var(--ventana-blur, var(--blur, 16px)));
+    -webkit-backdrop-filter: blur(var(--ventana-blur, var(--blur, 16px)));
+}
+
+body.modo-dia .cjs-modal-dialog {
+    background: color-mix(in srgb, var(--color-tarjeta, var(--color-ventana, #ffffff)) 52%, rgba(255, 255, 255, 0.48));
+    border: 1px solid var(--borde, rgba(0, 0, 0, 0.12));
+    color: var(--color-texto, #2b2b2b);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.cjs-modal-dialog p {
+    color: var(--color-texto) !important;
+    opacity: 0.92;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.cjs-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--borde, rgba(255, 255, 255, 0.15));
+}
+
+.cjs-modal-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-titulo, var(--color-texto)) !important;
+}
+
+.cjs-modal-header .cerrar {
+    position: static !important;
+    margin-left: auto;
+}
+
+.cjs-modal-textarea-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cjs-modal-textarea-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cjs-modal-textarea-header label {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--color-texto) !important;
+}
+
+.cjs-char-count {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-texto-secundario, #888);
+}
+
+body.modo-dia .cjs-char-count {
+    color: #475569;
+}
+
+body.modo-noche .cjs-char-count {
+    color: #cbd5e1;
+}
+
+.cjs-modal-textarea {
+    width: 100%;
+    min-height: 60px;
+    max-height: 140px;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.28);
+    border: 1.5px solid var(--borde, rgba(255, 255, 255, 0.2));
+    border-radius: 8px;
+    padding: 10px;
+    color: #ffffff;
+    font-size: 0.95rem;
+    line-height: 1.45;
+    font-family: inherit;
+    resize: none;
+    box-sizing: border-box;
+}
+
+body.modo-dia .cjs-modal-textarea {
+    background: rgba(255, 255, 255, 0.88);
+    border-color: rgba(0, 0, 0, 0.18);
+    color: #1a1a1a;
+}
+
+body.modo-noche .cjs-modal-textarea {
+    color: #f8fafc;
+}
+
+/* Subtítulo debajo de Fin del Duelo */
+.cjs-duelo-subtitulo {
+    font-size: 0.95rem;
+    margin-top: 4px;
+    color: var(--color-texto);
+    opacity: 0.9;
+}
+
+body.modo-noche .cjs-duelo-subtitulo {
+    color: #ffffff !important;
+    opacity: 0.95;
+}
+
+body.modo-dia .cjs-duelo-subtitulo {
+    color: var(--color-texto-secundario, #475569);
+    opacity: 1;
+}
+
+/* 3 Botones redondos de redes sociales: exactamente circulares e iconos grandes */
+.cjs-redes-circulares {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding: 6px 0;
+}
+
+.cjs-btn-red-circular {
+    width: 52px;
+    height: 52px;
+    min-width: 52px;
+    min-height: 52px;
+    border-radius: 50% !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    color: #ffffff;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.cjs-btn-red-circular svg {
+    width: 26px !important;
+    height: 26px !important;
+    min-width: 26px !important;
+    min-height: 26px !important;
+    flex-shrink: 0;
+    display: block;
+}
+
+.cjs-btn-red-circular:hover {
+    transform: scale(1.1);
+    filter: brightness(1.1);
+}
+
+.cjs-btn-red-circular.red-x {
+    background: #000000;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+}
+
+.cjs-btn-red-circular.red-bsky {
+    background: #0285ff;
+    box-shadow: 0 0 12px rgba(2, 133, 255, 0.45);
+}
+
+.cjs-btn-red-circular.red-fb {
+    background: #1877f2;
+    box-shadow: 0 0 12px rgba(24, 119, 242, 0.45);
+}
+
+.cjs-modal-acciones-inferiores {
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+}
+
+/* ─── MODAL CONFIRMAR CANCELAR PARTIDA ───────────────────── */
+.cjs-dialog-confirmar {
+    max-width: 440px;
+    text-align: center;
+    gap: 16px;
+}
+
+.cjs-dialog-confirmar h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 800;
+}
+
+.cjs-dialog-confirmar p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--color-texto-secundario, #888);
+}
+
+.cjs-confirmar-botones {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 6px;
+    flex-wrap: wrap;
+}
+
+/* ─── MODAL DESEMPATE (MUERTE SÚBITA) ───────────────────── */
+.cjs-dialog-desempate {
+    max-width: 480px;
+    text-align: center;
+}
+
+.cjs-desempate-eleccion-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.cjs-desempate-jugador-opcion {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--borde, rgba(255, 255, 255, 0.15));
+    border-radius: 10px;
+    padding: 12px;
+}
+
+body.modo-dia .cjs-desempate-jugador-opcion {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.12);
+}
+
+.cjs-par-impar-toggle {
+    display: flex;
+    gap: 6px;
+}
+
+.cjs-btn-parimpar {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-radius: 6px;
+    border: 1px solid var(--borde, rgba(255, 255, 255, 0.2));
+    background: transparent;
+    color: var(--color-texto);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+body.modo-dia .cjs-btn-parimpar {
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+.cjs-btn-parimpar.activo {
+    background: var(--color-resaltado, #2ecc71);
+    color: #ffffff;
+    border-color: var(--color-resaltado, #2ecc71);
+}
+
+.cjs-par-impar-fijo {
+    font-size: 0.88rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.15);
+    color: var(--color-texto);
+}
+
+body.modo-dia .cjs-par-impar-fijo {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.cjs-dado-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 0 16px 0;
+}
+
+.cjs-dado-caja {
+    font-size: 3.5rem;
+    line-height: 1;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    user-select: none;
+}
+
+.cjs-dado-caja.girando {
+    animation: cjsGiroDado 0.6s ease-in-out infinite;
+}
+
+@keyframes cjsGiroDado {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.15); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cjs-dado-caja.girando {
+        animation: none !important;
+    }
+}
+
+.cjs-dado-resultado-texto {
+    font-size: 1rem;
+    font-weight: 700;
+    min-height: 24px;
+}
+
+/* Botón Cambiar Configuración con estilo Ruleta Desastres .botonReto */
+.cjs-btn-accion.botonReto {
+    background: var(--color-principal, rgba(255, 255, 255, 0.15));
+    color: var(--color-texto);
+    border: none;
+    box-shadow: var(--sombra-suave);
+}
+
+.cjs-btn-accion.botonReto:hover {
+    background: var(--color-secundario, rgba(255, 255, 255, 0.25));
+    transform: translateY(-1px);
+}
+
+/* ─── RESPONSIVE MÓVIL ───────────────────────────────────── */
+@media (max-width: 680px) {
+    #ventanaConocesSolares {
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .cjs-segment-group.cjs-modo-group,
+    .cjs-segment-group.cjs-rondas-group {
+        max-width: 100%;
+        gap: 6px;
+    }
+
+    .cjs-segment-group.cjs-modo-group .cjs-segment-btn {
+        padding: 10px 8px;
+        font-size: 0.95rem;
+    }
+
+    .cjs-segment-group.cjs-rondas-group .cjs-segment-btn {
+        padding: 10px 4px;
+        font-size: 0.88rem;
+    }
+
+    .cjs-marcador-barra {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        text-align: center;
+    }
+
+    .cjs-marcador-info-ronda,
+    .cjs-marcador-puntos-pregunta {
+        justify-self: center;
+    }
+
+    .cjs-marcador-derecha-wrap {
+        justify-self: center;
+        align-items: center;
+    }
+
+    .cjs-pregunta-card {
+        padding: 18px 14px;
+    }
+
+    .cjs-solar-nombre-destacado {
+        font-size: 1.4rem;
+        padding: 10px 14px;
+    }
+
+    .cjs-opciones-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cjs-btn-opcion {
+        min-height: 52px;
+        font-size: 1rem;
+        padding: 10px 12px;
+    }
+
+    .cjs-comparativa-dos-jugadores {
+        grid-template-columns: 1fr;
+    }
+
+    .cjs-acciones-finales {
+        flex-direction: column;
+    }
+
+    .cjs-btn-accion {
+        width: 100%;
+    }
+}
+
+/* ==========================================================
+   GARANTÍA DE CONTRASTE: BOTÓN CERRAR EN HOVER (MODO DÍA Y NOCHE)
+   ========================================================== */
+body.modo-dia .cerrar:hover,
+body.modo-dia button.cerrar:hover,
+body.modo-dia .cabeceraVentana .cerrar:hover,
+body.modo-dia .cabeceraVentana button.cerrar:hover,
+body.modo-dia .headerPacksFlotante .cerrar:hover,
+body.modo-dia .cjs-modal-dialog .cerrar:hover,
+body.modo-dia .cjs-modal-dialog button.cerrar:hover,
+body.modo-dia .cerrarPequeno:hover,
+body.modo-dia button.cerrarPequeno:hover {
+    background: rgba(229, 57, 53, 0.85) !important;
+    color: #ffffff !important;
+}
+

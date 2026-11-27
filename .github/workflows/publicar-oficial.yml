@@ -1,0 +1,150 @@
+name: Publicar web oficial
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Etiqueta de la Release oficial (oficial-...)"
+        required: true
+        type: string
+      expected_sha256:
+        description: "SHA-256 esperado de lotlab-oficial.zip"
+        required: true
+        type: string
+      modo:
+        description: "Validar prepara el sitio sin publicarlo; Desplegar publica en Pages"
+        required: true
+        type: choice
+        options:
+          - validar
+          - desplegar
+        default: validar
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Este workflow solo se ejecuta manualmente. No se conecta todavía a las
+# automatizaciones de Google Sheets ni a la conversión WebP.
+concurrency:
+  group: "pages-oficial"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      modo: ${{ inputs.modo }}
+    steps:
+      - name: Comprobar que la Release es oficial
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          set -euo pipefail
+          case "$RELEASE_TAG" in
+            oficial-*) ;;
+            *) echo "::error::La etiqueta no tiene el prefijo oficial-."; exit 1 ;;
+          esac
+          IS_PRERELEASE="$(gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --json isPrerelease --jq '.isPrerelease')"
+          if [ "$IS_PRERELEASE" != "false" ]; then
+            echo "::error::La Release indicada es prerelease y no se puede publicar en producción."
+            exit 1
+          fi
+
+      - name: Descargar ZIP y checksum de la Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/release-pkg
+          gh release download "$RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern "lotlab-oficial.zip" \
+            --pattern "lotlab-oficial.sha256" \
+            --dir /tmp/release-pkg
+          test -s /tmp/release-pkg/lotlab-oficial.zip
+          test -s /tmp/release-pkg/lotlab-oficial.sha256
+
+      - name: Verificar integridad SHA-256
+        env:
+          EXPECTED_SHA256: ${{ inputs.expected_sha256 }}
+        working-directory: /tmp/release-pkg
+        run: |
+          set -euo pipefail
+          ACTUAL_SHA256="$(sha256sum lotlab-oficial.zip | cut -d ' ' -f 1)"
+          ASSET_SHA256="$(awk 'NR==1 {print $1}' lotlab-oficial.sha256)"
+          if [ "$ACTUAL_SHA256" != "$EXPECTED_SHA256" ] || [ "$ACTUAL_SHA256" != "$ASSET_SHA256" ]; then
+            echo "::error::El SHA-256 del ZIP no coincide con el valor esperado y el checksum de la Release."
+            exit 1
+          fi
+          echo "SHA-256 verificado: $ACTUAL_SHA256"
+
+      - name: Validar y extraer exportación oficial
+        run: |
+          set -euo pipefail
+          rm -rf _site
+          python3 - <<'PY'
+          import stat
+          import zipfile
+          from pathlib import PurePosixPath
+
+          archive = "/tmp/release-pkg/lotlab-oficial.zip"
+          forbidden = {"editor-local", "servidor-local", ".git", ".github"}
+          with zipfile.ZipFile(archive) as z:
+              for info in z.infolist():
+                  name = info.filename
+                  path = PurePosixPath(name)
+                  if path.is_absolute() or ".." in path.parts or not path.parts:
+                      raise SystemExit(f"Ruta insegura en ZIP: {name}")
+                  if any(part in forbidden for part in path.parts):
+                      raise SystemExit(f"Carpeta privada/no publicable detectada: {name}")
+                  if any(part.lower() == ".env" or part.lower().startswith(".env.") for part in path.parts):
+                      raise SystemExit(f"Archivo de entorno detectado: {name}")
+                  if name.endswith((".bat", ".ps1")):
+                      raise SystemExit(f"Script local no publicable detectado: {name}")
+                  mode = info.external_attr >> 16
+                  if stat.S_ISLNK(mode):
+                      raise SystemExit(f"Enlace simbólico no permitido: {name}")
+              bad = z.testzip()
+              if bad:
+                  raise SystemExit(f"CRC incorrecto en: {bad}")
+              z.extractall("_site")
+          PY
+          test -s _site/index.html
+          test -s _site/404.html
+          for folder in css js data img font; do
+            test -d "_site/$folder" || { echo "::error::Falta la carpeta $folder"; exit 1; }
+          done
+          echo "Exportación oficial validada correctamente."
+
+      - name: Configurar GitHub Pages
+        if: inputs.modo == 'desplegar'
+        uses: actions/configure-pages@v5
+
+      - name: Subir artefacto de Pages
+        if: inputs.modo == 'desplegar'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Resumen de validación (sin publicar)
+        if: inputs.modo == 'validar'
+        run: |
+          echo "Validación terminada. No se ha publicado nada."
+          echo "Archivos: $(find _site -type f | wc -l)"
+          echo "Tamaño: $(du -sh _site | cut -f1)"
+
+  deploy:
+    if: inputs.modo == 'desplegar'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Publicar en GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
